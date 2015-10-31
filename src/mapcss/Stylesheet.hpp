@@ -1,5 +1,5 @@
-#ifndef _MAPCSS_STYLESHEET_HPP_DEFINED_
-#define _MAPCSS_STYLESHEET_HPP_DEFINED_
+#ifndef MAPCSS_STYLESHEET_HPP_DEFINED
+#define MAPCSS_STYLESHEET_HPP_DEFINED
 
 namespace utymap { namespace mapcss {
 
@@ -9,4 +9,4 @@ class Stylesheet {
 
 }} // ns end utymap::mapcss
 
-#endif // _MAPCSS_STYLESHEET_HPP_DEFINED_
+#endif // MAPCSS_STYLESHEET_HPP_DEFINED

@@ -1,5 +1,5 @@
-#ifndef _MAPCSS_PARSER_HPP_DEFINED_
-#define _MAPCSS_PARSER_HPP_DEFINED_
+#ifndef MAPCSS_PARSER_HPP_DEFINED
+#define MAPCSS_PARSER_HPP_DEFINED
 
 namespace utymap { namespace mapcss {
 
@@ -17,4 +17,4 @@ private:
 
 }} // ns end utymap::mapcss
 
-#endif // _MAPCSS_PARSER_HPP_DEFINED_
+#endif // MAPCSS_PARSER_HPP_DEFINED
