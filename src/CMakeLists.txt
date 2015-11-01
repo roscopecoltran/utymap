@@ -1,5 +1,6 @@
 set(HEADER_FILES
-                mapcss/Stylesheet.hpp
+                mapcss/StyleSheet.hpp
+                mapcss/Grammar.hpp
                 mapcss/Parser.hpp
                 )
 
