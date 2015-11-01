@@ -9,7 +9,7 @@ using namespace utymap::mapcss;
 
 BOOST_AUTO_TEST_SUITE( MapCss_Parser )
 
-BOOST_AUTO_TEST_CASE( GivenMultilineComment_WhenParseIsCalled_ThenHasStylesheetAndNoError )
+BOOST_AUTO_TEST_CASE( GivenMultilineComment_WhenParseIsCalled_ThenHasOneRule )
 {
     std::string str = "/* Some comment */"
                       "way[highway] {}";
@@ -19,9 +19,10 @@ BOOST_AUTO_TEST_CASE( GivenMultilineComment_WhenParseIsCalled_ThenHasStylesheetA
 
     BOOST_CHECK(stylesheet != nullptr);
     BOOST_CHECK(parser.getLastError().empty());
+    BOOST_CHECK(stylesheet->rules_.size() == 1);
 }
 
-BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndEmptyDeclarations_WhenParseIsCalled_ThenHasStylesheetAndNoError )
+BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndEmptyDeclarations_WhenParseIsCalled_ThenHasRule )
 {
     std::string str = "way[highway] {}";
     Parser<std::string::iterator> parser;
@@ -30,9 +31,10 @@ BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndEmptyDeclarations_WhenParseIsCalled_
 
     BOOST_CHECK(stylesheet != nullptr);
     BOOST_CHECK(parser.getLastError().empty());
+    BOOST_CHECK(stylesheet->rules_.size() == 1);
 }
 
-BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndSingleDeclaration_WhenParseIsCalled_ThenHasStylesheetAndNoError )
+BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndSingleDeclaration_WhenParseIsCalled_ThenHasRule )
 {
     std::string str = "way[highway] {width: 3;}";
     Parser<std::string::iterator> parser;
@@ -41,6 +43,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleSelectorAndSingleDeclaration_WhenParseIsCalled_
 
     BOOST_CHECK(stylesheet != nullptr);
     BOOST_CHECK(parser.getLastError().empty());
+    BOOST_CHECK(stylesheet->rules_.size() == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

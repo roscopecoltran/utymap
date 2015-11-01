@@ -10,6 +10,7 @@
 
 #include "StyleSheet.hpp"
 
+#include <vector>
 #include <sstream>
 #include <memory>
 
@@ -136,10 +137,18 @@ public:
 
     void pushRulesetArray()
     {
+        s_->rules_.insert(s_->rules_.end(), currentRules_.begin(), currentRules_.end());
+        currentRules_.clear();
     }
 
     void setCurrentSelectors(const std::vector<Selector>& selectors)
     {
+        for (const Selector& selector : selectors)
+        {
+            Rule rule;
+            rule.selector_ = selector;
+            currentRules_.push_back(rule);
+        }
     }
 
     std::string getLastError() { return error_.str(); }
@@ -148,6 +157,7 @@ private:
     //std::string error_;
     std::stringstream error_;
     std::shared_ptr<StyleSheet> s_;
+    std::vector<Rule> currentRules_;
 
     qi::rule<Iterator, CommentSkipper<Iterator> > ruleset_, rulesetArray_;
     qi::rule<Iterator, CommentSkipper<Iterator> > declaration_;

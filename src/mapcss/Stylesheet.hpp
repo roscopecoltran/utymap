@@ -5,7 +5,6 @@
 
 namespace utymap { namespace mapcss {
 
-
 struct SimpleSelector
 {
 public:
@@ -22,17 +21,31 @@ struct Selector
 {
 public:
 
-    void addSimpleSelector(const SimpleSelector& s)
+    void addSimpleSelector(const SimpleSelector& selector)
     {
-        simpleSelectors_.push_back(s);
+        simpleSelectors_.push_back(selector);
     }
 
     std::vector<SimpleSelector> simpleSelectors_;
 };
 
+struct Rule
+{
+public:
+
+    Selector selector_;
+};
+
 struct StyleSheet
 {
+public:
 
+    void addRule(const Rule& rule)
+    {
+        rules_.push_back(rule);
+    }
+
+    std::vector<Rule> rules_;
 };
 
 }} // ns end utymap::mapcss
