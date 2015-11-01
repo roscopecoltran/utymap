@@ -4,7 +4,7 @@ set(HEADER_FILES
                 )
 
 add_library (UtyMap
-                mapcss/Stylesheet.cpp
-                mapcss/Parser.cpp
                 ${HEADER_FILES}
                 )
+
+set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)

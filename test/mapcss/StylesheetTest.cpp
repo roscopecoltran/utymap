@@ -1,5 +1,5 @@
-#include "mapcss/Stylesheet.hpp"
 #include <boost/test/unit_test.hpp>
+#include "mapcss/Stylesheet.hpp"
 
 using namespace utymap::mapcss;
 
