@@ -1,10 +1,10 @@
 set(HEADER_FILES
                 mapcss/StyleSheet.hpp
-                mapcss/Grammar.hpp
                 mapcss/Parser.hpp
                 )
 
 add_library (UtyMap
+                mapcss/Parser.cpp
                 ${HEADER_FILES}
                 )
 

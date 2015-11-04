@@ -1,53 +1,48 @@
 #ifndef MAPCSS_STYLESHEET_HPP_DEFINED
 #define MAPCSS_STYLESHEET_HPP_DEFINED
 
+#include <cstdint>
 #include <string>
+#include <vector>
 
 namespace utymap { namespace mapcss {
 
-struct SimpleSelector
+struct Condition
 {
-public:
+    std::string key;
+    std::string operation;
+    std::string value;
+};
 
-    void setElementName(const std::string& name) 
-    {
-        elementName_ = name;
-    }
-
-    std::string elementName_;
+struct Zoom
+{
+    std::uint8_t start;
+    std::uint8_t end;
 };
 
 struct Selector
 {
-public:
+    std::string name;
+    Zoom zoom;
+    std::vector<Condition> conditions;
+};
 
-    void addSimpleSelector(const SimpleSelector& selector)
-    {
-        simpleSelectors_.push_back(selector);
-    }
-
-    std::vector<SimpleSelector> simpleSelectors_;
+struct Declaration
+{
+    std::string key;
+    std::string value;
 };
 
 struct Rule
 {
-public:
-
-    Selector selector_;
+    std::vector<Selector> selectors;
+    std::vector<Declaration> declarations;
 };
 
 struct StyleSheet
 {
-public:
-
-    void addRule(const Rule& rule)
-    {
-        rules_.push_back(rule);
-    }
-
-    std::vector<Rule> rules_;
+    std::vector<Rule> rules;
 };
 
-}} // ns end utymap::mapcss
-
+}}
 #endif // MAPCSS_STYLESHEET_HPP_DEFINED
