@@ -18,9 +18,9 @@ public:
     boost::shared_ptr<StyleSheet> parse(const std::string& str);
 
     // Parses stylsheet from input stream (e.g. file).
-    boost::shared_ptr<StyleSheet> parse(boost::spirit::istream_iterator begin, 
+    boost::shared_ptr<StyleSheet> parse(boost::spirit::istream_iterator begin,
                                         boost::spirit::istream_iterator end);
-    
+
     // Returns last error if parse fails.
     std::string getError() { return error_;  };
 

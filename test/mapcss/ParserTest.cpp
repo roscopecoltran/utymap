@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( GivenCppComment_WhenParse_ThenDoesNotBreak )
 {
     std::string str = "/* Some \nncomment */\n way|z1-15[highway] {key:value;}";
 
-    bool success = phrase_parse(str.begin(), str.end(), styleSheetGrammar, skipper, stylesheet);
+    bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( stylesheet.rules.size() == 1 );
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( GivenHtmlComment_WhenParse_ThenDoesNotBreak )
 {
     std::string str = "<!--Some \ncomment-->\n way|z1-15[highway] {key:value;}";
 
-    bool success = phrase_parse(str.begin(), str.end(), styleSheetGrammar, skipper, stylesheet);
+    bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( stylesheet.rules.size() == 1 );
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( GivenExistenceCondition_WhenParse_ThenOnlyKeyIsSet )
 {
     std::string str = "[highway]";
 
-    bool success = phrase_parse(str.begin(), str.end(), conditionGrammar, skipper, condition);
+    bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( condition.key == "highway" );
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( GivenEqualCondition_WhenParse_ThenKeyOpValueAreSet )
 {
     std::string str = "[highway=primary]";
 
-    bool success = phrase_parse(str.begin(), str.end(), conditionGrammar, skipper, condition);
+    bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( condition.key == "highway" );
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( GivenNegativeCondition_WhenParse_ThenKeyOpValueAreSet )
 {
     std::string str = "[highway!=primary]";
 
-    bool success = phrase_parse(str.begin(), str.end(), conditionGrammar, skipper, condition);
+    bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( condition.key == "highway" );
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( GivenOneZoom_WhenParse_ThenStartAndEndAreSet )
 {
     std::string str = "|z1";
 
-    bool success = phrase_parse(str.begin(), str.end(), zoomGrammar, skipper, zoom);
+    bool success = phrase_parse(str.cbegin(), str.cend(), zoomGrammar, skipper, zoom);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( zoom.start == 1 );
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( GivenZoomRange_WhenParse_ThenStartAndEndAreSet )
 {
     std::string str = "|z12-21";
 
-    bool success = phrase_parse(str.begin(), str.end(), zoomGrammar, skipper, zoom);
+    bool success = phrase_parse(str.cbegin(), str.cend(), zoomGrammar, skipper, zoom);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( zoom.start == 12 );
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE( GivenSingleSelector_WhenParse_ThenNameAndConditionsAreSet 
 {
     std::string str = "way|z1[highway]";
 
-    bool success = phrase_parse(str.begin(), str.end(), selectorGrammar, skipper, selector);
+    bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( selector.name == "way" );
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( GivenTwoSelectors_WhenParse_ThenNameAndConditionsAreSet )
 {
     std::string str = "way|z1[highway][landuse]";
 
-    bool success = phrase_parse(str.begin(), str.end(), selectorGrammar, skipper, selector);
+    bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( selector.name == "way" );
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( GivenSingleDeclaraion_WhenParse_ThenKeyValueAreSet )
 {
     std::string str = "key1:value1;";
 
-    bool success = phrase_parse(str.begin(), str.end(), declarationGrammar, skipper, declaration);
+    bool success = phrase_parse(str.cbegin(), str.cend(), declarationGrammar, skipper, declaration);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( declaration.key == "key1" );
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleRule_WhenParse_ThenSelectorAndDeclarationAreSet
 {
     std::string str = "way|z1[highway] {key1:value1;}";
 
-    bool success = phrase_parse(str.begin(), str.end(), ruleGrammar, skipper, rule);
+    bool success = phrase_parse(str.cbegin(), str.cend(), ruleGrammar, skipper, rule);
 
     BOOST_CHECK(success == true);
 
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE( GivenComplexRule_WhenParse_ThenSelectorAndDeclarationAreSe
 {
     std::string str = "way|z1[highway],area|z2[landuse] { key1:value1; key2:value2; }";
 
-    bool success = phrase_parse(str.begin(), str.end(), ruleGrammar, skipper, rule);
+    bool success = phrase_parse(str.cbegin(), str.cend(), ruleGrammar, skipper, rule);
 
     BOOST_CHECK(success == true);
 
@@ -191,13 +191,13 @@ BOOST_AUTO_TEST_CASE( GivenComplexRule_WhenParse_ThenSelectorAndDeclarationAreSe
 /* StyleSheet */
 BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules )
 {
-    std::string str = 
+    std::string str =
         "way|z1[highway]  { key1:value1; }\n"
         "area|z2[landuse] { key2:value2; }\n"
         "node|z3[amenity] { key3:value3; }\n"
         "canvas|z3[*]     { key4:value4; }";
 
-    bool success = phrase_parse(str.begin(), str.end(), styleSheetGrammar, skipper, stylesheet);
+    bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
     BOOST_CHECK( success == true );
     BOOST_CHECK( stylesheet.rules.size() == 4) ;

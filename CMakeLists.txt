@@ -3,7 +3,8 @@ project ("UtyMap")
 
 set(SOURCE ${PROJECT_SOURCE_DIR}/src)
 
-set (BOOST_ROOT g:/__ASM/cpp/boost)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set (BOOST_ROOT /cygdrive/d/Dev/_libs/boost_1_59_0)
 set (BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib)
 
 # initialize boost package
