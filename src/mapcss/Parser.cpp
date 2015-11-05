@@ -90,7 +90,7 @@ struct ConditionGrammar : qi::grammar<Iterator, Condition(), CommentSkipper<Iter
         ;
 
         binary =
-            ascii::string("=")
+              ascii::string("=")
             | ascii::string("!=")
             | ascii::string(">")
         ;
@@ -131,7 +131,7 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
     {
         start =
             (
-              ascii::string("node")
+                ascii::string("node")
               | ascii::string("way")
               | ascii::string("area")
               | ascii::string("canvas")
@@ -152,7 +152,7 @@ struct DeclarationGrammar : qi::grammar < Iterator, Declaration(), CommentSkippe
     DeclarationGrammar() : DeclarationGrammar::base_type(start, "declaration")
     {
         start =
-            qi::lexeme[+(ascii::char_ - (qi::lit(':') | qi::lit('}')))]
+              qi::lexeme[+(ascii::char_ - (qi::lit(':') | qi::lit('}')))]
             >> ':'
             > qi::lexeme[+(ascii::char_ - ';')]
             > ';'

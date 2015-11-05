@@ -8,7 +8,6 @@ add_definitions (-DBOOST_TEST_DYN_LINK)
 
 add_executable (TestLauncher
                         main.cpp
-                        mapcss/StylesheetTest.cpp
                         mapcss/ParserTest.cpp)
 
 target_link_libraries (TestLauncher
