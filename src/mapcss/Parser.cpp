@@ -216,7 +216,6 @@ boost::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
     CommentSkipper<Iterator> skipper;
     boost::shared_ptr<StyleSheet> stylesheet(new StyleSheet());
 
-
     if (!phrase_parse(begin, end, grammar, skipper, *stylesheet.get()))
     {
         stylesheet.reset();
@@ -229,9 +228,4 @@ boost::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
 boost::shared_ptr<StyleSheet> Parser::parse(const std::string& str)
 {
     return parse(str.begin(), str.end());
-}
-
-std::string Parser::getError()
-{
-    return error_;
 }

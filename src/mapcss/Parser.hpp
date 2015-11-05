@@ -14,7 +14,7 @@ public:
 
     boost::shared_ptr<StyleSheet> parse(const std::string& str);
 
-    std::string getError();
+    std::string getError() { return error_;  };
 
 private:
     template<typename Iterator>
