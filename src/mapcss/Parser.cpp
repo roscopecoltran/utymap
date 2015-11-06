@@ -228,8 +228,9 @@ std::shared_ptr<StyleSheet> Parser::parse(const std::string& str)
     return parse(str.begin(), str.end());
 }
 
-std::shared_ptr<StyleSheet> Parser::parse(boost::spirit::istream_iterator begin,
-                                          boost::spirit::istream_iterator end)
+std::shared_ptr<StyleSheet> Parser::parse(std::istream& istream)
 {
+    boost::spirit::istream_iterator begin(istream);
+    boost::spirit::istream_iterator end;
     return parse(begin, end);
 }

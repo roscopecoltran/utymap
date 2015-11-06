@@ -2,8 +2,8 @@
 #define MAPCSS_PARSER_HPP_DEFINED
 
 #include "StyleSheet.hpp"
-#include <boost/spirit/include/support_istream_iterator.hpp>
 
+#include <istream>
 #include <string>
 #include <memory>
 
@@ -18,8 +18,7 @@ public:
     std::shared_ptr<StyleSheet> parse(const std::string& str);
 
     // Parses stylsheet from input stream (e.g. file).
-    std::shared_ptr<StyleSheet> parse(boost::spirit::istream_iterator begin,
-                                        boost::spirit::istream_iterator end);
+    std::shared_ptr<StyleSheet> parse(std::istream& istream);
 
     // Returns last error if parse fails.
     std::string getError() { return error_;  };
