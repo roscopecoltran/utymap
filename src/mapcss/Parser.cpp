@@ -1,7 +1,6 @@
 #include "StyleSheet.hpp"
 #include "Parser.hpp"
 
-#include <boost/shared_ptr.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
@@ -11,7 +10,6 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 
 #include <cstdint>
-#include <string>
 #include <vector>
 
 namespace qi = boost::spirit::qi;
@@ -210,11 +208,11 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
 };
 
 template<typename Iterator>
-boost::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
+std::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
 {
     StyleSheetGrammar<Iterator> grammar;
     CommentSkipper<Iterator> skipper;
-    boost::shared_ptr<StyleSheet> stylesheet(new StyleSheet());
+    std::shared_ptr<StyleSheet> stylesheet(new StyleSheet());
 
     if (!phrase_parse(begin, end, grammar, skipper, *stylesheet.get()))
     {
@@ -225,13 +223,13 @@ boost::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
     return stylesheet;
 }
 
-boost::shared_ptr<StyleSheet> Parser::parse(const std::string& str)
+std::shared_ptr<StyleSheet> Parser::parse(const std::string& str)
 {
     return parse(str.begin(), str.end());
 }
 
-boost::shared_ptr<StyleSheet> Parser::parse(boost::spirit::istream_iterator begin,
-                                            boost::spirit::istream_iterator end)
+std::shared_ptr<StyleSheet> Parser::parse(boost::spirit::istream_iterator begin,
+                                          boost::spirit::istream_iterator end)
 {
     return parse(begin, end);
 }
