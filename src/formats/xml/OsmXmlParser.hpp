@@ -1,5 +1,5 @@
-#ifndef OSMXMLPARSER_HPP_INCLUDED
-#define OSMXMLPARSER_HPP_INCLUDED
+#ifndef FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED
+#define FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED
 
 #include "formats/Types.hpp"
 
@@ -17,6 +17,8 @@ class OsmXmlParser
     using ptree = boost::property_tree::ptree;
 
 public:
+
+    OsmXmlParser() {}
 
     // Parses osm xml data from stream calling visitor
     void parse(std::istream& istream, Visitor& visitor)
@@ -133,4 +135,4 @@ private:
 
 }}
 
-#endif  // OSMXMLPARSER_HPP_INCLUDED
+#endif  // FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED

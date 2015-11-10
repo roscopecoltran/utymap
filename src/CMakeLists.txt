@@ -1,9 +1,10 @@
 set(HEADER_FILES
                 mapcss/StyleSheet.hpp
                 mapcss/Parser.hpp
+                formats/Types.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
-                formats/pbf/OsmPbfReader.hpp
+                formats/pbf/OsmPbfParser.hpp
                 formats/xml/OsmXmlParser.hpp
                 )
 

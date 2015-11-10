@@ -1,5 +1,5 @@
-#ifndef FORMATS_PBF_OSMPBFREADER_HPP_INCLUDED
-#define FORMATS_PBF_OSMPBFREADER_HPP_INCLUDED
+#ifndef FORMATS_PBF_OSMPBFPARSER_HPP_INCLUDED
+#define FORMATS_PBF_OSMPBFPARSER_HPP_INCLUDED
 
 #include "formats/Types.hpp"
 #include "formats/pbf/fileformat.pb.h"
@@ -13,7 +13,7 @@
 namespace utymap { namespace formats {
 
 template<typename Visitor>
-class OsmPbfReader
+class OsmPbfParser
 {
     typedef std::map<std::string, std::string> Tags;
 
@@ -22,13 +22,13 @@ class OsmPbfReader
 
 public:
 
-    OsmPbfReader()
+    OsmPbfParser()
     {
         buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
         unpack_buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
     }
 
-    ~OsmPbfReader()
+    ~OsmPbfParser()
     {
         delete[] buffer_;
         delete[] unpack_buffer_;
@@ -98,20 +98,20 @@ private:
 
         int32_t sz = header.datasize();
 
-        if (sz > max_uncompressed_blob_size)
+        if (sz > MAX_UNCOMPRESSED_BLOB_SIZE)
             throw std::domain_error("Blob size is bigger then allowed");
 
-        if (!stream.read(buffer, sz))
+        if (!stream.read(buffer_, sz))
             throw std::domain_error("Unable to read blob from file");
 
-        if (!blob.ParseFromArray(buffer, sz))
+        if (!blob.ParseFromArray(buffer_, sz))
             throw std::domain_error("Unable to parse blob");
 
         // uncompressed
         if (blob.has_raw())
         {
             sz = blob.raw().size();
-            memcpy(unpack_buffer_, buffer, sz);
+            memcpy(unpack_buffer_, buffer_, sz);
             return sz;
         }
 
@@ -253,4 +253,4 @@ private:
 
 }}
 
-#endif  // FORMATS_PBF_OSMPBFREADER_HPP_INCLUDED
+#endif  // FORMATS_PBF_OSMPBFPARSER_HPP_INCLUDED

@@ -1,10 +1,11 @@
-#ifndef TYPES_HPP_DEFINED
-#define TYPES_HPP_DEFINED
+#ifndef FORMATS_TYPES_HPP_DEFINED
+#define FORMATS_TYPES_HPP_DEFINED
 
-#include "stdafx.h"
-
+#include <vector>
 #include <cstdint>
 #include <string>
+
+namespace utymap { namespace formats {
 
 struct BoundingBox
 {
@@ -30,4 +31,6 @@ struct RelationMember
 typedef std::vector<Tag> TagCollection;
 typedef std::vector<RelationMember> RelationMembers;
 
-#endif // TYPES_HPP_DEFINED
+}}
+
+#endif // FORMATS_TYPES_HPP_DEFINED
