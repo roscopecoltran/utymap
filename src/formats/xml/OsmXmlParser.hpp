@@ -72,6 +72,7 @@ private:
         double lon = attributes.get_child("lon").get_value<double>();
 
         TagCollection tags;
+        tags.reserve(2);
         BOOST_FOREACH(ptree::value_type const& child, node.second)
         {
             if (child.first == "tag")
@@ -89,7 +90,8 @@ private:
 
         std::vector<uint64_t> nodeIds;
         TagCollection tags;
-
+        nodeIds.reserve(4);
+        tags.reserve(2);
         BOOST_FOREACH(ptree::value_type const& child, node.second)
         {
             if (child.first == "nd")
@@ -114,6 +116,8 @@ private:
 
         TagCollection tags;
         RelationMembers members;
+        tags.reserve(2);
+        members.reserve(2);
         BOOST_FOREACH(ptree::value_type const& child, node.second)
         {
             if (child.first == "member")
