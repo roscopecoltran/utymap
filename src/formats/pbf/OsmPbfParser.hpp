@@ -184,6 +184,7 @@ private:
                     lon += 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * dn.lon(i)));
 
                     TagCollection tags;
+                    tags.reserve(2);
                     while (current_kv < dn.keys_vals_size() && dn.keys_vals(current_kv) != 0)
                     {
                         uint64_t key = dn.keys_vals(current_kv);
@@ -205,6 +206,7 @@ private:
 
                 uint64_t ref = 0;
                 std::vector<uint64_t> nodeIds;
+                nodeIds.reserve(w.refs_size());
                 for (int j = 0; j < w.refs_size(); ++j)
                 {
                     ref += w.refs(j);
@@ -219,7 +221,7 @@ private:
                 OSMPBF::Relation rel = pg.relations(i);
                 uint64_t id = 0;
                 RelationMembers refs;
-
+                refs.reserve(rel.memids_size());
                 for (int l = 0; l < rel.memids_size(); ++l){
                     id += rel.memids(l);
                     RelationMember member;
@@ -238,6 +240,7 @@ private:
     TagCollection getTags(T object, const OSMPBF::PrimitiveBlock& primblock)
     {
         TagCollection tags;
+        tags.reserve(object.keys_size());
         for (int i = 0; i < object.keys_size(); ++i)
         {
             Tag tag;
