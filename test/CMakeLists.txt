@@ -20,9 +20,10 @@ set (HEADER_FILES
 
 add_executable (TestLauncher
                         main.cpp
-                        mapcss/ParserTest.cpp
                         formats/pbf/OsmPbfParserTest.cpp
                         formats/xml/OsmXmlParserTest.cpp
+                        index/StringTableTest.cpp
+                        mapcss/ParserTest.cpp
                         ${HEADER_FILES}
                       )
 

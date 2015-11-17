@@ -10,9 +10,9 @@ using namespace utymap::mapcss;
 
 typedef std::string::const_iterator StringIterator;
 
-struct Fixture {
-    Fixture()        { BOOST_TEST_MESSAGE("setup fixture"); }
-    ~Fixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
+struct MapCss_ParserFixture {
+    MapCss_ParserFixture()        { BOOST_TEST_MESSAGE("setup fixture"); }
+    ~MapCss_ParserFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
     // grammars
     CommentSkipper<StringIterator> skipper;
@@ -31,7 +31,7 @@ struct Fixture {
     Rule rule;
 };
 
-BOOST_FIXTURE_TEST_SUITE( MapCss_Parser, Fixture )
+BOOST_FIXTURE_TEST_SUITE( MapCss_Parser, MapCss_ParserFixture )
 
 /* Comment */
 BOOST_AUTO_TEST_CASE( GivenCppComment_WhenParse_ThenDoesNotBreak )

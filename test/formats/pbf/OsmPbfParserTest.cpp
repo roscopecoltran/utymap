@@ -9,21 +9,20 @@
 
 using namespace utymap::formats;
 
-struct PbfParserFixture
+struct Formats_Pbf_OsmPbfParserFixture
 {
-    PbfParserFixture() : istream(TEST_PBF_FILE, std::ios::binary)
-    {
-        BOOST_TEST_MESSAGE("setup fixture");
-    }
+    Formats_Pbf_OsmPbfParserFixture() :
+        istream(TEST_PBF_FILE, std::ios::binary)
+    { BOOST_TEST_MESSAGE("setup fixture"); }
 
-    ~PbfParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
+    ~Formats_Pbf_OsmPbfParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
 
     OsmPbfParser<OsmDataVisitor> parser;
     OsmDataVisitor visitor;
     std::ifstream istream;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Formats_Pbf_Parser, PbfParserFixture)
+BOOST_FIXTURE_TEST_SUITE( Formats_Pbf_Parser, Formats_Pbf_OsmPbfParserFixture )
 
 BOOST_AUTO_TEST_CASE( GivenDefaultPbf_WhenParserParse_ThenHasExpectedElementCount )
 {

@@ -9,21 +9,20 @@
 
 using namespace utymap::formats;
 
-struct XmlParserFixture 
+struct Formats_Xml_OsmXmlParserFixture 
 {
-    XmlParserFixture() : istream(TEST_XML_FILE, std::ios::in)
-    {
-        BOOST_TEST_MESSAGE("setup fixture");
-    }
+    Formats_Xml_OsmXmlParserFixture() :
+        istream(TEST_XML_FILE, std::ios::in)
+    { BOOST_TEST_MESSAGE("setup fixture"); }
 
-    ~XmlParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
+    ~Formats_Xml_OsmXmlParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
 
     OsmXmlParser<OsmDataVisitor> parser;
     OsmDataVisitor visitor;
     std::ifstream istream;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Formats_Xml_Parser, XmlParserFixture)
+BOOST_FIXTURE_TEST_SUITE( Formats_Xml_Parser, Formats_Xml_OsmXmlParserFixture )
 
 BOOST_AUTO_TEST_CASE( GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount )
 {
