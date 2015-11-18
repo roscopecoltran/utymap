@@ -79,8 +79,7 @@ private:
         sz = (((sz & 0xff) << 24) + ((sz & 0xff00) << 8) + ((sz & 0xff0000) >> 8) + ((sz >> 24) & 0xff));
 
         if (sz > MAX_BLOB_HEADER_SIZE)
-            throw std::domain_error("Blob header size is bigger than allowed: " + std::to_string(sz) + " > " +
-            std::to_string(MAX_BLOB_HEADER_SIZE));
+            throw std::domain_error("Blob header size is bigger than allowed");
 
         stream.read(buffer_, sz);
         if (!stream.good())
