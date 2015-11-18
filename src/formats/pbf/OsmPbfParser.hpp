@@ -164,7 +164,10 @@ private:
 
                 double lat = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
                 double lon = 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * n.lon()));
-                visitor.visitNode(n.id(), lat, lon, getTags(n, primblock));
+                uint64_t id = n.id();
+                TagCollection tags;
+                setTags(n, primblock, tags);
+                visitor.visitNode(id, lat, lon, tags);
             }
 
             // dense nodes
@@ -213,7 +216,9 @@ private:
                     nodeIds.push_back(ref);
                 }
                 uint64_t id = w.id();
-                visitor.visitWay(id, nodeIds, getTags(w, primblock));
+                TagCollection tags;
+                setTags(w, primblock, tags);
+                visitor.visitWay(id, nodeIds, tags);
             }
 
             for (int i = 0; i < pg.relations_size(); ++i)
@@ -231,15 +236,17 @@ private:
                     refs.push_back(member);
                 }
 
-                visitor.visitRelation(rel.id(), refs, getTags(rel, primblock));
+                uint64_t rel_id = rel.id();
+                TagCollection tags;
+                setTags(rel, primblock, tags);
+                visitor.visitRelation(rel_id, refs, tags);
             }
         }
     }
 
     template<typename T>
-    TagCollection getTags(T object, const OSMPBF::PrimitiveBlock& primblock)
+    void setTags(T object, const OSMPBF::PrimitiveBlock& primblock, TagCollection& tags)
     {
-        TagCollection tags;
         tags.reserve(object.keys_size());
         for (int i = 0; i < object.keys_size(); ++i)
         {
@@ -250,7 +257,6 @@ private:
             tag.value = primblock.stringtable().s(val);
             tags.push_back(tag);
         }
-        return tags;
     }
 };
 
