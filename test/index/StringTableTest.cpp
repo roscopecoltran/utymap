@@ -2,6 +2,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
+
 using namespace utymap::index;
 
 struct Index_StringTableFixture
@@ -10,13 +12,13 @@ struct Index_StringTableFixture
         indexPath("index.idx"),
         stringPath("strings.dat"),
         table(*new StringTable(indexPath, stringPath))
-    { 
-        BOOST_TEST_MESSAGE("setup fixture"); 
+    {
+        BOOST_TEST_MESSAGE("setup fixture");
     }
 
-    ~Index_StringTableFixture() 
-    { 
-        BOOST_TEST_MESSAGE("teardown fixture"); 
+    ~Index_StringTableFixture()
+    {
+        BOOST_TEST_MESSAGE("teardown fixture");
         delete &table;
         std::remove(indexPath.c_str());
         std::remove(stringPath.c_str());
