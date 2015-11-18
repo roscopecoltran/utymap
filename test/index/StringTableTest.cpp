@@ -14,7 +14,6 @@ struct Index_StringTableFixture
         BOOST_TEST_MESSAGE("setup fixture"); 
     }
 
-
     ~Index_StringTableFixture() 
     { 
         BOOST_TEST_MESSAGE("teardown fixture"); 

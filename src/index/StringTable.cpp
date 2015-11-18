@@ -123,7 +123,7 @@ private:
 };
 
 StringTable::StringTable(const std::string& indexPath, const std::string& dataPath) :
-    pimpl_(std::make_unique<StringTable::StringTableImpl>(indexPath, dataPath, 0)) { }
+    pimpl_(std::unique_ptr<StringTable::StringTableImpl>(new StringTable::StringTableImpl(indexPath, dataPath, 0))) { }
 
 StringTable::~StringTable() { }
 
