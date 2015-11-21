@@ -1,7 +1,7 @@
 #ifndef FORMATS_PBF_OSMPBFPARSER_HPP_INCLUDED
 #define FORMATS_PBF_OSMPBFPARSER_HPP_INCLUDED
 
-#include "formats/Types.hpp"
+#include "formats/OsmTypes.hpp"
 #include "formats/pbf/fileformat.pb.h"
 #include "formats/pbf/osmformat.pb.h"
 

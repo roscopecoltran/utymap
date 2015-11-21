@@ -1,7 +1,7 @@
 #ifndef TESTS_FORMATS_OSMDATAVISITOR_HPP_DEFINED
 #define TESTS_FORMATS_OSMDATAVISITOR_HPP_DEFINED
 
-#include "formats/Types.hpp"
+#include "formats/OsmTypes.hpp"
 
 #include <cstdint>
 

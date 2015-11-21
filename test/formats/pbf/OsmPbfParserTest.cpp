@@ -1,4 +1,4 @@
-#include "formats/Types.hpp"
+#include "formats/OsmTypes.hpp"
 #include "formats/pbf/OsmPbfParser.hpp"
 #include "formats/OsmDataVisitor.hpp"
 #include "config.hpp"

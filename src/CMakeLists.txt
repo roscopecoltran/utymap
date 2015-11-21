@@ -1,5 +1,5 @@
 set(HEADER_FILES
-                formats/Types.hpp
+                formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
