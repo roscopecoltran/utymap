@@ -7,14 +7,6 @@
 
 namespace utymap { namespace formats {
 
-struct BoundingBox
-{
-    double minLatitude;
-    double minLongitude;
-    double maxLatitude;
-    double maxLongitude;
-};
-
 struct Tag
 {
     std::string key;

@@ -1,7 +1,8 @@
 #ifndef FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED
 #define FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED
 
-#include "formats/Types.hpp"
+#include "CommonTypes.hpp"
+#include "formats/OsmTypes.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>

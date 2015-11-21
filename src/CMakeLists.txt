@@ -1,4 +1,5 @@
 set(HEADER_FILES
+                CommonTypes.hpp
                 formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h

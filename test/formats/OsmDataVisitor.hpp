@@ -1,6 +1,7 @@
 #ifndef TESTS_FORMATS_OSMDATAVISITOR_HPP_DEFINED
 #define TESTS_FORMATS_OSMDATAVISITOR_HPP_DEFINED
 
+#include "CommonTypes.hpp"
 #include "formats/OsmTypes.hpp"
 
 #include <cstdint>
@@ -16,7 +17,7 @@ struct OsmDataVisitor
 
     OsmDataVisitor() : bounds(0), nodes(0), ways(0), relations(0) {}
 
-    void visitBounds(BoundingBox bbox)
+    void visitBounds(utymap::BoundingBox bbox)
     {
         bounds++;
     }
