@@ -11,5 +11,12 @@ struct BoundingBox
     double maxLongitude;
 };
 
+struct QuadKey
+{
+    int levelOfDetail;
+    int tileX;
+    int tileY;
+};
+
 }
 #endif // COMMONTYPES_HPP_DEFINED

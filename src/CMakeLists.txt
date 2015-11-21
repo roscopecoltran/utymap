@@ -5,6 +5,7 @@ set(HEADER_FILES
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
                 formats/xml/OsmXmlParser.hpp
+                index/GeoUtils.hpp
                 index/StringTable.hpp
                 mapcss/StyleSheet.hpp
                 mapcss/Parser.hpp
