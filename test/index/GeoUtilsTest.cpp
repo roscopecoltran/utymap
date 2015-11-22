@@ -48,10 +48,10 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenGetBoundgingBox_ThenReturnValidBo
 
     utymap::BoundingBox boundingBox = GeoUtils::quadKeyToBoundingBox(quadKey);
 
-    BOOST_CHECK_CLOSE(boundingBox.minLatitude, 52.531678559, Precision);
-    BOOST_CHECK_CLOSE(boundingBox.maxLatitude, 52.532096259, Precision);
-    BOOST_CHECK_CLOSE(boundingBox.minLongitude, 13.386840820, Precision);
-    BOOST_CHECK_CLOSE(boundingBox.maxLongitude, 13.387527465, Precision);
+    BOOST_CHECK_CLOSE(boundingBox.minPoint.latitude, 52.531678559, Precision);
+    BOOST_CHECK_CLOSE(boundingBox.maxPoint.latitude, 52.532096259, Precision);
+    BOOST_CHECK_CLOSE(boundingBox.minPoint.longitude, 13.386840820, Precision);
+    BOOST_CHECK_CLOSE(boundingBox.maxPoint.longitude, 13.387527465, Precision);
 }
 
 BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenToString_ThenReturnValidCode)

@@ -1,5 +1,6 @@
 set(HEADER_FILES
                 BoundingBox.hpp
+                GeoCoordinate.hpp
                 QuadKey.hpp
                 formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h

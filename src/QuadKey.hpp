@@ -16,7 +16,7 @@ struct QuadKey
     int tileY;
 
     // Constructs and returns string representation of quadkey.
-    std::string toString();
+    std::string toString() const;
 };
 
 }

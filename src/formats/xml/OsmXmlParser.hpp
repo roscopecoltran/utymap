@@ -46,12 +46,13 @@ private:
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
-        BoundingBox bbox;
-        bbox.minLatitude = attributes.get_child("minlat").get_value<double>();
-        bbox.minLongitude = attributes.get_child("minlon").get_value<double>();
-        bbox.maxLatitude = attributes.get_child("maxlat").get_value<double>();
-        bbox.maxLongitude = attributes.get_child("maxlon").get_value<double>();
-        visitor.visitBounds(bbox);
+        GeoCoordinate minPoint, maxPoint;
+        minPoint.latitude = attributes.get_child("minlat").get_value<double>();
+        minPoint.longitude = attributes.get_child("minlon").get_value<double>();
+        maxPoint.latitude = attributes.get_child("maxlat").get_value<double>();
+        maxPoint.longitude = attributes.get_child("maxlon").get_value<double>();
+        
+        visitor.visitBounds(BoundingBox(minPoint, maxPoint));
     }
 
     void parseTag(ptree::value_type const& node, TagCollection& tags)
@@ -68,9 +69,10 @@ private:
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
+        GeoCoordinate coordinate;
         uint64_t id = attributes.get_child("id").get_value<uint64_t>();
-        double lat = attributes.get_child("lat").get_value<double>();
-        double lon = attributes.get_child("lon").get_value<double>();
+        coordinate.latitude = attributes.get_child("lat").get_value<double>();
+        coordinate.longitude = attributes.get_child("lon").get_value<double>();
 
         TagCollection tags;
         tags.reserve(2);
@@ -80,7 +82,7 @@ private:
                 parseTag(child, tags);
         }
 
-        visitor.visitNode(id, lat, lon, tags);
+        visitor.visitNode(id, coordinate, tags);
     }
 
     void parseWays(Visitor& visitor, ptree::value_type const& node)

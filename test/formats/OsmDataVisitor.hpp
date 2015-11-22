@@ -2,6 +2,7 @@
 #define TESTS_FORMATS_OSMDATAVISITOR_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "GeoCoordinate.hpp"
 #include "formats/OsmTypes.hpp"
 
 #include <cstdint>
@@ -22,7 +23,7 @@ struct OsmDataVisitor
         bounds++;
     }
 
-    void visitNode(uint64_t id, double latitude, double longitude, TagCollection& tags)
+    void visitNode(uint64_t id, utymap::GeoCoordinate& coordinate, TagCollection& tags)
     {
         nodes++;
     }

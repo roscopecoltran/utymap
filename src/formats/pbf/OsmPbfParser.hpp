@@ -161,13 +161,13 @@ private:
             for (int i = 0; i < pg.nodes_size(); ++i)
             {
                 OSMPBF::Node n = pg.nodes(i);
-
-                double lat = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
-                double lon = 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * n.lon()));
+                GeoCoordinate coordinate;
+                coordinate.latitude = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
+                coordinate.longitude = 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * n.lon()));
                 uint64_t id = n.id();
                 TagCollection tags;
                 setTags(n, primblock, tags);
-                visitor.visitNode(id, lat, lon, tags);
+                visitor.visitNode(id, coordinate, tags);
             }
 
             // dense nodes
@@ -199,7 +199,7 @@ private:
                         tags.push_back(tag);
                     }
                     ++current_kv;
-                    visitor.visitNode(id, lat, lon, tags);
+                    visitor.visitNode(id, GeoCoordinate(lat, lon), tags);
                 }
             }
 

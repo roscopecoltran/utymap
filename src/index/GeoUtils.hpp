@@ -31,13 +31,14 @@ public:
     // Converts quadkey to bounding box
     static BoundingBox quadKeyToBoundingBox(const QuadKey& quadKey)
     {
-        BoundingBox boundingBox;
+        GeoCoordinate minPoint, maxPoint;
         int levelOfDetail = quadKey.levelOfDetail;
-        boundingBox.minLatitude = tileYToLat(quadKey.tileY + 1, levelOfDetail);
-        boundingBox.maxLatitude = tileYToLat(quadKey.tileY, levelOfDetail);
-        boundingBox.minLongitude = tileXToLon(quadKey.tileX, levelOfDetail);
-        boundingBox.maxLongitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
-        return boundingBox;
+        minPoint.latitude = tileYToLat(quadKey.tileY + 1, levelOfDetail);
+        maxPoint.latitude = tileYToLat(quadKey.tileY, levelOfDetail);
+        minPoint.longitude = tileXToLon(quadKey.tileX, levelOfDetail);
+        maxPoint.longitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
+        
+        return BoundingBox { minPoint, maxPoint };
     }
 
 private:

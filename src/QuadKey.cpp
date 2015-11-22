@@ -2,7 +2,7 @@
 
 using namespace utymap;
 
-std::string QuadKey::toString()
+std::string QuadKey::toString() const
 {
     std::string code;
     code.reserve(levelOfDetail);
