@@ -23,26 +23,24 @@ struct Tag
 class Element
 {
 public:
-    typedef std::vector<Tag> TagCollection;
-
     // Returns id of given element.
     uint64_t id;
     // Returns tag collection represented by vector of tuple<uint,uint>.
-    TagCollection tags;
+    std::vector<Tag> tags;
 
     // Visitor method.
     virtual void accept(ElementVisitor&) const = 0;
 
     // Returns string reprsentation of element.
-    virtual std::string toString(utymap::index::StringTable& stringTable)
+    virtual std::string toString(utymap::index::StringTable& stringTable) const
     {
         std::string result;
         result.reserve(64);
 
         result = '[' + std::to_string(id) + ']' + "{";
-        for (Tag& tag : tags) {
+        for (const Tag& tag : tags) {
             result += (stringTable.getString(tag.key) + ':' +
-                stringTable.getString(tag.value) + ',');
+                       stringTable.getString(tag.value) + ',');
         }
         result += "}";
 
