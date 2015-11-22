@@ -13,20 +13,19 @@ struct BoundingBox
     // Point with maximum latitude and longitude.
     GeoCoordinate maxPoint;
 
-    BoundingBox(const GeoCoordinate& minPoint, const GeoCoordinate& maxPoint) :
-        minPoint(minPoint),
-        maxPoint(maxPoint)
-    {
-    }
+    BoundingBox(const GeoCoordinate& minPoint, const GeoCoordinate& maxPoint);
 
     // Expands bounding box by given.
-    void expand(const BoundingBox&);
+    BoundingBox& BoundingBox::operator +=(const BoundingBox&);
+
     // Checks whether given bounding box inside the current one.
-    bool contains(const BoundingBox&) const;
+    inline bool contains(const BoundingBox&) const;
+
     // Checks whether given coordinate inside the bounding box.
-    bool contains(const GeoCoordinate&) const;
+    inline bool contains(const GeoCoordinate&) const;
+
     // Checks whether given bounding box intersects the current one.
-    bool intersects(const BoundingBox&) const;
+    inline bool intersects(const BoundingBox&) const;
 };
 
 }

@@ -20,6 +20,7 @@ set (HEADER_FILES
 
 add_executable (TestLauncher
                         main.cpp
+                        BoundingBoxTest.cpp
                         formats/pbf/OsmPbfParserTest.cpp
                         formats/xml/OsmXmlParserTest.cpp
                         index/GeoUtilsTest.cpp
