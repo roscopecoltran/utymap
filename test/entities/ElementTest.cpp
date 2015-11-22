@@ -4,6 +4,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
+
 using namespace utymap::entities;
 
 class Counter: public ElementVisitor
@@ -32,6 +34,30 @@ BOOST_AUTO_TEST_CASE(GivenNode_Visit_IncrementsCounter)
     BOOST_CHECK_EQUAL(counter.nodes, 1);
     BOOST_CHECK_EQUAL(counter.ways, 0);
     BOOST_CHECK_EQUAL(counter.relations, 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenNodeWithTwoTags_ToString_ReturnsValidRepresentation)
+{
+    {
+        // arrange
+        utymap::index::StringTable st("index.idx", "strings.dat");
+        std::vector<Tag> tags;
+        tags.push_back(Tag(st.getId("key1"), st.getId("value1")));
+        tags.push_back(Tag(st.getId("key2"), st.getId("value2")));
+        Node node;
+        node.id = 1;
+        node.tags = tags;
+
+        // act
+        std::string result = node.toString(st);
+
+        // assert
+        BOOST_CHECK_EQUAL(result, "[1]{key1:value1,key2:value2,}");
+    }
+
+    // cleanup
+    std::remove("index.idx");
+    std::remove("strings.dat");
 }
 
 BOOST_AUTO_TEST_CASE(GivenWay_Visit_IncrementsCounter)

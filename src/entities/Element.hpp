@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <sstream>
 #include <vector>
 
 namespace utymap { namespace entities {
@@ -17,6 +18,8 @@ struct Tag
     uint32_t key;
     // Returns value string id.
     uint32_t value;
+
+    Tag(uint32_t key, uint32_t value) : key(key), value(value) { }
 };
 
 // Represents element stored in index.
@@ -32,19 +35,18 @@ public:
     virtual void accept(ElementVisitor&) const = 0;
 
     // Returns string reprsentation of element.
-    virtual std::string toString(utymap::index::StringTable& stringTable) const
+    virtual std::string toString(utymap::index::StringTable& st) const
     {
-        std::string result;
-        result.reserve(64);
+        std::ostringstream stm;
 
-        result = '[' + std::to_string(id) + ']' + "{";
+        stm << '[' << id << ']' << "{";
         for (const Tag& tag : tags) {
-            result += (stringTable.getString(tag.key) + ':' +
-                       stringTable.getString(tag.value) + ',');
+            stm << (st.getString(tag.key) + ':' +
+                    st.getString(tag.value) + ',');
         }
-        result += "}";
+        stm << "}";
 
-        return result;
+        return stm.str();
     }
 };
 
