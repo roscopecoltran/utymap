@@ -29,9 +29,9 @@ BOOST_AUTO_TEST_CASE( GivenDefaultPbf_WhenParserParse_ThenHasExpectedElementCoun
 {
     parser.parse(istream, visitor);
 
-    BOOST_CHECK( visitor.nodes == 151506 );
-    BOOST_CHECK( visitor.ways == 27791 );
-    BOOST_CHECK( visitor.relations == 362) ;
+    BOOST_CHECK_EQUAL( visitor.nodes, 151506 );
+    BOOST_CHECK_EQUAL( visitor.ways, 27791 );
+    BOOST_CHECK_EQUAL( visitor.relations, 362);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

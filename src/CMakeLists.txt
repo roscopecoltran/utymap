@@ -2,11 +2,17 @@ set(HEADER_FILES
                 BoundingBox.hpp
                 GeoCoordinate.hpp
                 QuadKey.hpp
+                entities/Element.hpp
+                entities/ElementVisitor.hpp
+                entities/Node.hpp
+                entities/Relation.hpp
+                entities/Way.hpp
                 formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
                 formats/xml/OsmXmlParser.hpp
+                index/GeoStore.hpp
                 index/GeoUtils.hpp
                 index/StringTable.hpp
                 mapcss/StyleSheet.hpp
@@ -20,6 +26,7 @@ add_library (UtyMap
                 QuadKey.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
+                index/GeoStore.cpp
                 index/StringTable.cpp
                 mapcss/Parser.cpp
                 utils/MurmurHash3.cpp

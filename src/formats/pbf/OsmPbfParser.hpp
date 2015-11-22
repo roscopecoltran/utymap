@@ -27,6 +27,7 @@ public:
     {
         buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
         unpack_buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
+        finished_ = false;
     }
 
     ~OsmPbfParser()
