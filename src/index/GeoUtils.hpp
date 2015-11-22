@@ -1,7 +1,7 @@
 #ifndef INDEX_GEOUTILS_HPP_DEFINED
 #define INDEX_GEOUTILS_HPP_DEFINED
 
-#include "../CommonTypes.hpp"
+#include "BoundingBox.hpp"
 
 #include <cmath>
 #include <string>
@@ -19,40 +19,25 @@ class GeoUtils
 public:
 
     // Converts Latitude/Longitude to quadkey
-    static void latLonToQuadKey(double latitude, double longitude, int levelOfDetail, QuadKey& quadKey)
+    static QuadKey latLonToQuadKey(double latitude, double longitude, int levelOfDetail)
     {
+        QuadKey quadKey;
         quadKey.tileX = lonToTileX(longitude, levelOfDetail);
         quadKey.tileY = latToTileY(latitude, levelOfDetail);
         quadKey.levelOfDetail = levelOfDetail;
+        return quadKey;
     }
 
     // Converts quadkey to bounding box
-    static void quadKeyToBoundingBox(const QuadKey& quadKey, BoundingBox& boundingBox)
+    static BoundingBox quadKeyToBoundingBox(const QuadKey& quadKey)
     {
+        BoundingBox boundingBox;
         int levelOfDetail = quadKey.levelOfDetail;
         boundingBox.minLatitude = tileYToLat(quadKey.tileY + 1, levelOfDetail);
         boundingBox.maxLatitude = tileYToLat(quadKey.tileY, levelOfDetail);
         boundingBox.minLongitude = tileXToLon(quadKey.tileX, levelOfDetail);
         boundingBox.maxLongitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
-    }
-
-    // converts quadkey to code representation
-    static void quadKeyToCode(const QuadKey& quadKey, std::string& code)
-    {
-        code.reserve(quadKey.levelOfDetail);
-        for (int i = quadKey.levelOfDetail; i > 0; --i)
-        {
-            char digit = '0';
-            int mask = 1 << (i - 1);
-            if ((quadKey.tileX & mask) != 0)
-                digit++;
-            if ((quadKey.tileY & mask) != 0)
-            {
-                digit++;
-                digit++;
-            }
-            code += digit;
-        }
+        return boundingBox;
     }
 
 private:

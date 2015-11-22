@@ -1,4 +1,4 @@
-#include "CommonTypes.hpp"
+#include "BoundingBox.hpp"
 #include "formats/OsmTypes.hpp"
 #include "formats/pbf/OsmPbfParser.hpp"
 #include "formats/OsmDataVisitor.hpp"

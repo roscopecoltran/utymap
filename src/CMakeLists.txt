@@ -1,5 +1,6 @@
 set(HEADER_FILES
-                CommonTypes.hpp
+                BoundingBox.hpp
+                QuadKey.hpp
                 formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
@@ -14,6 +15,8 @@ set(HEADER_FILES
 
 add_library (UtyMap
                 ${HEADER_FILES}
+                BoundingBox.cpp
+                QuadKey.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 index/StringTable.cpp

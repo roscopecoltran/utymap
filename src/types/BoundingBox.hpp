@@ -1,7 +1,7 @@
-ifndef COMMONTYPES_HPP_DEFINED
+#ifndef COMMONTYPES_HPP_DEFINED
 #define COMMONTYPES_HPP_DEFINED
 
-namespace utymap {
+namespace utymap::yt {
 
 struct BoundingBox
 {
@@ -9,18 +9,6 @@ struct BoundingBox
     double minLongitude;
     double maxLatitude;
     double maxLongitude;
-
-    inline void expand(const BoundingBox& bbox)
-    {
-
-    }
-};
-
-struct QuadKey
-{
-    int levelOfDetail;
-    int tileX;
-    int tileY;
 };
 
 }
