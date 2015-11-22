@@ -22,8 +22,6 @@ set(HEADER_FILES
 
 add_library (UtyMap
                 ${HEADER_FILES}
-                BoundingBox.cpp
-                QuadKey.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 index/GeoStore.cpp

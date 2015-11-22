@@ -1,4 +1,4 @@
-#include "BoundingBox.cpp"
+#include "BoundingBox.hpp"
 
 #include <boost/test/unit_test.hpp>
 
