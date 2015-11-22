@@ -15,8 +15,14 @@ struct BoundingBox
 
     BoundingBox(const GeoCoordinate& minPoint, const GeoCoordinate& maxPoint);
 
+    BoundingBox& operator+=(const BoundingBox& rhs)
+    {
+        expand(rhs);
+        return *this;
+    }
+
     // Expands bounding box by given.
-    BoundingBox& BoundingBox::operator +=(const BoundingBox&);
+    inline void expand(const BoundingBox& rhs);
 
     // Checks whether given bounding box inside the current one.
     inline bool contains(const BoundingBox&) const;

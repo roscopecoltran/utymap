@@ -7,7 +7,7 @@ BoundingBox::BoundingBox(const GeoCoordinate& minPoint, const GeoCoordinate& max
 {
 }
 
-BoundingBox& BoundingBox::operator +=(const BoundingBox& rhs)
+void BoundingBox::expand(const BoundingBox& rhs)
 {
     minPoint.latitude = minPoint.latitude < rhs.minPoint.latitude ? minPoint.latitude : rhs.minPoint.latitude;
     minPoint.longitude = minPoint.longitude < rhs.minPoint.longitude ? minPoint.longitude : rhs.minPoint.longitude;
@@ -15,7 +15,6 @@ BoundingBox& BoundingBox::operator +=(const BoundingBox& rhs)
     maxPoint.latitude = maxPoint.latitude > rhs.maxPoint.latitude ? maxPoint.latitude : rhs.maxPoint.latitude;
     maxPoint.longitude = maxPoint.longitude > rhs.maxPoint.longitude ? maxPoint.longitude : rhs.maxPoint.longitude;
 
-    return *this;
 }
 
 bool BoundingBox::contains(const GeoCoordinate& coordinate) const
