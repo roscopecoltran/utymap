@@ -200,7 +200,8 @@ private:
                         tags.push_back(tag);
                     }
                     ++current_kv;
-                    visitor.visitNode(id, GeoCoordinate(lat, lon), tags);
+                    GeoCoordinate coordinate(lat, lon);
+                    visitor.visitNode(id, coordinate, tags);
                 }
             }
 
