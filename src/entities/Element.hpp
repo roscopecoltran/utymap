@@ -32,7 +32,7 @@ public:
     std::vector<Tag> tags;
 
     // Visitor method.
-    virtual void accept(ElementVisitor&) const = 0;
+    virtual void accept(ElementVisitor&) const { };
 
     // Returns string reprsentation of element.
     virtual std::string toString(utymap::index::StringTable& st) const
