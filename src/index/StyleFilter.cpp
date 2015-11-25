@@ -2,7 +2,9 @@
 #include "StyleFilter.hpp"
 #include "StringTable.hpp"
 
+#include <algorithm>
 #include <cstdint>
+#include <unordered_map>
 #include <vector>
 
 using namespace utymap::entities;
@@ -28,10 +30,9 @@ struct Filter
 {
     int zoomStart;
     int zoomEnd;
-    // list of conditions which should be satisfied
+    // list of conditions in sorted order which should be satisfied
     std::vector<::Condition> conditions;
 };
-
 
 struct FilterCollection
 {
@@ -66,6 +67,17 @@ public:
 
     void visitRelation(const Relation&)
     {
+    }
+
+    inline bool check(const std::vector<Tag>& tags,
+                      const std::vector<Filter> filters)
+    {
+        for (const Filter& filter : filters) {
+            for (const ::Condition& condition : filter.conditions) {
+                // TODO binary search in tags
+            }
+        }
+        return false;
     }
 
     inline bool isApplicable() { return isApplicable_; }
@@ -114,6 +126,7 @@ public:
                     c.value = stringTable_.getId(condition.value);
                     filter.conditions.push_back(c);
                 }
+                //std::sort(filter.conditions.begin(), filter.conditions.end());
                 filtersPtr->push_back(filter);
             }
         }
@@ -127,7 +140,7 @@ public:
     }
 
 private:
-       
+
     StringTable& stringTable_;
     FilterCollection filters_;
 };
