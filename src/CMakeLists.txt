@@ -7,6 +7,7 @@ set(HEADER_FILES
                 entities/Node.hpp
                 entities/Relation.hpp
                 entities/Way.hpp
+                entities/Area.hpp
                 formats/OsmTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h

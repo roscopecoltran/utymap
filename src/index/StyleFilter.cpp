@@ -59,6 +59,10 @@ public:
     {
 
     }
+    void visitArea(const Area&)
+    {
+
+    }
 
     void visitRelation(const Relation&)
     {

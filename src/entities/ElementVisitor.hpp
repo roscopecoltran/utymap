@@ -5,6 +5,7 @@ namespace utymap { namespace entities {
 
 class Node;
 class Way;
+class Area;
 class Relation;
 
 class ElementVisitor
@@ -12,6 +13,7 @@ class ElementVisitor
 public:
     virtual void visitNode(const Node&) = 0;
     virtual void visitWay(const Way&) = 0;
+    virtual void visitArea(const Area&) = 0;
     virtual void visitRelation(const Relation&) = 0;
 };
 

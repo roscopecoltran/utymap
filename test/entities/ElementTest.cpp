@@ -1,5 +1,6 @@
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
+#include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -13,12 +14,14 @@ class Counter: public ElementVisitor
 public:
     int nodes;
     int ways;
+    int areas;
     int relations;
 
-    Counter(): nodes(0), ways(0), relations(0) {}
+    Counter(): nodes(0), ways(0), areas(0), relations(0) {}
 
     void visitNode(const Node&) { nodes++; }
     void visitWay(const Way&) { ways++; }
+    void visitArea(const Area&) { areas++; }
     void visitRelation(const Relation&) { relations++; }
 };
 
@@ -33,6 +36,7 @@ BOOST_AUTO_TEST_CASE(GivenNode_Visit_IncrementsCounter)
 
     BOOST_CHECK_EQUAL(counter.nodes, 1);
     BOOST_CHECK_EQUAL(counter.ways, 0);
+    BOOST_CHECK_EQUAL(counter.areas, 0);
     BOOST_CHECK_EQUAL(counter.relations, 0);
 }
 
@@ -69,6 +73,20 @@ BOOST_AUTO_TEST_CASE(GivenWay_Visit_IncrementsCounter)
 
     BOOST_CHECK_EQUAL(counter.nodes, 0);
     BOOST_CHECK_EQUAL(counter.ways, 1);
+    BOOST_CHECK_EQUAL(counter.areas, 0);
+    BOOST_CHECK_EQUAL(counter.relations, 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenArea_Visit_IncrementsCounter)
+{
+    Counter counter;
+    Area area;
+
+    area.accept(counter);
+
+    BOOST_CHECK_EQUAL(counter.nodes, 0);
+    BOOST_CHECK_EQUAL(counter.ways, 0);
+    BOOST_CHECK_EQUAL(counter.areas, 1);
     BOOST_CHECK_EQUAL(counter.relations, 0);
 }
 
@@ -81,6 +99,7 @@ BOOST_AUTO_TEST_CASE(GivenRelation_Visit_IncrementsCounter)
 
     BOOST_CHECK_EQUAL(counter.nodes, 0);
     BOOST_CHECK_EQUAL(counter.ways, 0);
+    BOOST_CHECK_EQUAL(counter.areas, 0);
     BOOST_CHECK_EQUAL(counter.relations, 1);
 }
 
