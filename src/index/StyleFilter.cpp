@@ -80,7 +80,39 @@ public:
         stringTable_(stringTable),
         filters_()
     {
-        initFilterCollection(stylesheet);
+        // convert mapcss stylesheet to index optimized representation.
+        filters_.nodes.reserve(24);
+        filters_.ways.reserve(24);
+        filters_.areas.reserve(24);
+
+        for (const Rule& rule : stylesheet.rules) {
+            for (const Selector& selector : rule.selectors) {
+                std::vector<Filter>* filtersPtr;
+                if (selector.name == "node") filtersPtr = &filters_.nodes;
+                else if (selector.name == "way") filtersPtr = &filters_.ways;
+                else if (selector.name == "area") filtersPtr = &filters_.areas;
+                else
+                    std::domain_error("Unexpected selector name:" + selector.name);
+
+                Filter filter;
+                filter.zoomStart = selector.zoom.start;
+                filter.zoomEnd = selector.zoom.end;
+                filter.conditions.reserve(selector.conditions.size());
+                for (const utymap::mapcss::Condition& condition : selector.conditions) {
+                    ::Condition c;
+                    if (condition.operation == "") c.type = OpType::Exists;
+                    else if (condition.operation == "=") c.type = OpType::Equals;
+                    else if (condition.operation == "!=") c.type = OpType::NotEquals;
+                    else
+                        std::domain_error("Unexpected condition operation:" + condition.operation);
+
+                    c.key = stringTable_.getId(condition.key);
+                    c.value = stringTable_.getId(condition.value);
+                    filter.conditions.push_back(c);
+                }
+                filtersPtr->push_back(filter);
+            }
+        }
     }
 
     bool isApplicable(const Element& element, int levelOfDetails) const
@@ -91,49 +123,7 @@ public:
     }
 
 private:
-    
-    // convert mapcss stylesheet to index optimized representation.
-    void initFilterCollection(const StyleSheet& stylesheet)
-    {
-        filters_.nodes.reserve(24);
-        filters_.ways.reserve(24);
-        filters_.areas.reserve(24);
-
-        for (const Rule& rule : stylesheet.rules) {
-            for (const Selector& selector : rule.selectors) {
-                std::vector<Filter>* filtersPtr;
-                if (selector.name == "node")
-                    filtersPtr = &filters_.nodes;
-                else if (selector.name == "way")
-                    filtersPtr = &filters_.ways;
-                else if (selector.name == "area")
-                    filtersPtr = &filters_.areas;
-                else
-                    continue;
-
-                Filter filter;
-                filter.zoomStart = selector.zoom.start;
-                filter.zoomEnd = selector.zoom.end;
-                filter.conditions.reserve(selector.conditions.size());
-                for (const utymap::mapcss::Condition& condition : selector.conditions) {
-                    ::Condition c;
-                    if (condition.operation == "")
-                        c.type = OpType::Exists;
-                    else if (condition.operation == "=")
-                        c.type = OpType::Equals;
-                    else if (condition.operation == "!=")
-                        c.type = OpType::NotEquals;
-                    else
-                        continue;
-                    c.key = stringTable_.getId(condition.key);
-                    c.value = stringTable_.getId(condition.value);
-                    filter.conditions.push_back(c);
-                }
-                filtersPtr->push_back(filter);
-            }
-        }
-    }
-    
+       
     StringTable& stringTable_;
     FilterCollection filters_;
 };
