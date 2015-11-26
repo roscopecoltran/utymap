@@ -1,5 +1,5 @@
 #include "StyleSheet.hpp"
-#include "Parser.hpp"
+#include "MapCssParser.hpp"
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>

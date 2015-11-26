@@ -26,7 +26,7 @@ add_executable (TestLauncher
                         formats/xml/OsmXmlParserTest.cpp
                         index/GeoUtilsTest.cpp
                         index/StringTableTest.cpp
-                        mapcss/ParserTest.cpp
+                        mapcss/MapCssParserTest.cpp
                         ${HEADER_FILES}
                       )
 

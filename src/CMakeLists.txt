@@ -18,7 +18,7 @@ set(HEADER_FILES
                 index/StringTable.hpp
                 index/StyleFilter.hpp
                 mapcss/StyleSheet.hpp
-                mapcss/Parser.hpp
+                mapcss/MapCssParser.hpp
                 utils/MurmurHash3.h
                 )
 
@@ -29,7 +29,7 @@ add_library (UtyMap
                 index/GeoStore.cpp
                 index/StringTable.cpp
                 index/StyleFilter.cpp
-                mapcss/Parser.cpp
+                mapcss/MapCssParser.cpp
                 utils/MurmurHash3.cpp
                 )
 
