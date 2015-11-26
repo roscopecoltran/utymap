@@ -3,7 +3,7 @@
 
 #include "Element.hpp"
 #include "ElementVisitor.hpp"
-#include "GeoCoordinate.hpp"
+#include "../GeoCoordinate.hpp"
 
 namespace utymap { namespace entities {
 
