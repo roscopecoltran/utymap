@@ -1,8 +1,8 @@
 #ifndef INDEX_GEOSTORE_HPP_DEFINED
 #define INDEX_GEOSTORE_HPP_DEFINED
 
-#include "../BoundingBox.hpp"
-#include "../entities/ElementVisitor.hpp"
+#include "BoundingBox.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "StyleFilter.hpp"
 
 #include <string>
@@ -17,9 +17,9 @@ public:
     GeoStore(std::string& directory);
 
     // Searches for elements using given parameters
-    void search(const StyleFilter& filter, 
-                const BoundingBox& bbox, 
-                int levelOfDetails, 
+    void search(const StyleFilter& filter,
+                const BoundingBox& bbox,
+                int levelOfDetails,
                 utymap::entities::ElementVisitor& visitor);
 private:
     class GeoStoreImpl;

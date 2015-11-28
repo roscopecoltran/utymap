@@ -2,7 +2,7 @@
 #define ENTITIES_ELEMENT_HPP_DEFINED
 
 #include "ElementVisitor.hpp"
-#include "../index/StringTable.hpp"
+#include "index/StringTable.hpp"
 
 #include <cstdint>
 #include <string>

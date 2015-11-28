@@ -1,4 +1,4 @@
-#include "../utils/MurmurHash3.h"
+#include "utils/MurmurHash3.h"
 #include "StringTable.hpp"
 
 #include <cstdio>
@@ -90,7 +90,7 @@ private:
     // reads string by id.
     void readString(uint32_t id, std::string& data)
     {
-        if (id < offsets_.size()) 
+        if (id < offsets_.size())
         {
             uint32_t offset = offsets_[id];
             std::string::size_type size = id + 1 < nextId_ ? offsets_[id] : 8;
@@ -137,7 +137,7 @@ std::string StringTable::getString(uint32_t id)
     return pimpl_->getString(id);
 }
 
-void StringTable::flush() 
+void StringTable::flush()
 {
     pimpl_->flush();
 }

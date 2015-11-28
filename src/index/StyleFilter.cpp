@@ -1,8 +1,8 @@
-#include "../entities/ElementVisitor.hpp"
-#include "../entities/Node.hpp"
-#include "../entities/Way.hpp"
-#include "../entities/Area.hpp"
-#include "../entities/Relation.hpp"
+#include "entities/ElementVisitor.hpp"
+#include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Area.hpp"
+#include "entities/Relation.hpp"
 
 #include "StyleFilter.hpp"
 #include "StringTable.hpp"
@@ -82,7 +82,7 @@ public:
     {
         switch (condition.type)
         {
-            case OpType::Exists: return true; 
+            case OpType::Exists: return true;
             case OpType::Equals: return tag.value == condition.value;
             case OpType::NotEquals: return tag.value != condition.value;
         }

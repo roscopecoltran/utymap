@@ -34,3 +34,5 @@ add_library (UtyMap
                 )
 
 set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)
+
+include_directories (${SOURCE})

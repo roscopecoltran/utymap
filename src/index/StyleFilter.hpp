@@ -2,8 +2,8 @@
 #define INDEX_STYLEFILTER_HPP_DEFINED
 
 #include "StringTable.hpp"
-#include "../entities/Element.hpp"
-#include "../mapcss/Stylesheet.hpp"
+#include "entities/Element.hpp"
+#include "mapcss/Stylesheet.hpp"
 
 #include <memory>
 
