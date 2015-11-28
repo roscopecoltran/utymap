@@ -167,7 +167,7 @@ public:
 
                 std::sort(filter.conditions.begin(), filter.conditions.end(),
                     [](const ::Condition& c1, const ::Condition& c2) { return c1.key > c2.key; });
-                for (int i = selector.zoom.start; i < selector.zoom.end; ++i) {
+                for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
                     (*filtersPtr)[i].push_back(filter);
                 }
             }
