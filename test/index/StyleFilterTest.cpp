@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
 #include <initializer_list>
 #include <utility>
 
@@ -37,15 +38,17 @@ struct Index_StyleFilterFixture
 
 BOOST_FIXTURE_TEST_SUITE(Index_StyleFilter, Index_StyleFilterFixture)
 
-void setAsSelector(StyleSheet& stylesheet, std::string name, 
-    std::vector<utymap::mapcss::Condition>& conditions,
-    int zoomStart = 1, int zoomEnd = 19)
+void setSingleSelector(StyleSheet& stylesheet, std::string name,
+    int zoomStart, int zoomEnd,
+    std::initializer_list<utymap::mapcss::Condition> conditions)
 {
     Selector selector;
     selector.name = name;
     selector.zoom.start = zoomStart;
     selector.zoom.end = zoomEnd;
-    selector.conditions = conditions;
+    for (const utymap::mapcss::Condition& condition : conditions) {
+        selector.conditions.push_back(condition);
+    }
     stylesheet.rules[0].selectors.push_back(selector);
 }
 
@@ -65,16 +68,67 @@ T createElement(StringTable& table, std::initializer_list<std::pair<const char*,
 BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenIsApplicable_ThenReturnTrue)
 {
     int zoomLevel = 1;
-    std::vector<utymap::mapcss::Condition> conditions;
-    utymap::mapcss::Condition condition = { "amenity", "=", "biergarten" };
-    conditions.push_back(condition);
-    setAsSelector(stylesheet, "node", conditions, zoomLevel, zoomLevel);
+    setSingleSelector(stylesheet, "node", zoomLevel, zoomLevel,
+        {{"amenity", "=", "biergarten"}});
     StyleFilter filter(stylesheet, table);
     Node node = createElement<Node>(table, { std::make_pair("amenity", "biergarten") });
 
     bool result = filter.isApplicable(node, zoomLevel);
 
     BOOST_CHECK(result);
+}
+
+BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenIsApplicable_ThenReturnFalse)
+{
+    int zoomLevel = 1;
+    setSingleSelector(stylesheet, "node", zoomLevel, zoomLevel,
+        {{"amenity", "=", "biergarten"}});
+    StyleFilter filter(stylesheet, table);
+    Node node = createElement<Node>(table, { std::make_pair("amenity", "biergarten") });
+
+    bool result = filter.isApplicable(node, 2);
+
+    BOOST_CHECK(result == false);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenIsApplicable_ThenReturnTrue)
+{
+    int zoomLevel = 1;
+    setSingleSelector(stylesheet, "node", zoomLevel, zoomLevel,
+        {
+            {"amenity", "=", "biergarten"},
+            {"address", "=", "Invalidstr."}
+        });
+    StyleFilter filter(stylesheet, table);
+    Node node = createElement<Node>(table,
+        {
+            std::make_pair("amenity", "biergarten"),
+            std::make_pair("address", "Invalidstr.")
+        });
+
+    bool result = filter.isApplicable(node, zoomLevel);
+
+    BOOST_CHECK(result);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenIsApplicable_ThenReturnFalse)
+{
+    int zoomLevel = 1;
+    setSingleSelector(stylesheet, "node", zoomLevel, zoomLevel,
+        {
+            {"amenity", "=", "biergarten"},
+            {"address", "!=", "Invalidstr."}
+        });
+    StyleFilter filter(stylesheet, table);
+    Node node = createElement<Node>(table,
+        {
+            std::make_pair("amenity", "biergarten"),
+            std::make_pair("address", "Invalidstr.")
+        });
+
+    bool result = filter.isApplicable(node, zoomLevel);
+
+    BOOST_CHECK(result == false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

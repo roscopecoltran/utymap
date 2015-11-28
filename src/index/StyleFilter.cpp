@@ -90,7 +90,7 @@ public:
     }
 
     // tries to find tag which satisfy condition using binary search.
-    inline bool match_tags(TagIterator& begin, TagIterator& end, const ::Condition& condition)
+    inline bool match_tags(TagIterator begin, TagIterator end, const ::Condition& condition)
     {
         while (begin < end)
         {
