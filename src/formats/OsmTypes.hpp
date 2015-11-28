@@ -7,6 +7,12 @@
 
 namespace utymap { namespace formats {
 
+enum FormatType
+{
+    Pbf,
+    Xml
+};
+
 struct Tag
 {
     std::string key;

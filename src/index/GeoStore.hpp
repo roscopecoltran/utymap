@@ -3,6 +3,8 @@
 
 #include "BoundingBox.hpp"
 #include "entities/ElementVisitor.hpp"
+#include "formats/OsmTypes.hpp"
+#include "index/StringTable.hpp"
 #include "StyleFilter.hpp"
 
 #include <string>
@@ -10,17 +12,23 @@
 
 namespace utymap { namespace index {
 
-// Provides API to store and access geo data
+// Provides API to store and access geo data.
 class GeoStore
 {
 public:
-    GeoStore(std::string& directory);
+    GeoStore(const std::string& directory, 
+            StringTable& stringTable);
 
-    // Searches for elements using given parameters
-    void search(const StyleFilter& filter,
-                const BoundingBox& bbox,
+    // Searches for elements using given parameters.
+    void search(const BoundingBox& bbox,
                 int levelOfDetails,
+                const StyleFilter& filter,
                 utymap::entities::ElementVisitor& visitor);
+
+    // Imports data from stream.
+    void import(std::istream& stream, 
+                const utymap::formats::FormatType type);
+
 private:
     class GeoStoreImpl;
     std::unique_ptr<GeoStoreImpl> pimpl_;

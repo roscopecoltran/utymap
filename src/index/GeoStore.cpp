@@ -8,29 +8,32 @@ class GeoStore::GeoStoreImpl
 {
 public:
 
-    GeoStoreImpl(std::string& directory) :
-        stringTable_("", "")
+    GeoStoreImpl(const std::string& directory, StringTable& stringTable) :
+        stringTable_(stringTable)
     {
     }
 
-    void search(const StyleFilter& filter, const BoundingBox& bbox, int levelOfDetails, ElementVisitor& visitor)
+    void search(const BoundingBox& bbox, int levelOfDetails, const StyleFilter& filter, ElementVisitor& visitor)
+    {
+    }
+
+    void import(std::istream& stream, const utymap::formats::FormatType type) 
     {
     }
 
 private:
-    StringTable stringTable_;
+    StringTable& stringTable_;
 };
 
-GeoStore::GeoStore(std::string& directory) :
-    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(directory)))
+GeoStore::GeoStore(const std::string& directory, StringTable& stringTable) :
+    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(directory, stringTable)))
 {
-
 }
 
-void utymap::index::GeoStore::search(const StyleFilter& filter, 
-                                     const BoundingBox& bbox, 
+void utymap::index::GeoStore::search(const BoundingBox& bbox,
                                      int levelOfDetails, 
+                                     const StyleFilter& filter,
                                      ElementVisitor& visitor)
 {
-    pimpl_->search(filter, bbox, levelOfDetails, visitor);
+    pimpl_->search(bbox, levelOfDetails, filter, visitor);
 }
