@@ -2,11 +2,12 @@
 #define INDEX_GEOSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "StyleFilter.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/OsmTypes.hpp"
 #include "index/StringTable.hpp"
-#include "StyleFilter.hpp"
 
+#include <iostream>
 #include <string>
 #include <memory>
 
@@ -22,12 +23,13 @@ public:
     // Searches for elements using given parameters.
     void search(const BoundingBox& bbox,
                 int levelOfDetails,
-                const StyleFilter& filter,
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor,
+                const StyleFilter& filter);
 
     // Imports data from stream.
     void import(std::istream& stream, 
-                const utymap::formats::FormatType type);
+                const utymap::formats::FormatType type,
+                const StyleFilter& filter);
 
 private:
     class GeoStoreImpl;

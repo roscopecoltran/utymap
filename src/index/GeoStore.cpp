@@ -13,11 +13,11 @@ public:
     {
     }
 
-    void search(const BoundingBox& bbox, int levelOfDetails, const StyleFilter& filter, ElementVisitor& visitor)
+    void search(const BoundingBox& bbox, int levelOfDetails, ElementVisitor& visitor, const StyleFilter& filter)
     {
     }
 
-    void import(std::istream& stream, const utymap::formats::FormatType type) 
+    void import(std::istream& stream, const utymap::formats::FormatType type, const StyleFilter& filter)
     {
     }
 
@@ -30,10 +30,13 @@ GeoStore::GeoStore(const std::string& directory, StringTable& stringTable) :
 {
 }
 
-void utymap::index::GeoStore::search(const BoundingBox& bbox,
-                                     int levelOfDetails, 
-                                     const StyleFilter& filter,
-                                     ElementVisitor& visitor)
+void utymap::index::GeoStore::search(const BoundingBox& bbox, int levelOfDetails, ElementVisitor& visitor, const StyleFilter& filter)
 {
-    pimpl_->search(bbox, levelOfDetails, filter, visitor);
+    pimpl_->search(bbox, levelOfDetails, visitor, filter);
 }
+
+void utymap::index::GeoStore::import(std::istream& stream, const utymap::formats::FormatType type, const StyleFilter& filter)
+{
+    pimpl_->import(stream, type, filter);
+}
+
