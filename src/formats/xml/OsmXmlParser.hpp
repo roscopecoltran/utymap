@@ -18,9 +18,6 @@ class OsmXmlParser
     using ptree = boost::property_tree::ptree;
 
 public:
-
-    OsmXmlParser() {}
-
     // Parses osm xml data from stream calling visitor
     void parse(std::istream& istream, Visitor& visitor)
     {
@@ -51,7 +48,7 @@ private:
         minPoint.longitude = attributes.get_child("minlon").get_value<double>();
         maxPoint.latitude = attributes.get_child("maxlat").get_value<double>();
         maxPoint.longitude = attributes.get_child("maxlon").get_value<double>();
-        
+
         visitor.visitBounds(BoundingBox(minPoint, maxPoint));
     }
 

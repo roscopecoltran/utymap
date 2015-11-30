@@ -12,6 +12,8 @@ set(HEADER_FILES
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
+                formats/shape/shapefil.h
+                formats/shape/ShapeParser.hpp
                 formats/xml/OsmXmlParser.hpp
                 index/GeoStore.hpp
                 index/GeoUtils.hpp
@@ -26,6 +28,9 @@ add_library (UtyMap
                 ${HEADER_FILES}
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
+                formats/shape/dbfopen.c
+                formats/shape/safileio.c
+                formats/shape/shpopen.c
                 index/GeoStore.cpp
                 index/StringTable.cpp
                 index/StyleFilter.cpp

@@ -10,7 +10,8 @@ namespace utymap { namespace formats {
 enum FormatType
 {
     Pbf,
-    Xml
+    Xml,
+    Shape
 };
 
 struct Tag
