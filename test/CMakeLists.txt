@@ -16,6 +16,7 @@ add_definitions (-DBOOST_TEST_DYN_LINK)
 set (HEADER_FILES
                 config.hpp
                 formats/OsmDataVisitor.hpp
+                formats/ShapeDataVisitor.hpp
                 )
 
 add_executable (TestLauncher
@@ -23,6 +24,7 @@ add_executable (TestLauncher
                         BoundingBoxTest.cpp
                         entities/ElementTest.cpp
                         formats/pbf/OsmPbfParserTest.cpp
+                        formats/shape/ShapeParserTest.cpp
                         formats/xml/OsmXmlParserTest.cpp
                         index/GeoUtilsTest.cpp
                         index/StringTableTest.cpp
