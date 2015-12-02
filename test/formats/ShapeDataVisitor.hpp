@@ -3,7 +3,7 @@
 
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
-#include "formats/OsmTypes.hpp"
+#include "formats/FormatTypes.hpp"
 
 #include <cstdint>
 
@@ -19,7 +19,7 @@ struct ShapeDataVisitor
     utymap::GeoCoordinate lastCoordinate;
     TagCollection lastTags;
 
-    ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0), 
+    ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0),
         lastCoordinate(), lastTags() {}
 
     void visitBounds(utymap::BoundingBox bbox)

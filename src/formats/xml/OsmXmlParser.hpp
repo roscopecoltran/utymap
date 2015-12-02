@@ -2,7 +2,7 @@
 #define FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED
 
 #include "BoundingBox.hpp"
-#include "formats/OsmTypes.hpp"
+#include "formats/FormatTypes.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>

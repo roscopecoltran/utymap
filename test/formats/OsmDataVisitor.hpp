@@ -3,7 +3,7 @@
 
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
-#include "formats/OsmTypes.hpp"
+#include "formats/FormatTypes.hpp"
 
 #include <cstdint>
 

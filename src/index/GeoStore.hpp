@@ -4,7 +4,7 @@
 #include "BoundingBox.hpp"
 #include "StyleFilter.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "formats/OsmTypes.hpp"
+#include "formats/FormatTypes.hpp"
 #include "index/StringTable.hpp"
 
 #include <iostream>

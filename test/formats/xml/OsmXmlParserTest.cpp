@@ -1,5 +1,4 @@
 #include "BoundingBox.hpp"
-#include "formats/OsmTypes.hpp"
 #include "formats/xml/OsmXmlParser.hpp"
 #include "formats/OsmDataVisitor.hpp"
 #include "config.hpp"

@@ -3,7 +3,7 @@
 
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
-#include "formats/OsmTypes.hpp"
+#include "formats/FormatTypes.hpp"
 #include "shapefil.h"
 
 #include <iostream>
@@ -43,7 +43,7 @@ public:
             SHPObject* shape = SHPReadObject(shpFile, k);
             if (shape == NULL)
                 throw std::domain_error("Unable to read shape:" + to_string(k));
-            
+
             visitShape(shape, parseTags(dbfFile, k), visitor);
 
             SHPDestroyObject(shape);
@@ -95,7 +95,7 @@ private:
                 }
             }
             tags.push_back(tag);
-        } 
+        }
         return std::move(tags);
     }
 

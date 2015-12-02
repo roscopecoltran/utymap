@@ -8,7 +8,7 @@ set(HEADER_FILES
                 entities/Relation.hpp
                 entities/Way.hpp
                 entities/Area.hpp
-                formats/OsmTypes.hpp
+                formats/FormatTypes.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
