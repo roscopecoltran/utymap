@@ -8,7 +8,7 @@
 #include <cstdint>
 
 using namespace utymap::formats;
-// TODO
+
 struct ShapeDataVisitor
 {
     int bounds;
@@ -16,15 +16,21 @@ struct ShapeDataVisitor
     int ways;
     int relations;
 
-    ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0) {}
+    utymap::GeoCoordinate lastCoordinate;
+    TagCollection lastTags;
+
+    ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0), 
+        lastCoordinate(), lastTags() {}
 
     void visitBounds(utymap::BoundingBox bbox)
     {
         bounds++;
     }
 
-    void visitNode(uint64_t id, utymap::GeoCoordinate& coordinate, TagCollection& tags)
+    void visitNode(utymap::GeoCoordinate& coordinate, TagCollection& tags)
     {
+        lastCoordinate = coordinate;
+        lastTags = tags;
         nodes++;
     }
 

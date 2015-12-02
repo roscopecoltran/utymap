@@ -6,7 +6,7 @@
 #include "formats/OsmTypes.hpp"
 #include "shapefil.h"
 
-#include <istream>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -56,18 +56,18 @@ public:
 private:
     // NOTE: Workaround due to MinGW g++ compiler
     template <typename T>
-    std::string to_string(T const& value)
+    inline std::string to_string(T const& value)
     {
         std::stringstream sstr;
         sstr << value;
         return sstr.str();
     }
 
-    inline std::vector<utymap::formats::Tag> parseTags(DBFHandle dbfFile, int k)
+    inline TagCollection parseTags(DBFHandle dbfFile, int k)
     {
         char title[12];
         int fieldCount = DBFGetFieldCount(dbfFile);
-        std::vector<utymap::formats::Tag> tags;
+        TagCollection tags;
         tags.reserve(fieldCount);
         for (int i = 0; i < fieldCount; i++)
         {
@@ -99,49 +99,59 @@ private:
         return std::move(tags);
     }
 
-    inline void visitShape(SHPObject* shape, std::vector<utymap::formats::Tag>& tags, Visitor& visitor)
+    inline void visitShape(SHPObject* shape, TagCollection& tags, Visitor& visitor)
     {
-        // parse coordinates
+        switch (shape->nSHPType)
+        {
+            case SHPT_POINT:
+            case SHPT_POINTM:
+            case SHPT_POINTZ:
+                visitPoint(shape, tags, visitor);
+                break;
+            case SHPT_ARC:
+            case SHPT_ARCZ:
+            case SHPT_ARCM:
+                visitArc(shape, tags, visitor);
+                break;
+            case SHPT_POLYGON:
+            case SHPT_POLYGONZ:
+            case SHPT_POLYGONM:
+                visitPolygon(shape, tags, visitor);
+                break;
+            case SHPT_MULTIPOINT:
+            case SHPT_MULTIPOINTZ:
+            case SHPT_MULTIPOINTM:
+            case SHPT_MULTIPATCH:
+                std::cout << "Unsupported shape type:" << SHPTypeName(shape->nSHPType);
+                break;
+            default:
+                std::cout << "Unknown shape type:" << SHPTypeName(shape->nSHPType);
+                break;
+        }
+    }
+
+    inline void visitPoint(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    {
+        visitor.visitNode(utymap::GeoCoordinate(shape->padfX[0], shape->padfY[0]), tags);
+    }
+
+    inline void visitArc(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    {
         std::vector<utymap::GeoCoordinate> coordinates;
         coordinates.reserve(shape->nVertices);
-        std::string type = SHPTypeName(shape->nSHPType);
+        for (int j = 0; j < shape->nVertices; j++)
+            coordinates.push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
+    }
+
+    inline void visitPolygon(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    {
+        std::vector<utymap::GeoCoordinate> coordinates;
+        coordinates.reserve(shape->nVertices);
         for (int j = 0, iPart = 1; j < shape->nVertices; ++j) {
             if (iPart < shape->nParts && shape->panPartStart[iPart] == j) {
                 // new part is started
             }
         }
-        //for (int j = 0; j < shape->nVertices; j++)
-       //     coordinates.push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
-
-        /*switch (nSHPType)
-        {
-        case SHPT_POINT:
-        case SHPT_POINTM:
-        case SHPT_POINTZ:
-            return "NODE";
-
-        case SHPT_ARC:
-        case SHPT_ARCZ:
-        case SHPT_ARCM:
-            return "WAY";
-
-        case SHPT_POLYGON:
-        case SHPT_POLYGONZ:
-        case SHPT_POLYGONM:
-            return "RELATIOn";
-
-        case SHPT_MULTIPOINT:
-        case SHPT_MULTIPOINTZ:
-        case SHPT_MULTIPOINTM:
-            return "MultiPoint";
-
-        case SHPT_MULTIPATCH:
-            return "MultiPatch";
-
-        default:
-            return "UnknownShapeType";
-        }*/
-
     }
 
 };
