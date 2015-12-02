@@ -20,6 +20,7 @@ struct ShapeDataVisitor
 
     utymap::GeoCoordinate lastCoordinate;
     Coordinates lastCoordinates;
+    PolygonMembers lastMembers;
     Tags lastTags;
     bool isRing;
 
@@ -46,8 +47,10 @@ struct ShapeDataVisitor
         ways++;
     }
 
-    void visitRelation(uint64_t id, RelationMembers& members, Tags& tags)
+    void visitRelation(PolygonMembers& members, Tags& tags)
     {
+        lastMembers = members;
+        lastTags = tags;
         relations++;
     }
 };

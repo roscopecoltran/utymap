@@ -71,4 +71,35 @@ BOOST_AUTO_TEST_CASE(GivenTestLineFile_WhenParse_ThenHasCorrectCoordinates)
     BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].longitude, -0.576696034914758, Precision);
 }
 
+BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenVisitsAllRecords)
+{
+    parser.parse(TEST_SHAPE_MULTIPOLY_FILE, visitor);
+
+    BOOST_CHECK_EQUAL(visitor.relations, 1);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenHasCorrectTags)
+{
+    parser.parse(TEST_SHAPE_MULTIPOLY_FILE, visitor);
+
+    BOOST_CHECK_EQUAL(visitor.lastTags.size(), 10);
+    BOOST_CHECK_EQUAL(visitor.lastTags[0].key, "ComID");
+    BOOST_CHECK_EQUAL(visitor.lastTags[0].value, "105569740");
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenHasCorrectGeometry)
+{
+    parser.parse(TEST_SHAPE_MULTIPOLY_FILE, visitor);
+
+    BOOST_CHECK_EQUAL(visitor.lastMembers.size(), 2);
+    BOOST_CHECK(visitor.lastMembers[0].isRing == true);
+    BOOST_CHECK(visitor.lastMembers[1].isRing == true);
+    BOOST_CHECK(visitor.lastMembers[0].coordinates.size(), 35);
+    BOOST_CHECK(visitor.lastMembers[1].coordinates.size(), 10);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].latitude, -94.9833954296734, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].longitude, 47.7065701259499, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].latitude, -94.9856752963366, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].longitude, 47.7061475259505, Precision);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

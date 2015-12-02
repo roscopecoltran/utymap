@@ -153,13 +153,25 @@ private:
 
     inline void visitPolygon(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
-        std::vector<utymap::GeoCoordinate> coordinates;
-        coordinates.reserve(shape->nVertices);
-        for (int j = 0, iPart = 1; j < shape->nVertices; ++j) {
-            if (iPart < shape->nParts && shape->panPartStart[iPart] == j) {
-                // new part is started
+        PolygonMembers members;
+        members.reserve(shape->nParts);
+        std::vector<GeoCoordinate>* coordinates;
+        for (int j = 0, partNum = 0; j < shape->nVertices; ++j) {
+            int startIndex = shape->panPartStart[partNum];
+            if (partNum < shape->nParts && startIndex == j) {
+                members.push_back(PolygonMember());
+                // TODO check inner/outer?
+                members[partNum].isRing = shape->panPartType[partNum] == SHPP_RING;
+                coordinates = &members[partNum].coordinates;
+                int endIndex = partNum == shape->nParts - 1 
+                    ? shape->nVertices 
+                    : shape->panPartStart[partNum + 1];
+                coordinates->reserve(endIndex - startIndex);
+                partNum++;
             }
+            coordinates->push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
         }
+        visitor.visitRelation(members, tags);
     }
 
 };
