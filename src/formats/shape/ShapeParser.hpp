@@ -122,10 +122,10 @@ private:
             case SHPT_MULTIPOINTZ:
             case SHPT_MULTIPOINTM:
             case SHPT_MULTIPATCH:
-                std::cout << "Unsupported shape type:" << SHPTypeName(shape->nSHPType);
+                std::cerr << "Unsupported shape type:" << SHPTypeName(shape->nSHPType);
                 break;
             default:
-                std::cout << "Unknown shape type:" << SHPTypeName(shape->nSHPType);
+                std::cerr << "Unknown shape type:" << SHPTypeName(shape->nSHPType);
                 break;
         }
     }
@@ -137,10 +137,18 @@ private:
 
     inline void visitArc(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
+        if (shape->nParts > 1) {
+            std::cerr << "Arc type has more than one part.";
+            return;
+        }
+
         std::vector<utymap::GeoCoordinate> coordinates;
         coordinates.reserve(shape->nVertices);
-        for (int j = 0; j < shape->nVertices; j++)
+        for (int j = 0; j < shape->nVertices; j++) {
             coordinates.push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
+        }
+
+        visitor.visitWay(coordinates, tags, shape->panPartType[0] == SHPP_RING);
     }
 
     inline void visitPolygon(SHPObject* shape, Tags& tags, Visitor& visitor)

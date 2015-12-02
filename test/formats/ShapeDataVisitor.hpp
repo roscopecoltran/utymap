@@ -9,6 +9,8 @@
 
 using namespace utymap::formats;
 
+typedef std::vector<utymap::GeoCoordinate> Coordinates;
+
 struct ShapeDataVisitor
 {
     int bounds;
@@ -17,10 +19,12 @@ struct ShapeDataVisitor
     int relations;
 
     utymap::GeoCoordinate lastCoordinate;
+    Coordinates lastCoordinates;
     Tags lastTags;
+    bool isRing;
 
     ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0),
-        lastCoordinate(), lastTags() {}
+        lastCoordinate(), lastCoordinates(), lastTags(), isRing() {}
 
     void visitBounds(utymap::BoundingBox bbox)
     {
@@ -34,8 +38,11 @@ struct ShapeDataVisitor
         nodes++;
     }
 
-    void visitWay(uint64_t id, std::vector<uint64_t>& nodeIds, Tags& tags)
+    void visitWay(Coordinates& coordinates, Tags& tags, bool isRing)
     {
+        this->isRing = isRing;
+        lastCoordinates = coordinates;
+        lastTags = tags;
         ways++;
     }
 
