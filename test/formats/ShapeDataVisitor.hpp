@@ -17,7 +17,7 @@ struct ShapeDataVisitor
     int relations;
 
     utymap::GeoCoordinate lastCoordinate;
-    TagCollection lastTags;
+    Tags lastTags;
 
     ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0),
         lastCoordinate(), lastTags() {}
@@ -27,19 +27,19 @@ struct ShapeDataVisitor
         bounds++;
     }
 
-    void visitNode(utymap::GeoCoordinate& coordinate, TagCollection& tags)
+    void visitNode(utymap::GeoCoordinate& coordinate, Tags& tags)
     {
         lastCoordinate = coordinate;
         lastTags = tags;
         nodes++;
     }
 
-    void visitWay(uint64_t id, std::vector<uint64_t>& nodeIds, TagCollection& tags)
+    void visitWay(uint64_t id, std::vector<uint64_t>& nodeIds, Tags& tags)
     {
         ways++;
     }
 
-    void visitRelation(uint64_t id, RelationMembers& members, TagCollection& tags)
+    void visitRelation(uint64_t id, RelationMembers& members, Tags& tags)
     {
         relations++;
     }

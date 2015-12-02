@@ -27,7 +27,7 @@ struct RelationMember
     std::string role;
 };
 
-typedef std::vector<Tag> TagCollection;
+typedef std::vector<Tag> Tags;
 typedef std::vector<RelationMember> RelationMembers;
 
 }}

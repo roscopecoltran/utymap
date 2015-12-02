@@ -23,17 +23,17 @@ struct OsmDataVisitor
         bounds++;
     }
 
-    void visitNode(uint64_t id, utymap::GeoCoordinate& coordinate, TagCollection& tags)
+    void visitNode(uint64_t id, utymap::GeoCoordinate& coordinate, Tags& tags)
     {
         nodes++;
     }
 
-    void visitWay(uint64_t id, std::vector<uint64_t>& nodeIds, TagCollection& tags)
+    void visitWay(uint64_t id, std::vector<uint64_t>& nodeIds, Tags& tags)
     {
         ways++;
     }
 
-    void visitRelation(uint64_t id, RelationMembers& members, TagCollection& tags)
+    void visitRelation(uint64_t id, RelationMembers& members, Tags& tags)
     {
         relations++;
     }

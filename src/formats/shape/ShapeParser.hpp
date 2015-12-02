@@ -63,11 +63,11 @@ private:
         return sstr.str();
     }
 
-    inline TagCollection parseTags(DBFHandle dbfFile, int k)
+    inline Tags parseTags(DBFHandle dbfFile, int k)
     {
         char title[12];
         int fieldCount = DBFGetFieldCount(dbfFile);
-        TagCollection tags;
+        Tags tags;
         tags.reserve(fieldCount);
         for (int i = 0; i < fieldCount; i++)
         {
@@ -99,7 +99,7 @@ private:
         return std::move(tags);
     }
 
-    inline void visitShape(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    inline void visitShape(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
         switch (shape->nSHPType)
         {
@@ -130,12 +130,12 @@ private:
         }
     }
 
-    inline void visitPoint(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    inline void visitPoint(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
         visitor.visitNode(utymap::GeoCoordinate(shape->padfX[0], shape->padfY[0]), tags);
     }
 
-    inline void visitArc(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    inline void visitArc(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
         std::vector<utymap::GeoCoordinate> coordinates;
         coordinates.reserve(shape->nVertices);
@@ -143,7 +143,7 @@ private:
             coordinates.push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
     }
 
-    inline void visitPolygon(SHPObject* shape, TagCollection& tags, Visitor& visitor)
+    inline void visitPolygon(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
         std::vector<utymap::GeoCoordinate> coordinates;
         coordinates.reserve(shape->nVertices);

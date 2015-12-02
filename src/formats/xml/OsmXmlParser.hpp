@@ -52,7 +52,7 @@ private:
         visitor.visitBounds(BoundingBox(minPoint, maxPoint));
     }
 
-    void parseTag(ptree::value_type const& node, TagCollection& tags)
+    void parseTag(ptree::value_type const& node, Tags& tags)
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
@@ -71,7 +71,7 @@ private:
         coordinate.latitude = attributes.get_child("lat").get_value<double>();
         coordinate.longitude = attributes.get_child("lon").get_value<double>();
 
-        TagCollection tags;
+        Tags tags;
         tags.reserve(2);
         BOOST_FOREACH(ptree::value_type const& child, node.second)
         {
@@ -89,7 +89,7 @@ private:
             .get_value<uint64_t>();
 
         std::vector<uint64_t> nodeIds;
-        TagCollection tags;
+        Tags tags;
         nodeIds.reserve(4);
         tags.reserve(2);
         BOOST_FOREACH(ptree::value_type const& child, node.second)
@@ -114,7 +114,7 @@ private:
             .get_child("id")
             .get_value<uint64_t>();
 
-        TagCollection tags;
+        Tags tags;
         RelationMembers members;
         tags.reserve(2);
         members.reserve(2);

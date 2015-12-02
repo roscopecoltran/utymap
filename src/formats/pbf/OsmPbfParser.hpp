@@ -16,8 +16,6 @@ namespace utymap { namespace formats {
 template<typename Visitor>
 class OsmPbfParser
 {
-    typedef std::map<std::string, std::string> Tags;
-
     const int MAX_BLOB_HEADER_SIZE = 64 * 1024;
     const int MAX_UNCOMPRESSED_BLOB_SIZE = 32 * 1024 * 1024;
 
@@ -166,7 +164,7 @@ private:
                 coordinate.latitude = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
                 coordinate.longitude = 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * n.lon()));
                 uint64_t id = n.id();
-                TagCollection tags;
+                Tags tags;
                 setTags(n, primblock, tags);
                 visitor.visitNode(id, coordinate, tags);
             }
@@ -187,7 +185,7 @@ private:
                     lat += 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * dn.lat(i)));
                     lon += 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * dn.lon(i)));
 
-                    TagCollection tags;
+                    Tags tags;
                     tags.reserve(2);
                     while (current_kv < dn.keys_vals_size() && dn.keys_vals(current_kv) != 0)
                     {
@@ -218,7 +216,7 @@ private:
                     nodeIds.push_back(ref);
                 }
                 uint64_t id = w.id();
-                TagCollection tags;
+                Tags tags;
                 setTags(w, primblock, tags);
                 visitor.visitWay(id, nodeIds, tags);
             }
@@ -239,7 +237,7 @@ private:
                 }
 
                 uint64_t rel_id = rel.id();
-                TagCollection tags;
+                Tags tags;
                 setTags(rel, primblock, tags);
                 visitor.visitRelation(rel_id, refs, tags);
             }
@@ -247,7 +245,7 @@ private:
     }
 
     template<typename T>
-    void setTags(T object, const OSMPBF::PrimitiveBlock& primblock, TagCollection& tags)
+    void setTags(T object, const OSMPBF::PrimitiveBlock& primblock, Tags& tags)
     {
         tags.reserve(object.keys_size());
         for (int i = 0; i < object.keys_size(); ++i)
