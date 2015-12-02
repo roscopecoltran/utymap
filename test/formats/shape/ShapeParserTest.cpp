@@ -30,8 +30,8 @@ BOOST_AUTO_TEST_CASE(GivenTestPointFile_WhenParse_ThenHasCorrectCoordinate)
 {
     parser.parse(TEST_SHAPE_POINT_FILE, visitor);
 
-    BOOST_CHECK_CLOSE(visitor.lastCoordinate.latitude, 0.996334426278262, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastCoordinate.longitude, -0.552155778109874, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinate.latitude, -0.552155778109874, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinate.longitude, 0.996334426278262, Precision);
 }
 
 BOOST_AUTO_TEST_CASE(GivenTestPointFile_WhenParse_ThenHasCorrectTags)
@@ -65,10 +65,10 @@ BOOST_AUTO_TEST_CASE(GivenTestLineFile_WhenParse_ThenHasCorrectCoordinates)
 
     BOOST_CHECK_EQUAL(visitor.lastCoordinates.size(), 6);
     BOOST_CHECK(visitor.isRing == true);
-    BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].latitude, -1.42333489468323, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].longitude, -0.488351110417178, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].latitude, -1.10921960758073, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].longitude, -0.576696034914758, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].latitude, -0.488351110417178, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].longitude, -1.42333489468323, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].latitude, -0.576696034914758, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].longitude, -1.10921960758073, Precision);
 }
 
 BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenVisitsAllRecords)
@@ -96,10 +96,10 @@ BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenHasCorrectGeometry)
     BOOST_CHECK(visitor.lastMembers[1].isRing == true);
     BOOST_CHECK(visitor.lastMembers[0].coordinates.size(), 35);
     BOOST_CHECK(visitor.lastMembers[1].coordinates.size(), 10);
-    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].latitude, -94.9833954296734, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].longitude, 47.7065701259499, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].latitude, -94.9856752963366, Precision);
-    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].longitude, 47.7061475259505, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].latitude, 47.7065701259499, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].longitude, -94.9833954296734, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].latitude, 47.7061475259505, Precision);
+    BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].longitude, -94.9856752963366, Precision);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -132,7 +132,7 @@ private:
 
     inline void visitPoint(SHPObject* shape, Tags& tags, Visitor& visitor)
     {
-        visitor.visitNode(utymap::GeoCoordinate(shape->padfX[0], shape->padfY[0]), tags);
+        visitor.visitNode(utymap::GeoCoordinate(shape->padfY[0], shape->padfX[0]), tags);
     }
 
     inline void visitArc(SHPObject* shape, Tags& tags, Visitor& visitor)
@@ -144,8 +144,8 @@ private:
 
         std::vector<utymap::GeoCoordinate> coordinates;
         coordinates.reserve(shape->nVertices);
-        for (int j = 0; j < shape->nVertices; j++) {
-            coordinates.push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
+        for (int i = 0; i < shape->nVertices; ++i) {
+            coordinates.push_back(utymap::GeoCoordinate(shape->padfY[i], shape->padfX[i]));
         }
 
         visitor.visitWay(coordinates, tags, shape->panPartType[0] == SHPP_RING);
@@ -156,9 +156,9 @@ private:
         PolygonMembers members;
         members.reserve(shape->nParts);
         std::vector<GeoCoordinate>* coordinates;
-        for (int j = 0, partNum = 0; j < shape->nVertices; ++j) {
+        for (int i = 0, partNum = 0; i < shape->nVertices; ++i) {
             int startIndex = shape->panPartStart[partNum];
-            if (partNum < shape->nParts && startIndex == j) {
+            if (partNum < shape->nParts && startIndex == i) {
                 members.push_back(PolygonMember());
                 // TODO check inner/outer?
                 members[partNum].isRing = shape->panPartType[partNum] == SHPP_RING;
@@ -169,7 +169,7 @@ private:
                 coordinates->reserve(endIndex - startIndex);
                 partNum++;
             }
-            coordinates->push_back(utymap::GeoCoordinate(shape->padfX[j], shape->padfY[j]));
+            coordinates->push_back(utymap::GeoCoordinate(shape->padfY[i], shape->padfX[i]));
         }
         visitor.visitRelation(members, tags);
     }
