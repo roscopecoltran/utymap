@@ -30,6 +30,7 @@ add_executable (TestLauncher
                         index/StringTableTest.cpp
                         index/StyleFilterTest.cpp
                         mapcss/MapCssParserTest.cpp
+                        meshing/MeshBuilderTest.cpp
                         ${HEADER_FILES}
                       )
 

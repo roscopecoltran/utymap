@@ -15,12 +15,17 @@ set(HEADER_FILES
                 formats/shape/shapefil.h
                 formats/shape/ShapeParser.hpp
                 formats/xml/OsmXmlParser.hpp
+                heightmap/ElevationProvider.hpp
                 index/GeoStore.hpp
                 index/GeoUtils.hpp
                 index/StringTable.hpp
                 index/StyleFilter.hpp
                 mapcss/StyleSheet.hpp
                 mapcss/MapCssParser.hpp
+                meshing/MeshBuilder.hpp
+                meshing/MeshTypes.hpp
+                meshing/Polygon.hpp
+                meshing/Triangle.h
                 utils/MurmurHash3.h
                 )
 
@@ -35,6 +40,8 @@ add_library (UtyMap
                 index/StringTable.cpp
                 index/StyleFilter.cpp
                 mapcss/MapCssParser.cpp
+                meshing/Triangle.c
+                meshing/MeshBuilder.cpp
                 utils/MurmurHash3.cpp
                 )
 
