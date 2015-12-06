@@ -1,5 +1,5 @@
-#ifndef FORMATS_TYPES_HPP_DEFINED
-#define FORMATS_TYPES_HPP_DEFINED
+#ifndef FORMATS_FORMATTYPES_HPP_DEFINED
+#define FORMATS_FORMATTYPES_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
 
@@ -43,4 +43,4 @@ typedef std::vector<PolygonMember> PolygonMembers;
 
 }}
 
-#endif // FORMATS_TYPES_HPP_DEFINED
+#endif // FORMATS_FORMATTYPES_HPP_DEFINED
