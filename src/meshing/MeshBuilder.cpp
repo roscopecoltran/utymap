@@ -4,8 +4,6 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/Triangle.h"
 
-#include <stdio.h>
-
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
 
@@ -76,26 +74,25 @@ private:
 
     void fillMesh(triangulateio* io, Mesh<double>& mesh)
     {
-        // TODO
-    }
+        mesh.vertices.reserve(io->numberofpoints / 2);
+        mesh.triangles.reserve(io->numberoftriangles);
 
-    // for debug only
-    void printData(triangulateio* io)
-    {
         for (int i = 0; i < io->numberofpoints; i++) {
-            printf("Point %4d:", i);
-            for (int j = 0; j < 2; j++) {
-                printf(" %.6g", io->pointlist[i * 2 + j]);
-            }
-            printf("\n");
+            double x = io->pointlist[i * 2 + 0];
+            double y = io->pointlist[i * 2 + 1];
+            double elevation = eleProvider_.getElevation(x, y);
+            Vertex<double> vertex(x, y, elevation);
+
+            mesh.vertices.push_back(vertex);
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {
-            printf("Triangle %4d:", i);
-            for (int j = 0; j < io->numberofcorners; j++) {
-                printf(" %d", io->trianglelist[i * io->numberofcorners + j]);
-            }
-            printf("\n");
+            int v0 = io->trianglelist[i * io->numberofcorners + 0];
+            int v1 = io->trianglelist[i * io->numberofcorners + 1];
+            int v2 = io->trianglelist[i * io->numberofcorners + 2];
+            Triangle tri(v0, v1, v2);
+
+            mesh.triangles.push_back(tri);
         }
     }
 };

@@ -2,6 +2,7 @@
 #define MESHING_MESHTYPES_HPP_DEFINED
 
 #include <algorithm>
+#include <cstdint>
 #include <vector>
 
 namespace utymap { namespace meshing {
@@ -53,9 +54,13 @@ struct Vertex
 // Represents triangle which stores vertex indicies.
 struct Triangle
 {
-    int v0;
-    int v1;
-    int v2;
+    std::uint16_t v0;
+    std::uint16_t v1;
+    std::uint16_t v2;
+
+    Triangle() : v0(0), v1(0), v2(0) { }
+    Triangle(std::uint16_t v0, std::uint16_t v1, std::uint16_t v2) 
+        : v0(v0), v1(v1), v2(v2) { }
 };
 
 // Represents mesh in 3D space.

@@ -7,7 +7,8 @@ namespace utymap { namespace heightmap {
 template <typename T>
 class ElevationProvider
 {
-    virtual float getElevation(T x, T y) = 0;
+public:
+    virtual T getElevation(T x, T y) = 0;
 };
 
 }}

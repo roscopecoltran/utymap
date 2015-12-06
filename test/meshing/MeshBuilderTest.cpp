@@ -13,13 +13,13 @@ typedef Point<double> DoublePoint;
 class TestElevationProvider: public ElevationProvider<double>
 {
 public:
-    float getElevation(double x, double y) { return 0; }
+    double getElevation(double x, double y) { return 0; }
 };
 
-struct Meshing_MeshingFixture {
-    Meshing_MeshingFixture()
-        : eleProvider(), builder(eleProvider)
-    { BOOST_TEST_MESSAGE("setup fixture"); }
+struct Meshing_MeshingFixture 
+{
+    Meshing_MeshingFixture(): eleProvider(), builder(eleProvider)
+                                    { BOOST_TEST_MESSAGE("setup fixture"); }
     ~Meshing_MeshingFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
     TestElevationProvider eleProvider;
@@ -28,11 +28,10 @@ struct Meshing_MeshingFixture {
 
 BOOST_FIXTURE_TEST_SUITE( Meshing_MeshBuilder, Meshing_MeshingFixture )
 
-BOOST_AUTO_TEST_CASE( GivenPolygonWithHole_WhenBuild_RefinesCorrectly )
+BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
 {
-    Polygon<double> polygon(8, 1);
-
-    polygon.addContour(std::vector <Point<double> >
+    Polygon<double> polygon(4, 0);
+    polygon.addContour(std::vector < Point<double> >
     {
         DoublePoint(0, 0),
         DoublePoint(10, 0),
@@ -40,6 +39,26 @@ BOOST_AUTO_TEST_CASE( GivenPolygonWithHole_WhenBuild_RefinesCorrectly )
         DoublePoint(0, 10)
     });
 
+    Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
+    {
+        /*area=*/ 5,
+        /* segmentSplit=*/ 0
+    });
+
+    BOOST_CHECK_EQUAL(mesh.vertices.size(), 23);
+    BOOST_CHECK_EQUAL(mesh.triangles.size(), 29);
+}
+
+BOOST_AUTO_TEST_CASE( GivenPolygonWithHole_WhenBuild_RefinesCorrectly )
+{
+    Polygon<double> polygon(8, 1);
+    polygon.addContour(std::vector <Point<double> >
+    {
+        DoublePoint(0, 0),
+        DoublePoint(10, 0),
+        DoublePoint(10, 10),
+        DoublePoint(0, 10)
+    });
     polygon.addHole(std::vector <Point<double> >
     {
         DoublePoint(3, 3),
@@ -48,7 +67,14 @@ BOOST_AUTO_TEST_CASE( GivenPolygonWithHole_WhenBuild_RefinesCorrectly )
         DoublePoint(3, 6)
     });
 
-    builder.build(polygon, MeshBuilder::Options{ /*area=*/ 4, /* segmentSplit=*/ 0 });
+    Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
+    { 
+        /*area=*/ 1, 
+        /* segmentSplit=*/ 0 
+    });
+
+    BOOST_CHECK_EQUAL(mesh.vertices.size(), 86);
+    BOOST_CHECK_EQUAL(mesh.triangles.size(), 137);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
