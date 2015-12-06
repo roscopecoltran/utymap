@@ -44,7 +44,8 @@ public:
             if (shape == NULL)
                 throw std::domain_error("Unable to read shape:" + to_string(k));
 
-            visitShape(shape, parseTags(dbfFile, k), visitor);
+            Tags tags = parseTags(dbfFile, k);
+            visitShape(*shape, tags, visitor);
 
             SHPDestroyObject(shape);
         }
@@ -99,9 +100,9 @@ private:
         return std::move(tags);
     }
 
-    inline void visitShape(SHPObject* shape, Tags& tags, Visitor& visitor)
+    inline void visitShape(const SHPObject& shape, Tags& tags, Visitor& visitor)
     {
-        switch (shape->nSHPType)
+        switch (shape.nSHPType)
         {
             case SHPT_POINT:
             case SHPT_POINTM:
@@ -122,54 +123,55 @@ private:
             case SHPT_MULTIPOINTZ:
             case SHPT_MULTIPOINTM:
             case SHPT_MULTIPATCH:
-                std::cerr << "Unsupported shape type:" << SHPTypeName(shape->nSHPType);
+                std::cerr << "Unsupported shape type:" << SHPTypeName(shape.nSHPType);
                 break;
             default:
-                std::cerr << "Unknown shape type:" << SHPTypeName(shape->nSHPType);
+                std::cerr << "Unknown shape type:" << SHPTypeName(shape.nSHPType);
                 break;
         }
     }
 
-    inline void visitPoint(SHPObject* shape, Tags& tags, Visitor& visitor)
+    inline void visitPoint(const SHPObject& shape, Tags& tags, Visitor& visitor)
     {
-        visitor.visitNode(utymap::GeoCoordinate(shape->padfY[0], shape->padfX[0]), tags);
+        utymap::GeoCoordinate coordinate(shape.padfY[0], shape.padfX[0]);
+        visitor.visitNode(coordinate, tags);
     }
 
-    inline void visitArc(SHPObject* shape, Tags& tags, Visitor& visitor)
+    inline void visitArc(const SHPObject& shape, Tags& tags, Visitor& visitor)
     {
-        if (shape->nParts > 1) {
+        if (shape.nParts > 1) {
             std::cerr << "Arc type has more than one part.";
             return;
         }
 
         std::vector<utymap::GeoCoordinate> coordinates;
-        coordinates.reserve(shape->nVertices);
-        for (int i = 0; i < shape->nVertices; ++i) {
-            coordinates.push_back(utymap::GeoCoordinate(shape->padfY[i], shape->padfX[i]));
+        coordinates.reserve(shape.nVertices);
+        for (int i = 0; i < shape.nVertices; ++i) {
+            coordinates.push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
 
-        visitor.visitWay(coordinates, tags, shape->panPartType[0] == SHPP_RING);
+        visitor.visitWay(coordinates, tags, shape.panPartType[0] == SHPP_RING);
     }
 
-    inline void visitPolygon(SHPObject* shape, Tags& tags, Visitor& visitor)
+    inline void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor)
     {
         PolygonMembers members;
-        members.reserve(shape->nParts);
+        members.reserve(shape.nParts);
         std::vector<GeoCoordinate>* coordinates;
-        for (int i = 0, partNum = 0; i < shape->nVertices; ++i) {
-            int startIndex = shape->panPartStart[partNum];
-            if (partNum < shape->nParts && startIndex == i) {
+        for (int i = 0, partNum = 0; i < shape.nVertices; ++i) {
+            int startIndex = shape.panPartStart[partNum];
+            if (partNum < shape.nParts && startIndex == i) {
                 members.push_back(PolygonMember());
                 // TODO check inner/outer?
-                members[partNum].isRing = shape->panPartType[partNum] == SHPP_RING;
+                members[partNum].isRing = shape.panPartType[partNum] == SHPP_RING;
                 coordinates = &members[partNum].coordinates;
-                int endIndex = partNum == shape->nParts - 1 
-                    ? shape->nVertices 
-                    : shape->panPartStart[partNum + 1];
+                int endIndex = partNum == shape.nParts - 1
+                    ? shape.nVertices
+                    : shape.panPartStart[partNum + 1];
                 coordinates->reserve(endIndex - startIndex);
                 partNum++;
             }
-            coordinates->push_back(utymap::GeoCoordinate(shape->padfY[i], shape->padfX[i]));
+            coordinates->push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
         visitor.visitRelation(members, tags);
     }

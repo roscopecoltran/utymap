@@ -17,10 +17,12 @@ public:
 };
 
 struct Meshing_MeshingFixture {
-    Meshing_MeshingFixture() : builder(TestElevationProvider())
+    Meshing_MeshingFixture()
+        : eleProvider(), builder(eleProvider)
     { BOOST_TEST_MESSAGE("setup fixture"); }
     ~Meshing_MeshingFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
+    TestElevationProvider eleProvider;
     MeshBuilder builder;
 };
 

@@ -4,6 +4,8 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/Triangle.h"
 
+#include <stdio.h>
+
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
 

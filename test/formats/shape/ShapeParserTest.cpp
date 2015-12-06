@@ -94,8 +94,8 @@ BOOST_AUTO_TEST_CASE(GivenTestMultiPolyFile_WhenParse_ThenHasCorrectGeometry)
     BOOST_CHECK_EQUAL(visitor.lastMembers.size(), 2);
     BOOST_CHECK(visitor.lastMembers[0].isRing == true);
     BOOST_CHECK(visitor.lastMembers[1].isRing == true);
-    BOOST_CHECK(visitor.lastMembers[0].coordinates.size(), 35);
-    BOOST_CHECK(visitor.lastMembers[1].coordinates.size(), 10);
+    BOOST_CHECK_EQUAL(visitor.lastMembers[0].coordinates.size(), 35);
+    BOOST_CHECK_EQUAL(visitor.lastMembers[1].coordinates.size(), 10);
     BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].latitude, 47.7065701259499, Precision);
     BOOST_CHECK_CLOSE(visitor.lastMembers[0].coordinates[0].longitude, -94.9833954296734, Precision);
     BOOST_CHECK_CLOSE(visitor.lastMembers[1].coordinates[0].latitude, 47.7061475259505, Precision);
