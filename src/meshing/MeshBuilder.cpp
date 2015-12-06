@@ -10,6 +10,7 @@ using namespace utymap::meshing;
 class MeshBuilder::MeshBuilderImpl
 {
 public:
+
     MeshBuilderImpl(ElevationProvider<double>& eleProvider)
     : eleProvider_(eleProvider) { }
 
@@ -74,26 +75,22 @@ private:
 
     void fillMesh(triangulateio* io, Mesh<double>& mesh)
     {
-        mesh.vertices.reserve(io->numberofpoints / 2);
-        mesh.triangles.reserve(io->numberoftriangles);
+        mesh.vertices.reserve(io->numberofpoints * 3 / 2);
+        mesh.triangles.reserve(io->numberoftriangles * 3);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-            double elevation = eleProvider_.getElevation(x, y);
-            Vertex<double> vertex(x, y, elevation);
-
-            mesh.vertices.push_back(vertex);
+            mesh.vertices.push_back(x);
+            mesh.vertices.push_back(y);
+            mesh.vertices.push_back(eleProvider_.getElevation(x, y));
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {
-            int v0 = io->trianglelist[i * io->numberofcorners + 0];
-            int v1 = io->trianglelist[i * io->numberofcorners + 1];
-            int v2 = io->trianglelist[i * io->numberofcorners + 2];
-            Triangle tri(v0, v1, v2);
-
-            mesh.triangles.push_back(tri);
-        }
+            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 0]);
+            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 1]);
+            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 2]);
+          }
     }
 };
 
