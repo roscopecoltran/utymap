@@ -35,7 +35,7 @@ public:
         mid.segmentlist = nullptr;
         mid.segmentmarkerlist = nullptr;
 
-        ::triangulate("pzBQ", &in, &mid, nullptr);
+        ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
 
         mid.trianglearealist = (REAL *)malloc(mid.numberoftriangles * sizeof(REAL));
         for (int i = 0; i < mid.numberoftriangles; ++i) {
@@ -47,7 +47,7 @@ public:
         out.trianglelist = nullptr;
         out.triangleattributelist = nullptr;
 
-        ::triangulate("praqzBPQ", &mid, &out, nullptr);
+        ::triangulate(const_cast<char*>("praqzBPQ"), &mid, &out, nullptr);
 
         Mesh<double> mesh;
         fillMesh(&out, mesh);
