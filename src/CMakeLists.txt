@@ -22,10 +22,15 @@ set(HEADER_FILES
                 index/StyleFilter.hpp
                 mapcss/StyleSheet.hpp
                 mapcss/MapCssParser.hpp
+                meshing/clipper.hpp
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
+                meshing/PolygonClipper.hpp
                 meshing/Triangle.h
+                terrain/CellBuilder.hpp
+                terrain/MeshRegion.hpp
+                terrain/TileBuilder.hpp
                 utils/MurmurHash3.h
                 )
 
@@ -40,8 +45,10 @@ add_library (UtyMap
                 index/StringTable.cpp
                 index/StyleFilter.cpp
                 mapcss/MapCssParser.cpp
+                meshing/clipper.cpp
                 meshing/Triangle.c
                 meshing/MeshBuilder.cpp
+                terrain/TileBuilder.cpp
                 utils/MurmurHash3.cpp
                 )
 
