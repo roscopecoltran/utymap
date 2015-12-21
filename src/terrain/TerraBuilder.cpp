@@ -1,4 +1,4 @@
-#include "terrain/TerrBuilder.hpp"
+#include "terrain/TerraBuilder.hpp"
 
 using namespace utymap::meshing;
 using namespace utymap::terrain;
