@@ -1,5 +1,5 @@
-#ifndef TERRAIN_TILEBUILDER_HPP_DEFINED
-#define TERRAIN_TILEBUILDER_HPP_DEFINED
+#ifndef TERRAIN_TERRABUILDER_HPP_DEFINED
+#define TERRAIN_TERRABUILDER_HPP_DEFINED
 
 #include "meshing/MeshTypes.hpp"
 #include "terrain/MeshRegion.hpp"
@@ -34,4 +34,4 @@ private:
 
 }}
 
-#endif // TERRAIN_TILEBUILDER_HPP_DEFINED
+#endif // TERRAIN_TERRABUILDER_HPP_DEFINED

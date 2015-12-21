@@ -30,7 +30,7 @@ set(HEADER_FILES
                 meshing/Triangle.h
                 terrain/CellBuilder.hpp
                 terrain/MeshRegion.hpp
-                terrain/TileBuilder.hpp
+                terrain/TerraBuilder.hpp
                 utils/MurmurHash3.h
                 )
 
@@ -48,7 +48,7 @@ add_library (UtyMap
                 meshing/clipper.cpp
                 meshing/Triangle.c
                 meshing/MeshBuilder.cpp
-                terrain/TileBuilder.cpp
+                terrain/TerraBuilder.cpp
                 utils/MurmurHash3.cpp
                 )
 
