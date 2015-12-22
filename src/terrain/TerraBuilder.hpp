@@ -7,7 +7,7 @@
 namespace utymap { namespace terrain {
 
 // Provides the way to build tile.
-class TileBuilder
+class TerraBuilder
 {
 public:
     // Adds water region to tile mesh.
@@ -35,7 +35,7 @@ public:
     }
 
     // builds tile mesh using data provided.
-    utymap::meshing::Mesh<double> build(utymap::meshing::Rectangle<double> tileRect);
+    utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double> tileRect);
 
 private:
     std::vector<MeshRegion> waters_;

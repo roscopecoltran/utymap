@@ -31,6 +31,7 @@ add_executable (TestLauncher
                         index/StyleFilterTest.cpp
                         mapcss/MapCssParserTest.cpp
                         meshing/MeshBuilderTest.cpp
+                        terrain/TerraBuilderTest.cpp
                         ${HEADER_FILES}
                       )
 

@@ -10,10 +10,8 @@ namespace utymap { namespace terrain {
 // Represents mesh region.
 struct MeshRegion
 {
-private:
-    typedef std::vector<utymap::meshing::Point<double>> Contour;
+    const int NoValue = -1;
 
-public:
     // Gradient key.
     int gradientKey;
 
@@ -22,7 +20,7 @@ public:
 
     // Texture key.
     int textureKey;
-    
+
     // Elevation noise frequency.
     float eleNoiseFreq;
 
@@ -30,12 +28,25 @@ public:
     float colorNoiseFreq;
 
     // Outer points.
-    Contour points;
+    utymap::meshing::Contour<double> points;
+
     // Holes
-    std::vector<Contour> holes;
+    std::vector<utymap::meshing::Contour<double>> holes;
 
     // Specific mesh action associated with given region.
     std::function<void(utymap::meshing::Mesh<double>)> action;
+
+    MeshRegion() :
+        gradientKey(NoValue),
+        textureAtlas(NoValue),
+        textureKey(NoValue),
+        eleNoiseFreq(0),
+        colorNoiseFreq(0),
+        points(),
+        holes(),
+        action(nullptr)
+    {
+    }
 };
 
 }}

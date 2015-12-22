@@ -43,9 +43,12 @@ struct Rectangle
 template <typename T>
 struct Mesh
 {
-    std::vector<double> vertices;
+    std::vector<T> vertices;
     std::vector<int> triangles;
 };
+
+template<typename T>
+using Contour = std::vector<utymap::meshing::Point<T>>;
 
 }}
 

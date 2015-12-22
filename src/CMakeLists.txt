@@ -26,7 +26,6 @@ set(HEADER_FILES
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
-                meshing/PolygonClipper.hpp
                 meshing/Triangle.h
                 terrain/CellBuilder.hpp
                 terrain/MeshRegion.hpp
