@@ -11,16 +11,28 @@ class TileBuilder
 {
 public:
     // Adds water region to tile mesh.
-    void addWater(const MeshRegion& water);
+    inline void addWater(const MeshRegion& water) 
+    {
+        waters_.push_back(water); 
+    }
 
     // Adds surface region to tile mesh.
-    void addSurface(const MeshRegion& surface);
+    inline void addSurface(const MeshRegion& surface) 
+    {
+        surfaces_.push_back(surface); 
+    }
 
     // Add car road region to tile mesh.
-    void addCarRoad(const MeshRegion& carRoad);
+    inline void addCarRoad(const MeshRegion& carRoad) 
+    {
+        carRoads_.push_back(carRoad);
+    }
 
     // Add walk road region to tile mesh.
-    void addWalkRoad(const MeshRegion& walkRoad);
+    inline void addWalkRoad(const MeshRegion& walkRoad) 
+    {
+        walkRoads_.push_back(walkRoad); 
+    }
 
     // builds tile mesh using data provided.
     utymap::meshing::Mesh<double> build(utymap::meshing::Rectangle<double> tileRect);
