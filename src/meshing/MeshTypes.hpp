@@ -45,6 +45,7 @@ struct Mesh
 {
     std::vector<T> vertices;
     std::vector<int> triangles;
+    std::vector<int> colors;
 };
 
 template<typename T>

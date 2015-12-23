@@ -1,13 +1,18 @@
 #include "meshing/clipper.hpp"
+#include "terrain/LineGridSplitter.hpp"
 #include "terrain/TerraBuilder.hpp"
 
+#include <cmath>
+#include <cstdint>
 #include <iterator>
 
 using namespace utymap::meshing;
 using namespace utymap::terrain;
 using namespace ClipperLib;
 
-const int Scale = 1E8;
+const uint64_t Scale = 1E8;
+const uint64_t DoubleScale = Scale * Scale;
+
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<int, MeshRegions> SurfaceMap;
@@ -20,6 +25,15 @@ struct TerraContext
     Paths walkRoads;
     Paths surfaces;
     Paths background;
+
+    LineGridSplitter<double> splitter;
+
+    Mesh<double> mesh;
+
+    TerraContext(int gridCellSize, int roundDigitCount) 
+        : splitter(gridCellSize, roundDigitCount)
+    {
+    }
 };
 
 Path createPathFromRect(const Rectangle<double>& tileRect) 
@@ -41,18 +55,6 @@ Paths clipByRect(Clipper& clipper, const Path& clipRect, const Paths& subjects)
     clipper.Execute(ctIntersection, solution);
     clipper.Clear();
     return std::move(solution);
-}
-
-void addPoints(Clipper& clipper, const MeshRegions& regions)
-{
-    // TODO holes are not processed
-    for (const MeshRegion& region : regions) {
-        Path p(region.points.size());
-        for (const Point<double> point : region.points) {
-            p.push_back(IntPoint(point.x*Scale, point.y*Scale));
-        }
-        clipper.AddPath(p, ptSubject, true);
-    }
 }
 
 Paths buildPaths(const MeshRegions& regions) {
@@ -93,10 +95,33 @@ Paths clipRoads(Clipper& clipper, TerraContext& context, const Paths& roads)
     return std::move(clipByRect(clipper, context.clipRect, resultRoads));
 }
 
+void populateMesh(Mesh<double>& mesh, const MeshRegion& region, const Paths& paths)
+{
+    for (Path path : paths) {
+        double area = ClipperLib::Area(path);
+        // skip small polygons to prevent triangulation issues
+        if (std::abs(area / DoubleScale) < 0.001) continue;
+
+        // TODO
+    }
+}
+
+/*std::vector<Point<double>> restorePoints(Path path)
+{
+    // TODO
+}*/
+
+
 // build water layer
 void buildWater(Clipper& clipper, TerraContext& context, const MeshRegions& regions)
 {
-    addPoints(clipper, regions);
+    for (const MeshRegion& region : regions) {
+        Path p(region.points.size());
+        for (const Point<double> point : region.points) {
+            p.push_back(IntPoint(point.x*Scale, point.y*Scale));
+        }
+        clipper.AddPath(p, ptSubject, true);
+    }
 
     Paths solution;
     clipper.Execute(ctUnion, solution);
@@ -117,14 +142,13 @@ void buildRoads(Clipper& clipper, TerraContext& context, const RoadMap& carMap, 
     clipper.Execute(ctDifference, extrudedWalkRoads);
     clipper.Clear();
 
-    context.carRoads = clipRoads(clipper, context, carRoadPaths);
-    context.walkRoads = clipRoads(clipper, context, extrudedWalkRoads);
+    context.carRoads = std::move(clipRoads(clipper, context, carRoadPaths));
+    context.walkRoads = std::move(clipRoads(clipper, context, extrudedWalkRoads));
 }
 
 // build surfaces layer
 void buildSurfaces(Clipper& clipper, TerraContext& context, const SurfaceMap& surfaces)
 {
-    Paths surfaceShapes;
     for (auto surfacePair : surfaces) {
         Paths paths = buildPaths(surfacePair.second);
         clipper.AddPaths(paths, ptSubject, true);
@@ -135,7 +159,7 @@ void buildSurfaces(Clipper& clipper, TerraContext& context, const SurfaceMap& su
         clipper.AddPaths(context.carRoads, ptClip, true);
         clipper.AddPaths(context.walkRoads, ptClip, true);
         clipper.AddPaths(context.water, ptClip, true);
-        clipper.AddPaths(surfaceShapes, ptClip, true);
+        clipper.AddPaths(context.surfaces, ptClip, true);
         clipper.AddPaths(surfacesUnion, ptSubject, true);
         Paths result;
         clipper.Execute(ctDifference, result, pftPositive, pftPositive);
@@ -144,14 +168,12 @@ void buildSurfaces(Clipper& clipper, TerraContext& context, const SurfaceMap& su
 
         // TODO process surfaces as context is present only here
 
-        surfaceShapes.insert(
-            surfaceShapes.end(),
+        context.surfaces.insert(
+            context.surfaces.end(),
             std::make_move_iterator(result.begin()),
             std::make_move_iterator(result.end())
             );
     }
-
-    context.surfaces = std::move(surfaceShapes);
 }
 
 // build background
@@ -163,18 +185,14 @@ void buildBackground(Clipper& clipper, TerraContext& context)
     clipper.AddPaths(context.walkRoads, ptClip, true);
     clipper.AddPaths(context.water, ptClip, true);
     clipper.AddPaths(context.surfaces, ptClip, true);
-    Paths solution;
-    clipper.Execute(ctDifference, solution, pftPositive, pftPositive);
+    clipper.Execute(ctDifference, context.background, pftPositive, pftPositive);
     clipper.Clear();
-
-    context.background = std::move(solution);
 }
 
 Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect)
 {
-    Mesh<double> mesh;
     Clipper clipper;
-    TerraContext context;
+    TerraContext context(1, 8);
     context.clipRect = createPathFromRect(tileRect);
 
     // fill context with layer specific data.
@@ -183,7 +201,5 @@ Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect)
     buildSurfaces(clipper, context, surfaces_);
     buildBackground(clipper, context);
 
-    return std::move(mesh);
+    return std::move(context.mesh);
 }
-
-

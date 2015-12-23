@@ -27,6 +27,9 @@ struct MeshRegion
     // Color noise frequency.
     float colorNoiseFreq;
 
+    // Height offset of region.
+    float heightOffset;
+
     // Outer points.
     utymap::meshing::Contour<double> points;
 
@@ -42,6 +45,7 @@ struct MeshRegion
         textureKey(NoValue),
         eleNoiseFreq(0),
         colorNoiseFreq(0),
+        heightOffset(0),
         points(),
         holes(),
         action(nullptr)

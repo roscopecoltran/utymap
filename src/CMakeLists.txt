@@ -27,7 +27,7 @@ set(HEADER_FILES
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
                 meshing/Triangle.h
-                terrain/CellBuilder.hpp
+                terrain/LineGridSplitter.hpp
                 terrain/MeshRegion.hpp
                 terrain/TerraBuilder.hpp
                 utils/MurmurHash3.h
