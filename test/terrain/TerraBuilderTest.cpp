@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenBuild_ThenMeshIsNotEmpty)
     TerraBuilder builder;
     builder.addWater(region);
 
-    Mesh<double> mesh = builder.build(clipRect);
+    Mesh<double> mesh = builder.build(clipRect, 0);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);

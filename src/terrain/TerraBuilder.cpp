@@ -189,7 +189,7 @@ void buildBackground(Clipper& clipper, TerraContext& context)
     clipper.Clear();
 }
 
-Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect)
+Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect, int levelOfDetails)
 {
     Clipper clipper;
     TerraContext context(7); // TODO this value is depended on LoD

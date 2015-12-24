@@ -40,7 +40,7 @@ public:
     }
 
     // builds tile mesh using data provided.
-    utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect);
+    utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails);
 
 private:
     std::vector<MeshRegion> waters_;
