@@ -30,8 +30,8 @@ struct TerraContext
 
     Mesh<double> mesh;
 
-    TerraContext(int gridCellSize, int roundDigitCount) 
-        : splitter(gridCellSize, roundDigitCount)
+    TerraContext(int roundDigitCount) 
+        : splitter(roundDigitCount)
     {
     }
 };
@@ -192,7 +192,7 @@ void buildBackground(Clipper& clipper, TerraContext& context)
 Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect)
 {
     Clipper clipper;
-    TerraContext context(1, 8);
+    TerraContext context(7); // TODO this value is depended on LoD
     context.clipRect = createPathFromRect(tileRect);
 
     // fill context with layer specific data.

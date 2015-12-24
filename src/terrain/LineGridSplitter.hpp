@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <vector>
 
@@ -39,9 +40,9 @@ class LineGridSplitter
 
 public:
 
-    LineGridSplitter(int cellSize, int roundDigitCount) : 
-        cellSize_(cellSize),
-        roundDigitCount_(roundDigitCount)
+    LineGridSplitter(uint8_t roundCount) : 
+        roundVal_(std::pow(10, roundCount)),
+        step_(1. / roundVal_)
     {
     }
 
@@ -52,11 +53,11 @@ public:
         PointT end(e.x, e.y);
 
         Points points(2);
-        points.push_back(s);
+        points.push_back(start);
 
-        double slope = (e.y - s.y) / (e.x - s.x);
-        if (std::isinf(slope) || std::abs(slope) < std::numeric_limits<double>::epsilon)
-            zeroSlope(s, e, points);
+        double slope = (end.y - start.y) / (end.x - start.x);
+        if (std::isinf(slope) || std::abs(slope) < std::numeric_limits<double>::epsilon())
+            zeroSlope(start, end, points);
         else
             normalCase(start, end, slope, points);
 
@@ -66,74 +67,84 @@ public:
 private:
     void zeroSlope(PointT start, PointT end, Points& points)
     {
-        if (std::abs(start.x - end.x) < std::numeric_limits<double>::epsilon)
+        if (std::abs(start.x - end.x) < std::numeric_limits<double>::epsilon())
         {
             bool isBottomTop = start.y < end.y;
             if (!isBottomTop)
             {
-                T tmp = start;
+                PointT tmp = start;
                 start = end;
                 end = tmp;
             }
 
-            int yStart = (int)std::ceil(start.y);
-            int yEnd = (int)std::floor(end.y);
-            for (int y = yStart; y <= yEnd; y += cellSize_)
+            // TODO
+            double yStart = std::ceil(start.y * roundVal_) / roundVal_;
+            double yEnd = std::floor(end.y * roundVal_) / roundVal_;
+            for (double y = yStart; y <= yEnd; y += step_)
                 points.push_back(PointT(start.x, y));
 
-            std::sort(points.begin(), points.end(), isBottomTop ? sort_y() : sort_reverse_y());
+            if (isBottomTop)
+                std::sort(points.begin(), points.end(), sort_y());
+            else
+                std::sort(points.begin(), points.end(), sort_reverse_y());
         }
         else
         {
-            var isLeftRight = start.x < end.x;
+            bool isLeftRight = start.x < end.x;
             if (!isLeftRight)
             {
-                T tmp = start;
+                PointT tmp = start;
                 start = end;
                 end = tmp;
             }
 
-            int xStart = (int)std::ceil(start.x);
-            int xEnd = (int)std::floor(end.X);
-            for (int x = xStart; x <= xEnd; x += cellSize_)
+            double xStart = std::ceil(start.x * roundVal_) / roundVal_;
+            double xEnd = std::floor(end.x * roundVal_) / roundVal_;
+            for (double x = xStart; x <= xEnd; x += step_)
                 points.push_back(PointT(x, start.y));
 
-            std::sort(points.begin(), points.end(), isLeftRight ? sort_x() : sort_reverse_x());
+            if (isLeftRight)
+                std::sort(points.begin(), points.end(), sort_x());
+            else
+                std::sort(points.begin(), points.end(), sort_reverse_x());
         }
     }
 
     void normalCase(PointT start, PointT end, double slope, Points& points)
     {
         double inverseSlope = 1 / slope;
-        double b = start.Y - slope * start.X;
+        double b = start.y - slope * start.x;
 
-        bool isLeftRight = start.X < end.X;
+        bool isLeftRight = start.x < end.x;
         if (!isLeftRight)
         {
-            T tmp = start;
+            PointT tmp = start;
             start = end;
             end = tmp;
         }
 
-        int xStart = (int) std::ceil(start.X);
-        int xEnd = (int) std::floor(end.X);
-        for (int x = xStart; x <= xEnd; x += cellSize_)
-            points.push_back(PointT(x, std::round(slope * x + b, roundDigitCount_)));
+        double xStart = std::ceil(start.x * roundVal_) / roundVal_;
+        double xEnd = std::floor(end.x * roundVal_) / roundVal_;
+        for (double x = xStart; x <= xEnd; x += step_)
+            points.push_back(PointT(x, slope * x + b));
 
-        bool isBottomTop = start.Y < end.Y;
+        bool isBottomTop = start.y < end.y;
         if (!isBottomTop)
         {
-            T tmp = start;
+            PointT tmp = start;
             start = end;
             end = tmp;
         }
 
-        int yStart = (int)std::ceil(start.Y);
-        int yEnd = (int)std::floor(end.Y);
-        for (int y = yStart; y <= yEnd; y += cellSize_)
-            points.push_back(PointT(std::round((y - b) * inverseSlope, roundDigitCount_), y));
+        double yStart = std::ceil(start.y * roundVal_) / roundVal_;
+        double yEnd = std::floor(end.y * roundVal_) / roundVal_;
+        for (double y = yStart; y <= yEnd; y += step_)
+            points.push_back(PointT((y - b) * inverseSlope, y));
 
-        std::sort(points.begin(), points.end(), isLeftRight ? sort_x() : sort_reverse_x());
+        if (isLeftRight)
+            std::sort(points.begin(), points.end(), sort_x());
+        else
+            std::sort(points.begin(), points.end(), sort_reverse_x());
     }
 
     Points filterResults(Points& points)
@@ -144,10 +155,10 @@ private:
             PointT candidate = points[i];
             if (result.size() > 0)
             {
-                T last = result[result.size() - 1];
+                PointT last = result[result.size() - 1];
                 double distance = std::sqrt((last.x - candidate.x) * (last.x - candidate.x) +
                     (last.y - candidate.y) * (last.y - candidate.y));
-                if ((std::abs(distance) < std::numeric_limits<double>::epsilon))
+                if ((std::abs(distance) < std::numeric_limits<double>::epsilon()))
                     continue;
             }
 
@@ -157,8 +168,8 @@ private:
         return std::move(result);
     }
 
-    int cellSize_;
-    int roundDigitCount_;
+    uint32_t roundVal_;
+    double step_;
 };
 
 }}
