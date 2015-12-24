@@ -52,7 +52,8 @@ public:
         PointT start(s.x, s.y);
         PointT end(e.x, e.y);
 
-        Points points(2);
+        // TODO use better estimation
+        Points points(8);
         points.push_back(start);
 
         double slope = (end.y - start.y) / (end.x - start.x);
@@ -77,7 +78,6 @@ private:
                 end = tmp;
             }
 
-            // TODO
             double yStart = std::ceil(start.y * roundVal_) / roundVal_;
             double yEnd = std::floor(end.y * roundVal_) / roundVal_;
             for (double y = yStart; y <= yEnd; y += step_)
@@ -149,6 +149,7 @@ private:
 
     Points filterResults(Points& points)
     {
+        // TODO filter without allocating new vector?
         Points result;
         for (int i = 0; i < points.size(); ++i)
         {
