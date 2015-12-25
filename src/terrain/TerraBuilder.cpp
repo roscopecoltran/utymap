@@ -78,9 +78,9 @@ private:
     {
         Path rect;
         rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMin*Scale));
-        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMin*Scale));
-        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMin*Scale));
-        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMin*Scale));
+        rect.push_back(IntPoint(tileRect.xMax*Scale, tileRect.yMin*Scale));
+        rect.push_back(IntPoint(tileRect.xMax*Scale, tileRect.yMax*Scale));
+        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMax*Scale));
 
         return std::move(rect);
     }
@@ -169,7 +169,8 @@ private:
     MeshPoints restorePoints(const Path& path)
     {
         int lastItemIndex = path.size() - 1;
-        MeshPoints points(path.size());
+        MeshPoints points;
+        points.reserve(path.size());
         for (int i = 0; i <= lastItemIndex; i++) {
             IntPoint start = path[i];
             IntPoint end = path[i == lastItemIndex ? 0 : i + 1];
@@ -193,7 +194,7 @@ private:
         // TODO use valid area value
         Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
-            /* area=*/ 1,
+            /* area=*/ 3,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
             /* segmentSplit=*/ 0
         });
