@@ -16,10 +16,13 @@ class MeshBuilder
 public:
     struct Options
     {
-        // max area of triangle in refined mesh.
+        // Max area of triangle in refined mesh.
         double area;
 
-        // flag indicating whether to suppress boundary segment splitting.
+        // Elevation noise
+        double eleNoiseFreq;
+
+        // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
         //     1 = no new vertices on the boundary
         //     2 = prevent all segment splitting, including internal boundaries

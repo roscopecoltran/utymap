@@ -83,6 +83,7 @@ private:
             double y = io->pointlist[i * 2 + 1];
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
+            // TODO Use elevation noise
             mesh.vertices.push_back(eleProvider_.getElevation(x, y));
         }
 

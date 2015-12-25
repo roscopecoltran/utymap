@@ -10,25 +10,58 @@ namespace utymap { namespace terrain {
 // Represents mesh region.
 struct MeshRegion
 {
-    const int NoValue = -1;
+    // Specifies properties of given region.
+    struct Properties
+    {
+        const int NoValue = -1;
 
-    // Gradient key.
-    int gradientKey;
+        // Gradient key.
+        int gradientKey;
 
-    // Texture atlas.
-    int textureAtlas;
+        // Texture atlas.
+        int textureAtlas;
 
-    // Texture key.
-    int textureKey;
+        // Texture key.
+        int textureKey;
 
-    // Elevation noise frequency.
-    float eleNoiseFreq;
+        // Elevation noise frequency.
+        float eleNoiseFreq;
 
-    // Color noise frequency.
-    float colorNoiseFreq;
+        // Color noise frequency.
+        float colorNoiseFreq;
 
-    // Height offset of region.
-    float heightOffset;
+        // Height offset of region.
+        float heightOffset;
+
+        // Specific mesh action associated with given region.
+        std::function<void(utymap::meshing::Mesh<double>)> action;
+
+        Properties() :
+            gradientKey(NoValue),
+            textureAtlas(NoValue),
+            textureKey(NoValue),
+            eleNoiseFreq(0),
+            colorNoiseFreq(0),
+            heightOffset(0),
+            action(nullptr)
+        {
+        }
+
+        Properties& Properties::operator =(const Properties & obj)
+        {
+            if (this != &obj)
+            {
+                gradientKey = obj.gradientKey;
+                textureAtlas = obj.textureAtlas;
+                textureKey = obj.textureKey;
+                eleNoiseFreq = obj.eleNoiseFreq;
+                colorNoiseFreq = obj.colorNoiseFreq;
+                heightOffset = obj.heightOffset;
+                action = obj.action;
+            }
+            return *this;
+        }
+    };
 
     // Outer points.
     utymap::meshing::Contour<double> points;
@@ -36,21 +69,8 @@ struct MeshRegion
     // Holes
     std::vector<utymap::meshing::Contour<double>> holes;
 
-    // Specific mesh action associated with given region.
-    std::function<void(utymap::meshing::Mesh<double>)> action;
-
-    MeshRegion() :
-        gradientKey(NoValue),
-        textureAtlas(NoValue),
-        textureKey(NoValue),
-        eleNoiseFreq(0),
-        colorNoiseFreq(0),
-        heightOffset(0),
-        points(),
-        holes(),
-        action(nullptr)
-    {
-    }
+    // Properties of the region.
+    Properties properties;
 };
 
 }}

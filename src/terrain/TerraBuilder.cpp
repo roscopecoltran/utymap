@@ -1,7 +1,10 @@
 #include "meshing/clipper.hpp"
+#include "meshing/Polygon.hpp"
+#include "meshing/MeshBuilder.hpp"
 #include "terrain/LineGridSplitter.hpp"
 #include "terrain/TerraBuilder.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iterator>
@@ -9,9 +12,10 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace ClipperLib;
+using namespace utymap::heightmap;
 using namespace utymap::meshing;
 using namespace utymap::terrain;
-using namespace ClipperLib;
 
 const uint64_t Scale = 1E8;
 const uint64_t DoubleScale = Scale * Scale;
@@ -19,38 +23,40 @@ const uint64_t DoubleScale = Scale * Scale;
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<int, MeshRegions> SurfaceMap;
+typedef std::vector<Point<double>> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl
 {
 public:
 
-    TerraBuilderImpl()
+    TerraBuilderImpl(ElevationProvider<double>& eleProvider) :
+        meshBuilder_(eleProvider)
     {
     }
 
-    // Adds water region to tile mesh.
     inline void addWater(const MeshRegion& water)
     {
         waters_.push_back(water);
     }
 
-    // Adds surface region to tile mesh. 
-    // Regions will be sorted and merged using gradient key as reference.
     inline void addSurface(const MeshRegion& surface)
     {
-        surfaces_[surface.gradientKey].push_back(surface);
+        surfaces_[surface.properties.gradientKey].push_back(surface);
     }
 
-    // Add car road region to tile mesh.
     inline void addCarRoad(const MeshRegion& carRoad, int width)
     {
         carRoads_[width].push_back(carRoad);
     }
 
-    // Add walk road region to tile mesh.
     inline void addWalkRoad(const MeshRegion& walkRoad, int width)
     {
         walkRoads_[width].push_back(walkRoad);
+    }
+
+    inline void setBackgroundProperties(const MeshRegion::Properties& properties)
+    {
+        bgProperties_ = properties;
     }
 
     // builds tile mesh using data provided.
@@ -127,51 +133,94 @@ private:
         return std::move(clipByRect(resultRoads));
     }
 
-    void populateMesh(const MeshRegion& region, const Paths& paths)
+    // populates mesh 
+    void populateMesh(const MeshRegion::Properties& properties, const Paths& paths)
     {
+        bool hasHeightOffset = properties.heightOffset > 0;
+        // TODO precalculate capacity somehow?
+        Polygon<double> polygon(256, 1);
+        std::vector<MeshPoints> contours(hasHeightOffset ? 4 : 0);
+
         for (Path path : paths) {
             double area = ClipperLib::Area(path);
-            // skip small polygons to prevent triangulation issues
-            if (std::abs(area / DoubleScale) < 0.001) continue;
 
-            // TODO
+            // TODO skip small polygons to prevent triangulation issues?
+            //if (std::abs(area / DoubleScale) < 0.0000001) continue;
+
+            MeshPoints points = restorePoints(path);
+            if (area < 0)
+                polygon.addHole(points);
+            else
+                polygon.addContour(points);
+
+            if (hasHeightOffset)
+                contours.push_back(points);
         }
+
+        if (hasHeightOffset) {
+            std::reverse(contours.begin(), contours.end());
+            processHeightOffset(contours);
+        }
+
+        fillMesh(properties, polygon);
     }
 
-    std::vector<Point<double>> restorePoints(Path path)
+    // restores mesh points from clipper points and injects new ones according to grid.
+    MeshPoints restorePoints(const Path& path)
+    {
+        int lastItemIndex = path.size() - 1;
+        MeshPoints points(path.size());
+        for (int i = 0; i <= lastItemIndex; i++) {
+            IntPoint start = path[i];
+            IntPoint end = path[i == lastItemIndex ? 0 : i + 1];
+
+            Point<double> p1(start.X / Scale, start.Y / Scale);
+            Point<double> p2(end.X / Scale, end.Y / Scale);
+
+            splitter_.split(p1, p2, points);
+        }
+
+        return std::move(points);
+    }
+
+    void processHeightOffset(const std::vector<MeshPoints>& contours)
     {
         // TODO
-        int lastItemIndex = path.size() - 1;
-
-        /*
-        for (int i = 0; i <= lastItemIndex; i++)
-        {
-        var start = path[i];
-        var end = path[i == lastItemIndex ? 0 : i + 1];
-
-        var p1 = new Point(Math.Round(start.X/Scale, MathUtils.RoundDigitCount),
-        Math.Round(start.Y/Scale, MathUtils.RoundDigitCount));
-
-        var p2 = new Point(Math.Round(end.X/Scale, MathUtils.RoundDigitCount),
-        Math.Round(end.Y/Scale, MathUtils.RoundDigitCount));
-
-        if (isOverview &&
-        (!rect.IsOnBorder(new Vector2d(p1.X, p1.Y)) ||
-        !rect.IsOnBorder(new Vector2d(p2.X, p2.Y))))
-        {
-        points.Add(p1);
-        continue;
-        }
-
-        _lineGridSplitter.Split(p1, p2, _objectPool, points);
-        }
-        */
     }
 
+    void fillMesh(const MeshRegion::Properties& properties, Polygon<double>& polygon)
+    {
+        // TODO use valid area value
+        Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
+        {
+            /* area=*/ 1,
+            /* elevation noise frequency*/ properties.eleNoiseFreq,
+            /* segmentSplit=*/ 0
+        });
+
+        // TODO fill mesh colors based on region properties
+
+        if (properties.action != nullptr)
+            properties.action(regionMesh);
+
+        mesh_.vertices.insert(mesh_.vertices.begin(),
+            regionMesh.vertices.begin(),
+            regionMesh.vertices.end());
+
+        mesh_.triangles.insert(mesh_.triangles.begin(),
+            regionMesh.triangles.begin(),
+            regionMesh.triangles.end());
+
+        mesh_.colors.insert(mesh_.colors.begin(),
+            regionMesh.colors.begin(),
+            regionMesh.colors.end());
+    }
 
     // build water layer
     void buildWater()
     {
+        if (waters_.size() == 0) return;
+
         for (const MeshRegion& region : waters_) {
             Path p(region.points.size());
             for (const Point<double> point : region.points) {
@@ -184,6 +233,9 @@ private:
         clipper_.Execute(ctUnion, solution);
         clipper_.Clear();
         waterShape_ = std::move(clipByRect(solution));
+
+        // NOTE we use properties of first region for all water regions
+        populateMesh(waters_[0].properties, waterShape_);
     }
 
     // build road layer
@@ -201,6 +253,13 @@ private:
 
         carRoadShape_ = std::move(clipRoads(carRoadPaths));
         walkRoadShape_ = std::move(clipRoads(extrudedWalkRoads));
+
+        // NOTE we use properties of first region for road regions
+        if (carRoads_.size() > 0) 
+            populateMesh(carRoads_.begin()->second[0].properties, carRoadShape_);
+
+        if (walkRoads_.size() > 0)
+            populateMesh(walkRoads_.begin()->second[0].properties, walkRoadShape_);
     }
 
     // build surfaces layer
@@ -223,7 +282,8 @@ private:
             clipper_.Clear();
             result = clipByRect(result);
 
-            // TODO process surfaces as context is present only here
+            // NOTE surfaces are merged by gradient key.
+            populateMesh(surfacePair.second[0].properties, result);
 
             surfaceShape_.insert(
                 surfaceShape_.end(),
@@ -244,13 +304,21 @@ private:
         clipper_.AddPaths(surfaceShape_, ptClip, true);
         clipper_.Execute(ctDifference, backgroundShape_, pftPositive, pftPositive);
         clipper_.Clear();
+
+        populateMesh(bgProperties_, backgroundShape_);
     }
 
+// mesh builder
+MeshBuilder meshBuilder_;
+
+// input data
 MeshRegions waters_;
 SurfaceMap surfaces_;
 RoadMap carRoads_;
 RoadMap walkRoads_;
+MeshRegion::Properties bgProperties_;
 
+// clipper data
 Clipper clipper_;
 ClipperOffset offset_;
 Path clipRect_;
@@ -260,10 +328,11 @@ Paths walkRoadShape_;
 Paths surfaceShape_;
 Paths backgroundShape_;
 
+// splits segments using grid
 LineGridSplitter<double> splitter_;
 
+// output
 Mesh<double> mesh_;
-
 };
 
 void TerraBuilder::addWater(const MeshRegion& water)
@@ -291,8 +360,13 @@ Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect, int levelOfD
     return std::move(pimpl_->build(tileRect, levelOfDetails));
 }
 
-TerraBuilder::TerraBuilder() :
-pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl()))
+void TerraBuilder::setBackgroundProperties(const MeshRegion::Properties& properties)
+{
+    pimpl_->setBackgroundProperties(properties);
+}
+
+TerraBuilder::TerraBuilder(ElevationProvider<double>& eleProvider) :
+pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(eleProvider)))
 {
 }
 

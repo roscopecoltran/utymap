@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
 
     Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
     {
-        /*area=*/ 5,
+        /* area=*/ 5,
         /* segmentSplit=*/ 0
     });
 
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( GivenPolygonWithHole_WhenBuild_RefinesCorrectly )
 
     Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
     { 
-        /*area=*/ 1, 
+        /* area=*/ 1, 
         /* segmentSplit=*/ 0 
     });
 

@@ -1,6 +1,7 @@
 #ifndef TERRAIN_TERRABUILDER_HPP_DEFINED
 #define TERRAIN_TERRABUILDER_HPP_DEFINED
 
+#include "heightmap/ElevationProvider.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "terrain/MeshRegion.hpp"
 
@@ -13,7 +14,7 @@ class TerraBuilder
 {
 public:
 
-    TerraBuilder();
+    TerraBuilder(utymap::heightmap::ElevationProvider<double>& eleProvider);
     ~TerraBuilder();
 
     // Adds water region to tile mesh.
@@ -28,6 +29,10 @@ public:
 
     // Add walk road region to tile mesh.
     void addWalkRoad(const MeshRegion& walkRoad, int width);
+
+    // Specifies background properties. Background region will be determined
+    // by clipping operations.
+    void setBackgroundProperties(const MeshRegion::Properties& properties);
 
     // builds tile mesh using data provided.
     utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails);

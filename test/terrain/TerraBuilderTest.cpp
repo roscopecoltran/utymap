@@ -1,16 +1,25 @@
+#include "heightmap/ElevationProvider.hpp"
 #include "terrain/MeshRegion.hpp"
 #include "terrain/TerraBuilder.hpp"
 
 #include <boost/test/unit_test.hpp>
 
+using namespace utymap::heightmap;
 using namespace utymap::meshing;
 using namespace utymap::terrain;
 
 const double Precision = 0.1e-7;
 
+class TestElevationProvider : public ElevationProvider<double>
+{
+public:
+    double getElevation(double x, double y) { return 0; }
+};
+
 struct Terrain_TerraBuilderFixture
 {
-    Terrain_TerraBuilderFixture()
+    Terrain_TerraBuilderFixture() :
+        builder(eleProvider)
     {
         BOOST_TEST_MESSAGE("setup fixture");
         Contour<double> contour;
@@ -26,6 +35,8 @@ struct Terrain_TerraBuilderFixture
         BOOST_TEST_MESSAGE("teardown fixture");
     }
 
+    TestElevationProvider eleProvider;
+    TerraBuilder builder;
     Rectangle<double> clipRect;
 };
 
@@ -38,7 +49,6 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenBuild_ThenMeshIsNotEmpty)
     region.points.push_back(Point<double>(20, 0));
     region.points.push_back(Point<double>(20, 20));
     region.points.push_back(Point<double>(0, 20));
-    TerraBuilder builder;
     builder.addWater(region);
 
     Mesh<double> mesh = builder.build(clipRect, 0);
