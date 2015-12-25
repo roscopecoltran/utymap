@@ -4,9 +4,7 @@
 #include "meshing/MeshTypes.hpp"
 #include "terrain/MeshRegion.hpp"
 
-#include <map>
-#include <unordered_map>
-#include <vector>
+#include <memory>
 
 namespace utymap { namespace terrain {
 
@@ -14,39 +12,29 @@ namespace utymap { namespace terrain {
 class TerraBuilder
 {
 public:
+
+    TerraBuilder();
+    ~TerraBuilder();
+
     // Adds water region to tile mesh.
-    inline void addWater(const MeshRegion& water) 
-    {
-        waters_.push_back(water); 
-    }
+    void addWater(const MeshRegion& water);
 
     // Adds surface region to tile mesh. 
     // Regions will be sorted and merged using gradient key as reference.
-    inline void addSurface(const MeshRegion& surface) 
-    {
-        surfaces_[surface.gradientKey].push_back(surface);
-    }
+    void addSurface(const MeshRegion& surface);
 
     // Add car road region to tile mesh.
-    inline void addCarRoad(const MeshRegion& carRoad, int width) 
-    {
-        carRoads_[width].push_back(carRoad);
-    }
+    void addCarRoad(const MeshRegion& carRoad, int width);
 
     // Add walk road region to tile mesh.
-    inline void addWalkRoad(const MeshRegion& walkRoad, int width) 
-    {
-        walkRoads_[width].push_back(walkRoad);
-    }
+    void addWalkRoad(const MeshRegion& walkRoad, int width);
 
     // builds tile mesh using data provided.
     utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails);
 
 private:
-    std::vector<MeshRegion> waters_;
-    std::map<int, std::vector<MeshRegion>> surfaces_;
-    std::unordered_map<int, std::vector<MeshRegion>> carRoads_;
-    std::unordered_map<int, std::vector<MeshRegion>> walkRoads_;
+    class TerraBuilderImpl;
+    std::unique_ptr<TerraBuilderImpl> pimpl_;
 };
 
 }}

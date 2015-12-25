@@ -40,10 +40,16 @@ class LineGridSplitter
 
 public:
 
-    LineGridSplitter(uint8_t roundCount) : 
-        roundVal_(std::pow(10, roundCount)),
-        step_(1. / roundVal_)
+    LineGridSplitter() : 
+        roundVal_(1),
+        step_(1)
     {
+    }
+
+    void setRoundCount(uint8_t roundCount)
+    {
+        roundVal_ = std::pow(10, roundCount);
+        step_ = 1. / roundVal_;
     }
 
     // Splits line to segments.

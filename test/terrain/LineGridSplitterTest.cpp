@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
 {
     DoublePoint start(0, 0);
     DoublePoint end(10, 0);
-    LineGridSplitter<double> splitter(0);
+    LineGridSplitter<double> splitter;
 
     DoublePoints result = splitter.split(start, end);
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(GivenVertical_WhenSplitWithIntStep_CanSplit)
 {
     DoublePoint start(0, 0);
     DoublePoint end(0, 10);
-    LineGridSplitter<double> splitter(0);
+    LineGridSplitter<double> splitter;
 
     DoublePoints result = splitter.split(start, end);
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
 {
     DoublePoint start(0, 0);
     DoublePoint end(-10, 10);
-    LineGridSplitter<double> splitter(0);
+    LineGridSplitter<double> splitter;
 
     DoublePoints result = splitter.split(start, end);
 
@@ -61,7 +61,8 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 
     DoublePoint start(0, 0);
     DoublePoint end(step * -10, step * 10);
-    LineGridSplitter<double> splitter(roundCount);
+    LineGridSplitter<double> splitter;
+    splitter.setRoundCount(roundCount);
 
     DoublePoints result = splitter.split(start, end);
 
