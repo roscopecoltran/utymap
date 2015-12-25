@@ -53,12 +53,8 @@ public:
     }
 
     // Splits line to segments.
-    Points split(PointT s, PointT e)
+    void split(PointT start, PointT end, Points& result)
     {
-        PointT start(s.x, s.y);
-        PointT end(e.x, e.y);
-
-        // TODO use better estimation
         Points points(8);
         points.push_back(start);
 
@@ -68,7 +64,7 @@ public:
         else
             normalCase(start, end, slope, points);
 
-        return filterResults(points);
+        filterResults(points, result);
     }
 
 private:
@@ -153,10 +149,8 @@ private:
             std::sort(points.begin(), points.end(), sort_reverse_x());
     }
 
-    Points filterResults(Points& points)
+    void filterResults(const Points& points, Points& result)
     {
-        // TODO filter without allocating new vector?
-        Points result;
         for (int i = 0; i < points.size(); ++i)
         {
             PointT candidate = points[i];
@@ -171,8 +165,6 @@ private:
 
             result.push_back(candidate);
         }
-
-        return std::move(result);
     }
 
     uint32_t roundVal_;

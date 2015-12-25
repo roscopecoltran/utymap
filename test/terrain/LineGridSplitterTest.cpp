@@ -17,8 +17,9 @@ BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
     DoublePoint start(0, 0);
     DoublePoint end(10, 0);
     LineGridSplitter<double> splitter;
+    DoublePoints result;
 
-    DoublePoints result = splitter.split(start, end);
+    splitter.split(start, end, result);
 
     for (int i = 0; i <= 10; ++i) {
         BOOST_CHECK_CLOSE(i, result[i].x, Precision);
@@ -31,8 +32,9 @@ BOOST_AUTO_TEST_CASE(GivenVertical_WhenSplitWithIntStep_CanSplit)
     DoublePoint start(0, 0);
     DoublePoint end(0, 10);
     LineGridSplitter<double> splitter;
+    DoublePoints result;
 
-    DoublePoints result = splitter.split(start, end);
+    splitter.split(start, end, result);
 
     for (int i = 0; i <= 10; ++i) {
         BOOST_CHECK_CLOSE(0, result[i].x, Precision);
@@ -45,8 +47,9 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
     DoublePoint start(0, 0);
     DoublePoint end(-10, 10);
     LineGridSplitter<double> splitter;
+    DoublePoints result;
 
-    DoublePoints result = splitter.split(start, end);
+    splitter.split(start, end, result);
 
     for (int i = 0; i <= 10; ++i) {
         BOOST_CHECK_CLOSE(-i, result[i].x, Precision);
@@ -63,8 +66,9 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
     DoublePoint end(step * -10, step * 10);
     LineGridSplitter<double> splitter;
     splitter.setRoundCount(roundCount);
+    DoublePoints result;
 
-    DoublePoints result = splitter.split(start, end);
+    splitter.split(start, end, result);
 
     for (int i = 0; i <= 10; ++i) {
         BOOST_CHECK_CLOSE(-i * step, result[i].x, Precision);
