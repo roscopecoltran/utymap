@@ -17,7 +17,7 @@ using namespace utymap::heightmap;
 using namespace utymap::meshing;
 using namespace utymap::terrain;
 
-const uint64_t Scale = 1E8;
+const uint64_t Scale = 1E8; // max precision for Lat/Lon
 const uint64_t DoubleScale = Scale * Scale;
 
 typedef std::vector<MeshRegion> MeshRegions;
@@ -63,8 +63,7 @@ public:
     utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails)
     {
         clipRect_ = createPathFromRect(tileRect);
-        splitter_.setRoundDigits(7);
-        splitter_.setScale(Scale);
+        configureSplitter(levelOfDetails);
 
         // fill context with layer specific data.
         buildWater();
@@ -75,6 +74,23 @@ public:
         return std::move(mesh_);
     }
 private:
+
+    void configureSplitter(int levelOfDetails)
+    {
+        int roundDigits = 1;
+        int coeff = 1;
+
+        // TODO
+        switch (levelOfDetails)
+        {
+            case 1: roundDigits = 7; break;
+            default:
+                throw std::domain_error("Unknown LoD");
+        };
+
+        splitter_.setRoundDigits(roundDigits, coeff);
+        splitter_.setScale(Scale);
+    }
 
     Path createPathFromRect(const Rectangle<double>& tileRect)
     {

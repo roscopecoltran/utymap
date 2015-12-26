@@ -51,10 +51,10 @@ public:
     {
     }
 
-    void setRoundDigits(uint8_t roundDigits)
+    void setRoundDigits(uint8_t roundDigits, uint8_t coeff = 1)
     {
         roundVal_ = std::pow(10, roundDigits);
-        step_ = std::pow(10, roundDigits - 1);
+        step_ = std::pow(10, roundDigits - 1) * coeff;
     }
 
     void setScale(uint64_t scale)

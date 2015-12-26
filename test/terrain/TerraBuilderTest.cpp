@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenBuild_ThenMeshIsNotEmpty)
     region.points.push_back(Point<double>(0, 20));
     builder.addWater(region);
 
-    Mesh<double> mesh = builder.build(clipRect, 0);
+    Mesh<double> mesh = builder.build(clipRect, 1);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);
