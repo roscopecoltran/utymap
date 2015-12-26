@@ -1,5 +1,6 @@
 set(HEADER_FILES
                 BoundingBox.hpp
+                ExportLib.h
                 GeoCoordinate.hpp
                 QuadKey.hpp
                 entities/Element.hpp
