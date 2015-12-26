@@ -15,6 +15,16 @@ struct Point
     T y;
     Point() : x(0), y(0)  { }
     Point(T x, T y) : x(x), y(y) { }
+
+    bool operator==(const Point& rhs) const
+    {
+        return x == rhs.x && y == rhs.y;
+    }
+
+    bool operator!=(const Point& rhs) const
+    {
+        return this != rhs;
+    }
 };
 
 // Represents axis aligned rectangle in 2D space.
@@ -22,6 +32,14 @@ template <typename T>
 struct Rectangle
 {
     T xMin, xMax, yMin, yMax;
+
+    Rectangle() :
+        xMin(0),
+        xMax(0),
+        yMin(0),
+        yMax(0)
+    {
+    }
 
     void expand(const std::vector<Point<T>>& contour)
     {

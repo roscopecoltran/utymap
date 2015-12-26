@@ -3,19 +3,19 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace ClipperLib;
 using namespace utymap::meshing;
 using namespace utymap::terrain;
 
-typedef Point<double> DoublePoint;
-typedef std::vector<DoublePoint> DoublePoints;
+typedef std::vector<Point<double>> DoublePoints;
 const double Precision = 0.1e-9;
 
 BOOST_AUTO_TEST_SUITE(Terrain_LineGridSplitter)
 
 BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
 {
-    DoublePoint start(0, 0);
-    DoublePoint end(10, 0);
+    IntPoint start(0, 0);
+    IntPoint end(10, 0);
     LineGridSplitter<double> splitter;
     DoublePoints result;
 
@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
 
 BOOST_AUTO_TEST_CASE(GivenVertical_WhenSplitWithIntStep_CanSplit)
 {
-    DoublePoint start(0, 0);
-    DoublePoint end(0, 10);
+    IntPoint start(0, 0);
+    IntPoint end(0, 10);
     LineGridSplitter<double> splitter;
     DoublePoints result;
 
@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(GivenVertical_WhenSplitWithIntStep_CanSplit)
 
 BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
 {
-    DoublePoint start(0, 0);
-    DoublePoint end(-10, 10);
+    IntPoint start(0, 0);
+    IntPoint end(-10, 10);
     LineGridSplitter<double> splitter;
     DoublePoints result;
 
@@ -59,19 +59,20 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
 
 BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 {
-    int roundCount = 8;
-    double step = std::pow(10, -roundCount);
-
-    DoublePoint start(0, 0);
-    DoublePoint end(step * -10, step * 10);
+    int roundDigits = 1;
+    double scale = 10000000;
     LineGridSplitter<double> splitter;
-    splitter.setRoundCount(roundCount);
+    splitter.setRoundDigits(roundDigits);
+    splitter.setScale(scale);
+    IntPoint start(0, 0);
+    IntPoint end(10, 10);
     DoublePoints result;
 
     splitter.split(start, end, result);
 
+    double step = 1 / scale;
     for (int i = 0; i <= 10; ++i) {
-        BOOST_CHECK_CLOSE(-i * step, result[i].x, Precision);
+        BOOST_CHECK_CLOSE(i * step, result[i].x, Precision);
         BOOST_CHECK_CLOSE(i * step, result[i].y, Precision);
     }
 }

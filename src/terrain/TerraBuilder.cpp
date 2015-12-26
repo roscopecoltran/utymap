@@ -63,6 +63,8 @@ public:
     utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails)
     {
         clipRect_ = createPathFromRect(tileRect);
+        splitter_.setRoundDigits(7);
+        splitter_.setScale(Scale);
 
         // fill context with layer specific data.
         buildWater();
@@ -175,10 +177,7 @@ private:
             IntPoint start = path[i];
             IntPoint end = path[i == lastItemIndex ? 0 : i + 1];
 
-            Point<double> p1(start.X / Scale, start.Y / Scale);
-            Point<double> p2(end.X / Scale, end.Y / Scale);
-
-            splitter_.split(p1, p2, points);
+            splitter_.split(start, end, points);
         }
 
         return std::move(points);
@@ -194,7 +193,7 @@ private:
         // TODO use valid area value
         Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
-            /* area=*/ 3,
+            /* area=*/ 1,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
             /* segmentSplit=*/ 0
         });
@@ -306,7 +305,8 @@ private:
         clipper_.Execute(ctDifference, backgroundShape_, pftPositive, pftPositive);
         clipper_.Clear();
 
-        populateMesh(bgProperties_, backgroundShape_);
+        if (backgroundShape_.size() > 0)
+            populateMesh(bgProperties_, backgroundShape_);
     }
 
 // mesh builder
