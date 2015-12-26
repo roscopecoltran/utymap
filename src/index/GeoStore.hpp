@@ -3,6 +3,7 @@
 
 #include "BoundingBox.hpp"
 #include "StyleFilter.hpp"
+#include "QuadKey.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/StringTable.hpp"
@@ -17,17 +18,16 @@ namespace utymap { namespace index {
 class GeoStore
 {
 public:
-    GeoStore(const std::string& directory, 
+    GeoStore(const std::string& directory,
             StringTable& stringTable);
 
     // Searches for elements using given parameters.
-    void search(const BoundingBox& bbox,
-                int levelOfDetails,
-                utymap::entities::ElementVisitor& visitor,
-                const StyleFilter& filter);
+    void search(const QuadKey& quadKey,
+                const StyleFilter& filter,
+                utymap::entities::ElementVisitor& visitor);
 
     // Imports data from stream.
-    void import(std::istream& stream, 
+    void import(std::istream& stream,
                 const utymap::formats::FormatType type,
                 const StyleFilter& filter);
 
