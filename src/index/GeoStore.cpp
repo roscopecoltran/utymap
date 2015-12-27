@@ -30,6 +30,10 @@ GeoStore::GeoStore(const std::string& directory, StringTable& stringTable) :
 {
 }
 
+GeoStore::~GeoStore()
+{
+}
+
 void utymap::index::GeoStore::search(const QuadKey& quadKey, const StyleFilter& filter, utymap::entities::ElementVisitor& visitor)
 {
     pimpl_->search(quadKey, filter, visitor);

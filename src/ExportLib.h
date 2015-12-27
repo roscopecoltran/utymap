@@ -6,11 +6,14 @@
 
 #include "QuadKey.hpp"
 #include "TileLoader.hpp"
+#include "index/GeoStore.hpp"
+#include "index/StringTable.hpp"
 #include "meshing/MeshTypes.hpp"
 
 #include <cstdint>
 
-static utymap::TileLoader tileLoader;
+static utymap::TileLoader* tileLoader = nullptr;
+static utymap::index::StringTable* stringTable = nullptr;
 
 extern "C"
 {
@@ -24,10 +27,16 @@ extern "C"
                                  const char** tags, int size,
                                  const double* vertices, int vertexCount);
 
-
-    void EXPORT_API configure(const char* configPath)
+    void EXPORT_API configure(const char* stringPath, const char* stylePath, const char* dataPath)
     {
-        tileLoader.configure(std::string(configPath));
+        stringTable = new utymap::index::StringTable(stringPath, stringPath);
+        tileLoader = new utymap::TileLoader(std::move(utymap::index::GeoStore(dataPath, *stringTable)));
+    }
+
+    void EXPORT_API cleanup()
+    {
+        delete tileLoader;
+        delete stringTable;
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
@@ -39,7 +48,7 @@ extern "C"
         quadKey.levelOfDetail = levelOfDetail;
 
         // TODO
-        tileLoader.loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
+        tileLoader->loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
                 mesh.triangles.data(), mesh.triangles.size(),

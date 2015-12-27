@@ -2,6 +2,7 @@
 #define TILELOADER_HPP_DEFINED
 
 #include "entities/Element.hpp"
+#include "index/GeoStore.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "QuadKey.hpp"
 
@@ -16,11 +17,8 @@ class TileLoader
 {
 public:
 
-    TileLoader();
+    TileLoader(utymap::index::GeoStore& geoStore);
     ~TileLoader();
-
-    // Configures tile loader.
-    void configure(const std::string& configPath);
 
     // Loads tile for given quadkey.
     void loadTile(const utymap::QuadKey& quadKey,

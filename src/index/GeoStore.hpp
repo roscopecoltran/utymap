@@ -21,6 +21,8 @@ public:
     GeoStore(const std::string& directory,
              StringTable& stringTable);
 
+    ~GeoStore();
+
     // Searches for elements using given parameters.
     void search(const QuadKey& quadKey,
                 const StyleFilter& filter,

@@ -7,7 +7,7 @@ struct ExportLibFixture {
     ExportLibFixture()
     { 
         BOOST_TEST_MESSAGE("setup fixture"); 
-        ::configure(TEST_ASSETS_PATH);
+        ::configure(TEST_ASSETS_PATH, TEST_ASSETS_PATH, TEST_ASSETS_PATH);
     }
 
     ~ExportLibFixture()

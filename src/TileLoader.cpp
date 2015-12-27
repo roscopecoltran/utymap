@@ -2,15 +2,16 @@
 
 using namespace utymap;
 using namespace utymap::entities;
+using namespace utymap::index;
 using namespace utymap::meshing;
 
 class TileLoader::TileLoaderImpl
 {
 public:
 
-    void configure(const std::string& configPath)
+    TileLoaderImpl(GeoStore& geoStore) :
+        geoStore_(geoStore)
     {
-        // TODO load string table and index;
     }
 
     void loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
@@ -24,21 +25,17 @@ public:
     }
 
 private:
-
+    GeoStore& geoStore_;
 };
 
-void TileLoader::configure(const std::string& configPath)
-{
-    pimpl_->configure(configPath);
-}
 
 void TileLoader::loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
 {
     pimpl_->loadTile(quadKey, meshFunc, elementFunc);
 }
 
-TileLoader::TileLoader() :
-    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl()))
+TileLoader::TileLoader(GeoStore& geoStore) :
+    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore)))
 {
 }
 
