@@ -3,6 +3,7 @@ set(HEADER_FILES
                 ExportLib.h
                 GeoCoordinate.hpp
                 QuadKey.hpp
+                TileLoader.hpp
                 entities/Element.hpp
                 entities/ElementVisitor.hpp
                 entities/Node.hpp
@@ -36,6 +37,7 @@ set(HEADER_FILES
 
 add_library (UtyMap
                 ${HEADER_FILES}
+                TileLoader.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 formats/shape/dbfopen.c

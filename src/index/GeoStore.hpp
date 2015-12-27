@@ -19,7 +19,7 @@ class GeoStore
 {
 public:
     GeoStore(const std::string& directory,
-            StringTable& stringTable);
+             StringTable& stringTable);
 
     // Searches for elements using given parameters.
     void search(const QuadKey& quadKey,
