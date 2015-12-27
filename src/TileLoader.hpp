@@ -24,8 +24,8 @@ public:
 
     // Loads tile for given quadkey.
     void loadTile(const utymap::QuadKey& quadKey,
-                  std::function<utymap::meshing::Mesh<double>>& meshFunc,
-                  std::function<utymap::entities::Element>& elementFunc);
+                  std::function<void(utymap::meshing::Mesh<double>&)> meshFunc,
+                  std::function<void(utymap::entities::Element&)> elementFunc);
 
 private:
     class TileLoaderImpl;

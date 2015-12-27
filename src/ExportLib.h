@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-static TileLoader tileLoader;
+static utymap::TileLoader tileLoader;
 
 extern "C"
 {
@@ -40,10 +40,10 @@ extern "C"
 
         // TODO
         tileLoader.loadTile(quadKey,
-            [](utymap::meshing::Mesh<double>& mesh) -> {
+            [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
                 //  meshCallback()
             },
-            [](utymap::entities::Element& element) -> {
+            [&elementCallback](utymap::entities::Element& element) {
                 // elementCallback
             });
     }
