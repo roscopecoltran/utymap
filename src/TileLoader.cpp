@@ -13,8 +13,14 @@ public:
         // TODO load string table and index;
     }
 
-    void loadTile(const QuadKey& quadKey, std::function<void(Mesh<double>&)> meshFunc, std::function<void(Element&)> elementFunc)
+    void loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
     {
+        // TODO read index
+        Mesh<double> mesh;
+        meshFunc(mesh);
+
+        Element element;
+        elementFunc(element);
     }
 
 private:
@@ -26,7 +32,7 @@ void TileLoader::configure(const std::string& configPath)
     pimpl_->configure(configPath);
 }
 
-void TileLoader::loadTile(const QuadKey& quadKey, std::function<void(Mesh<double>&)> meshFunc, std::function<void(Element&)> elementFunc)
+void TileLoader::loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
 {
     pimpl_->loadTile(quadKey, meshFunc, elementFunc);
 }

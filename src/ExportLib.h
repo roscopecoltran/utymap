@@ -31,7 +31,7 @@ extern "C"
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
-                             OnMeshBuilt* meshCallback, OnElementLoaded* elementCallback)
+        OnMeshBuilt* meshCallback, OnElementLoaded* elementCallback)
     {
         utymap::QuadKey quadKey;
         quadKey.tileX = tileX;
@@ -39,12 +39,13 @@ extern "C"
         quadKey.levelOfDetail = levelOfDetail;
 
         // TODO
-        tileLoader.loadTile(quadKey,
-            [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
-                //  meshCallback()
-            },
-            [&elementCallback](utymap::entities::Element& element) {
-                // elementCallback
-            });
+        tileLoader.loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
+            meshCallback(mesh.name.data(),
+                mesh.vertices.data(), mesh.vertices.size(),
+                mesh.triangles.data(), mesh.triangles.size(),
+                mesh.colors.data(), mesh.colors.size());
+        }, [&elementCallback](utymap::entities::Element& element) {
+            // TODO call elementCallback
+        });
     }
 }

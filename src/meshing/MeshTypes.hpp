@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace utymap { namespace meshing {
@@ -61,6 +62,7 @@ struct Rectangle
 template <typename T>
 struct Mesh
 {
+    std::string name;
     std::vector<T> vertices;
     std::vector<int> triangles;
     std::vector<int> colors;

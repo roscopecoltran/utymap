@@ -22,6 +22,7 @@ set (HEADER_FILES
 add_executable (TestLauncher
                         main.cpp
                         BoundingBoxTest.cpp
+                        ExportLibTest.cpp
                         entities/ElementTest.cpp
                         formats/pbf/OsmPbfParserTest.cpp
                         formats/shape/ShapeParserTest.cpp
