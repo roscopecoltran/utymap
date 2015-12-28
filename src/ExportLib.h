@@ -8,12 +8,18 @@
 #include "TileLoader.hpp"
 #include "index/GeoStore.hpp"
 #include "index/StringTable.hpp"
+#include "index/StyleFilter.hpp"
+#include "mapcss/MapCssParser.hpp"
+#include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 
 #include <cstdint>
+#include <fstream>
 
 static utymap::TileLoader* tileLoader = nullptr;
+static utymap::index::GeoStore* geoStore = nullptr;
 static utymap::index::StringTable* stringTable = nullptr;
+static utymap::index::StyleFilter* styleFilter;
 
 extern "C"
 {
@@ -29,14 +35,25 @@ extern "C"
 
     void EXPORT_API configure(const char* stringPath, const char* stylePath, const char* dataPath)
     {
+        std::ifstream styleFile(stylePath);
+        utymap::mapcss::Parser parser;
+        utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
+        if (!parser.getError().empty())
+            throw std::domain_error("Cannot parse mapcss.");
+
         stringTable = new utymap::index::StringTable(stringPath, stringPath);
-        tileLoader = new utymap::TileLoader(std::move(utymap::index::GeoStore(dataPath, *stringTable)));
+        styleFilter = new utymap::index::StyleFilter(stylesheet, *stringTable);
+
+        geoStore = new utymap::index::GeoStore(dataPath, *stringTable);
+        tileLoader = new utymap::TileLoader(*geoStore);
     }
 
     void EXPORT_API cleanup()
     {
         delete tileLoader;
+        delete geoStore;
         delete stringTable;
+        delete styleFilter;
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
