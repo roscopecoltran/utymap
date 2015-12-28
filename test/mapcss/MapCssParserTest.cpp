@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
     std::string str = "way|z1[highway]  { key1:value1; }\n";
     Parser parser;
 
-    std::shared_ptr<StyleSheet> stylesheet = parser.parse(str);
+    StyleSheet stylesheet = parser.parse(str);
 
     BOOST_CHECK( parser.getError().empty() == true );
     BOOST_CHECK( stylesheet->rules.size() == 1 );

@@ -208,27 +208,24 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
 };
 
 template<typename Iterator>
-std::shared_ptr<StyleSheet> Parser::parse(Iterator begin, Iterator end)
+StyleSheet Parser::parse(Iterator begin, Iterator end)
 {
     StyleSheetGrammar<Iterator> grammar;
     CommentSkipper<Iterator> skipper;
-    std::shared_ptr<StyleSheet> stylesheet(new StyleSheet());
+    StyleSheet stylesheet;
 
-    if (!phrase_parse(begin, end, grammar, skipper, *stylesheet.get()))
-    {
-        stylesheet.reset();
+    if (!phrase_parse(begin, end, grammar, skipper, stylesheet))
         error_ = grammar.error.str();
-    }
 
-    return stylesheet;
+    return std::move(stylesheet);
 }
 
-std::shared_ptr<StyleSheet> Parser::parse(const std::string& str)
+StyleSheet Parser::parse(const std::string& str)
 {
     return parse(str.begin(), str.end());
 }
 
-std::shared_ptr<StyleSheet> Parser::parse(std::istream& istream)
+StyleSheet Parser::parse(std::istream& istream)
 {
     boost::spirit::istream_iterator begin(istream);
     boost::spirit::istream_iterator end;
