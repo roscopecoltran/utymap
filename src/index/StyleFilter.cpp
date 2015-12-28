@@ -193,6 +193,10 @@ StyleFilter::StyleFilter(const StyleSheet& stylesheet, StringTable& stringTable)
 {
 }
 
+StyleFilter::~StyleFilter()
+{
+}
+
 bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
 {
     return pimpl_->isApplicable(element, levelOfDetails);
