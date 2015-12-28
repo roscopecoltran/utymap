@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
     StyleSheet stylesheet = parser.parse(str);
 
     BOOST_CHECK( parser.getError().empty() == true );
-    BOOST_CHECK( stylesheet->rules.size() == 1 );
+    BOOST_CHECK( stylesheet.rules.size() == 1 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
