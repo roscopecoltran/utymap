@@ -1,6 +1,7 @@
 #include "TileLoader.hpp"
 
 using namespace utymap;
+using namespace utymap::heightmap;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::meshing;
@@ -9,8 +10,9 @@ class TileLoader::TileLoaderImpl
 {
 public:
 
-    TileLoaderImpl(GeoStore& geoStore) :
-        geoStore_(geoStore)
+    TileLoaderImpl(GeoStore& geoStore, ElevationProvider<double>& eleProvider) :
+        geoStore_(geoStore),
+        eleProvider_(eleProvider)
     {
     }
 
@@ -26,6 +28,7 @@ public:
 
 private:
     GeoStore& geoStore_;
+    ElevationProvider<double>& eleProvider_;
 };
 
 
@@ -34,8 +37,8 @@ void TileLoader::loadTile(const QuadKey& quadKey, const std::function<void(Mesh<
     pimpl_->loadTile(quadKey, meshFunc, elementFunc);
 }
 
-TileLoader::TileLoader(GeoStore& geoStore) :
-    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore)))
+TileLoader::TileLoader(GeoStore& geoStore, ElevationProvider<double>& eleProvider) :
+    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, eleProvider)))
 {
 }
 

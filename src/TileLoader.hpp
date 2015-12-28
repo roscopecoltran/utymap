@@ -2,6 +2,7 @@
 #define TILELOADER_HPP_DEFINED
 
 #include "entities/Element.hpp"
+#include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "QuadKey.hpp"
@@ -17,7 +18,9 @@ class TileLoader
 {
 public:
 
-    TileLoader(utymap::index::GeoStore& geoStore);
+    TileLoader(utymap::index::GeoStore& geoStore, 
+               utymap::heightmap::ElevationProvider<double>& eleProvider);
+
     ~TileLoader();
 
     // Loads tile for given quadkey.

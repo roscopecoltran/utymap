@@ -6,6 +6,7 @@
 
 #include "QuadKey.hpp"
 #include "TileLoader.hpp"
+#include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/StringTable.hpp"
 #include "index/StyleFilter.hpp"
@@ -19,7 +20,7 @@
 static utymap::TileLoader* tileLoader = nullptr;
 static utymap::index::GeoStore* geoStore = nullptr;
 static utymap::index::StringTable* stringTable = nullptr;
-static utymap::index::StyleFilter* styleFilter;
+static utymap::heightmap::ElevationProvider<double>* eleProvider = nullptr;
 
 extern "C"
 {
@@ -33,19 +34,19 @@ extern "C"
                                  const char** tags, int size,
                                  const double* vertices, int vertexCount);
 
-    void EXPORT_API configure(const char* stringPath, const char* stylePath, const char* dataPath)
+    void EXPORT_API configure(const char* stringPath, // path to string table directory
+                              const char* stylePath,  // path to mapcss file
+                              const char* dataPath)   // path to index directory
     {
         std::ifstream styleFile(stylePath);
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         if (!parser.getError().empty())
-            throw std::domain_error("Cannot parse mapcss.");
+            throw std::domain_error("Cannot parse mapcss:" + parser.getError());
 
         stringTable = new utymap::index::StringTable(stringPath, stringPath);
-        styleFilter = new utymap::index::StyleFilter(stylesheet, *stringTable);
-
-        geoStore = new utymap::index::GeoStore(dataPath, *stringTable);
-        tileLoader = new utymap::TileLoader(*geoStore);
+        geoStore = new utymap::index::GeoStore(dataPath, stylesheet, *stringTable);
+        tileLoader = new utymap::TileLoader(*geoStore, *eleProvider);
     }
 
     void EXPORT_API cleanup()
@@ -53,7 +54,6 @@ extern "C"
         delete tileLoader;
         delete geoStore;
         delete stringTable;
-        delete styleFilter;
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
