@@ -4,11 +4,19 @@
 #include <boost/test/unit_test.hpp>
 
 #include <string>
+#include <sstream>
 #include <memory>
 
 using namespace utymap::mapcss;
 
 typedef std::string::const_iterator StringIterator;
+
+template <typename T>
+std::string toString(T t) {
+    std::stringstream stream;
+    stream << t;
+    return stream.str();
+}
 
 struct MapCss_MapCssParserFixture {
     MapCss_MapCssParserFixture()        { BOOST_TEST_MESSAGE("setup fixture"); }
@@ -223,6 +231,18 @@ BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
 
     BOOST_CHECK(parser.getError().empty() == true);
     BOOST_CHECK(stylesheet.rules.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentation)
+{
+    std::string str = "way|z1-12[highway]{key1:value1;}";
+    Parser parser;
+
+    StyleSheet stylesheet = parser.parse(str);
+
+    BOOST_CHECK(parser.getError().empty());
+    BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
+    BOOST_CHECK_EQUAL(str, toString(stylesheet.rules[0]));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

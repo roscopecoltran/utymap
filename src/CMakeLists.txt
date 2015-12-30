@@ -1,5 +1,6 @@
 set(HEADER_FILES
                 BoundingBox.hpp
+                Exceptions.hpp
                 ExportLib.h
                 GeoCoordinate.hpp
                 QuadKey.hpp
@@ -47,6 +48,7 @@ add_library (UtyMap
                 index/StringTable.cpp
                 index/StyleFilter.cpp
                 mapcss/MapCssParser.cpp
+                mapcss/StyleSheet.cpp
                 meshing/clipper.cpp
                 meshing/Triangle.c
                 meshing/MeshBuilder.cpp

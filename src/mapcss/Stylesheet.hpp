@@ -50,5 +50,12 @@ struct StyleSheet
     std::vector<Rule> rules;
 };
 
+std::ostream& operator<<(std::ostream &stream, const Condition &c);
+std::ostream& operator<<(std::ostream &stream, const Zoom &z);
+std::ostream& operator<<(std::ostream &stream, const Selector &s);
+std::ostream& operator<<(std::ostream &stream, const Declaration &d);
+std::ostream& operator<<(std::ostream &stream, const Rule &r);
+std::ostream& operator<<(std::ostream &stream, const StyleSheet &s);
+
 }}
 #endif // MAPCSS_STYLESHEET_HPP_DEFINED
