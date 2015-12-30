@@ -33,6 +33,7 @@ set(HEADER_FILES
                 terrain/LineGridSplitter.hpp
                 terrain/MeshRegion.hpp
                 terrain/TerraBuilder.hpp
+                utils/CoreUtils.hpp
                 utils/MurmurHash3.h
                 )
 

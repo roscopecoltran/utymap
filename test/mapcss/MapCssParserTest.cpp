@@ -1,22 +1,15 @@
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/MapCssParser.cpp"
+#include "utils/CoreUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 #include <string>
-#include <sstream>
 #include <memory>
 
 using namespace utymap::mapcss;
 
 typedef std::string::const_iterator StringIterator;
-
-template <typename T>
-std::string toString(T t) {
-    std::stringstream stream;
-    stream << t;
-    return stream.str();
-}
 
 struct MapCss_MapCssParserFixture {
     MapCss_MapCssParserFixture()        { BOOST_TEST_MESSAGE("setup fixture"); }
@@ -242,7 +235,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentatio
 
     BOOST_CHECK(parser.getError().empty());
     BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
-    BOOST_CHECK_EQUAL(str, toString(stylesheet.rules[0]));
+    BOOST_CHECK_EQUAL(str, utymap::utils::toString(stylesheet.rules[0]));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
