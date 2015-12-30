@@ -19,6 +19,7 @@ set(HEADER_FILES
                 formats/shape/ShapeParser.hpp
                 formats/xml/OsmXmlParser.hpp
                 heightmap/ElevationProvider.hpp
+                heightmap/FlatElevationProvider.hpp
                 index/GeoStore.hpp
                 index/GeoUtils.hpp
                 index/StringTable.hpp

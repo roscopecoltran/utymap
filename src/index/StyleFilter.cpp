@@ -44,6 +44,7 @@ struct FilterCollection
     FilterMap nodes;
     FilterMap ways;
     FilterMap areas;
+    FilterMap canvases;
 };
 
 class StyleElementVisitor : public ElementVisitor
@@ -140,6 +141,7 @@ public:
         filters_.nodes.reserve(24);
         filters_.ways.reserve(24);
         filters_.areas.reserve(24);
+        filters_.canvases.reserve(24);
 
         for (const Rule& rule : stylesheet.rules) {
             for (const Selector& selector : rule.selectors) {
@@ -147,6 +149,7 @@ public:
                 if (selector.name == "node") filtersPtr = &filters_.nodes;
                 else if (selector.name == "way") filtersPtr = &filters_.ways;
                 else if (selector.name == "area") filtersPtr = &filters_.areas;
+                else if (selector.name == "canvas") filtersPtr = &filters_.canvases;
                 else
                     std::domain_error("Unexpected selector name:" + selector.name);
 

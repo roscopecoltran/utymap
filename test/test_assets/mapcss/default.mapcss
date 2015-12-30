@@ -1,4 +1,4 @@
-canvas|z1 {
+canvas|z1-23 {
     behaviours: terrain_draw;
     material: main;
     water-material: main;

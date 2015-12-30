@@ -6,7 +6,7 @@
 
 #include "QuadKey.hpp"
 #include "TileLoader.hpp"
-#include "heightmap/ElevationProvider.hpp"
+#include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/StringTable.hpp"
 #include "index/StyleFilter.hpp"
@@ -36,19 +36,22 @@ extern "C"
     // Called when operation is completed
     typedef void OnCompleted(int resultCode);
 
-    void EXPORT_API configure(const char* stringPath, // path to string table directory
-                              const char* stylePath,  // path to mapcss file
-                              const char* dataPath)   // path to index directory
+    int EXPORT_API configure(const char* stringPath, // path to string table directory
+                              const char* stylePath, // path to mapcss file
+                              const char* dataPath)  // path to index directory
     {
         std::ifstream styleFile(stylePath);
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         if (!parser.getError().empty())
-            throw std::domain_error("Cannot parse mapcss:" + parser.getError());
+            return 1;
+
+        eleProvider = new utymap::heightmap::FlatElevationProvider<double>();
 
         stringTable = new utymap::index::StringTable(stringPath, stringPath);
         geoStore = new utymap::index::GeoStore(dataPath, stylesheet, *stringTable);
         tileLoader = new utymap::TileLoader(*geoStore, stylesheet, *stringTable, *eleProvider);
+        return 0;
     }
 
     void EXPORT_API cleanup()
