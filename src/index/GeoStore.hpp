@@ -2,6 +2,7 @@
 #define INDEX_GEOSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
@@ -24,13 +25,18 @@ public:
 
     ~GeoStore();
 
-    // Searches for elements using given parameters.
+    // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
                 utymap::entities::ElementVisitor& visitor);
 
-    // Imports data from stream.
-    void import(std::istream& stream,
-                const utymap::formats::FormatType type);
+    // Searches for elements inside circle with given parameters.
+    void search(const GeoCoordinate& coordinate,
+                double radius,
+                utymap::entities::ElementVisitor& visitor);
+
+    // Saves data from stream.
+    void save(std::istream& stream,
+              const utymap::formats::FormatType type);
 
 private:
     class GeoStoreImpl;

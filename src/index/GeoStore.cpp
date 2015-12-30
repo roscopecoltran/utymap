@@ -4,6 +4,7 @@
 #include "mapcss/StyleSheet.hpp"
 
 using namespace utymap::entities;
+using namespace utymap::formats;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
@@ -17,11 +18,15 @@ public:
     {
     }
 
-    void search(const QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
+    void search(const QuadKey& quadKey, ElementVisitor& visitor)
     {
     }
 
-    void import(std::istream& stream, const utymap::formats::FormatType type)
+    void search(const GeoCoordinate& coordinate, double radius, ElementVisitor& visitor)
+    {
+    }
+
+    void save(std::istream& stream, const FormatType type)
     {
     }
 
@@ -39,12 +44,17 @@ GeoStore::~GeoStore()
 {
 }
 
-void utymap::index::GeoStore::search(const QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
+void utymap::index::GeoStore::search(const QuadKey& quadKey, ElementVisitor& visitor)
 {
     pimpl_->search(quadKey, visitor);
 }
 
-void utymap::index::GeoStore::import(std::istream& stream, const utymap::formats::FormatType type)
+void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, ElementVisitor& visitor)
 {
-    pimpl_->import(stream, type);
+    pimpl_->search(coordinate, radius, visitor);
+}
+
+void utymap::index::GeoStore::save(std::istream& stream, const FormatType type)
+{
+    pimpl_->save(stream, type);
 }

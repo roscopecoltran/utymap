@@ -42,6 +42,14 @@ struct Rectangle
     {
     }
 
+    Rectangle(T xMin, T yMin, T xMax, T yMax) :
+        xMin(xMin),
+        yMin(yMin),
+        xMax(xMax),
+        yMax(yMax)
+    {
+    }
+
     void expand(const std::vector<Point<T>>& contour)
     {
         for (const Point<T>& p : contour) {

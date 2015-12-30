@@ -4,6 +4,8 @@
 #include "entities/Element.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
+#include "index/StringTable.hpp"
+#include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "QuadKey.hpp"
 
@@ -19,6 +21,8 @@ class TileLoader
 public:
 
     TileLoader(utymap::index::GeoStore& geoStore, 
+               const utymap::mapcss::StyleSheet& stylesheet,
+               utymap::index::StringTable& stringTable,
                utymap::heightmap::ElevationProvider<double>& eleProvider);
 
     ~TileLoader();

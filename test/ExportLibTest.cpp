@@ -31,6 +31,10 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenTileLoad_ThenCallbacksAreCalled)
             const char** tags, int size,
             const double* vertices, int vertexCount) {
             // TODO basic checks
+        },
+        [](int id)
+        {
+           // TODO basic checks
         }
     );
 }

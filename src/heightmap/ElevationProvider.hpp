@@ -9,6 +9,8 @@ class ElevationProvider
 {
 public:
     virtual T getElevation(T x, T y) = 0;
+
+    virtual ~ElevationProvider() {}
 };
 
 }}

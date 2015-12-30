@@ -33,6 +33,8 @@ extern "C"
     typedef void OnElementLoaded(uint64_t id, const char* name,
                                  const char** tags, int size,
                                  const double* vertices, int vertexCount);
+    // Called when operation is completed
+    typedef void OnCompleted(int resultCode);
 
     void EXPORT_API configure(const char* stringPath, // path to string table directory
                               const char* stylePath,  // path to mapcss file
@@ -46,7 +48,7 @@ extern "C"
 
         stringTable = new utymap::index::StringTable(stringPath, stringPath);
         geoStore = new utymap::index::GeoStore(dataPath, stylesheet, *stringTable);
-        tileLoader = new utymap::TileLoader(*geoStore, *eleProvider);
+        tileLoader = new utymap::TileLoader(*geoStore, stylesheet, *stringTable, *eleProvider);
     }
 
     void EXPORT_API cleanup()
@@ -54,17 +56,19 @@ extern "C"
         delete tileLoader;
         delete geoStore;
         delete stringTable;
+        delete eleProvider;
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
-        OnMeshBuilt* meshCallback, OnElementLoaded* elementCallback)
+                             OnMeshBuilt* meshCallback, 
+                             OnElementLoaded* elementCallback, 
+                             OnCompleted* completedCallback)
     {
         utymap::QuadKey quadKey;
         quadKey.tileX = tileX;
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        // TODO
         tileLoader->loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
@@ -73,5 +77,14 @@ extern "C"
         }, [&elementCallback](utymap::entities::Element& element) {
             // TODO call elementCallback
         });
+
+        completedCallback(0);
+    }
+
+    void EXPORT_API search(double latitude, double longitude, double radius, 
+                           OnElementLoaded* elementCallback,
+                           OnCompleted* completedCallback)
+    {
+        // TODO
     }
 }
