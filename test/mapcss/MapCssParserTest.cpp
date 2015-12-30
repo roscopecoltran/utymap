@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules 
         "way|z1[highway]  { key1:value1; }\n"
         "area|z2[landuse] { key2:value2; }\n"
         "node|z3[amenity] { key3:value3; }\n"
-        "canvas|z3[*]     { key4:value4; }";
+        "canvas|z3        { key4:value4; }";
 
     bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
@@ -212,6 +212,17 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
 
     BOOST_CHECK( parser.getError().empty() == true );
     BOOST_CHECK( stylesheet.rules.size() == 1 );
+}
+
+BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
+{
+    std::string str = "canvas|z1 { key1:value1; }\n";
+    Parser parser;
+
+    StyleSheet stylesheet = parser.parse(str);
+
+    BOOST_CHECK(parser.getError().empty() == true);
+    BOOST_CHECK(stylesheet.rules.size() == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

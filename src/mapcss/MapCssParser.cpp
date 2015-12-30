@@ -129,13 +129,16 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
     {
         start =
             (
-                ascii::string("node")
-              | ascii::string("way")
-              | ascii::string("area")
-              | ascii::string("canvas")
+                (
+                    ascii::string("node")
+                  | ascii::string("way")
+                  | ascii::string("area")
+                )
+                > zoom
+                > +condition
             )
-            > zoom
-            > +condition
+            | ascii::string("canvas")
+              > zoom
         ;
         start.name("selector");
     }
