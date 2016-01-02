@@ -20,6 +20,9 @@ public:
 
     void visit(const QuadKey& quadKey, const BoundingBox& bbox)
     {
+        lastQuadKey = quadKey;
+        lastBoundingBox = bbox;
+        count++;
     }
 
     int count;
@@ -51,7 +54,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineLod_WhenGetQuadKey_ThenReturnValidQu
     BOOST_CHECK_EQUAL(quadKey.tileY, 167);
 }
 
-BOOST_AUTO_TEST_CASE(GivenTestLocationAtLastLod_WhenGetQuadKey_ThenReturnValidQuadKey)
+BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineteenLod_WhenGetQuadKey_ThenReturnValidQuadKey)
 {
     QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 19);
 
@@ -60,7 +63,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtLastLod_WhenGetQuadKey_ThenReturnValidQu
     BOOST_CHECK_EQUAL(quadKey.tileY, 171914);
 }
 
-BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenGetBoundgingBox_ThenReturnValidBoundingBox)
+BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenGetBoundgingBox_ThenReturnValidBoundingBox)
 {
     QuadKey quadKey;
     quadKey.levelOfDetail = 19;
@@ -75,7 +78,7 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenGetBoundgingBox_ThenReturnValidBo
     BOOST_CHECK_CLOSE(boundingBox.maxPoint.longitude, 13.387527465, Precision);
 }
 
-BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenToString_ThenReturnValidCode)
+BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenToString_ThenReturnValidCode)
 {
     QuadKey quadKey;
     quadKey.levelOfDetail = 19;
@@ -87,7 +90,7 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenToString_ThenReturnValidCode)
     BOOST_CHECK_EQUAL("1202102332220103020", code);
 }
 
-BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsCorrectTiles)
+BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsOneTile)
 {
     BoundingBox bbox(GeoCoordinate(1, 1), GeoCoordinate(2, 2));
     TileRangeVisitor visitor;
@@ -97,6 +100,16 @@ BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsCorrectTiles)
     BOOST_CHECK_EQUAL(1, visitor.count);
     BOOST_CHECK_EQUAL(1, visitor.lastQuadKey.tileX);
     BOOST_CHECK_EQUAL(0, visitor.lastQuadKey.tileY);
+}
+
+BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsTwoTiles)
+{
+    BoundingBox bbox(GeoCoordinate(-1, 1), GeoCoordinate(2, 2));
+    TileRangeVisitor visitor;
+
+    GeoUtils::visitTileRange(bbox, 1, visitor);
+
+    BOOST_CHECK_EQUAL(2, visitor.count);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

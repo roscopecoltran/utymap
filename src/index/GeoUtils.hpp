@@ -43,7 +43,7 @@ public:
 
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
-    static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor visitor)
+    static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor& visitor)
     {
         QuadKey start = latLonToQuadKey(bbox.minPoint, levelOfDetail);
         QuadKey end = latLonToQuadKey(bbox.maxPoint, levelOfDetail);
