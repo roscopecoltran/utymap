@@ -19,11 +19,11 @@ class GeoUtils
 public:
 
     // Converts Latitude/Longitude to quadkey
-    static QuadKey latLonToQuadKey(double latitude, double longitude, int levelOfDetail)
+    static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
         QuadKey quadKey;
-        quadKey.tileX = lonToTileX(longitude, levelOfDetail);
-        quadKey.tileY = latToTileY(latitude, levelOfDetail);
+        quadKey.tileX = lonToTileX(coordinate.longitude, levelOfDetail);
+        quadKey.tileY = latToTileY(coordinate.latitude, levelOfDetail);
         quadKey.levelOfDetail = levelOfDetail;
         return quadKey;
     }
@@ -39,6 +39,24 @@ public:
         maxPoint.longitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
         
         return BoundingBox { minPoint, maxPoint };
+    }
+
+    // Visits all tiles which are intersecting with given bounding box at given level of details
+    template<typename Visitor>
+    static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor visitor)
+    {
+        QuadKey start = latLonToQuadKey(bbox.minPoint, levelOfDetail);
+        QuadKey end = latLonToQuadKey(bbox.maxPoint, levelOfDetail);
+
+        for (int y = end.tileY; y < start.tileY + 1; y++) {
+            for (int x = start.tileX; x < end.tileX + 1; x++) {
+                QuadKey currentQuadKey = { levelOfDetail, x, y };
+                BoundingBox currentBbox = quadKeyToBoundingBox(currentQuadKey);
+                if (bbox.intersects(currentBbox)) {
+                    visitor.visit(currentQuadKey, currentBbox);
+                }
+            }
+        }
     }
 
 private:

@@ -1,4 +1,4 @@
-canvas|z1-23 {
+canvas|z1-16 {
     behaviours: terrain_draw;
     material: main;
     water-material: main;
@@ -30,7 +30,7 @@ canvas|z1-23 {
     pedestrian-texture: road_brick;
 }
 
-area|z1-23[featurecla=coastline] {
+area|z1-16[featurecla=coastline] {
     material: main;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;

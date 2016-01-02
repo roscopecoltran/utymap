@@ -1,10 +1,31 @@
 #include "BoundingBox.hpp"
+#include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "index/GeoUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
+using namespace utymap;
 using namespace utymap::index;
+
+class TileRangeVisitor
+{
+public:
+    TileRangeVisitor() : 
+        count(0),
+        lastQuadKey(),
+        lastBoundingBox(GeoCoordinate(0, 0), GeoCoordinate(0, 0))
+    {
+    }
+
+    void visit(const QuadKey& quadKey, const BoundingBox& bbox)
+    {
+    }
+
+    int count;
+    QuadKey lastQuadKey;
+    BoundingBox lastBoundingBox;
+};
 
 BOOST_AUTO_TEST_SUITE(Index_GeoUtils)
 
@@ -14,7 +35,7 @@ const double TestLongitude = 13.38730;
 
 BOOST_AUTO_TEST_CASE( GivenTestLocationAtFirstLod_WhenGetQuadKey_ThenReturnValidQuadKey )
 {
-    utymap::QuadKey quadKey = GeoUtils::latLonToQuadKey(TestLatitude, TestLongitude, 1);
+    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 1);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 1);
     BOOST_CHECK_EQUAL(quadKey.tileX, 1);
@@ -23,7 +44,7 @@ BOOST_AUTO_TEST_CASE( GivenTestLocationAtFirstLod_WhenGetQuadKey_ThenReturnValid
 
 BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineLod_WhenGetQuadKey_ThenReturnValidQuadKey)
 {
-    utymap::QuadKey quadKey = GeoUtils::latLonToQuadKey(TestLatitude, TestLongitude, 9);
+    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 9);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 9);
     BOOST_CHECK_EQUAL(quadKey.tileX, 275);
@@ -32,7 +53,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineLod_WhenGetQuadKey_ThenReturnValidQu
 
 BOOST_AUTO_TEST_CASE(GivenTestLocationAtLastLod_WhenGetQuadKey_ThenReturnValidQuadKey)
 {
-    utymap::QuadKey quadKey = GeoUtils::latLonToQuadKey(TestLatitude, TestLongitude, 19);
+    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 19);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 19);
     BOOST_CHECK_EQUAL(quadKey.tileX, 281640);
@@ -41,7 +62,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtLastLod_WhenGetQuadKey_ThenReturnValidQu
 
 BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenGetBoundgingBox_ThenReturnValidBoundingBox)
 {
-    utymap::QuadKey quadKey;
+    QuadKey quadKey;
     quadKey.levelOfDetail = 19;
     quadKey.tileX = 281640;
     quadKey.tileY = 171914;
@@ -56,7 +77,7 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenGetBoundgingBox_ThenReturnValidBo
 
 BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenToString_ThenReturnValidCode)
 {
-    utymap::QuadKey quadKey;
+    QuadKey quadKey;
     quadKey.levelOfDetail = 19;
     quadKey.tileX = 281640;
     quadKey.tileY = 171914;
@@ -64,6 +85,18 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineLod_WhenToString_ThenReturnValidCode)
     std::string code = quadKey.toString();
 
     BOOST_CHECK_EQUAL("1202102332220103020", code);
+}
+
+BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsCorrectTiles)
+{
+    BoundingBox bbox(GeoCoordinate(1, 1), GeoCoordinate(2, 2));
+    TileRangeVisitor visitor;
+
+    GeoUtils::visitTileRange(bbox, 1, visitor);
+
+    BOOST_CHECK_EQUAL(1, visitor.count);
+    BOOST_CHECK_EQUAL(1, visitor.lastQuadKey.tileX);
+    BOOST_CHECK_EQUAL(0, visitor.lastQuadKey.tileY);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
