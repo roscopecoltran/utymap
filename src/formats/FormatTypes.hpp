@@ -11,9 +11,9 @@ namespace utymap { namespace formats {
 
 enum FormatType
 {
-    Pbf,
-    Xml,
-    Shape
+    Pbf = 0,
+    Xml = 1,
+    Shape = 2
 };
 
 struct Tag
@@ -40,6 +40,7 @@ struct PolygonMember
 typedef std::vector<Tag> Tags;
 typedef std::vector<RelationMember> RelationMembers;
 typedef std::vector<PolygonMember> PolygonMembers;
+typedef std::vector<utymap::GeoCoordinate> Coordinates;
 
 }}
 

@@ -56,7 +56,7 @@ public:
         eleProvider_(eleProvider),
         stringTable_(stringTable)
     {
-        createBackgroundMeshRegions(stylesheet);
+        createBackgroundProperties(stylesheet);
     }
 
     void loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
@@ -85,7 +85,7 @@ private:
         );
     }
 
-    void createBackgroundMeshRegions(const StyleSheet& stylesheet)
+    void createBackgroundProperties(const StyleSheet& stylesheet)
     {
         for (const auto& rule : stylesheet.rules) {
             // NOTE expecting that canvas is always first in list of selectors

@@ -29,3 +29,11 @@ canvas|z1-23 {
     pedestrian-gradient: gradient(#636363, #4d4d4d);
     pedestrian-texture: road_brick;
 }
+
+area|z1-23[featurecla=coastline] {
+    material: main;
+    color-noise-freq: 0.1;
+    ele-noise-freq: 0.05;
+    gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+    texture: background;
+}

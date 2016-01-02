@@ -28,6 +28,7 @@ add_executable (TestLauncher
                         formats/shape/ShapeParserTest.cpp
                         formats/xml/OsmXmlParserTest.cpp
                         index/GeoUtilsTest.cpp
+                        index/ShapeDataVisitorTest.cpp
                         index/StringTableTest.cpp
                         index/StyleFilterTest.cpp
                         mapcss/MapCssParserTest.cpp

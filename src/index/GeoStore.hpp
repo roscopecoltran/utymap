@@ -4,12 +4,14 @@
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
+#include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
+#include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
+
 #include "mapcss/StyleSheet.hpp"
 
-#include <iostream>
 #include <string>
 #include <memory>
 
@@ -19,11 +21,19 @@ namespace utymap { namespace index {
 class GeoStore
 {
 public:
-    GeoStore(const std::string& directory,
-             const utymap::mapcss::StyleSheet& stylesheet,
+    GeoStore(const utymap::mapcss::StyleSheet& stylesheet,
              StringTable& stringTable);
 
     ~GeoStore();
+
+    // Adds underlying element store for usage.
+    void registerStore(const std::string& storeKey, ElementStore& store);
+
+    // Adds element to selected store.
+    void add(const std::string& storeKey, const  utymap::entities::Element& element);
+
+    // Adds elements from given path to selected store.
+    void add(const std::string& storeKey, const std::string& path);
 
     // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
@@ -33,10 +43,6 @@ public:
     void search(const GeoCoordinate& coordinate,
                 double radius,
                 utymap::entities::ElementVisitor& visitor);
-
-    // Saves data from stream.
-    void save(std::istream& stream,
-              const utymap::formats::FormatType type);
 
 private:
     class GeoStoreImpl;

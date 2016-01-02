@@ -22,6 +22,10 @@ set(HEADER_FILES
                 heightmap/FlatElevationProvider.hpp
                 index/GeoStore.hpp
                 index/GeoUtils.hpp
+                index/ElementStore.hpp
+                index/InMemoryElementStore.hpp
+                index/PersistentElementStore.hpp
+                index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
                 index/StyleFilter.hpp
                 mapcss/StyleSheet.hpp
@@ -47,6 +51,8 @@ add_library (UtyMap
                 formats/shape/safileio.c
                 formats/shape/shpopen.c
                 index/GeoStore.cpp
+                index/InMemoryElementStore.cpp
+                index/PersistentElementStore.cpp
                 index/StringTable.cpp
                 index/StyleFilter.cpp
                 mapcss/MapCssParser.cpp

@@ -8,6 +8,8 @@
 #include "TileLoader.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
+#include "index/InMemoryElementStore.hpp"
+#include "index/PersistentElementStore.hpp"
 #include "index/StringTable.hpp"
 #include "index/StyleFilter.hpp"
 #include "mapcss/MapCssParser.hpp"
@@ -15,12 +17,18 @@
 #include "meshing/MeshTypes.hpp"
 
 #include <cstdint>
+#include <string>
 #include <fstream>
 
-static utymap::TileLoader* tileLoader = nullptr;
-static utymap::index::GeoStore* geoStore = nullptr;
-static utymap::index::StringTable* stringTable = nullptr;
-static utymap::heightmap::ElevationProvider<double>* eleProvider = nullptr;
+static utymap::TileLoader* tileLoaderPtr = nullptr;
+static utymap::index::GeoStore* geoStorePtr = nullptr;
+static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
+static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
+static utymap::index::StringTable* stringTablePtr = nullptr;
+static utymap::heightmap::ElevationProvider<double>* eleProviderPtr = nullptr;
+
+const std::string inMemoryStorageKey;
+const std::string persistentStorageKey;
 
 extern "C"
 {
@@ -34,45 +42,66 @@ extern "C"
                                  const char** tags, int size,
                                  const double* vertices, int vertexCount);
     // Called when operation is completed
-    typedef void OnCompleted(int resultCode);
+    typedef void OnError(const char* errorMessage);
 
-    int EXPORT_API configure(const char* stringPath, // path to string table directory
-                              const char* stylePath, // path to mapcss file
-                              const char* dataPath)  // path to index directory
+    void EXPORT_API configure(const char* stringPath, // path to string table directory
+                             const char* stylePath,   // path to mapcss file
+                             const char* dataPath,    // path to index directory
+                             OnError* errorCallback)
     {
         std::ifstream styleFile(stylePath);
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        if (!parser.getError().empty())
-            return 1;
+        if (!parser.getError().empty()) {
+            errorCallback(parser.getError().c_str());
+            return;
+        }
 
-        eleProvider = new utymap::heightmap::FlatElevationProvider<double>();
+        eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
 
-        stringTable = new utymap::index::StringTable(stringPath, stringPath);
-        geoStore = new utymap::index::GeoStore(dataPath, stylesheet, *stringTable);
-        tileLoader = new utymap::TileLoader(*geoStore, stylesheet, *stringTable, *eleProvider);
-        return 0;
+        stringTablePtr = new utymap::index::StringTable(stringPath, stringPath);
+        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr);
+        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
+        geoStorePtr = new utymap::index::GeoStore(stylesheet, *stringTablePtr);
+        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, stylesheet, *stringTablePtr, *eleProviderPtr);
+
+        geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
+        geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);
     }
 
     void EXPORT_API cleanup()
     {
-        delete tileLoader;
-        delete geoStore;
-        delete stringTable;
-        delete eleProvider;
+        delete tileLoaderPtr;
+        delete geoStorePtr;
+        delete persistentStorePtr;
+        delete inMemoryStorePtr;
+        delete stringTablePtr;
+        delete eleProviderPtr;
+    }
+
+    // TODO for single element as well
+
+    void EXPORT_API addToPersistentStore(const char* path, OnError* errorCallback)
+    {
+        geoStorePtr->add(persistentStorageKey, path);
+    }
+
+    void EXPORT_API addToInMemoryStore(const char* path, OnError* errorCallback)
+    {
+        geoStorePtr->add(inMemoryStorageKey, path);
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
-                             OnMeshBuilt* meshCallback, 
-                             OnElementLoaded* elementCallback, 
-                             OnCompleted* completedCallback)
+                             OnMeshBuilt* meshCallback,
+                             OnElementLoaded* elementCallback,
+                             OnError* errorCallback)
     {
         utymap::QuadKey quadKey;
         quadKey.tileX = tileX;
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        tileLoader->loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
+        tileLoaderPtr->loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
                 mesh.triangles.data(), mesh.triangles.size(),
@@ -80,13 +109,11 @@ extern "C"
         }, [&elementCallback](utymap::entities::Element& element) {
             // TODO call elementCallback
         });
-
-        completedCallback(0);
     }
 
-    void EXPORT_API search(double latitude, double longitude, double radius, 
+    void EXPORT_API search(double latitude, double longitude, double radius,
                            OnElementLoaded* elementCallback,
-                           OnCompleted* completedCallback)
+                           OnError* errorCallback)
     {
         // TODO
     }

@@ -9,8 +9,6 @@
 
 using namespace utymap::formats;
 
-typedef std::vector<utymap::GeoCoordinate> Coordinates;
-
 struct ShapeDataVisitor
 {
     int bounds;

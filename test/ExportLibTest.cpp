@@ -7,7 +7,10 @@ struct ExportLibFixture {
     ExportLibFixture()
     { 
         BOOST_TEST_MESSAGE("setup fixture"); 
-        ::configure(TEST_ASSETS_PATH, TEST_MAPCSS_DEFAULT, TEST_ASSETS_PATH);
+        ::configure(TEST_ASSETS_PATH, TEST_MAPCSS_DEFAULT, TEST_ASSETS_PATH,
+            [](const char* message) {
+            BOOST_TEST_FAIL(message);
+        });
     }
 
     ~ExportLibFixture()
@@ -33,9 +36,9 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenTileLoad_ThenCallbacksAreCalled)
             const double* vertices, int vertexCount) {
             // TODO basic checks
         },
-        [](int id)
+        [](const char* message)
         {
-           // TODO basic checks
+            BOOST_TEST_FAIL(message);
         }
     );
 }
