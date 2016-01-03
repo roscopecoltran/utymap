@@ -17,12 +17,7 @@ using namespace utymap::index;
 using namespace utymap::mapcss;
 
 // Contains operation types supported by mapcss parser.
-enum OpType
-{
-    Exists,
-    Equals,
-    NotEquals
-};
+enum OpType { Exists, Equals, NotEquals };
 
 struct Condition
 {
@@ -59,22 +54,22 @@ public:
     {
     }
 
-    void visitNode(const Node& node)
+    inline void visitNode(const Node& node)
     {
         isApplicable_ = check(node.tags, filters_.nodes);
     }
 
-    void visitWay(const Way& way)
+    inline void visitWay(const Way& way)
     {
         isApplicable_ = check(way.tags, filters_.ways);
     }
 
-    void visitArea(const Area& area)
+    inline void visitArea(const Area& area)
     {
         isApplicable_ = check(area.tags, filters_.areas);
     }
 
-    void visitRelation(const Relation&)
+    inline void visitRelation(const Relation&)
     {
     }
 
@@ -134,22 +129,24 @@ class StyleFilter::StyleFilterImpl
 {
 public:
 
+    FilterCollection filters;
+
     StyleFilterImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         stringTable_(stringTable),
-        filters_()
+        filters()
     {
-        filters_.nodes.reserve(24);
-        filters_.ways.reserve(24);
-        filters_.areas.reserve(24);
-        filters_.canvases.reserve(24);
+        filters.nodes.reserve(24);
+        filters.ways.reserve(24);
+        filters.areas.reserve(24);
+        filters.canvases.reserve(24);
 
         for (const Rule& rule : stylesheet.rules) {
             for (const Selector& selector : rule.selectors) {
                 FilterMap* filtersPtr;
-                if (selector.name == "node") filtersPtr = &filters_.nodes;
-                else if (selector.name == "way") filtersPtr = &filters_.ways;
-                else if (selector.name == "area") filtersPtr = &filters_.areas;
-                else if (selector.name == "canvas") filtersPtr = &filters_.canvases;
+                if (selector.name == "node") filtersPtr = &filters.nodes;
+                else if (selector.name == "way") filtersPtr = &filters.ways;
+                else if (selector.name == "area") filtersPtr = &filters.areas;
+                else if (selector.name == "canvas") filtersPtr = &filters.canvases;
                 else
                     std::domain_error("Unexpected selector name:" + selector.name);
 
@@ -177,17 +174,9 @@ public:
         }
     }
 
-    bool isApplicable(const Element& element, int levelOfDetails) const
-    {
-        StyleElementVisitor visitor = { filters_, levelOfDetails };
-        element.accept(visitor);
-        return visitor.isApplicable();
-    }
-
 private:
 
     StringTable& stringTable_;
-    FilterCollection filters_;
 };
 
 StyleFilter::StyleFilter(const StyleSheet& stylesheet, StringTable& stringTable) :
@@ -200,7 +189,9 @@ StyleFilter::~StyleFilter()
 {
 }
 
-bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
+inline bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
 {
-    return pimpl_->isApplicable(element, levelOfDetails);
+    StyleElementVisitor visitor = { pimpl_->filters, levelOfDetails };
+    element.accept(visitor);
+    return visitor.isApplicable();
 }

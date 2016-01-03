@@ -16,14 +16,12 @@ namespace utymap { namespace index {
 
 struct ShapeDataVisitor
 {
-    int bounds;
     int nodes;
     int ways;
     int relations;
 
     ShapeDataVisitor(ElementStore& elementStore) :
         elementStore_(elementStore),
-        bounds(0),
         nodes(0),
         ways(0),
         relations(0)
@@ -35,9 +33,10 @@ struct ShapeDataVisitor
         ElementStore::GeoPolygon polygon;
         polygon.reserve(1);
         polygon.push_back(std::vector<GeoCoordinate> {coordinate});
-        elementStore_.store(polygon, tags, ElementStore::Node);
 
-        nodes++;
+        if (elementStore_.store(polygon, tags, ElementStore::Node)) {
+            nodes++;
+        }
     }
 
     void visitWay(utymap::formats::Coordinates& coordinates, utymap::formats::Tags& tags, bool isRing)
@@ -46,8 +45,9 @@ struct ShapeDataVisitor
         polygon.reserve(1);
         polygon.push_back(coordinates);
 
-        elementStore_.store(polygon, tags, isRing ? ElementStore::Area : ElementStore::Way);
-        ways++;
+        if (elementStore_.store(polygon, tags, isRing ? ElementStore::Area : ElementStore::Way)) {
+            ways++;
+        }
     }
 
     void visitRelation(utymap::formats::PolygonMembers& members, utymap::formats::Tags& tags)
@@ -55,7 +55,6 @@ struct ShapeDataVisitor
         // TODO
         relations++;
     }
-
 
 private:
     ElementStore& elementStore_;

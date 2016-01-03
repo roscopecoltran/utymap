@@ -9,4 +9,3 @@
 #define TEST_SHAPE_LINE_FILE TEST_ASSETS_PATH "shape/line"
 #define TEST_SHAPE_POLY_FILE TEST_ASSETS_PATH "shape/poly"
 #define TEST_SHAPE_MULTIPOLY_FILE TEST_ASSETS_PATH "shape/multipoly"
-#define TEST_SHAPE_NE_110M_COASTLINE TEST_ASSETS_PATH "shape/ne_110m_coastline"

@@ -2,8 +2,10 @@
 #include "index/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "mapcss/MapCssParser.hpp"
+#include "mapcss/StyleSheet.hpp"
 
 #include <boost/test/unit_test.hpp>
+#include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap::index;
 using namespace utymap::formats;
@@ -13,20 +15,22 @@ struct Formats_ShapeDataVisitorFixture
     Formats_ShapeDataVisitorFixture() :
         indexPath("index.idx"),
         stringPath("strings.dat"),
-        shapeFile(TEST_SHAPE_NE_110M_COASTLINE),
-        stringTablePtr(new StringTable(indexPath, stringPath))
+        shapeFile(TEST_SHAPE_LINE_FILE),
+        stringTablePtr(new StringTable(indexPath, stringPath)),
+        styleFilter(MapCssUtils::createStyleFilterFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
     {
         BOOST_TEST_MESSAGE("setup fixture");
 
         utymap::mapcss::Parser parser;
-        styleFilterPtr = new StyleFilter(parser.parse(TEST_MAPCSS_DEFAULT), *stringTablePtr);
-        storePtr = new InMemoryElementStore(*stringTablePtr, *styleFilterPtr);
+        std::ifstream styleFile(TEST_MAPCSS_DEFAULT);
+        utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
+        BOOST_TEST_CHECK(parser.getError().empty());
+        storePtr = new InMemoryElementStore(*stringTablePtr, styleFilter);
     }
 
     ~Formats_ShapeDataVisitorFixture()
     {
         BOOST_TEST_MESSAGE("teardown fixture");
-        delete styleFilterPtr;
         delete stringTablePtr;
         delete storePtr;
         std::remove(indexPath.c_str());
@@ -37,7 +41,7 @@ struct Formats_ShapeDataVisitorFixture
     std::string stringPath;
     std::string shapeFile;
     StringTable* stringTablePtr;
-    StyleFilter* styleFilterPtr;
+    StyleFilter styleFilter;
     InMemoryElementStore* storePtr;
 };
 
@@ -50,9 +54,8 @@ BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount
 
     parser.parse(shapeFile, visitor);
 
-    BOOST_CHECK_EQUAL(0, visitor.bounds);
     BOOST_CHECK_EQUAL(0, visitor.nodes);
-    BOOST_CHECK_EQUAL(134, visitor.ways);
+    BOOST_CHECK_EQUAL(1, visitor.ways);
     BOOST_CHECK_EQUAL(0, visitor.relations);
 }
 
