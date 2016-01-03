@@ -27,7 +27,7 @@ bool ElementStore::store(const GeoPolygon& polygon,
 {
     StringTable& stringTable = getStringTable();
     const StyleFilter& styleFilter = getStyleFilter();
-    
+
     Element* element = createElement(elementType, tags);
     BoundingBox bbox;
     bool wasStored = false;
@@ -51,7 +51,7 @@ bool ElementStore::store(const GeoPolygon& polygon,
     return wasStored;
 }
 
-Element* ElementStore::createElement(const ElementStore::ElementType elementType, 
+Element* ElementStore::createElement(const ElementStore::ElementType elementType,
                                      const utymap::formats::Tags& tags) const
 {
     Element* element = nullptr;
@@ -78,10 +78,9 @@ Element* ElementStore::createElement(const ElementStore::ElementType elementType
 void ElementStore::storeInTileRange(Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
     ElementVisitor& elementVisitor = getElementVisitor();
-    GeoUtils::visitTileRange(elementBbox, levelOfDetails,
-        [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-
-        // TODO
+    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+        // TODO use clipper to clip polygon by quadkey bounding box
         element.accept(elementVisitor);
-    });
+    };
+    GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }

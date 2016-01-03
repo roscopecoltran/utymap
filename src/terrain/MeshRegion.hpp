@@ -47,7 +47,7 @@ struct MeshRegion
         {
         }
 
-        Properties& Properties::operator =(const Properties & obj)
+        Properties& operator =(const Properties & obj)
         {
             if (this != &obj)
             {
