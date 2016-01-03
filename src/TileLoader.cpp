@@ -4,6 +4,7 @@
 #include "terrain/TerraBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 
+#include <cstdlib>
 #include <unordered_map>
 
 using namespace utymap;
@@ -92,8 +93,11 @@ private:
             const auto& selector = rule.selectors[0];
             if (selector.name != "canvas") continue;
             MeshRegion::Properties properties;
-            properties.eleNoiseFreq = std::stof(getDeclaration(rule, BackgroundEleNoiseFreq).value);
-            properties.colorNoiseFreq = std::stof(getDeclaration(rule, BackgroundColorNoiseFreq).value);
+
+            // NOTE cannot just use std::stof due to MinGW bug
+            char *end; 
+            properties.eleNoiseFreq = std::strtof(getDeclaration(rule, BackgroundEleNoiseFreq).value.c_str(), &end);
+            properties.colorNoiseFreq = std::strtof(getDeclaration(rule, BackgroundColorNoiseFreq).value.c_str(), &end);
 
             for (int lod = selector.zoom.start; lod <= selector.zoom.end; ++lod) {
                 backgroundPropertiesMap_[lod] = properties;
