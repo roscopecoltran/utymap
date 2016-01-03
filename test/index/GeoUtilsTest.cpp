@@ -18,7 +18,7 @@ public:
     {
     }
 
-    void visit(const QuadKey& quadKey, const BoundingBox& bbox)
+    void operator()(const QuadKey& quadKey, const BoundingBox& bbox)
     {
         lastQuadKey = quadKey;
         lastBoundingBox = bbox;

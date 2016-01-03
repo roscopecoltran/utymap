@@ -15,12 +15,16 @@ namespace utymap { namespace index {
 class InMemoryElementStore : public ElementStore
 {
 public:
-    InMemoryElementStore(StringTable& stringTable);
+    InMemoryElementStore(StringTable& stringTable, const StyleFilter& styleFilter);
 
     ~InMemoryElementStore();
 
-    // Stores element in storage.
-    void store(const QuadKey& quadKey, const utymap::entities::Element& element);
+protected:
+    StringTable& getStringTable() const;
+
+    const StyleFilter& getStyleFilter() const;
+
+    utymap::entities::ElementVisitor& getElementVisitor() const;
 
 private:
     class InMemoryElementStoreImpl;

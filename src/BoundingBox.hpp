@@ -13,6 +13,11 @@ struct BoundingBox
     // Point with maximum latitude and longitude.
     GeoCoordinate maxPoint;
 
+    BoundingBox() : 
+        BoundingBox(GeoCoordinate(90, 180), GeoCoordinate(-90, -180))
+    {
+    }
+
     BoundingBox(const GeoCoordinate& minPoint, const GeoCoordinate& maxPoint) :
         minPoint(minPoint), maxPoint(maxPoint) 
     {
@@ -24,7 +29,12 @@ struct BoundingBox
         return *this;
     }
 
-    // Expands bounding box by given.
+    inline bool isValid() {
+        return minPoint.latitude < maxPoint.latitude &&
+               minPoint.longitude < maxPoint.longitude;
+    }
+
+    // Expands bounding box using another bounding box.
     inline void expand(const BoundingBox& rhs)
     {
         minPoint.latitude = minPoint.latitude < rhs.minPoint.latitude ? minPoint.latitude : rhs.minPoint.latitude;
@@ -32,6 +42,18 @@ struct BoundingBox
 
         maxPoint.latitude = maxPoint.latitude > rhs.maxPoint.latitude ? maxPoint.latitude : rhs.maxPoint.latitude;
         maxPoint.longitude = maxPoint.longitude > rhs.maxPoint.longitude ? maxPoint.longitude : rhs.maxPoint.longitude;
+    }
+
+    // Expands bounding box using given coordinate.
+    inline void expand(const GeoCoordinate& c)
+    {
+        minPoint = GeoCoordinate(
+            minPoint.latitude < c.latitude ? minPoint.latitude : c.latitude,
+            minPoint.longitude < c.longitude ? minPoint.longitude : c.longitude);
+
+        maxPoint = GeoCoordinate(
+            maxPoint.latitude > c.latitude ? maxPoint.latitude : c.latitude,
+            maxPoint.longitude > c.longitude ? maxPoint.longitude : c.longitude);
     }
 
     // Checks whether given bounding box inside the current one.

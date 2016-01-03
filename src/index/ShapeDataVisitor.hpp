@@ -8,20 +8,24 @@
 #include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
 #include "index/StyleFilter.hpp"
+#include "index/GeoUtils.hpp"
+
+#include <cstdint>
 
 namespace utymap { namespace index {
 
 struct ShapeDataVisitor
 {
+    const int MinLevelOfDetails = 1;
+    const int MaxLevelOfDetails = 16;
+
     int bounds;
     int nodes;
     int ways;
     int relations;
 
-    ShapeDataVisitor(ElementStore& store, StringTable& stringTable, const StyleFilter& styleFilter) :
-        store_(store),
-        stringTable_(stringTable),
-        styleFilter_(styleFilter),
+    ShapeDataVisitor(ElementStore& elementStore) :
+        elementStore_(elementStore),
         bounds(0),
         nodes(0),
         ways(0),
@@ -31,22 +35,33 @@ struct ShapeDataVisitor
 
     void visitNode(utymap::GeoCoordinate& coordinate, utymap::formats::Tags& tags)
     {
+        ElementStore::GeoPolygon polygon;
+        polygon.reserve(1);
+        polygon.push_back(std::vector<GeoCoordinate> {coordinate});
+        elementStore_.store(polygon, tags, ElementStore::Node);
+
         nodes++;
     }
 
     void visitWay(utymap::formats::Coordinates& coordinates, utymap::formats::Tags& tags, bool isRing)
     {
+        ElementStore::GeoPolygon polygon;
+        polygon.reserve(1);
+        polygon.push_back(coordinates);
+
+        elementStore_.store(polygon, tags, isRing ? ElementStore::Area : ElementStore::Way);
         ways++;
     }
 
     void visitRelation(utymap::formats::PolygonMembers& members, utymap::formats::Tags& tags)
     {
+        // TODO relation should be converted to something else?.
         relations++;
     }
+
+
 private:
-    ElementStore& store_;
-    StringTable& stringTable_;
-    const StyleFilter& styleFilter_;
+    ElementStore& elementStore_;
 };
 
 }}

@@ -25,6 +25,7 @@ static utymap::index::GeoStore* geoStorePtr = nullptr;
 static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
 static utymap::index::StringTable* stringTablePtr = nullptr;
+static utymap::index::StyleFilter* styleFilterPtr = nullptr;
 static utymap::heightmap::ElevationProvider<double>* eleProviderPtr = nullptr;
 
 const std::string inMemoryStorageKey;
@@ -57,12 +58,16 @@ extern "C"
             return;
         }
 
+        
+
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
 
         stringTablePtr = new utymap::index::StringTable(stringPath, stringPath);
-        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr);
-        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
-        geoStorePtr = new utymap::index::GeoStore(stylesheet, *stringTablePtr);
+        styleFilterPtr = new utymap::index::StyleFilter(stylesheet, *stringTablePtr);
+
+        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr, *styleFilterPtr);
+        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr, *styleFilterPtr);
+        geoStorePtr = new utymap::index::GeoStore(*styleFilterPtr);
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, stylesheet, *stringTablePtr, *eleProviderPtr);
 
         geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
@@ -76,6 +81,7 @@ extern "C"
         delete persistentStorePtr;
         delete inMemoryStorePtr;
         delete stringTablePtr;
+        delete styleFilterPtr;
         delete eleProviderPtr;
     }
 

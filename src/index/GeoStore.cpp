@@ -2,9 +2,7 @@
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
 #include "index/ShapeDataVisitor.hpp"
-#include "index/StringTable.hpp"
 #include "index/StyleFilter.hpp"
-#include "mapcss/StyleSheet.hpp"
 
 #include <unordered_map>
 
@@ -17,9 +15,8 @@ class GeoStore::GeoStoreImpl
 {
 public:
 
-    GeoStoreImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
-        stringTable_(stringTable),
-        styleFilter_(stylesheet, stringTable)
+    GeoStoreImpl(const StyleFilter& styleFilter) :
+        styleFilter_(styleFilter)
     {
     }
 
@@ -39,7 +36,7 @@ public:
         {
             case FormatType::Shape:
             {
-                ShapeDataVisitor shpVisitor(*storePtr, stringTable_, styleFilter_);
+                ShapeDataVisitor shpVisitor(*storePtr);
                 utymap::formats::ShapeParser<ShapeDataVisitor> parser;
                 parser.parse(path, shpVisitor);
                 break;
@@ -58,8 +55,7 @@ public:
     }
 
 private:
-    StringTable& stringTable_;
-    StyleFilter styleFilter_;
+    const StyleFilter& styleFilter_;
     std::unordered_map<std::string, ElementStore*> storeMap_;
 
     FormatType getFormatTypeFromPath(const std::string& path)
@@ -69,8 +65,8 @@ private:
     }
 };
 
-GeoStore::GeoStore(const StyleSheet& stylesheet, StringTable& stringTable) :
-    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(stylesheet, stringTable)))
+GeoStore::GeoStore(const StyleFilter& styleFilter) :
+    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(styleFilter)))
 {
 }
 

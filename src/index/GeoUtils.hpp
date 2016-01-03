@@ -2,6 +2,7 @@
 #define INDEX_GEOUTILS_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "QuadKey.hpp"
 
 #include <cmath>
 #include <string>
@@ -50,10 +51,10 @@ public:
 
         for (int y = end.tileY; y < start.tileY + 1; y++) {
             for (int x = start.tileX; x < end.tileX + 1; x++) {
-                QuadKey currentQuadKey = { levelOfDetail, x, y };
-                BoundingBox currentBbox = quadKeyToBoundingBox(currentQuadKey);
+                const QuadKey currentQuadKey = { levelOfDetail, x, y };
+                const BoundingBox currentBbox = quadKeyToBoundingBox(currentQuadKey);
                 if (bbox.intersects(currentBbox)) {
-                    visitor.visit(currentQuadKey, currentBbox);
+                    visitor(currentQuadKey, currentBbox);
                 }
             }
         }

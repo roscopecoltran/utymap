@@ -21,8 +21,7 @@ namespace utymap { namespace index {
 class GeoStore
 {
 public:
-    GeoStore(const utymap::mapcss::StyleSheet& stylesheet,
-             StringTable& stringTable);
+    GeoStore(const StyleFilter& styleFilter);
 
     ~GeoStore();
 

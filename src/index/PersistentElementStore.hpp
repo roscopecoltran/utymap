@@ -15,12 +15,16 @@ namespace utymap { namespace index {
 class PersistentElementStore : public ElementStore
 {
 public:
-    PersistentElementStore(const std::string& path, StringTable& stringTable);
+    PersistentElementStore(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter);
 
     ~PersistentElementStore();
 
-    // Stores element in storage.
-    void store(const QuadKey& quadKey, const utymap::entities::Element& element);
+protected:
+    StringTable& getStringTable() const;
+
+    const StyleFilter& getStyleFilter() const;
+
+    utymap::entities::ElementVisitor& getElementVisitor() const;
 
 private:
     class PersistentElementStoreImpl;

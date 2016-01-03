@@ -50,6 +50,7 @@ add_library (UtyMap
                 formats/shape/dbfopen.c
                 formats/shape/safileio.c
                 formats/shape/shpopen.c
+                index/ElementStore.cpp
                 index/GeoStore.cpp
                 index/InMemoryElementStore.cpp
                 index/PersistentElementStore.cpp

@@ -13,41 +13,42 @@ using namespace utymap::entities;
 class PersistentElementStore::PersistentElementStoreImpl : public ElementVisitor
 {
 public:
-    PersistentElementStoreImpl(const std::string& path, StringTable& stringTable) :
+    PersistentElementStoreImpl(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter) :
         path_(path),
-        stringTable_(stringTable)
+        stringTable_(stringTable),
+        styleFilter_(styleFilter)
     {
     }
 
-    void store(const QuadKey& quadKey, const Element& element)
-    {
-
-    }
-
-    void visitNode(const Node& node)
+    void visitNode(const utymap::entities::Node& node)
     {
     }
 
-    void visitWay(const Way& way)
+    void visitWay(const utymap::entities::Way& way)
     {
     }
 
-    void visitArea(const Area& area)
+    void visitArea(const utymap::entities::Area& area)
     {
     }
 
-    virtual void visitRelation(const Relation& relation)
+    virtual void visitRelation(const utymap::entities::Relation& relation)
     {
     }
+
+    inline StringTable& getStringTable() const { return stringTable_; }
+
+    inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
 
 private:
     std::string path_;
     StringTable& stringTable_;
+    const StyleFilter& styleFilter_;
 };
 
-PersistentElementStore::PersistentElementStore(const std::string& path, StringTable& stringTable) :
+PersistentElementStore::PersistentElementStore(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter) :
     pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
-        new PersistentElementStore::PersistentElementStoreImpl(path, stringTable)))
+        new PersistentElementStore::PersistentElementStoreImpl(path, stringTable, styleFilter)))
 {
 }
 
@@ -55,7 +56,17 @@ PersistentElementStore::~PersistentElementStore()
 {
 }
 
-void PersistentElementStore::store(const QuadKey& quadKey, const Element& element)
+StringTable& PersistentElementStore::getStringTable() const
 {
-    pimpl_->store(quadKey, element);
+    return pimpl_->getStringTable();
+}
+
+const StyleFilter& PersistentElementStore::getStyleFilter() const
+{
+    return pimpl_->getStyleFilter();
+}
+
+utymap::entities::ElementVisitor& PersistentElementStore::getElementVisitor() const
+{
+    return *pimpl_;
 }

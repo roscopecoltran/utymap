@@ -14,13 +14,13 @@ struct Formats_ShapeDataVisitorFixture
         indexPath("index.idx"),
         stringPath("strings.dat"),
         shapeFile("g:/__ASM/_data/test/ne_110m_coastline"),
-        stringTablePtr(new StringTable(indexPath, stringPath)),
-        store_(*stringTablePtr)
+        stringTablePtr(new StringTable(indexPath, stringPath))
     {
         BOOST_TEST_MESSAGE("setup fixture");
 
         utymap::mapcss::Parser parser;
         styleFilterPtr = new StyleFilter(parser.parse(TEST_MAPCSS_DEFAULT), *stringTablePtr);
+        storePtr = new InMemoryElementStore(*stringTablePtr, *styleFilterPtr);
     }
 
     ~Formats_ShapeDataVisitorFixture()
@@ -28,6 +28,7 @@ struct Formats_ShapeDataVisitorFixture
         BOOST_TEST_MESSAGE("teardown fixture");
         delete styleFilterPtr;
         delete stringTablePtr;
+        delete storePtr;
         std::remove(indexPath.c_str());
         std::remove(stringPath.c_str());
     }
@@ -37,14 +38,14 @@ struct Formats_ShapeDataVisitorFixture
     std::string shapeFile;
     StringTable* stringTablePtr;
     StyleFilter* styleFilterPtr;
-    InMemoryElementStore store_;
+    InMemoryElementStore* storePtr;
 };
 
 BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixture)
 
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {
-    ShapeDataVisitor shpVisitor(store_, *stringTablePtr, *styleFilterPtr);
+    ShapeDataVisitor shpVisitor(*storePtr);
     ShapeParser<ShapeDataVisitor> parser;
 
     parser.parse(shapeFile, shpVisitor);

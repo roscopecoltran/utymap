@@ -31,6 +31,8 @@ public:
     // Returns tag collection represented by vector of tuple<uint,uint>.
     std::vector<Tag> tags;
 
+    virtual ~Element() {}
+
     // Visitor method.
     virtual void accept(ElementVisitor&) const { };
 

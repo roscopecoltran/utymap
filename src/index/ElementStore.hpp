@@ -1,10 +1,13 @@
 #ifndef INDEX_ELEMENTSTORE_HPP_DEFINED
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
-#include "QuadKey.hpp"
+#include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
+#include "entities/ElementVisitor.hpp"
+#include "formats/FormatTypes.hpp"
+#include "index/StringTable.hpp"
+#include "index/StyleFilter.hpp"
 
-#include <string>
 #include <memory>
 
 namespace utymap { namespace index {
@@ -13,8 +16,32 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    // Stores element in storage.
-    virtual void store(const QuadKey& quadKey, const utymap::entities::Element& element) = 0;
+    static const int MinLevelOfDetails = 1;
+    static const int MaxLevelOfDetails = 16;
+
+    typedef std::vector<std::vector<GeoCoordinate>> GeoPolygon;
+    enum ElementType { Node, Way, Area, Relation };
+
+    // Stores element with given polygon and tags in storage.
+    void store(const GeoPolygon& polygon,
+               const utymap::formats::Tags& tags,
+               const ElementStore::ElementType elementType);
+
+    virtual ~ElementStore();
+
+protected:
+    virtual StringTable& getStringTable() const = 0;
+    virtual const StyleFilter& getStyleFilter() const = 0;
+    virtual utymap::entities::ElementVisitor& getElementVisitor() const = 0;
+
+private:
+
+    inline utymap::entities::Element* createElement(const ElementStore::ElementType elementType) const;
+
+    void storeInTileRange(utymap::entities::Element& element,
+                          const BoundingBox& elementBbox, 
+                          int levelOfDetails, 
+                          utymap::entities::ElementVisitor& elementVisitor);
 };
 
 }}
