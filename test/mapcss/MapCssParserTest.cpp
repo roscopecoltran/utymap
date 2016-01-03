@@ -226,6 +226,20 @@ BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
     BOOST_CHECK(stylesheet.rules.size() == 1);
 }
 
+
+BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoomStartAndEnd)
+{
+    std::string str = "way|z1-12[highway]{key1:value1;}";
+    Parser parser;
+
+    StyleSheet stylesheet = parser.parse(str);
+
+    BOOST_CHECK(parser.getError().empty());
+    Selector selector = stylesheet.rules[0].selectors[0];
+    BOOST_CHECK_EQUAL(1, selector.zoom.start);
+    BOOST_CHECK_EQUAL(12, selector.zoom.end);
+}
+
 BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentation)
 {
     std::string str = "way|z1-12[highway]{key1:value1;}";
