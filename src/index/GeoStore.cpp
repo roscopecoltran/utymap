@@ -31,12 +31,12 @@ public:
 
     void add(const std::string& storeKey, const std::string& path)
     {
-        ElementStore* storePtr = storeMap_[storeKey];
+        ElementStore* elementStorePtr = storeMap_[storeKey];
         switch (getFormatTypeFromPath(path))
         {
             case FormatType::Shape:
             {
-                ShapeDataVisitor shpVisitor(*storePtr);
+                ShapeDataVisitor shpVisitor(*elementStorePtr);
                 utymap::formats::ShapeParser<ShapeDataVisitor> parser;
                 parser.parse(path, shpVisitor);
                 break;

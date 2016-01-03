@@ -23,7 +23,7 @@ public:
     enum ElementType { Node, Way, Area, Relation };
 
     // Stores element with given polygon and tags in storage.
-    void store(const GeoPolygon& polygon,
+    bool store(const GeoPolygon& polygon,
                const utymap::formats::Tags& tags,
                const ElementStore::ElementType elementType);
 
@@ -36,12 +36,10 @@ protected:
 
 private:
 
-    inline utymap::entities::Element* createElement(const ElementStore::ElementType elementType) const;
+    inline utymap::entities::Element* createElement(const ElementStore::ElementType elementType, 
+                                                    const utymap::formats::Tags& tags) const;
 
-    void storeInTileRange(utymap::entities::Element& element,
-                          const BoundingBox& elementBbox, 
-                          int levelOfDetails, 
-                          utymap::entities::ElementVisitor& elementVisitor);
+    void storeInTileRange(utymap::entities::Element& element, const BoundingBox& elementBbox, int levelOfDetails);
 };
 
 }}

@@ -58,8 +58,6 @@ extern "C"
             return;
         }
 
-        
-
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
 
         stringTablePtr = new utymap::index::StringTable(stringPath, stringPath);

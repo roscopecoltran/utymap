@@ -16,9 +16,6 @@ namespace utymap { namespace index {
 
 struct ShapeDataVisitor
 {
-    const int MinLevelOfDetails = 1;
-    const int MaxLevelOfDetails = 16;
-
     int bounds;
     int nodes;
     int ways;
@@ -55,7 +52,7 @@ struct ShapeDataVisitor
 
     void visitRelation(utymap::formats::PolygonMembers& members, utymap::formats::Tags& tags)
     {
-        // TODO relation should be converted to something else?.
+        // TODO
         relations++;
     }
 

@@ -21,31 +21,20 @@ ElementStore::~ElementStore()
 {
 }
 
-void ElementStore::store(const GeoPolygon& polygon,
+bool ElementStore::store(const GeoPolygon& polygon,
     const utymap::formats::Tags& tags,
     const ElementStore::ElementType elementType)
 {
     StringTable& stringTable = getStringTable();
     const StyleFilter& styleFilter = getStyleFilter();
-    ElementVisitor& elementVisitor = getElementVisitor();
     
+    Element* element = createElement(elementType, tags);
     BoundingBox bbox;
-    Element* element = createElement(elementType);
+    bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
         if (!styleFilter.isApplicable(*element, lod))
             continue;
-
-        // initialize tags only once
-        if (element->tags.size() == 0 && tags.size() > 0) {
-            element->tags.reserve(tags.size());
-            for (const auto& tag : tags) {
-                uint32_t key = stringTable.getId(tag.key);
-                uint32_t value = stringTable.getId(tag.value);
-                element->tags.push_back(utymap::entities::Tag(key, value));
-            }
-            stringTable.flush();
-        }
         // initialize bounding box only once
         if (!bbox.isValid()) {
             for (const auto& shape : polygon) {
@@ -54,26 +43,41 @@ void ElementStore::store(const GeoPolygon& polygon,
                 }
             }
         }
-
-        storeInTileRange(*element, bbox, lod, elementVisitor);
+        storeInTileRange(*element, bbox, lod);
+        wasStored = true;
     }
 
     delete element;
+    return wasStored;
 }
 
-Element* ElementStore::createElement(const ElementStore::ElementType elementType) const
+Element* ElementStore::createElement(const ElementStore::ElementType elementType, 
+                                     const utymap::formats::Tags& tags) const
 {
+    Element* element = nullptr;
     switch (elementType)
     {
-        case Node: return new utymap::entities::Node();
-        case Way:  return new utymap::entities::Way();
-        case Area: return new utymap::entities::Area();
-        case Relation: return new utymap::entities::Relation();
+        case Node: element = new utymap::entities::Node(); break;
+        case Way:  element = new utymap::entities::Way(); break;
+        case Area: element = new utymap::entities::Area(); break;
+        case Relation: element = new utymap::entities::Relation(); break;
     }
+    // convert tag colection
+    StringTable& stringTable = getStringTable();
+    element->tags.reserve(tags.size());
+    for (const auto& tag : tags) {
+        uint32_t key = stringTable.getId(tag.key);
+        uint32_t value = stringTable.getId(tag.value);
+        element->tags.push_back(utymap::entities::Tag(key, value));
+    }
+    stringTable.flush();
+
+    return element;
 }
 
-void ElementStore::storeInTileRange(Element& element, const BoundingBox& elementBbox, int levelOfDetails, ElementVisitor& elementVisitor)
+void ElementStore::storeInTileRange(Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
+    ElementVisitor& elementVisitor = getElementVisitor();
     GeoUtils::visitTileRange(elementBbox, levelOfDetails,
         [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
 
