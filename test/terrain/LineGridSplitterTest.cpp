@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 
     splitter.split(start, end, result);
 
-    double step = 1 / scale;
+    double step = 1. / scale;
     for (int i = 0; i <= 10; ++i) {
         BOOST_CHECK_CLOSE(i * step, result[i].x, Precision);
         BOOST_CHECK_CLOSE(i * step, result[i].y, Precision);
