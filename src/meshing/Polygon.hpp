@@ -3,6 +3,8 @@
 
 #include "meshing/MeshTypes.hpp"
 
+#include <stdexcept>
+
 namespace utymap { namespace meshing {
 
 // Represents polygon in 2D space

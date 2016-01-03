@@ -17,7 +17,7 @@ struct Formats_ShapeDataVisitorFixture
         stringPath("strings.dat"),
         shapeFile(TEST_SHAPE_LINE_FILE),
         stringTablePtr(new StringTable(indexPath, stringPath)),
-        styleFilter(MapCssUtils::createStyleFilterFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
+        styleFilterPtr(MapCssUtils::createStyleFilterFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
     {
         BOOST_TEST_MESSAGE("setup fixture");
 
@@ -25,13 +25,14 @@ struct Formats_ShapeDataVisitorFixture
         std::ifstream styleFile(TEST_MAPCSS_DEFAULT);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         BOOST_TEST_CHECK(parser.getError().empty());
-        storePtr = new InMemoryElementStore(*stringTablePtr, styleFilter);
+        storePtr = new InMemoryElementStore(*stringTablePtr, *styleFilterPtr);
     }
 
     ~Formats_ShapeDataVisitorFixture()
     {
         BOOST_TEST_MESSAGE("teardown fixture");
         delete stringTablePtr;
+        delete styleFilterPtr;
         delete storePtr;
         std::remove(indexPath.c_str());
         std::remove(stringPath.c_str());
@@ -41,7 +42,7 @@ struct Formats_ShapeDataVisitorFixture
     std::string stringPath;
     std::string shapeFile;
     StringTable* stringTablePtr;
-    StyleFilter styleFilter;
+    StyleFilter* styleFilterPtr;
     InMemoryElementStore* storePtr;
 };
 

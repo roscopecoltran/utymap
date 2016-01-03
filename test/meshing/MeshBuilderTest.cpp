@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
 
     Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
     {
-        /* area=*/ 1 / scale,
+        /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,
         /* segmentSplit=*/ 0
     });

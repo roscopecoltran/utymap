@@ -15,23 +15,23 @@ class MapCssUtils
 {
 public:
 
-    static utymap::index::StyleFilter createStyleFilterFromFile(utymap::index::StringTable& stringTable,
+    static utymap::index::StyleFilter* createStyleFilterFromFile(utymap::index::StringTable& stringTable,
                                                                 const std::string& filePath)
     {
         std::ifstream styleFile(filePath);
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         BOOST_TEST_CHECK(parser.getError().empty());
-        return utymap::index::StyleFilter(stylesheet, stringTable);
+        return new utymap::index::StyleFilter(stylesheet, stringTable);
     }
 
-    static utymap::index::StyleFilter createStyleFilterFromString(utymap::index::StringTable& stringTable,
+    static utymap::index::StyleFilter* createStyleFilterFromString(utymap::index::StringTable& stringTable,
                                                                   const std::string& str)
     {
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(str);
         BOOST_TEST_CHECK(parser.getError().empty());
-        return utymap::index::StyleFilter(stylesheet, stringTable);
+        return new utymap::index::StyleFilter(stylesheet, stringTable);
     }
 };
 
