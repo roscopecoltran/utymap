@@ -2,6 +2,7 @@
 #include "TileLoader.hpp"
 #include "index/GeoUtils.hpp"
 #include "terrain/TerraBuilder.hpp"
+#include "utils/CompatibilityUtils.hpp"
 #include "utils/CoreUtils.hpp"
 
 #include <unordered_map>

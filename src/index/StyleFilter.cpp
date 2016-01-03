@@ -189,7 +189,7 @@ StyleFilter::~StyleFilter()
 {
 }
 
-inline bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
+bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
 {
     StyleElementVisitor visitor = { pimpl_->filters, levelOfDetails };
     element.accept(visitor);

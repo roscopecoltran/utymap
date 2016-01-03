@@ -1,4 +1,5 @@
 #include "mapcss/StyleSheet.hpp"
+#include "utils/CompatibilityUtils.hpp"
 
 #include <ostream>
 

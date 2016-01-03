@@ -19,7 +19,7 @@ public:
     ~StyleFilter();
 
     //  Returns true if element is defined in stylesheet..
-    inline bool isApplicable(const utymap::entities::Element&, int levelOfDetails) const;
+    bool isApplicable(const utymap::entities::Element&, int levelOfDetails) const;
 
 private:
     class StyleFilterImpl;
