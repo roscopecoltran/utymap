@@ -4,7 +4,6 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "index/ElementStore.hpp"
-#include "index/StringTable.hpp"
 
 #include <string>
 #include <memory>
@@ -15,13 +14,11 @@ namespace utymap { namespace index {
 class InMemoryElementStore : public ElementStore
 {
 public:
-    InMemoryElementStore(StringTable& stringTable, const StyleFilter& styleFilter);
+    InMemoryElementStore(const StyleFilter& styleFilter);
 
     ~InMemoryElementStore();
 
 protected:
-    StringTable& getStringTable() const;
-
     const StyleFilter& getStyleFilter() const;
 
     utymap::entities::ElementVisitor& getElementVisitor() const;

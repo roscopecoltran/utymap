@@ -13,9 +13,8 @@ using namespace utymap::entities;
 class PersistentElementStore::PersistentElementStoreImpl : public ElementVisitor
 {
 public:
-    PersistentElementStoreImpl(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter) :
+    PersistentElementStoreImpl(const std::string& path, const StyleFilter& styleFilter) :
         path_(path),
-        stringTable_(stringTable),
         styleFilter_(styleFilter)
     {
     }
@@ -36,19 +35,16 @@ public:
     {
     }
 
-    inline StringTable& getStringTable() const { return stringTable_; }
-
     inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
 
 private:
     std::string path_;
-    StringTable& stringTable_;
     const StyleFilter& styleFilter_;
 };
 
-PersistentElementStore::PersistentElementStore(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter) :
+PersistentElementStore::PersistentElementStore(const std::string& path, const StyleFilter& styleFilter) :
     pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
-        new PersistentElementStore::PersistentElementStoreImpl(path, stringTable, styleFilter)))
+        new PersistentElementStore::PersistentElementStoreImpl(path, styleFilter)))
 {
 }
 
@@ -56,10 +52,6 @@ PersistentElementStore::~PersistentElementStore()
 {
 }
 
-StringTable& PersistentElementStore::getStringTable() const
-{
-    return pimpl_->getStringTable();
-}
 
 const StyleFilter& PersistentElementStore::getStyleFilter() const
 {

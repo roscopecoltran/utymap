@@ -9,6 +9,7 @@
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
+#include "index/StyleFilter.hpp"
 
 #include "mapcss/StyleSheet.hpp"
 
@@ -21,7 +22,7 @@ namespace utymap { namespace index {
 class GeoStore
 {
 public:
-    GeoStore(const StyleFilter& styleFilter);
+    GeoStore(const StyleFilter& styleFilter, StringTable& stringTable);
 
     ~GeoStore();
 

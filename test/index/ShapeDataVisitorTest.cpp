@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "formats/shape/ShapeParser.hpp"
 #include "index/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "mapcss/MapCssParser.hpp"
@@ -23,7 +24,7 @@ struct Formats_ShapeDataVisitorFixture
         std::ifstream styleFile(TEST_MAPCSS_DEFAULT);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         BOOST_TEST_CHECK(parser.getError().empty());
-        storePtr = new InMemoryElementStore(*stringTablePtr, *styleFilterPtr);
+        storePtr = new InMemoryElementStore(*styleFilterPtr);
     }
 
     ~Formats_ShapeDataVisitorFixture()
@@ -46,13 +47,14 @@ BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixtu
 
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {
-    ShapeDataVisitor visitor(*storePtr);
+    ShapeDataVisitor visitor(*storePtr, *stringTablePtr);
     ShapeParser<ShapeDataVisitor> parser;
 
     parser.parse(shapeFile, visitor);
 
     BOOST_CHECK_EQUAL(0, visitor.nodes);
-    BOOST_CHECK_EQUAL(1, visitor.ways);
+    BOOST_CHECK_EQUAL(0, visitor.ways);
+    BOOST_CHECK_EQUAL(1, visitor.areas);
     BOOST_CHECK_EQUAL(0, visitor.relations);
 }
 

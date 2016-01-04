@@ -21,61 +21,46 @@ ElementStore::~ElementStore()
 {
 }
 
-bool ElementStore::store(const GeoPolygon& polygon,
-    const utymap::formats::Tags& tags,
-    const ElementStore::ElementType elementType)
+// Creates bounding box of given element.
+struct ElementGeometryVisitor : public ElementVisitor
 {
-    StringTable& stringTable = getStringTable();
+    BoundingBox boundingBox;
+
+    void visitNode(const Node& node) { boundingBox.expand(node.coordinate); }
+
+    void visitWay(const Way& way) { boundingBox.expand(way.coordinates.cbegin(), way.coordinates.cend()); }
+
+    void visitArea(const Area& area) { boundingBox.expand(area.coordinates.cbegin(), area.coordinates.cend()); }
+
+    void visitRelation(const Relation& relation)
+    {
+        // TODO
+    }
+};
+
+bool ElementStore::store(const utymap::entities::Element& element)
+{
     const StyleFilter& styleFilter = getStyleFilter();
 
-    Element* element = createElement(elementType, tags);
-    BoundingBox bbox;
+    ElementGeometryVisitor geometryVisitor;
     bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
-        if (!styleFilter.isApplicable(*element, lod))
+        if (!styleFilter.isApplicable(element, lod))
             continue;
         // initialize bounding box only once
-        if (!bbox.isValid()) {
-            for (const auto& shape : polygon) {
-                for (const GeoCoordinate& c : shape) {
-                    bbox.expand(c);
-                }
-            }
+        if (!geometryVisitor.boundingBox.isValid()) {
+            element.accept(geometryVisitor);
         }
-        storeInTileRange(*element, bbox, lod);
-        wasStored = true;
+        storeInTileRange(element, geometryVisitor.boundingBox, lod);
+        wasStored = true; 
     }
 
-    delete element;
+    // NOTE still might be clipped and then skipped
     return wasStored;
 }
 
-Element* ElementStore::createElement(const ElementStore::ElementType elementType,
-                                     const utymap::formats::Tags& tags) const
-{
-    Element* element = nullptr;
-    switch (elementType)
-    {
-        case Node: element = new utymap::entities::Node(); break;
-        case Way:  element = new utymap::entities::Way(); break;
-        case Area: element = new utymap::entities::Area(); break;
-        case Relation: element = new utymap::entities::Relation(); break;
-    }
-    // convert tag colection
-    StringTable& stringTable = getStringTable();
-    element->tags.reserve(tags.size());
-    for (const auto& tag : tags) {
-        uint32_t key = stringTable.getId(tag.key);
-        uint32_t value = stringTable.getId(tag.value);
-        element->tags.push_back(utymap::entities::Tag(key, value));
-    }
-    stringTable.flush();
-
-    return element;
-}
-
-void ElementStore::storeInTileRange(Element& element, const BoundingBox& elementBbox, int levelOfDetails)
+void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
     ElementVisitor& elementVisitor = getElementVisitor();
     auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {

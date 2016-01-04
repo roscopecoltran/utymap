@@ -56,6 +56,15 @@ struct BoundingBox
             maxPoint.longitude > c.longitude ? maxPoint.longitude : c.longitude);
     }
 
+    // Expands bounging box from collection of geo data.
+    template<typename ForwardIterator>
+    inline void expand(ForwardIterator begin, ForwardIterator end)
+    {
+        for (; begin != end; ++begin) {
+            expand(*begin);
+        }
+    }
+
     // Checks whether given bounding box inside the current one.
     inline bool contains(const BoundingBox& bbox) const
     {

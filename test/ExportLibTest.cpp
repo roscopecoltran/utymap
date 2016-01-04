@@ -28,7 +28,7 @@ BOOST_FIXTURE_TEST_SUITE(ExportLib, ExportLibFixture)
 
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenTileLoad_ThenCallbacksAreCalled)
 {
-    /*::loadTile(0, 0, 1,
+    ::loadTile(0, 0, 1,
         [](const char* name,
            const double* vertices, int vertexCount,
            const int* triangles, int triCount,
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenTileLoad_ThenCallbacksAreCalled)
         {
             BOOST_TEST_FAIL(message);
         }
-    );*/
+    );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

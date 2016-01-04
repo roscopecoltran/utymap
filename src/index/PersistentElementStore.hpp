@@ -4,7 +4,6 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "index/ElementStore.hpp"
-#include "index/StringTable.hpp"
 
 #include <string>
 #include <memory>
@@ -15,13 +14,11 @@ namespace utymap { namespace index {
 class PersistentElementStore : public ElementStore
 {
 public:
-    PersistentElementStore(const std::string& path, StringTable& stringTable, const StyleFilter& styleFilter);
+    PersistentElementStore(const std::string& path, const StyleFilter& styleFilter);
 
     ~PersistentElementStore();
 
 protected:
-    StringTable& getStringTable() const;
-
     const StyleFilter& getStyleFilter() const;
 
     utymap::entities::ElementVisitor& getElementVisitor() const;

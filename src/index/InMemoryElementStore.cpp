@@ -13,8 +13,8 @@ using namespace utymap::entities;
 class InMemoryElementStore::InMemoryElementStoreImpl : public ElementVisitor
 {
 public:
-    InMemoryElementStoreImpl(StringTable& stringTable, const StyleFilter& styleFilter) :
-        stringTable_(stringTable),
+
+    InMemoryElementStoreImpl(const StyleFilter& styleFilter) :
         styleFilter_(styleFilter)
     {
     }
@@ -35,28 +35,20 @@ public:
     {
     }
 
-    inline StringTable& getStringTable() const { return stringTable_; }
-
     inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
 
 private:
-    StringTable& stringTable_;
     const StyleFilter& styleFilter_;
 };
 
-InMemoryElementStore::InMemoryElementStore(StringTable& stringTable, const StyleFilter& styleFilter) :
+InMemoryElementStore::InMemoryElementStore(const StyleFilter& styleFilter) :
     pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
-        new InMemoryElementStore::InMemoryElementStoreImpl(stringTable, styleFilter)))
+        new InMemoryElementStore::InMemoryElementStoreImpl(styleFilter)))
 {
 }
 
 InMemoryElementStore::~InMemoryElementStore()
 {
-}
-
-StringTable& InMemoryElementStore::getStringTable() const
-{
-    return pimpl_->getStringTable();
 }
 
 const StyleFilter& InMemoryElementStore::getStyleFilter() const

@@ -19,27 +19,21 @@ public:
     static const int MinLevelOfDetails = 1;
     static const int MaxLevelOfDetails = 16;
 
-    typedef std::vector<std::vector<GeoCoordinate>> GeoPolygon;
-    enum ElementType { Node, Way, Area, Relation };
-
-    // Stores element with given polygon and tags in storage.
-    bool store(const GeoPolygon& polygon,
-               const utymap::formats::Tags& tags,
-               const ElementStore::ElementType elementType);
-
     virtual ~ElementStore();
 
+    // Stores element with given polygon and tags in storage.
+    bool store(const utymap::entities::Element& element);
+
 protected:
-    virtual StringTable& getStringTable() const = 0;
+    // Returns style filter.
     virtual const StyleFilter& getStyleFilter() const = 0;
+    // Gets element visitor.
     virtual utymap::entities::ElementVisitor& getElementVisitor() const = 0;
 
 private:
-
-    inline utymap::entities::Element* createElement(const ElementStore::ElementType elementType, 
-                                                    const utymap::formats::Tags& tags) const;
-
-    void storeInTileRange(utymap::entities::Element& element, const BoundingBox& elementBbox, int levelOfDetails);
+    void storeInTileRange(const utymap::entities::Element& element, 
+                          const BoundingBox& elementBbox, 
+                          int levelOfDetails);
 };
 
 }}
