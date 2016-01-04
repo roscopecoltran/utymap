@@ -60,7 +60,7 @@ extern "C"
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
 
-        stringTablePtr = new utymap::index::StringTable(stringPath, stringPath);
+        stringTablePtr = new utymap::index::StringTable(stringPath);
         styleFilterPtr = new utymap::index::StyleFilter(stylesheet, *stringTablePtr);
 
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr, *styleFilterPtr);

@@ -16,7 +16,7 @@ class StringTable
 public:
 
     // Creates instance of StringTable using file path provided.
-    StringTable(const std::string& indexPath, const std::string& dataPath);
+    StringTable(const std::string& path);
     ~StringTable();
 
     // Gets id of given string.
@@ -35,4 +35,3 @@ private:
 
 }}
 #endif  // INDEX_STRINGTABLE_HPP_INCLUDED
-

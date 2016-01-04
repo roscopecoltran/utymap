@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWithTwoTags_ToString_ReturnsValidRepresentation)
 {
     {
         // arrange
-        utymap::index::StringTable st("index.idx", "strings.dat");
+        utymap::index::StringTable st("");
         std::vector<Tag> tags;
         tags.push_back(Tag(st.getId("key1"), st.getId("value1")));
         tags.push_back(Tag(st.getId("key2"), st.getId("value2")));
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(GivenNodeWithTwoTags_ToString_ReturnsValidRepresentation)
     }
 
     // cleanup
-    std::remove("index.idx");
-    std::remove("strings.dat");
+    std::remove("string.idx");
+    std::remove("string.dat");
 }
 
 BOOST_AUTO_TEST_CASE(GivenWay_Visit_IncrementsCounter)

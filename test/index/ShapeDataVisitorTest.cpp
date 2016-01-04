@@ -13,10 +13,8 @@ using namespace utymap::formats;
 struct Formats_ShapeDataVisitorFixture
 {
     Formats_ShapeDataVisitorFixture() :
-        indexPath("index.idx"),
-        stringPath("strings.dat"),
         shapeFile(TEST_SHAPE_LINE_FILE),
-        stringTablePtr(new StringTable(indexPath, stringPath)),
+        stringTablePtr(new StringTable("")),
         styleFilterPtr(MapCssUtils::createStyleFilterFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
     {
         BOOST_TEST_MESSAGE("setup fixture");
@@ -34,12 +32,10 @@ struct Formats_ShapeDataVisitorFixture
         delete stringTablePtr;
         delete styleFilterPtr;
         delete storePtr;
-        std::remove(indexPath.c_str());
-        std::remove(stringPath.c_str());
+        std::remove("string.idx");
+        std::remove("string.dat");
     }
 
-    std::string indexPath;
-    std::string stringPath;
     std::string shapeFile;
     StringTable* stringTablePtr;
     StyleFilter* styleFilterPtr;
