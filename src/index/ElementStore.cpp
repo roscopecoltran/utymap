@@ -18,7 +18,7 @@ using namespace utymap::entities;
 using namespace utymap::formats;
 
 // Creates bounding box of given element.
-struct ElementGeometryVisitor : public ElementVisitor
+struct BoundingBoxVisitor : public ElementVisitor
 {
     BoundingBox boundingBox;
 
@@ -34,6 +34,32 @@ struct ElementGeometryVisitor : public ElementVisitor
     }
 };
 
+// Modifies geometry of element by bounding box clipping
+struct GeometryVisitor : public ElementVisitor
+{
+    const BoundingBox& boundingBox;
+
+    GeometryVisitor(const BoundingBox& bbox) : boundingBox(bbox)
+    {
+    }
+
+    void visitNode(const Node& node)
+    {
+    }
+
+    void visitWay(const Way& way)
+    {
+    }
+
+    void visitArea(const Area& area)
+    {
+    }
+
+    void visitRelation(const Relation& relation)
+    {
+    }
+};
+
 ElementStore::ElementStore(const StyleFilter& styleFilter) :
      styleFilter_(styleFilter)
 {
@@ -45,17 +71,17 @@ ElementStore::~ElementStore()
 
 bool ElementStore::store(const utymap::entities::Element& element)
 {
-    ElementGeometryVisitor geometryVisitor;
+    BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
         if (!styleFilter_.isApplicable(element, lod))
             continue;
         // initialize bounding box only once
-        if (!geometryVisitor.boundingBox.isValid()) {
-            element.accept(geometryVisitor);
+        if (!bboxVisitor.boundingBox.isValid()) {
+            element.accept(bboxVisitor);
         }
-        storeInTileRange(element, geometryVisitor.boundingBox, lod);
+        storeInTileRange(element, bboxVisitor.boundingBox, lod);
         wasStored = true;
     }
 
@@ -66,7 +92,8 @@ bool ElementStore::store(const utymap::entities::Element& element)
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
     auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-        // TODO use clipper to clip polygon by quadkey bounding box
+        GeometryVisitor geometryVisitor(quadKeyBbox);
+        element.accept(geometryVisitor);
         store(element, quadKey);
     };
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
