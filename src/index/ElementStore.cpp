@@ -17,10 +17,6 @@ using namespace utymap::index;
 using namespace utymap::entities;
 using namespace utymap::formats;
 
-ElementStore::~ElementStore()
-{
-}
-
 // Creates bounding box of given element.
 struct ElementGeometryVisitor : public ElementVisitor
 {
@@ -38,15 +34,22 @@ struct ElementGeometryVisitor : public ElementVisitor
     }
 };
 
+ElementStore::ElementStore(const StyleFilter& styleFilter) :
+     styleFilter_(styleFilter)
+{
+}
+
+ElementStore::~ElementStore()
+{
+}
+
 bool ElementStore::store(const utymap::entities::Element& element)
 {
-    const StyleFilter& styleFilter = getStyleFilter();
-
     ElementGeometryVisitor geometryVisitor;
     bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
-        if (!styleFilter.isApplicable(element, lod))
+        if (!styleFilter_.isApplicable(element, lod))
             continue;
         // initialize bounding box only once
         if (!geometryVisitor.boundingBox.isValid()) {

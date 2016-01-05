@@ -20,14 +20,14 @@ public:
     static const int MinLevelOfDetails = 1;
     static const int MaxLevelOfDetails = 16;
 
+    ElementStore(const StyleFilter& styleFilter);
+
     virtual ~ElementStore();
 
     // Stores element with given polygon and tags in storage.
     bool store(const utymap::entities::Element& element);
 
 protected:
-    // Returns style filter.
-    virtual const StyleFilter& getStyleFilter() const = 0;
     // Stores element in given quadkey.
     virtual void store(const utymap::entities::Element& element, const QuadKey& quadKey) = 0;
 
@@ -35,6 +35,8 @@ private:
     void storeInTileRange(const utymap::entities::Element& element,
                           const BoundingBox& elementBbox,
                           int levelOfDetails);
+
+    const StyleFilter& styleFilter_;
 };
 
 }}

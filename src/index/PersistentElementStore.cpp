@@ -13,9 +13,8 @@ using namespace utymap::entities;
 class PersistentElementStore::PersistentElementStoreImpl : public ElementVisitor
 {
 public:
-    PersistentElementStoreImpl(const std::string& path, const StyleFilter& styleFilter) :
+    PersistentElementStoreImpl(const std::string& path) :
         path_(path),
-        styleFilter_(styleFilter),
         currentQuadKey_()
     {
     }
@@ -36,29 +35,22 @@ public:
     {
     }
 
-    inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
-
     void setQuadKey(const QuadKey& quadKey) { currentQuadKey_ = quadKey; }
 
 private:
     std::string path_;
-    const StyleFilter& styleFilter_;
     QuadKey currentQuadKey_;
 };
 
 PersistentElementStore::PersistentElementStore(const std::string& path, const StyleFilter& styleFilter) :
+    ElementStore(styleFilter),
     pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
-        new PersistentElementStore::PersistentElementStoreImpl(path, styleFilter)))
+        new PersistentElementStore::PersistentElementStoreImpl(path)))
 {
 }
 
 PersistentElementStore::~PersistentElementStore()
 {
-}
-
-const StyleFilter& PersistentElementStore::getStyleFilter() const
-{
-    return pimpl_->getStyleFilter();
 }
 
 void PersistentElementStore::store(const utymap::entities::Element& element, const QuadKey& quadKey)

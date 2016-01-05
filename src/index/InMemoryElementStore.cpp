@@ -14,8 +14,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl : public ElementVisitor
 {
 public:
 
-    InMemoryElementStoreImpl(const StyleFilter& styleFilter) :
-        styleFilter_(styleFilter),
+    InMemoryElementStoreImpl() :
         currentQuadKey_()
     {
     }
@@ -36,30 +35,22 @@ public:
     {
     }
 
-    inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
-
     void setQuadKey(const QuadKey& quadKey) { currentQuadKey_ = quadKey; }
 
 private:
-    const StyleFilter& styleFilter_;
     QuadKey currentQuadKey_;
 };
 
 InMemoryElementStore::InMemoryElementStore(const StyleFilter& styleFilter) :
+    ElementStore(styleFilter),
     pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
-        new InMemoryElementStore::InMemoryElementStoreImpl(styleFilter)))
+        new InMemoryElementStore::InMemoryElementStoreImpl()))
 {
 }
 
 InMemoryElementStore::~InMemoryElementStore()
 {
 }
-
-const StyleFilter& InMemoryElementStore::getStyleFilter() const
-{
-    return pimpl_->getStyleFilter();
-}
-
 void InMemoryElementStore::store(const utymap::entities::Element& element, const QuadKey& quadKey)
 {
     pimpl_->setQuadKey(quadKey);
