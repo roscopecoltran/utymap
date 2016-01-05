@@ -22,11 +22,20 @@ struct BoundingBoxVisitor : public ElementVisitor
 {
     BoundingBox boundingBox;
 
-    void visitNode(const Node& node) { boundingBox.expand(node.coordinate); }
+    void visitNode(const Node& node)
+    {
+        boundingBox.expand(node.coordinate);
+    }
 
-    void visitWay(const Way& way) { boundingBox.expand(way.coordinates.cbegin(), way.coordinates.cend()); }
+    void visitWay(const Way& way)
+    {
+        boundingBox.expand(way.coordinates.cbegin(), way.coordinates.cend());
+    }
 
-    void visitArea(const Area& area) { boundingBox.expand(area.coordinates.cbegin(), area.coordinates.cend()); }
+    void visitArea(const Area& area)
+    {
+        boundingBox.expand(area.coordinates.cbegin(), area.coordinates.cend());
+    }
 
     void visitRelation(const Relation& relation)
     {
@@ -38,8 +47,11 @@ struct BoundingBoxVisitor : public ElementVisitor
 struct GeometryVisitor : public ElementVisitor
 {
     const BoundingBox& boundingBox;
+    bool isInside;
 
-    GeometryVisitor(const BoundingBox& bbox) : boundingBox(bbox)
+    GeometryVisitor(const BoundingBox& bbox) :
+        boundingBox(bbox),
+        isInside(false)
     {
     }
 
@@ -69,7 +81,7 @@ ElementStore::~ElementStore()
 {
 }
 
-bool ElementStore::store(const utymap::entities::Element& element)
+bool ElementStore::store(const Element& element)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
@@ -91,10 +103,12 @@ bool ElementStore::store(const utymap::entities::Element& element)
 
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
-    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+    auto tileRangeVisitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         GeometryVisitor geometryVisitor(quadKeyBbox);
         element.accept(geometryVisitor);
-        store(element, quadKey);
+        if (geometryVisitor.isInside) {
+            store(element, quadKey);
+        }
     };
-    GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
+    GeoUtils::visitTileRange(elementBbox, levelOfDetails, tileRangeVisitor);
 }
