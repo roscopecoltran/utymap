@@ -11,11 +11,13 @@
 #include "index/ElementStore.hpp"
 #include "index/StyleFilter.hpp"
 #include "index/GeoUtils.hpp"
+#include "meshing/clipper.hpp"
 
 using namespace utymap;
-using namespace utymap::index;
 using namespace utymap::entities;
 using namespace utymap::formats;
+
+namespace utymap { namespace index {
 
 // Creates bounding box of given element.
 struct BoundingBoxVisitor : public ElementVisitor
@@ -44,23 +46,66 @@ struct BoundingBoxVisitor : public ElementVisitor
 };
 
 // Modifies geometry of element by bounding box clipping
-struct GeometryVisitor : public ElementVisitor
+class ElementGeometryClipper : private ElementVisitor
 {
-    const BoundingBox& boundingBox;
-    bool isInside;
+public:
 
-    GeometryVisitor(const BoundingBox& bbox) :
-        boundingBox(bbox),
-        isInside(false)
+    ElementGeometryClipper(ElementStore& elementStore) :
+        elementStore_(elementStore),
+        clipper_(),
+        quadKey_(nullptr),
+        quadKeyBbox_(nullptr)
     {
     }
 
+    void clip(const Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox)
+    {
+        quadKey_ = &quadKey;
+        quadKeyBbox_ = &quadKeyBbox;
+        element.accept(*this);
+    }
+
+private:
+
     void visitNode(const Node& node)
     {
+        if (quadKeyBbox_->contains(node.coordinate)) {
+            elementStore_.store(node, *quadKey_);
+        }
     }
 
     void visitWay(const Way& way)
     {
+        ClipperLib::Paths solution;
+        ClipperLib::Path wayShape;
+        wayShape.reserve(way.coordinates.size());
+        bool shouldBeTruncated = false;
+        for (const GeoCoordinate& coord : way.coordinates) {
+            shouldBeTruncated |= !quadKeyBbox_->contains(coord);
+            wayShape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
+        }
+
+        // all geometry inside current quadkey: no need to truncate.
+        if (!shouldBeTruncated) {
+            elementStore_.store(way, *quadKey_);
+            return;
+        }
+
+        clipper_.AddPath(wayShape, ClipperLib::ptSubject, false);
+        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
+        clipper_.Execute(ClipperLib::ctIntersection, solution);
+        clipper_.Clear();
+
+        // TODO it is possible that result should be stored as relation (collection of ways)
+
+        /*Way clippedWay;
+        clippedWay.id = way.id;
+        clippedWay.tags = way.tags;
+        clippedWay.coordinates.reserve(solution.size());
+
+        for (const auto& point : solution) {
+            clippedWay.coordinates.push_back(GeoCoordinate(point. / Scale, point.X / Scale))
+        }*/
     }
 
     void visitArea(const Area& area)
@@ -70,6 +115,26 @@ struct GeometryVisitor : public ElementVisitor
     void visitRelation(const Relation& relation)
     {
     }
+
+    ClipperLib::Path createPathFromBoundingBox()
+    {
+        double xMin = quadKeyBbox_->minPoint.longitude, yMin = quadKeyBbox_->minPoint.latitude,
+            xMax = quadKeyBbox_->maxPoint.longitude, yMax = quadKeyBbox_->maxPoint.latitude;
+        ClipperLib::Path rect;
+        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMin*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMin*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMax*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMax*Scale));
+        return std::move(rect);
+    }
+
+    const double Scale = 1E8; // max precision for Lat/Lon
+    const double DoubleScale = Scale * Scale;
+
+    ElementStore& elementStore_;
+    ClipperLib::Clipper clipper_;
+    const QuadKey* quadKey_;
+    const BoundingBox* quadKeyBbox_;
 };
 
 ElementStore::ElementStore(const StyleFilter& styleFilter) :
@@ -103,12 +168,11 @@ bool ElementStore::store(const Element& element)
 
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
+    ElementGeometryClipper geometryClipper(*this);
     auto tileRangeVisitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-        GeometryVisitor geometryVisitor(quadKeyBbox);
-        element.accept(geometryVisitor);
-        if (geometryVisitor.isInside) {
-            store(element, quadKey);
-        }
+        geometryClipper.clip(element, quadKey, quadKeyBbox);
     };
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, tileRangeVisitor);
 }
+
+}}
