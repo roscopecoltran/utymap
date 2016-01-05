@@ -53,7 +53,7 @@ bool ElementStore::store(const utymap::entities::Element& element)
             element.accept(geometryVisitor);
         }
         storeInTileRange(element, geometryVisitor.boundingBox, lod);
-        wasStored = true; 
+        wasStored = true;
     }
 
     // NOTE still might be clipped and then skipped
@@ -62,10 +62,9 @@ bool ElementStore::store(const utymap::entities::Element& element)
 
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
 {
-    ElementVisitor& elementVisitor = getElementVisitor();
     auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         // TODO use clipper to clip polygon by quadkey bounding box
-        element.accept(elementVisitor);
+        store(element, quadKey);
     };
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }

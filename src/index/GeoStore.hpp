@@ -30,7 +30,7 @@ public:
     void registerStore(const std::string& storeKey, ElementStore& store);
 
     // Adds element to selected store.
-    void add(const std::string& storeKey, const  utymap::entities::Element& element);
+    void add(const std::string& storeKey, const utymap::entities::Element& element);
 
     // Adds elements from given path to selected store.
     void add(const std::string& storeKey, const std::string& path);

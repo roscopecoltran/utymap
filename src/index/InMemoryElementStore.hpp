@@ -20,8 +20,7 @@ public:
 
 protected:
     const StyleFilter& getStyleFilter() const;
-
-    utymap::entities::ElementVisitor& getElementVisitor() const;
+    void store(const utymap::entities::Element& element, const QuadKey& quadKey);
 
 private:
     class InMemoryElementStoreImpl;

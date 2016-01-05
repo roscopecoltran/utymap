@@ -2,6 +2,7 @@
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
@@ -27,12 +28,12 @@ public:
 protected:
     // Returns style filter.
     virtual const StyleFilter& getStyleFilter() const = 0;
-    // Gets element visitor.
-    virtual utymap::entities::ElementVisitor& getElementVisitor() const = 0;
+    // Stores element in given quadkey.
+    virtual void store(const utymap::entities::Element& element, const QuadKey& quadKey) = 0;
 
 private:
-    void storeInTileRange(const utymap::entities::Element& element, 
-                          const BoundingBox& elementBbox, 
+    void storeInTileRange(const utymap::entities::Element& element,
+                          const BoundingBox& elementBbox,
                           int levelOfDetails);
 };
 

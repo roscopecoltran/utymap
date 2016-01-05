@@ -15,7 +15,8 @@ class PersistentElementStore::PersistentElementStoreImpl : public ElementVisitor
 public:
     PersistentElementStoreImpl(const std::string& path, const StyleFilter& styleFilter) :
         path_(path),
-        styleFilter_(styleFilter)
+        styleFilter_(styleFilter),
+        currentQuadKey_()
     {
     }
 
@@ -37,9 +38,12 @@ public:
 
     inline const StyleFilter& getStyleFilter() const { return styleFilter_; }
 
+    void setQuadKey(const QuadKey& quadKey) { currentQuadKey_ = quadKey; }
+
 private:
     std::string path_;
     const StyleFilter& styleFilter_;
+    QuadKey currentQuadKey_;
 };
 
 PersistentElementStore::PersistentElementStore(const std::string& path, const StyleFilter& styleFilter) :
@@ -52,13 +56,13 @@ PersistentElementStore::~PersistentElementStore()
 {
 }
 
-
 const StyleFilter& PersistentElementStore::getStyleFilter() const
 {
     return pimpl_->getStyleFilter();
 }
 
-utymap::entities::ElementVisitor& PersistentElementStore::getElementVisitor() const
+void PersistentElementStore::store(const utymap::entities::Element& element, const QuadKey& quadKey)
 {
-    return *pimpl_;
+    pimpl_->setQuadKey(quadKey);
+    element.accept(*pimpl_);
 }
