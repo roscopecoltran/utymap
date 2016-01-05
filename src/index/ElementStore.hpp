@@ -24,7 +24,7 @@ public:
 
     virtual ~ElementStore();
 
-    // Stores element with given polygon and tags in storage.
+    // Stores element in storage.
     bool store(const utymap::entities::Element& element);
 
 protected:

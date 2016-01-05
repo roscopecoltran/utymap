@@ -19,7 +19,6 @@ public:
     ~InMemoryElementStore();
 
 protected:
-    const StyleFilter& getStyleFilter() const;
     void store(const utymap::entities::Element& element, const QuadKey& quadKey);
 
 private:
