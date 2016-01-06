@@ -6,7 +6,6 @@
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <memory>
@@ -17,7 +16,7 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    ElementStore(const utymap::mapcss::StyleProvider& styleProvider);
+    ElementStore(const utymap::mapcss::StyleProvider& styleProvider, utymap::index::StringTable& stringTable);
 
     virtual ~ElementStore();
 
@@ -32,9 +31,11 @@ private:
     friend class ElementGeometryClipper;
     void storeInTileRange(const utymap::entities::Element& element,
                           const BoundingBox& elementBbox,
-                          int levelOfDetails);
+                          int levelOfDetails,
+                          bool shoudClip);
 
     const utymap::mapcss::StyleProvider& styleProvider_;
+    utymap::index::StringTable& stringTable_;
 };
 
 }}

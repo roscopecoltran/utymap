@@ -42,8 +42,8 @@ private:
     QuadKey currentQuadKey_;
 };
 
-InMemoryElementStore::InMemoryElementStore(const StyleProvider& styleProvider) :
-    ElementStore(styleProvider),
+InMemoryElementStore::InMemoryElementStore(const StyleProvider& styleProvider, StringTable& stringTable) :
+ElementStore(styleProvider, stringTable),
     pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
         new InMemoryElementStore::InMemoryElementStoreImpl()))
 {

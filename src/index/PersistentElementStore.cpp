@@ -43,8 +43,8 @@ private:
     QuadKey currentQuadKey_;
 };
 
-PersistentElementStore::PersistentElementStore(const std::string& path, const StyleProvider& styleProvider) :
-    ElementStore(styleProvider),
+PersistentElementStore::PersistentElementStore(const std::string& path, const StyleProvider& styleProvider, StringTable& stringTable) :
+    ElementStore(styleProvider, stringTable),
     pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
         new PersistentElementStore::PersistentElementStoreImpl(path)))
 {

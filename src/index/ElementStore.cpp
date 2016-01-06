@@ -60,7 +60,7 @@ public:
     {
     }
 
-    void clip(const Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox)
+    void clipAndStore(const Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox)
     {
         quadKey_ = &quadKey;
         quadKeyBbox_ = &quadKeyBbox;
@@ -139,8 +139,9 @@ private:
     const BoundingBox* quadKeyBbox_;
 };
 
-ElementStore::ElementStore(const StyleProvider& styleProvider) :
-    styleProvider_(styleProvider)
+ElementStore::ElementStore(const StyleProvider& styleProvider, StringTable& stringTable) :
+    styleProvider_(styleProvider),
+    stringTable_(stringTable)
 {
 }
 
@@ -152,6 +153,7 @@ bool ElementStore::store(const Element& element)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
+    uint32_t clipKeyId = stringTable_.getId("clip");
     for (int lod = GeoUtils::MinLevelOfDetails; lod <= GeoUtils::MaxLevelOfDetails; ++lod) {
         // skip element for this lod
         Style style = styleProvider_.forElement(element, lod);
@@ -161,7 +163,7 @@ bool ElementStore::store(const Element& element)
         if (!bboxVisitor.boundingBox.isValid()) {
             element.accept(bboxVisitor);
         }
-        storeInTileRange(element, bboxVisitor.boundingBox, lod);
+        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId));
         wasStored = true;
     }
 
@@ -169,11 +171,14 @@ bool ElementStore::store(const Element& element)
     return wasStored;
 }
 
-void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails)
+void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shoudClip)
 {
     ElementGeometryClipper geometryClipper(*this);
     auto tileRangeVisitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-        geometryClipper.clip(element, quadKey, quadKeyBbox);
+        if (shoudClip) 
+            geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
+        else 
+            store(element, quadKey);
     };
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, tileRangeVisitor);
 }

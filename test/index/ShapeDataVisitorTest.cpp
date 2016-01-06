@@ -26,7 +26,7 @@ struct Formats_ShapeDataVisitorFixture
         std::ifstream styleFile(TEST_MAPCSS_DEFAULT);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         BOOST_TEST_CHECK(parser.getError().empty());
-        storePtr = new InMemoryElementStore(*styleProviderPtr);
+        storePtr = new InMemoryElementStore(*styleProviderPtr, *stringTablePtr);
     }
 
     ~Formats_ShapeDataVisitorFixture()

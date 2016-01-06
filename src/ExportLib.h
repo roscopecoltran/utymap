@@ -61,8 +61,8 @@ extern "C"
         stringTablePtr = new utymap::index::StringTable(stringPath);
         styleProviderPtr = new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr);
 
-        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleProviderPtr);
-        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleProviderPtr);
+        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleProviderPtr, *stringTablePtr);
+        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleProviderPtr, *stringTablePtr);
         geoStorePtr = new utymap::index::GeoStore(*styleProviderPtr, *stringTablePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
