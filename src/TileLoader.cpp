@@ -52,12 +52,12 @@ private:
 
 public:
 
-    TileLoaderImpl(GeoStore& geoStore, const StyleSheet& stylesheet, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
+    TileLoaderImpl(GeoStore& geoStore, const StyleProvider& styleProvider, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
         geoStore_(geoStore),
         eleProvider_(eleProvider),
         stringTable_(stringTable)
     {
-        createBackgroundProperties(stylesheet);
+        createBackgroundProperties(styleProvider);
     }
 
     void loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
@@ -86,31 +86,23 @@ private:
         );
     }
 
-    void createBackgroundProperties(const StyleSheet& stylesheet)
+    void createBackgroundProperties(const StyleProvider& styleProvider)
     {
-        // TODO use StyleProvider instead
-        for (const auto& rule : stylesheet.rules) {
-            // NOTE expecting that canvas is always first in list of selectors
-            const auto& selector = rule.selectors[0];
-            if (selector.name != "canvas") continue;
+        for (int lod = GeoUtils::MinLevelOfDetails; lod <= GeoUtils::MaxLevelOfDetails; ++lod) {
+            Style style = styleProvider.forCanvas(lod);
             MeshRegion::Properties properties;
-            properties.eleNoiseFreq = std::stof(getDeclaration(rule, BackgroundEleNoiseFreq).value);
-            properties.colorNoiseFreq = std::stof(getDeclaration(rule, BackgroundColorNoiseFreq).value);
+            properties.eleNoiseFreq = std::stof(getStyleValue(BackgroundEleNoiseFreq, style));
+            properties.colorNoiseFreq = std::stof(getStyleValue(BackgroundColorNoiseFreq, style));
+            backgroundPropertiesMap_[lod] = properties;
 
-            for (int lod = selector.zoom.start; lod <= selector.zoom.end; ++lod) {
-                backgroundPropertiesMap_[lod] = properties;
-            }
         }
     }
 
-    inline Declaration getDeclaration(const Rule& rule, const std::string& key) const
+    inline std::string getStyleValue(const std::string& key, const Style& style) 
     {
-        for (const auto& declaration : rule.declarations) {
-            if (declaration.key == key)
-                return declaration;
-        }
-        throw utymap::MapCssException("Cannot find declaration:" + key + " in rule:" 
-            + utymap::utils::toString(rule));
+        uint32_t keyId = stringTable_.getId(key);
+        uint32_t valueId = style.get(keyId);
+        return std::move(stringTable_.getString(valueId));
     }
 
     GeoStore& geoStore_;
@@ -125,8 +117,8 @@ void TileLoader::loadTile(const QuadKey& quadKey, const std::function<void(Mesh<
     pimpl_->loadTile(quadKey, meshFunc, elementFunc);
 }
 
-TileLoader::TileLoader(GeoStore& geoStore, const StyleSheet& stylesheet, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
-    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, stylesheet, stringTable, eleProvider)))
+TileLoader::TileLoader(GeoStore& geoStore, const StyleProvider& styleProvider, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
+    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, styleProvider, stringTable, eleProvider)))
 {
 }
 

@@ -21,17 +21,17 @@ public:
 
     bool isApplicable;
 
-    inline bool has(uint32_t key)
+    inline bool has(uint32_t key) const 
     {
         return declarations_.find(key) != declarations_.end();
     }
 
-    inline void put(uint32_t key, uint32_t value)
+    inline void put(uint32_t key, uint32_t value) 
     {
         declarations_[key] = value;
     }
 
-    inline uint32_t get(uint32_t key)
+    inline uint32_t get(uint32_t key) const
     {
         auto it = declarations_.find(key);
         if (it == declarations_.end())

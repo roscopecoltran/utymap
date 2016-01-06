@@ -138,9 +138,10 @@ class StyleProvider::StyleProviderImpl
 public:
 
     FilterCollection filters;
+    StringTable& stringTable;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
-        stringTable_(stringTable),
+        stringTable(stringTable),
         filters()
     {
         filters.nodes.reserve(24);
@@ -168,16 +169,16 @@ public:
                     else
                         std::domain_error("Unexpected condition operation:" + condition.operation);
 
-                    c.key = stringTable_.getId(condition.key);
-                    c.value = stringTable_.getId(condition.value);
+                    c.key = stringTable.getId(condition.key);
+                    c.value = stringTable.getId(condition.value);
                     filter.conditions.push_back(c);
                 }
 
                 filter.declarations.reserve(rule.declarations.size());
                 for (auto i = 0; i < rule.declarations.size(); ++i) {
                     Declaration declaration = rule.declarations[i];
-                    uint32_t key = stringTable_.getId(declaration.key);
-                    uint32_t value = stringTable_.getId(declaration.value);
+                    uint32_t key = stringTable.getId(declaration.key);
+                    uint32_t value = stringTable.getId(declaration.value);
                     filter.declarations[key] = value;
                 }
 
@@ -189,9 +190,6 @@ public:
             }
         }
     }
-
-private:
-    StringTable& stringTable_;
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
@@ -203,9 +201,22 @@ StyleProvider::~StyleProvider()
 {
 }
 
-Style utymap::mapcss::StyleProvider::get(const Element& element, int levelOfDetails) const
+Style utymap::mapcss::StyleProvider::forElement(const Element& element, int levelOfDetails) const
 {
     StyleBuilder builder = { pimpl_->filters, levelOfDetails };
     element.accept(builder);
     return std::move(builder.get());
+}
+
+Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const
+{
+    Style style;
+    for (const auto& rule : pimpl_->filters.canvases[levelOfDetails]) {
+        for (const auto& filter : pimpl_->filters.canvases[levelOfDetails]) {
+            for (const auto& declaration : filter.declarations) {
+                style.put(declaration.first, declaration.second);
+            }
+        }
+    }
+    return std::move(style);
 }

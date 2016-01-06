@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenIsApplicable_ThenReturnTrue)
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
     Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
 
-    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->forElement(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result);
 }
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenIsAppli
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
     Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
 
-    bool result = styleProviderPtr->get(node, 2).isApplicable;
+    bool result = styleProviderPtr->forElement(node, 2).isApplicable;
 
     BOOST_CHECK(result == false);
 }
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenIsApplicable_ThenReturnTrue)
             std::make_pair("address", "Invalidstr.")
         });
 
-    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->forElement(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result);
 }
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenIsApplicable_ThenReturnFals
             std::make_pair("address", "Invalidstr.")
         });
 
-    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->forElement(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result == false);
 }

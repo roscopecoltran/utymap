@@ -152,9 +152,9 @@ bool ElementStore::store(const Element& element)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
-    for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
+    for (int lod = GeoUtils::MinLevelOfDetails; lod <= GeoUtils::MaxLevelOfDetails; ++lod) {
         // skip element for this lod
-        Style style = styleProvider_.get(element, lod);
+        Style style = styleProvider_.forElement(element, lod);
         if (!style.isApplicable)
             continue;
         // initialize bounding box only once

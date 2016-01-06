@@ -19,7 +19,11 @@ public:
 
     ~StyleProvider();
 
-     utymap::mapcss::Style get(const utymap::entities::Element&, int levelOfDetails) const;
+    // Creates style for given element at given level of details.
+    utymap::mapcss::Style forElement(const utymap::entities::Element&, int levelOfDetails) const;
+
+    // Creates style for canvas at given level of details.
+    utymap::mapcss::Style forCanvas(int levelOfDetails) const;
 
 private:
     class StyleProviderImpl;

@@ -17,9 +17,6 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    static const int MinLevelOfDetails = 1;
-    static const int MaxLevelOfDetails = 16;
-
     ElementStore(const utymap::mapcss::StyleProvider& styleProvider);
 
     virtual ~ElementStore();

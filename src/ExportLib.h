@@ -58,15 +58,15 @@ extern "C"
             return;
         }
 
-        eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
-
         stringTablePtr = new utymap::index::StringTable(stringPath);
         styleProviderPtr = new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr);
 
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleProviderPtr);
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleProviderPtr);
         geoStorePtr = new utymap::index::GeoStore(*styleProviderPtr, *stringTablePtr);
-        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, stylesheet, *stringTablePtr, *eleProviderPtr);
+
+        eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
+        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *styleProviderPtr, *stringTablePtr, *eleProviderPtr);
 
         geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
         geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);

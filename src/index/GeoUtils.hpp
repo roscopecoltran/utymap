@@ -18,6 +18,8 @@ namespace utymap { namespace index {
 class GeoUtils
 {
 public:
+    static const int MinLevelOfDetails = 1;
+    static const int MaxLevelOfDetails = 16;
 
     // Converts Latitude/Longitude to quadkey
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
@@ -38,7 +40,7 @@ public:
         maxPoint.latitude = tileYToLat(quadKey.tileY, levelOfDetail);
         minPoint.longitude = tileXToLon(quadKey.tileX, levelOfDetail);
         maxPoint.longitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
-        
+
         return BoundingBox { minPoint, maxPoint };
     }
 
