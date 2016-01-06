@@ -9,6 +9,7 @@
 using namespace utymap;
 using namespace utymap::index;
 using namespace utymap::entities;
+using namespace utymap::mapcss;
 
 class PersistentElementStore::PersistentElementStoreImpl : public ElementVisitor
 {
@@ -42,8 +43,8 @@ private:
     QuadKey currentQuadKey_;
 };
 
-PersistentElementStore::PersistentElementStore(const std::string& path, const StyleFilter& styleFilter) :
-    ElementStore(styleFilter),
+PersistentElementStore::PersistentElementStore(const std::string& path, const StyleProvider& styleProvider) :
+    ElementStore(styleProvider),
     pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
         new PersistentElementStore::PersistentElementStoreImpl(path)))
 {

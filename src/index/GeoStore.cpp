@@ -15,8 +15,8 @@ class GeoStore::GeoStoreImpl
 {
 public:
 
-    GeoStoreImpl(const StyleFilter& styleFilter, StringTable& stringTable) :
-        styleFilter_(styleFilter),
+    GeoStoreImpl(const StyleProvider& styleProvider, StringTable& stringTable) :
+        styleProvider_(styleProvider),
         stringTable_(stringTable)
     {
     }
@@ -56,7 +56,7 @@ public:
     }
 
 private:
-    const StyleFilter& styleFilter_;
+    const StyleProvider& styleProvider_;
     StringTable& stringTable_;
 
     std::unordered_map<std::string, ElementStore*> storeMap_;
@@ -68,8 +68,8 @@ private:
     }
 };
 
-GeoStore::GeoStore(const StyleFilter& styleFilter, StringTable& stringTable) :
-pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(styleFilter, stringTable)))
+GeoStore::GeoStore(const StyleProvider& styleProvider, StringTable& stringTable) :
+    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(styleProvider, stringTable)))
 {
 }
 

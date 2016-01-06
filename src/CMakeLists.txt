@@ -25,12 +25,12 @@ set(HEADER_FILES
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
                 index/PersistentElementStore.hpp
-                index/Style.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
-                index/StyleFilter.hpp
-                mapcss/StyleSheet.hpp
                 mapcss/MapCssParser.hpp
+                mapcss/StyleSheet.hpp
+                mapcss/Style.hpp
+                mapcss/StyleProvider.hpp
                 meshing/clipper.hpp
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
@@ -57,8 +57,8 @@ add_library (UtyMap
                 index/InMemoryElementStore.cpp
                 index/PersistentElementStore.cpp
                 index/StringTable.cpp
-                index/StyleFilter.cpp
                 mapcss/MapCssParser.cpp
+                mapcss/StyleProvider.cpp
                 mapcss/StyleSheet.cpp
                 meshing/clipper.cpp
                 meshing/Triangle.c

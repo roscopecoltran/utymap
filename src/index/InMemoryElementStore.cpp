@@ -9,6 +9,7 @@
 using namespace utymap;
 using namespace utymap::index;
 using namespace utymap::entities;
+using namespace utymap::mapcss;
 
 class InMemoryElementStore::InMemoryElementStoreImpl : public ElementVisitor
 {
@@ -41,8 +42,8 @@ private:
     QuadKey currentQuadKey_;
 };
 
-InMemoryElementStore::InMemoryElementStore(const StyleFilter& styleFilter) :
-    ElementStore(styleFilter),
+InMemoryElementStore::InMemoryElementStore(const StyleProvider& styleProvider) :
+    ElementStore(styleProvider),
     pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
         new InMemoryElementStore::InMemoryElementStoreImpl()))
 {

@@ -30,8 +30,8 @@ add_executable (TestLauncher
                         index/GeoUtilsTest.cpp
                         index/ShapeDataVisitorTest.cpp
                         index/StringTableTest.cpp
-                        index/StyleFilterTest.cpp
                         mapcss/MapCssParserTest.cpp
+                        mapcss/StyleProviderTest.cpp
                         meshing/MeshBuilderTest.cpp
                         terrain/LineGridSplitterTest.cpp
                         terrain/TerraBuilderTest.cpp

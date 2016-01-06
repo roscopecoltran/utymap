@@ -8,8 +8,9 @@
 #include <string>
 #include <unordered_map>
 
-namespace utymap { namespace index {
+namespace utymap { namespace mapcss {
 
+// Represents style for element.
 struct Style
 {
 public:
@@ -20,14 +21,14 @@ public:
 
     bool isApplicable;
 
-    inline bool has(uint32_t key) 
-    { 
-        return declarations_.find(key) != declarations_.end(); 
+    inline bool has(uint32_t key)
+    {
+        return declarations_.find(key) != declarations_.end();
     }
 
-    inline void put(uint32_t key, uint32_t value) 
-    { 
-        declarations_[key] = value; 
+    inline void put(uint32_t key, uint32_t value)
+    {
+        declarations_[key] = value;
     }
 
     inline uint32_t get(uint32_t key)

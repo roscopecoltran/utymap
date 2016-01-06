@@ -4,6 +4,7 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "index/ElementStore.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 #include <string>
 #include <memory>
@@ -14,7 +15,7 @@ namespace utymap { namespace index {
 class InMemoryElementStore : public ElementStore
 {
 public:
-    InMemoryElementStore(const StyleFilter& styleFilter);
+    InMemoryElementStore(const utymap::mapcss::StyleProvider& styleProvider);
 
     ~InMemoryElementStore();
 

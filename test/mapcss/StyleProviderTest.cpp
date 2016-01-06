@@ -1,4 +1,8 @@
-#include "index/StyleFilter.cpp"
+#include "entities/Element.hpp"
+#include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Relation.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -6,26 +10,27 @@
 #include <initializer_list>
 #include <utility>
 
+using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
-struct Index_StyleFilterFixture
+struct Index_StyleProviderFixture
 {
-    Index_StyleFilterFixture() :
+    Index_StyleProviderFixture() :
         tablePtr(new StringTable("")),
         stylesheetPtr(new StyleSheet()),
-        styleFilterPtr(nullptr)
+        styleProviderPtr(nullptr)
     {
         BOOST_TEST_MESSAGE("setup fixture");
         stylesheetPtr->rules.push_back(Rule());
     }
 
-    ~Index_StyleFilterFixture()
+    ~Index_StyleProviderFixture()
     {
         BOOST_TEST_MESSAGE("teardown fixture");
         delete stylesheetPtr;
         delete tablePtr;
-        delete styleFilterPtr;
+        delete styleProviderPtr;
         std::remove("string.idx");
         std::remove("string.dat");
     }
@@ -41,7 +46,7 @@ struct Index_StyleFilterFixture
             selector.conditions.push_back(condition);
         }
         stylesheetPtr->rules[0].selectors.push_back(selector);
-        styleFilterPtr = new StyleFilter(*stylesheetPtr, *tablePtr);
+        styleProviderPtr = new StyleProvider(*stylesheetPtr, *tablePtr);
     }
 
     template <typename T>
@@ -59,10 +64,10 @@ struct Index_StyleFilterFixture
 
     StringTable* tablePtr;
     StyleSheet* stylesheetPtr;
-    StyleFilter* styleFilterPtr;
+    StyleProvider* styleProviderPtr;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Index_StyleFilter, Index_StyleFilterFixture)
+BOOST_FIXTURE_TEST_SUITE(Index_StyleProvider, Index_StyleProviderFixture)
 
 BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenIsApplicable_ThenReturnTrue)
 {
@@ -70,7 +75,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenIsApplicable_ThenReturnTrue)
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
     Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
 
-    bool result = styleFilterPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result);
 }
@@ -81,7 +86,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenIsAppli
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
     Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
 
-    bool result = styleFilterPtr->get(node, 2).isApplicable;
+    bool result = styleProviderPtr->get(node, 2).isApplicable;
 
     BOOST_CHECK(result == false);
 }
@@ -100,7 +105,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenIsApplicable_ThenReturnTrue)
             std::make_pair("address", "Invalidstr.")
         });
 
-    bool result = styleFilterPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result);
 }
@@ -119,7 +124,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenIsApplicable_ThenReturnFals
             std::make_pair("address", "Invalidstr.")
         });
 
-    bool result = styleFilterPtr->get(node, zoomLevel).isApplicable;
+    bool result = styleProviderPtr->get(node, zoomLevel).isApplicable;
 
     BOOST_CHECK(result == false);
 }

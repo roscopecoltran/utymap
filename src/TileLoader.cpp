@@ -88,6 +88,7 @@ private:
 
     void createBackgroundProperties(const StyleSheet& stylesheet)
     {
+        // TODO use StyleProvider instead
         for (const auto& rule : stylesheet.rules) {
             // NOTE expecting that canvas is always first in list of selectors
             const auto& selector = rule.selectors[0];
@@ -125,7 +126,7 @@ void TileLoader::loadTile(const QuadKey& quadKey, const std::function<void(Mesh<
 }
 
 TileLoader::TileLoader(GeoStore& geoStore, const StyleSheet& stylesheet, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
-pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, stylesheet, stringTable, eleProvider)))
+    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, stylesheet, stringTable, eleProvider)))
 {
 }
 

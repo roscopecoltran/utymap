@@ -4,6 +4,7 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "index/ElementStore.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 #include <string>
 #include <memory>
@@ -14,7 +15,7 @@ namespace utymap { namespace index {
 class PersistentElementStore : public ElementStore
 {
 public:
-    PersistentElementStore(const std::string& path, const StyleFilter& styleFilter);
+    PersistentElementStore(const std::string& path, const utymap::mapcss::StyleProvider& styleProvider);
 
     ~PersistentElementStore();
 

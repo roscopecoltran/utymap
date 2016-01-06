@@ -7,7 +7,7 @@
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/StringTable.hpp"
-#include "index/StyleFilter.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 #include <memory>
 
@@ -20,7 +20,7 @@ public:
     static const int MinLevelOfDetails = 1;
     static const int MaxLevelOfDetails = 16;
 
-    ElementStore(const StyleFilter& styleFilter);
+    ElementStore(const utymap::mapcss::StyleProvider& styleProvider);
 
     virtual ~ElementStore();
 
@@ -37,7 +37,7 @@ private:
                           const BoundingBox& elementBbox,
                           int levelOfDetails);
 
-    const StyleFilter& styleFilter_;
+    const utymap::mapcss::StyleProvider& styleProvider_;
 };
 
 }}

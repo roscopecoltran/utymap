@@ -9,13 +9,15 @@
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
-#include "index/StyleFilter.hpp"
 #include "index/GeoUtils.hpp"
+#include "mapcss/Style.hpp"
+#include "mapcss/StyleProvider.hpp"
 #include "meshing/clipper.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::formats;
+using namespace utymap::mapcss;
 
 namespace utymap { namespace index {
 
@@ -137,8 +139,8 @@ private:
     const BoundingBox* quadKeyBbox_;
 };
 
-ElementStore::ElementStore(const StyleFilter& styleFilter) :
-     styleFilter_(styleFilter)
+ElementStore::ElementStore(const StyleProvider& styleProvider) :
+    styleProvider_(styleProvider)
 {
 }
 
@@ -152,7 +154,7 @@ bool ElementStore::store(const Element& element)
     bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
-        Style style = styleFilter_.get(element, lod);
+        Style style = styleProvider_.get(element, lod);
         if (!style.isApplicable)
             continue;
         // initialize bounding box only once

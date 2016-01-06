@@ -11,8 +11,8 @@
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
 #include "index/StringTable.hpp"
-#include "index/StyleFilter.hpp"
 #include "mapcss/MapCssParser.hpp"
+#include "mapcss/StyleProvider.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 
@@ -25,7 +25,7 @@ static utymap::index::GeoStore* geoStorePtr = nullptr;
 static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
 static utymap::index::StringTable* stringTablePtr = nullptr;
-static utymap::index::StyleFilter* styleFilterPtr = nullptr;
+static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
 static utymap::heightmap::ElevationProvider<double>* eleProviderPtr = nullptr;
 
 const std::string inMemoryStorageKey;
@@ -61,11 +61,11 @@ extern "C"
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
 
         stringTablePtr = new utymap::index::StringTable(stringPath);
-        styleFilterPtr = new utymap::index::StyleFilter(stylesheet, *stringTablePtr);
+        styleProviderPtr = new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr);
 
-        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleFilterPtr);
-        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleFilterPtr);
-        geoStorePtr = new utymap::index::GeoStore(*styleFilterPtr, *stringTablePtr);
+        inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleProviderPtr);
+        persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleProviderPtr);
+        geoStorePtr = new utymap::index::GeoStore(*styleProviderPtr, *stringTablePtr);
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, stylesheet, *stringTablePtr, *eleProviderPtr);
 
         geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
@@ -79,7 +79,7 @@ extern "C"
         delete persistentStorePtr;
         delete inMemoryStorePtr;
         delete stringTablePtr;
-        delete styleFilterPtr;
+        delete styleProviderPtr;
         delete eleProviderPtr;
     }
 
