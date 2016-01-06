@@ -63,13 +63,13 @@ extern "C"
 
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*styleProviderPtr, *stringTablePtr);
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *styleProviderPtr, *stringTablePtr);
+        
         geoStorePtr = new utymap::index::GeoStore(*styleProviderPtr, *stringTablePtr);
+        geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
+        geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *styleProviderPtr, *stringTablePtr, *eleProviderPtr);
-
-        geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
-        geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);
     }
 
     void EXPORT_API cleanup()
