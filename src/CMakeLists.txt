@@ -25,6 +25,7 @@ set(HEADER_FILES
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
                 index/PersistentElementStore.hpp
+                index/Style.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
                 index/StyleFilter.hpp

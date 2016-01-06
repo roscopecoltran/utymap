@@ -4,6 +4,7 @@
 #include "StringTable.hpp"
 #include "entities/Element.hpp"
 #include "mapcss/Stylesheet.hpp"
+#include "index/Style.hpp"
 
 #include <memory>
 
@@ -13,13 +14,13 @@ namespace utymap { namespace index {
 class StyleFilter
 {
 public:
+
     StyleFilter(const utymap::mapcss::StyleSheet&,
                       utymap::index::StringTable&);
 
     ~StyleFilter();
 
-    //  Returns true if element is defined in stylesheet..
-    bool isApplicable(const utymap::entities::Element&, int levelOfDetails) const;
+    Style get(const utymap::entities::Element&, int levelOfDetails) const;
 
 private:
     class StyleFilterImpl;

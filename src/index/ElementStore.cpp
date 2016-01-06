@@ -152,7 +152,8 @@ bool ElementStore::store(const Element& element)
     bool wasStored = false;
     for (int lod = MinLevelOfDetails; lod <= MaxLevelOfDetails; ++lod) {
         // skip element for this lod
-        if (!styleFilter_.isApplicable(element, lod))
+        Style style = styleFilter_.get(element, lod);
+        if (!style.isApplicable)
             continue;
         // initialize bounding box only once
         if (!bboxVisitor.boundingBox.isValid()) {

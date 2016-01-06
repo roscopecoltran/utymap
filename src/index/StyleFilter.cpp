@@ -29,6 +29,7 @@ struct Condition
 struct Filter
 {
     std::vector<::Condition> conditions;
+    std::unordered_map<uint32_t, uint32_t> declarations;
 };
 
 // key: level of detais, value: filters for specific element type.
@@ -42,31 +43,31 @@ struct FilterCollection
     FilterMap canvases;
 };
 
-class StyleElementVisitor : public ElementVisitor
+class StyleBuilder : public ElementVisitor
 {
     typedef std::vector<Tag>::const_iterator TagIterator;
 public:
 
-    StyleElementVisitor(const FilterCollection& filters, int levelOfDetails) :
+    StyleBuilder(const FilterCollection& filters, int levelOfDetails) :
         filters_(filters),
         levelOfDetails_(levelOfDetails),
-        isApplicable_(false)
+        style_()
     {
     }
 
     inline void visitNode(const Node& node)
     {
-        isApplicable_ = check(node.tags, filters_.nodes);
+        build(node.tags, filters_.nodes);
     }
 
     inline void visitWay(const Way& way)
     {
-        isApplicable_ = check(way.tags, filters_.ways);
+        build(way.tags, filters_.ways);
     }
 
     inline void visitArea(const Area& area)
     {
-        isApplicable_ = check(area.tags, filters_.areas);
+        build(area.tags, filters_.areas);
     }
 
     inline void visitRelation(const Relation&)
@@ -101,27 +102,34 @@ public:
         return false;
     }
 
-    inline bool check(const std::vector<Tag>& tags, const FilterMap& filters)
+    inline void build(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {
             for (const Filter& filter : iter->second) {
-                bool isMatched = true;
-                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                    isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                for(auto it = filter.conditions.cbegin(); it != filter.conditions.cend(); ++it) {
+                    bool isMatched = true;
+                    for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
+                        isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                    }
+                    // merge declarations to style
+                    if (isMatched) {
+                        style_.isApplicable = true;
+                        for (auto& d : filter.declarations) {
+                            style_.put(d.first, d.second);
+                        }
+                    }
                 }
-                if (isMatched) return true;
             }
         }
-        return false;
     }
 
-    inline bool isApplicable() { return isApplicable_; }
+    inline Style get() { return style_; }
 
 private:
     const FilterCollection& filters_;
     int levelOfDetails_;
-    bool isApplicable_;
+    Style style_;
 };
 
 // Converts mapcss stylesheet to index optimized representation to speed search query up.
@@ -165,6 +173,14 @@ public:
                     filter.conditions.push_back(c);
                 }
 
+                filter.declarations.reserve(rule.declarations.size());
+                for (auto i = 0; i < rule.declarations.size(); ++i) {
+                    Declaration declaration = rule.declarations[i];
+                    uint32_t key = stringTable_.getId(declaration.key);
+                    uint32_t value = stringTable_.getId(declaration.value);
+                    filter.declarations[key] = value;
+                }
+
                 std::sort(filter.conditions.begin(), filter.conditions.end(),
                     [](const ::Condition& c1, const ::Condition& c2) { return c1.key > c2.key; });
                 for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
@@ -175,7 +191,6 @@ public:
     }
 
 private:
-
     StringTable& stringTable_;
 };
 
@@ -189,9 +204,9 @@ StyleFilter::~StyleFilter()
 {
 }
 
-bool utymap::index::StyleFilter::isApplicable(const Element& element, int levelOfDetails) const
+Style utymap::index::StyleFilter::get(const Element& element, int levelOfDetails) const
 {
-    StyleElementVisitor visitor = { pimpl_->filters, levelOfDetails };
-    element.accept(visitor);
-    return visitor.isApplicable();
+    StyleBuilder builder = { pimpl_->filters, levelOfDetails };
+    element.accept(builder);
+    return std::move(builder.get());
 }
