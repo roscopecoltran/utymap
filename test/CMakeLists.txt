@@ -27,6 +27,7 @@ add_executable (TestLauncher
                         formats/pbf/OsmPbfParserTest.cpp
                         formats/shape/ShapeParserTest.cpp
                         formats/xml/OsmXmlParserTest.cpp
+                        index/ElementStoreTest.cpp
                         index/GeoUtilsTest.cpp
                         index/ShapeDataVisitorTest.cpp
                         index/StringTableTest.cpp
