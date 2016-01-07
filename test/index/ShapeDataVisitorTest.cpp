@@ -2,8 +2,6 @@
 #include "formats/shape/ShapeParser.hpp"
 #include "index/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "mapcss/MapCssParser.hpp"
-#include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -21,11 +19,6 @@ struct Formats_ShapeDataVisitorFixture
         styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
     {
         BOOST_TEST_MESSAGE("setup fixture");
-
-        utymap::mapcss::Parser parser;
-        std::ifstream styleFile(TEST_MAPCSS_DEFAULT);
-        utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        BOOST_TEST_CHECK(parser.getError().empty());
         storePtr = new InMemoryElementStore(*styleProviderPtr, *stringTablePtr);
     }
 

@@ -1,6 +1,7 @@
 #ifndef INDEX_ELEMENTSTORE_HPP_DEFINED
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
+#include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
@@ -30,7 +31,7 @@ protected:
 private:
     friend class ElementGeometryClipper;
     void storeInTileRange(const utymap::entities::Element& element,
-                          const BoundingBox& elementBbox,
+                          const utymap::BoundingBox& elementBbox,
                           int levelOfDetails,
                           bool shoudClip);
 
