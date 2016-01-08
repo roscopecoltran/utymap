@@ -30,8 +30,9 @@ struct BoundingBox
     }
 
     inline bool isValid() {
-        return minPoint.latitude < maxPoint.latitude &&
-               minPoint.longitude < maxPoint.longitude;
+        // TODO possible that minLon > maxLon at some locations
+        return minPoint.latitude <= maxPoint.latitude &&
+               minPoint.longitude <= maxPoint.longitude;
     }
 
     // Expands bounding box using another bounding box.
@@ -75,18 +76,18 @@ struct BoundingBox
     inline bool contains(const GeoCoordinate& coordinate) const
     {
         return coordinate.latitude > minPoint.latitude && coordinate.longitude > minPoint.longitude &&
-            coordinate.latitude < maxPoint.latitude && coordinate.longitude < maxPoint.longitude;
+               coordinate.latitude < maxPoint.latitude && coordinate.longitude < maxPoint.longitude;
     }
 
     // Checks whether given bounding box intersects the current one.
     inline bool intersects(const BoundingBox& rhs) const
     {
-        double minX = minPoint.latitude < rhs.minPoint.latitude ? rhs.minPoint.latitude : minPoint.latitude;
-        double minY = minPoint.longitude < rhs.minPoint.longitude ? rhs.minPoint.longitude : minPoint.longitude;
-        double maxX = maxPoint.latitude > rhs.maxPoint.latitude ? rhs.maxPoint.latitude : maxPoint.latitude;
-        double maxY = maxPoint.longitude > rhs.maxPoint.longitude ? rhs.maxPoint.longitude : maxPoint.longitude;
+        double minLat = minPoint.latitude < rhs.minPoint.latitude ? rhs.minPoint.latitude : minPoint.latitude;
+        double minLon = minPoint.longitude < rhs.minPoint.longitude ? rhs.minPoint.longitude : minPoint.longitude;
+        double maxLat = maxPoint.latitude > rhs.maxPoint.latitude ? rhs.maxPoint.latitude : maxPoint.latitude;
+        double maxLon = maxPoint.longitude > rhs.maxPoint.longitude ? rhs.maxPoint.longitude : maxPoint.longitude;
 
-        return minX < maxX && minY < maxY;
+        return minLat <= maxLat && minLon <= maxLon;
     }
 };
 

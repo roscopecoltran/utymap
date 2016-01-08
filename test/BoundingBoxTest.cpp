@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(GivenIntersectBoundingBox_WhenIntersects_ThenReturnTrue)
 
 BOOST_AUTO_TEST_CASE(GivenOuterBoundingBox_WhenIntersects_ThenReturnFalse)
 {
-    const BoundingBox b(GeoCoordinate(10, 10), GeoCoordinate(15, 15));
+    const BoundingBox b(GeoCoordinate(11, 11), GeoCoordinate(15, 15));
 
     bool result = bbox.intersects(b);
 

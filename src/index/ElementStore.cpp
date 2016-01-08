@@ -78,7 +78,7 @@ private:
 
     void visitWay(const Way& way)
     {
-        ClipperLib::Paths solution;
+        
         ClipperLib::Path wayShape;
         wayShape.reserve(way.coordinates.size());
         bool shouldBeTruncated = false;
@@ -93,21 +93,27 @@ private:
             return;
         }
 
+        ClipperLib::PolyTree solution;
         clipper_.AddPath(wayShape, ClipperLib::ptSubject, false);
         clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
 
-        // TODO it is possible that result should be stored as relation (collection of ways)
-
-        /*Way clippedWay;
-        clippedWay.id = way.id;
-        clippedWay.tags = way.tags;
-        clippedWay.coordinates.reserve(solution.size());
-
-        for (const auto& point : solution) {
-            clippedWay.coordinates.push_back(GeoCoordinate(point. / Scale, point.X / Scale))
-        }*/
+        // way intersects border only once: store a copy with clipped geometry
+        if (solution.ChildCount() == 1) {
+            ClipperLib::PolyNode* node = solution.Childs[0];
+            Way clippedWay;
+            clippedWay.id = way.id;
+            clippedWay.tags = way.tags;
+            clippedWay.coordinates.reserve(node->Contour.size());
+            for (const auto& c : node->Contour) {
+                clippedWay.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
+            }
+            elementStore_.storeImpl(clippedWay, *quadKey_);
+        }
+        else {
+            // TODO in this case, result should be stored as relation (collection of ways)
+        }
     }
 
     void visitArea(const Area& area)
