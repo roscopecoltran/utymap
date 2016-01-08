@@ -36,6 +36,7 @@ add_executable (TestLauncher
                         meshing/MeshBuilderTest.cpp
                         terrain/LineGridSplitterTest.cpp
                         terrain/TerraBuilderTest.cpp
+                        test_utils/ElementUtils.hpp
                         test_utils/MapCssUtils.hpp
                         ${HEADER_FILES}
                       )

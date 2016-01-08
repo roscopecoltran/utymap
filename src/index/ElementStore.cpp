@@ -174,13 +174,12 @@ bool ElementStore::store(const Element& element)
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
     ElementGeometryClipper geometryClipper(*this);
-    auto tileRangeVisitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+    GeoUtils::visitTileRange(elementBbox, levelOfDetails, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
         else
             storeImpl(element, quadKey);
-    };
-    GeoUtils::visitTileRange(elementBbox, levelOfDetails, tileRangeVisitor);
+    });
 }
 
 }}

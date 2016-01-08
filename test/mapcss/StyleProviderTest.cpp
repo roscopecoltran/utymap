@@ -3,11 +3,12 @@
 #include "entities/Way.hpp"
 #include "entities/Relation.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "test_utils/MapCssUtils.hpp"
+#include "test_utils/ElementUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 #include <cstdio>
-#include <initializer_list>
 #include <utility>
 
 using namespace utymap::entities;
@@ -49,19 +50,6 @@ struct Index_StyleProviderFixture
         styleProviderPtr = new StyleProvider(*stylesheetPtr, *tablePtr);
     }
 
-    template <typename T>
-    T createElement(std::initializer_list<std::pair<const char*, const char*>> tags)
-    {
-        T t;
-        for (auto pair : tags) {
-            uint32_t key = tablePtr->getId(pair.first);
-            uint32_t value = tablePtr->getId(pair.second);
-            Tag tag(key, value);
-            t.tags.push_back(tag);
-        }
-        return t;
-    }
-
     StringTable* tablePtr;
     StyleSheet* stylesheetPtr;
     StyleProvider* styleProviderPtr;
@@ -73,7 +61,10 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenIsApplicable_ThenReturnTrue)
 {
     int zoomLevel = 1;
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
-    Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
+    Node node = ElementUtils::createElement<Node>(*tablePtr,
+    { 
+        std::make_pair("amenity", "biergarten") 
+    });
 
     bool result = styleProviderPtr->forElement(node, zoomLevel).isApplicable;
 
@@ -84,7 +75,10 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenIsAppli
 {
     int zoomLevel = 1;
     setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
-    Node node = createElement<Node>({ std::make_pair("amenity", "biergarten") });
+    Node node = ElementUtils::createElement<Node>(*tablePtr,
+    { 
+        std::make_pair("amenity", "biergarten") 
+    });
 
     bool result = styleProviderPtr->forElement(node, 2).isApplicable;
 
@@ -99,7 +93,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenIsApplicable_ThenReturnTrue)
             {"amenity", "=", "biergarten"},
             {"address", "=", "Invalidstr."}
         });
-    Node node = createElement<Node>(
+    Node node = ElementUtils::createElement<Node>(*tablePtr,
         {
             std::make_pair("amenity", "biergarten"),
             std::make_pair("address", "Invalidstr.")
@@ -118,7 +112,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenIsApplicable_ThenReturnFals
             {"amenity", "=", "biergarten"},
             {"address", "!=", "Invalidstr."}
         });
-    Node node = createElement<Node>(
+    Node node = ElementUtils::createElement<Node>(*tablePtr,
         {
             std::make_pair("amenity", "biergarten"),
             std::make_pair("address", "Invalidstr.")
