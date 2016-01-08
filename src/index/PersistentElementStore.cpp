@@ -54,7 +54,7 @@ PersistentElementStore::~PersistentElementStore()
 {
 }
 
-void PersistentElementStore::store(const utymap::entities::Element& element, const QuadKey& quadKey)
+void PersistentElementStore::storeImpl(const utymap::entities::Element& element, const QuadKey& quadKey)
 {
     pimpl_->setQuadKey(quadKey);
     element.accept(*pimpl_);

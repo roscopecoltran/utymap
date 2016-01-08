@@ -26,14 +26,14 @@ public:
 
 protected:
     // Stores element in given quadkey.
-    virtual void store(const utymap::entities::Element& element, const QuadKey& quadKey) = 0;
+    virtual void storeImpl(const utymap::entities::Element& element, const QuadKey& quadKey) = 0;
 
 private:
     friend class ElementGeometryClipper;
     void storeInTileRange(const utymap::entities::Element& element,
                           const utymap::BoundingBox& elementBbox,
                           int levelOfDetails,
-                          bool shoudClip);
+                          bool shouldClip);
 
     const utymap::mapcss::StyleProvider& styleProvider_;
     utymap::index::StringTable& stringTable_;

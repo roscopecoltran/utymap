@@ -52,7 +52,7 @@ ElementStore(styleProvider, stringTable),
 InMemoryElementStore::~InMemoryElementStore()
 {
 }
-void InMemoryElementStore::store(const utymap::entities::Element& element, const QuadKey& quadKey)
+void InMemoryElementStore::storeImpl(const utymap::entities::Element& element, const QuadKey& quadKey)
 {
     pimpl_->setQuadKey(quadKey);
     element.accept(*pimpl_);

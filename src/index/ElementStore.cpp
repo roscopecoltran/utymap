@@ -72,7 +72,7 @@ private:
     void visitNode(const Node& node)
     {
         if (quadKeyBbox_->contains(node.coordinate)) {
-            elementStore_.store(node, *quadKey_);
+            elementStore_.storeImpl(node, *quadKey_);
         }
     }
 
@@ -89,7 +89,7 @@ private:
 
         // all geometry inside current quadkey: no need to truncate.
         if (!shouldBeTruncated) {
-            elementStore_.store(way, *quadKey_);
+            elementStore_.storeImpl(way, *quadKey_);
             return;
         }
 
@@ -171,14 +171,14 @@ bool ElementStore::store(const Element& element)
     return wasStored;
 }
 
-void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shoudClip)
+void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
     ElementGeometryClipper geometryClipper(*this);
     auto tileRangeVisitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-        if (shoudClip) 
+        if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
-        else 
-            store(element, quadKey);
+        else
+            storeImpl(element, quadKey);
     };
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, tileRangeVisitor);
 }

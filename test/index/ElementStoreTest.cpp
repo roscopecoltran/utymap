@@ -28,7 +28,7 @@ public:
     utymap::QuadKey lastQuadKey;
 
 protected:
-    void store(const Element& element, const utymap::QuadKey& quadKey)
+    void storeImpl(const Element& element, const utymap::QuadKey& quadKey)
     {
         lastElement = element;
         lastQuadKey = quadKey;
@@ -73,6 +73,7 @@ BOOST_AUTO_TEST_CASE(GivenBigWay_WhenStore_GeometryIsClipped)
     Way way;
     createElementStore("way|z1[test=Foo] { key:val; }");
 
+    elementStorePtr->store(way);
     // TODO
 }
 
