@@ -132,9 +132,9 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
             const Relation& relation = reinterpret_cast<const Relation&>(element);
-            BOOST_CHECK_EQUAL(relation.ways.size(), 2);
-            checkGeometry<Way>(relation.ways[0], { { 20, 10 }, { 20, 0 } });
-            checkGeometry<Way>(relation.ways[1], { { 10, 0 }, { 10, 10 } });
+            BOOST_CHECK_EQUAL(relation.elements.size(), 2);
+            checkGeometry<Way>(reinterpret_cast<const Way&>(*relation.elements[0]), { { 20, 10 }, { 20, 0 } });
+            checkGeometry<Way>(reinterpret_cast<const Way&>(*relation.elements[1]), { { 10, 0 }, { 10, 10 } });
         }
         else {
             BOOST_TEST_FAIL("Unexpected quadKey!");

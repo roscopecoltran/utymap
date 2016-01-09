@@ -112,12 +112,12 @@ private:
             Relation relation;
             relation.id = way.id;
             relation.tags = way.tags;
-            relation.ways.reserve(solution.ChildCount());
+            relation.elements.reserve(solution.ChildCount());
             for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
-                Way clippedWay;
-                clippedWay.id = way.id;
-                fillWayWithCooords(clippedWay, (*it)->Contour);
-                relation.ways.push_back(std::move(clippedWay));
+                std::shared_ptr<Way> clippedWay(new Way);
+                clippedWay->id = way.id;
+                fillWayWithCooords(*clippedWay, (*it)->Contour);
+                relation.elements.push_back(clippedWay);
             }
             elementStore_.storeImpl(relation, *quadKey_);
         }

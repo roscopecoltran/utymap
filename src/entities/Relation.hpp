@@ -9,6 +9,7 @@
 #include "entities/ElementVisitor.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace utymap { namespace entities {
 
@@ -17,10 +18,7 @@ class Relation : public Element
 {
 public:
 
-    std::vector<Node> nodes;
-    std::vector<Way> ways;
-    std::vector<Area> areas;
-    std::vector<Relation> relations;
+    std::vector<std::shared_ptr<Element>> elements;
 
     // Accepts visitor.
     void accept(ElementVisitor& visitor) const
