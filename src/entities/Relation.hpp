@@ -1,9 +1,15 @@
 #ifndef ENTITIES_RELATION_HPP_DEFINED
 #define ENTITIES_RELATION_HPP_DEFINED
 
-#include "Element.hpp"
-#include "ElementVisitor.hpp"
 #include "GeoCoordinate.hpp"
+#include "entities/Element.hpp"
+#include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Area.hpp"
+#include "entities/Relation.hpp"
+#include "entities/ElementVisitor.hpp"
+
+#include <vector>
 
 namespace utymap { namespace entities {
 
@@ -11,6 +17,12 @@ namespace utymap { namespace entities {
 class Relation : public Element
 {
 public:
+
+    std::vector<Node> nodes;
+    std::vector<Way> ways;
+    std::vector<Area> areas;
+    std::vector<Relation> relations;
+
     // Accepts visitor.
     void accept(ElementVisitor& visitor) const
     {

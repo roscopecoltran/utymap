@@ -78,7 +78,6 @@ private:
 
     void visitWay(const Way& way)
     {
-        
         ClipperLib::Path wayShape;
         wayShape.reserve(way.coordinates.size());
         bool shouldBeTruncated = false;
@@ -87,7 +86,7 @@ private:
             wayShape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
         }
 
-        // all geometry inside current quadkey: no need to truncate.
+        // 1. all geometry inside current quadkey: no need to truncate.
         if (!shouldBeTruncated) {
             elementStore_.storeImpl(way, *quadKey_);
             return;
@@ -99,20 +98,28 @@ private:
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
 
-        // way intersects border only once: store a copy with clipped geometry
+        // 2. way intersects border only once: store a copy with clipped geometry
         if (solution.ChildCount() == 1) {
             ClipperLib::PolyNode* node = solution.Childs[0];
             Way clippedWay;
             clippedWay.id = way.id;
             clippedWay.tags = way.tags;
-            clippedWay.coordinates.reserve(node->Contour.size());
-            for (const auto& c : node->Contour) {
-                clippedWay.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
-            }
+            fillWayWithCooords(clippedWay, node->Contour);
             elementStore_.storeImpl(clippedWay, *quadKey_);
         }
+        // 3. in this case, result should be stored as relation (collection of ways)
         else {
-            // TODO in this case, result should be stored as relation (collection of ways)
+            Relation relation;
+            relation.id = way.id;
+            relation.tags = way.tags;
+            relation.ways.reserve(solution.ChildCount());
+            for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
+                Way clippedWay;
+                clippedWay.id = way.id;
+                fillWayWithCooords(clippedWay, (*it)->Contour);
+                relation.ways.push_back(std::move(clippedWay));
+            }
+            elementStore_.storeImpl(relation, *quadKey_);
         }
     }
 
@@ -122,6 +129,13 @@ private:
 
     void visitRelation(const Relation& relation)
     {
+    }
+
+    void fillWayWithCooords(Way& way, const ClipperLib::Path& path) {
+        way.coordinates.reserve(path.size());
+        for (const auto& c : path) {
+            way.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
+        }
     }
 
     ClipperLib::Path createPathFromBoundingBox()

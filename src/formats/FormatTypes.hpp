@@ -41,7 +41,6 @@ typedef std::vector<Tag> Tags;
 typedef std::vector<RelationMember> RelationMembers;
 typedef std::vector<PolygonMember> PolygonMembers;
 typedef std::vector<utymap::GeoCoordinate> Coordinates;
-typedef std::vector<Coordinates> GeoPolygon;
 
 }}
 
