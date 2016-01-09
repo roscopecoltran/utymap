@@ -50,6 +50,7 @@ public:
 
         return stm.str();
     }
+    // TODO prevent copy/move/assign functions for base class
 };
 
 }}

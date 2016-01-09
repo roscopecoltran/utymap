@@ -6,7 +6,6 @@
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
-#include "entities/Relation.hpp"
 #include "entities/ElementVisitor.hpp"
 
 #include <vector>
