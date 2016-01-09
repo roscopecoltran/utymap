@@ -10,6 +10,7 @@
 #include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
+#include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
 
 #include <cstdint>
@@ -23,9 +24,10 @@ struct ShapeDataVisitor
     int areas;
     int relations;
 
-    ShapeDataVisitor(ElementStore& elementStore, StringTable& stringTable) :
+    ShapeDataVisitor(ElementStore& elementStore, StringTable& stringTable, const LodRange& lodRange) :
         elementStore_(elementStore),
         stringTable_(stringTable),
+        lodRange_(lodRange),
         nodes(0),
         ways(0),
         areas(0),
@@ -38,7 +40,7 @@ struct ShapeDataVisitor
         utymap::entities::Node node;
         node.coordinate = coordinate;
         setTags(node, tags);
-        if (elementStore_.store(node)) {
+        if (elementStore_.store(node, lodRange_)) {
             nodes++;
         }
     }
@@ -49,14 +51,14 @@ struct ShapeDataVisitor
             utymap::entities::Area area;
             area.coordinates = coordinates;
             setTags(area, tags);
-            if (elementStore_.store(area)) 
+            if (elementStore_.store(area, lodRange_))
                 areas++;
         }
         else {
             utymap::entities::Way way;
             way.coordinates = coordinates;
             setTags(way, tags);
-            if (elementStore_.store(way))
+            if (elementStore_.store(way, lodRange_))
                 ways++;
         }
     }
@@ -75,6 +77,7 @@ struct ShapeDataVisitor
 private:
     ElementStore& elementStore_;
     StringTable& stringTable_;
+    const LodRange& lodRange_;
 
     void setTags(utymap::entities::Element& element, const utymap::formats::Tags& tags)
     {

@@ -1,3 +1,4 @@
+#include "index/LodRange.hpp"
 #include "formats/shape/ShapeParser.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -26,18 +27,18 @@ public:
         storeMap_[storeKey] = &store;
     }
 
-    void add(const std::string& storeKey, const Element& element)
+    void add(const std::string& storeKey, const LodRange& range, const Element& element)
     {
     }
 
-    void add(const std::string& storeKey, const std::string& path)
+    void add(const std::string& storeKey, const LodRange& range, const std::string& path)
     {
         ElementStore* elementStorePtr = storeMap_[storeKey];
         switch (getFormatTypeFromPath(path))
         {
             case FormatType::Shape:
             {
-                ShapeDataVisitor shpVisitor(*elementStorePtr, stringTable_);
+                ShapeDataVisitor shpVisitor(*elementStorePtr, stringTable_, range);
                 utymap::formats::ShapeParser<ShapeDataVisitor> parser;
                 parser.parse(path, shpVisitor);
                 break;
@@ -82,14 +83,14 @@ void utymap::index::GeoStore::registerStore(const std::string& storeKey, Element
     pimpl_->registerStore(storeKey, store);
 }
 
-void utymap::index::GeoStore::add(const std::string& storeKey, const Element& element)
+void utymap::index::GeoStore::add(const std::string& storeKey, const LodRange& range, const Element& element)
 {
-    pimpl_->add(storeKey, element);
+    pimpl_->add(storeKey, range, element);
 }
 
-void utymap::index::GeoStore::add(const std::string& storeKey, const std::string& path)
+void utymap::index::GeoStore::add(const std::string& storeKey, const LodRange& range, const std::string& path)
 {
-    pimpl_->add(storeKey, path);
+    pimpl_->add(storeKey, range, path);
 }
 
 void utymap::index::GeoStore::search(const QuadKey& quadKey, ElementVisitor& visitor)

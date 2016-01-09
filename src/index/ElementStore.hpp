@@ -6,6 +6,7 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
+#include "index/LodRange.hpp"
 #include "formats/FormatTypes.hpp"
 #include "mapcss/StyleProvider.hpp"
 
@@ -21,8 +22,8 @@ public:
 
     virtual ~ElementStore();
 
-    // Stores element in storage.
-    bool store(const utymap::entities::Element& element);
+    // Stores element in storage for given level of details range.
+    bool store(const utymap::entities::Element& element, const LodRange& range);
 
 protected:
     // Stores element in given quadkey.

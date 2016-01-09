@@ -24,6 +24,7 @@ set(HEADER_FILES
                 index/GeoUtils.hpp
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
+                index/LodRange.hpp
                 index/PersistentElementStore.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp

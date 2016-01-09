@@ -2,6 +2,7 @@
 #include "formats/shape/ShapeParser.hpp"
 #include "index/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
+#include "index/LodRange.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -42,7 +43,7 @@ BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixtu
 
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {
-    ShapeDataVisitor visitor(*storePtr, *stringTablePtr);
+    ShapeDataVisitor visitor(*storePtr, *stringTablePtr, LodRange(1,1));
     ShapeParser<ShapeDataVisitor> parser;
 
     parser.parse(shapeFile, visitor);

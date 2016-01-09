@@ -10,6 +10,7 @@
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
+#include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleProvider.hpp"
@@ -85,14 +86,14 @@ extern "C"
 
     // TODO for single element as well
 
-    void EXPORT_API addToPersistentStore(const char* path, OnError* errorCallback)
+    void EXPORT_API addToPersistentStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(persistentStorageKey, path);
+        geoStorePtr->add(persistentStorageKey, utymap::index::LodRange(startLod, endLod), path);
     }
 
-    void EXPORT_API addToInMemoryStore(const char* path, OnError* errorCallback)
+    void EXPORT_API addToInMemoryStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(inMemoryStorageKey, path);
+        geoStorePtr->add(inMemoryStorageKey, utymap::index::LodRange(startLod, endLod), path);
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,

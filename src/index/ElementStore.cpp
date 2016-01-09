@@ -155,12 +155,12 @@ ElementStore::~ElementStore()
 {
 }
 
-bool ElementStore::store(const Element& element)
+bool ElementStore::store(const Element& element, const utymap::index::LodRange& range)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
     uint32_t clipKeyId = stringTable_.getId("clip");
-    for (int lod = GeoUtils::MinLevelOfDetails; lod <= GeoUtils::MaxLevelOfDetails; ++lod) {
+    for (int lod = range.start; lod <= range.end; ++lod) {
         // skip element for this lod
         Style style = styleProvider_.forElement(element, lod);
         if (!style.isApplicable)

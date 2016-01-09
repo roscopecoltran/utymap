@@ -100,32 +100,22 @@ BOOST_FIXTURE_TEST_SUITE(Index_ElementStore, Index_ElementStoreFixture)
 BOOST_AUTO_TEST_CASE(GivenBigWayAtZoom1_WhenStore_GeometryIsClipped)
 {
     Way way = ElementUtils::createElement<Way>(*stringTablePtr,
-    {
-        { "test", "Foo" }
-    },
-    {
-        { 10, 10 }, { 10, -10 },
-    });
+        { { "test", "Foo" } },
+        { { 10, 10 }, { 10, -10 }});
     createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
         [&](const Element& element, const utymap::QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Way>(reinterpret_cast<const Way&>(element),
-            {
-                { 10, -10 }, { 10, 0 }
-            });
+            checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, -10 }, { 10, 0 } });
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            checkGeometry<Way>(reinterpret_cast<const Way&>(element),
-            {
-                { 10, 0 }, { 10, 10 }
-            });
+            checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, 0 }, { 10, 10 } });
         }
         else {
             BOOST_TEST_FAIL("Unexpected quadKey!");
         }
     });
 
-    elementStorePtr->store(way);
+    elementStorePtr->store(way, LodRange(1,1));
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }

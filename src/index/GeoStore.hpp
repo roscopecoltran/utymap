@@ -9,6 +9,7 @@
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
+#include "index/LodRange.hpp"
 
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
@@ -30,10 +31,10 @@ public:
     void registerStore(const std::string& storeKey, ElementStore& store);
 
     // Adds element to selected store.
-    void add(const std::string& storeKey, const utymap::entities::Element& element);
+    void add(const std::string& storeKey, const utymap::index::LodRange& range, const utymap::entities::Element& element);
 
     // Adds elements from given path to selected store.
-    void add(const std::string& storeKey, const std::string& path);
+    void add(const std::string& storeKey, const utymap::index::LodRange& range, const std::string& path);
 
     // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
