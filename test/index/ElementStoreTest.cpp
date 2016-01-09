@@ -146,4 +146,27 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
+BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
+{
+    Area way = ElementUtils::createElement<Area>(*stringTablePtr,
+    { { "test", "Foo" } },
+    { { 10, 10 }, { 20, 10 }, { 20, -10 }, { 10, -10 } });
+    createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 0, 0)) {
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, {10, -10}, {10, 0} });
+        }
+        else if (checkQuadKey(quadKey, 1, 1, 0)) {
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 10 }, { 20, 0 }, { 10, 0 }, { 10, 10 } });
+        }
+        else {
+            BOOST_TEST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStorePtr->store(way, LodRange(1, 1));
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -79,13 +79,7 @@ private:
     void visitWay(const Way& way)
     {
         ClipperLib::Path wayShape;
-        wayShape.reserve(way.coordinates.size());
-        bool shouldBeTruncated = false;
-        for (const GeoCoordinate& coord : way.coordinates) {
-            shouldBeTruncated |= !quadKeyBbox_->contains(coord);
-            wayShape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
-        }
-
+        bool shouldBeTruncated = setPath(way, wayShape);
         // 1. all geometry inside current quadkey: no need to truncate.
         if (!shouldBeTruncated) {
             elementStore_.storeImpl(way, *quadKey_);
@@ -104,7 +98,7 @@ private:
             Way clippedWay;
             clippedWay.id = way.id;
             clippedWay.tags = way.tags;
-            fillWayWithCooords(clippedWay, node->Contour);
+            setCoordinates(clippedWay, node->Contour);
             elementStore_.storeImpl(clippedWay, *quadKey_);
         }
         // 3. in this case, result should be stored as relation (collection of ways)
@@ -114,9 +108,9 @@ private:
             relation.tags = way.tags;
             relation.elements.reserve(solution.ChildCount());
             for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
-                std::shared_ptr<Way> clippedWay(new Way);
+                std::shared_ptr<Way> clippedWay(new Way());
                 clippedWay->id = way.id;
-                fillWayWithCooords(*clippedWay, (*it)->Contour);
+                setCoordinates(*clippedWay, (*it)->Contour);
                 relation.elements.push_back(clippedWay);
             }
             elementStore_.storeImpl(relation, *quadKey_);
@@ -125,16 +119,65 @@ private:
 
     void visitArea(const Area& area)
     {
+        ClipperLib::Path areaShape;
+        bool shouldBeTruncated = setPath(area, areaShape);
+        // 1. all geometry inside current quadkey: no need to truncate.
+        if (!shouldBeTruncated) {
+            elementStore_.storeImpl(area, *quadKey_);
+            return;
+        }
+
+        ClipperLib::Paths solution;
+        clipper_.AddPath(areaShape, ClipperLib::ptSubject, true);
+        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
+        clipper_.Execute(ClipperLib::ctIntersection, solution);
+        clipper_.Clear();
+
+        // 2. way intersects border only once: store a copy with clipped geometry
+        if (solution.size() == 1) {
+            Area clippedArea;
+            clippedArea.id = area.id;
+            clippedArea.tags = area.tags;
+            setCoordinates(clippedArea, solution[0]);
+            elementStore_.storeImpl(clippedArea, *quadKey_);
+        }
+        // 3. in this case, result should be stored as relation (collection of areas)
+        else {
+            Relation relation;
+            relation.id = area.id;
+            relation.tags = area.tags;
+            relation.elements.reserve(solution.size());
+            for (auto it = solution.begin(); it != solution.end(); ++it) {
+                std::shared_ptr<Area> clippedArea(new Area());
+                clippedArea->id = area.id;
+                setCoordinates(*clippedArea, (*it));
+                relation.elements.push_back(clippedArea);
+            }
+            elementStore_.storeImpl(relation, *quadKey_);
+        }
     }
 
     void visitRelation(const Relation& relation)
     {
     }
 
-    void fillWayWithCooords(Way& way, const ClipperLib::Path& path) {
-        way.coordinates.reserve(path.size());
+    template<typename T>
+    bool setPath(const T& t, ClipperLib::Path& shape) {
+        shape.reserve(t.coordinates.size());
+        bool shouldBeTruncated = false;
+        for (const GeoCoordinate& coord : t.coordinates) {
+            shouldBeTruncated |= !quadKeyBbox_->contains(coord);
+            shape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
+        }
+
+        return shouldBeTruncated;
+    }
+
+    template<typename T>
+    void setCoordinates(T& t, const ClipperLib::Path& path) {
+        t.coordinates.reserve(path.size());
         for (const auto& c : path) {
-            way.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
+            t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
         }
     }
 
