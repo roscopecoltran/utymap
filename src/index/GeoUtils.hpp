@@ -32,12 +32,6 @@ public:
         return quadKey;
     }
 
-    // clips value in range
-    inline static double clip(double n, double minValue, double maxValue)
-    {
-        return std::max(minValue, std::min(n, maxValue));
-    }
-
     // Converts quadkey to bounding box
     static BoundingBox quadKeyToBoundingBox(const QuadKey& quadKey)
     {
@@ -73,6 +67,12 @@ public:
     }
 
 private:
+
+    // clips value in range
+    inline static double clip(double n, double minValue, double maxValue)
+    {
+        return std::max(minValue, std::min(n, maxValue));
+    }
 
     inline static int lonToTileX(double lon, int levelOfDetail)
     {
