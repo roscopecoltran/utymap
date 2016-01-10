@@ -69,6 +69,9 @@ public:
 
 private:
 
+    // Defines polygon points location relative to current quadkey.
+    enum PointLocation { AllInside, AllOutside, Mixed };
+
     void visitNode(const Node& node)
     {
         if (quadKeyBbox_->contains(node.coordinate)) {
@@ -79,10 +82,15 @@ private:
     void visitWay(const Way& way)
     {
         ClipperLib::Path wayShape;
-        bool shouldBeTruncated = setPath(way, wayShape);
+        PointLocation pointLocation = setPath(way, wayShape);
         // 1. all geometry inside current quadkey: no need to truncate.
-        if (!shouldBeTruncated) {
+        if (pointLocation == PointLocation::AllInside) {
             elementStore_.storeImpl(way, *quadKey_);
+            return;
+        }
+
+        // 2. all geometry outside : way should be skipped
+        if (pointLocation == PointLocation::AllOutside) {
             return;
         }
 
@@ -92,7 +100,7 @@ private:
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
 
-        // 2. way intersects border only once: store a copy with clipped geometry
+        // 3. way intersects border only once: store a copy with clipped geometry
         if (solution.ChildCount() == 1) {
             ClipperLib::PolyNode* node = solution.Childs[0];
             Way clippedWay;
@@ -101,7 +109,7 @@ private:
             setCoordinates(clippedWay, node->Contour);
             elementStore_.storeImpl(clippedWay, *quadKey_);
         }
-        // 3. in this case, result should be stored as relation (collection of ways)
+        // 4. in this case, result should be stored as relation (collection of ways)
         else {
             Relation relation;
             relation.id = way.id;
@@ -120,10 +128,19 @@ private:
     void visitArea(const Area& area)
     {
         ClipperLib::Path areaShape;
-        bool shouldBeTruncated = setPath(area, areaShape);
+        PointLocation pointLocation = setPath(area, areaShape);
         // 1. all geometry inside current quadkey: no need to truncate.
-        if (!shouldBeTruncated) {
+        if (pointLocation == PointLocation::AllInside) {
             elementStore_.storeImpl(area, *quadKey_);
+            return;
+        }
+
+        // 2. all geometry outside : pass empty
+        if (pointLocation == PointLocation::AllOutside) {
+            Area emptyArea;
+            emptyArea.id = area.id;
+            emptyArea.tags = area.tags;
+            elementStore_.storeImpl(emptyArea, *quadKey_);
             return;
         }
 
@@ -133,7 +150,7 @@ private:
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
 
-        // 2. way intersects border only once: store a copy with clipped geometry
+        // 3. way intersects border only once: store a copy with clipped geometry
         if (solution.size() == 1) {
             Area clippedArea;
             clippedArea.id = area.id;
@@ -141,7 +158,7 @@ private:
             setCoordinates(clippedArea, solution[0]);
             elementStore_.storeImpl(clippedArea, *quadKey_);
         }
-        // 3. in this case, result should be stored as relation (collection of areas)
+        // 4. in this case, result should be stored as relation (collection of areas)
         else {
             Relation relation;
             relation.id = area.id;
@@ -162,15 +179,19 @@ private:
     }
 
     template<typename T>
-    bool setPath(const T& t, ClipperLib::Path& shape) {
+    PointLocation setPath(const T& t, ClipperLib::Path& shape) {
         shape.reserve(t.coordinates.size());
-        bool shouldBeTruncated = false;
+        bool allInside = false;
+        bool allOutside = true;
         for (const GeoCoordinate& coord : t.coordinates) {
-            shouldBeTruncated |= !quadKeyBbox_->contains(coord);
+            bool contains = quadKeyBbox_->contains(coord);
+            allInside &= contains;
+            allOutside &= !contains;
             shape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
         }
 
-        return shouldBeTruncated;
+        return allInside ? PointLocation::AllInside :
+              (allOutside ? PointLocation::AllOutside : PointLocation::Mixed);
     }
 
     template<typename T>

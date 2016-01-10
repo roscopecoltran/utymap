@@ -169,4 +169,21 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
+BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
+{
+    Area way = ElementUtils::createElement<Area>(*stringTablePtr,
+    { { "test", "Foo" } },
+    { { -10, -10 }, { -10, 181 }, { 91, 181 }, { 91, -10 } });
+    createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 0)) {
+            BOOST_CHECK_EQUAL(reinterpret_cast<const Area&>(element).coordinates.size(), 0);
+        }
+    });
+
+    elementStorePtr->store(way, LodRange(1, 1));
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 4);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

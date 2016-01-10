@@ -4,6 +4,7 @@
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <string>
 
@@ -25,10 +26,16 @@ public:
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
         QuadKey quadKey;
-        quadKey.tileX = lonToTileX(coordinate.longitude, levelOfDetail);
-        quadKey.tileY = latToTileY(coordinate.latitude, levelOfDetail);
+        quadKey.tileX = lonToTileX(clip(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail);
+        quadKey.tileY = latToTileY(clip(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail);
         quadKey.levelOfDetail = levelOfDetail;
         return quadKey;
+    }
+
+    // clips value in range
+    inline static double clip(double n, double minValue, double maxValue)
+    {
+        return std::max(minValue, std::min(n, maxValue));
     }
 
     // Converts quadkey to bounding box
