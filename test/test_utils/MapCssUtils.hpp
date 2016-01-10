@@ -17,7 +17,7 @@ class MapCssUtils
 public:
 
     static utymap::mapcss::StyleProvider* createStyleProviderFromFile(utymap::index::StringTable& stringTable,
-                                                                const std::string& filePath)
+                                                                      const std::string& filePath)
     {
         std::ifstream styleFile(filePath);
         utymap::mapcss::Parser parser;
@@ -27,7 +27,7 @@ public:
     }
 
     static utymap::mapcss::StyleProvider* createStyleProviderFromString(utymap::index::StringTable& stringTable,
-                                                                  const std::string& str)
+                                                                        const std::string& str)
     {
         utymap::mapcss::Parser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(str);

@@ -21,6 +21,164 @@ using namespace utymap::mapcss;
 
 namespace utymap { namespace index {
 
+class ElementGeometryClipper
+{
+public:
+
+    const BoundingBox* quadKeyBboxPtr;
+
+    ElementGeometryClipper():
+        quadKeyBboxPtr(nullptr)
+    {
+    }
+
+    void clipNode(const Node& node, const std::function<void(std::shared_ptr<Element>)>& callback)
+    {
+        if (quadKeyBboxPtr->contains(node.coordinate)) {
+            callback(std::shared_ptr<Node>(new Node(node)));
+        }
+    }
+
+    void clipWay(const Way& way, const std::function<void(std::shared_ptr<Element>)>& callback)
+    {
+        ClipperLib::Path wayShape;
+        PointLocation pointLocation = setPath(way, wayShape);
+        // 1. all geometry inside current quadkey: no need to truncate.
+        if (pointLocation == PointLocation::AllInside) {
+            callback(std::shared_ptr<Way>(new Way(way)));
+            return;
+        }
+
+        // 2. all geometry outside : way should be skipped
+        if (pointLocation == PointLocation::AllOutside) {
+            return;
+        }
+
+        ClipperLib::PolyTree solution;
+        clipper_.AddPath(wayShape, ClipperLib::ptSubject, false);
+        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
+        clipper_.Execute(ClipperLib::ctIntersection, solution);
+        clipper_.Clear();
+
+        // 3. way intersects border only once: store a copy with clipped geometry
+        if (solution.ChildCount() == 1) {
+            ClipperLib::PolyNode* node = solution.Childs[0];
+            std::shared_ptr<Way> clippedWay = std::shared_ptr<Way>(new Way());
+            clippedWay->id = way.id;
+            clippedWay->tags = way.tags;
+            setCoordinates(*clippedWay, node->Contour);
+            callback(clippedWay);
+        }
+        // 4. in this case, result should be stored as relation (collection of ways)
+        else {
+            auto relation = std::shared_ptr<Relation>(new Relation());
+            relation->id = way.id;
+            relation->tags = way.tags;
+            relation->elements.reserve(solution.ChildCount());
+            for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
+                std::shared_ptr<Way> clippedWay(new Way());
+                clippedWay->id = way.id;
+                setCoordinates(*clippedWay, (*it)->Contour);
+                relation->elements.push_back(clippedWay);
+            }
+            callback(relation);
+        }
+    }
+
+    void clipArea(const Area& area, const std::function<void(std::shared_ptr<Element>)>& callback)
+    {
+        ClipperLib::Path areaShape;
+        PointLocation pointLocation = setPath(area, areaShape);
+        // 1. all geometry inside current quadkey: no need to truncate.
+        if (pointLocation == PointLocation::AllInside) {
+            callback(std::shared_ptr<Area>(new Area(area)));
+            return;
+        }
+
+        // 2. all geometry outside : pass empty
+        if (pointLocation == PointLocation::AllOutside) {
+            auto emptyArea = std::shared_ptr<Area>(new Area());
+            emptyArea->id = area.id;
+            emptyArea->tags = area.tags;
+            callback(emptyArea);
+            return;
+        }
+
+        ClipperLib::Paths solution;
+        clipper_.AddPath(areaShape, ClipperLib::ptSubject, true);
+        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
+        clipper_.Execute(ClipperLib::ctIntersection, solution);
+        clipper_.Clear();
+
+        // 3. way intersects border only once: store a copy with clipped geometry
+        if (solution.size() == 1) {
+            auto clippedArea = std::shared_ptr<Area>(new Area());
+            clippedArea->id = area.id;
+            clippedArea->tags = area.tags;
+            setCoordinates(*clippedArea, solution[0]);
+            callback(clippedArea);
+        }
+        // 4. in this case, result should be stored as relation (collection of areas)
+        else {
+            auto relation = std::shared_ptr<Relation>(new Relation());
+            relation->id = area.id;
+            relation->tags = area.tags;
+            relation->elements.reserve(solution.size());
+            for (auto it = solution.begin(); it != solution.end(); ++it) {
+                std::shared_ptr<Area> clippedArea(new Area());
+                clippedArea->id = area.id;
+                setCoordinates(*clippedArea, *it);
+                relation->elements.push_back(clippedArea);
+            }
+            callback(relation);
+        }
+    }
+
+private:
+    // Defines polygon points location relative to current quadkey.
+    enum PointLocation { AllInside, AllOutside, Mixed };
+
+    template<typename T>
+    PointLocation setPath(const T& t, ClipperLib::Path& shape) {
+        shape.reserve(t.coordinates.size());
+        bool allInside = false;
+        bool allOutside = true;
+        for (const GeoCoordinate& coord : t.coordinates) {
+            bool contains = quadKeyBboxPtr->contains(coord);
+            allInside &= contains;
+            allOutside &= !contains;
+            shape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
+        }
+
+        return allInside ? PointLocation::AllInside :
+            (allOutside ? PointLocation::AllOutside : PointLocation::Mixed);
+    }
+
+    template<typename T>
+    void setCoordinates(T& t, const ClipperLib::Path& path) {
+        t.coordinates.reserve(path.size());
+        for (const auto& c : path) {
+            t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
+        }
+    }
+
+    ClipperLib::Path createPathFromBoundingBox()
+    {
+        double xMin = quadKeyBboxPtr->minPoint.longitude, yMin = quadKeyBboxPtr->minPoint.latitude,
+            xMax = quadKeyBboxPtr->maxPoint.longitude, yMax = quadKeyBboxPtr->maxPoint.latitude;
+        ClipperLib::Path rect;
+        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMin*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMin*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMax*Scale));
+        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMax*Scale));
+        return std::move(rect);
+    }
+
+    const double Scale = 1E8; // max precision for Lat/Lon
+    const double DoubleScale = Scale * Scale;
+    ClipperLib::Clipper clipper_;
+};
+
 // Creates bounding box of given element.
 struct BoundingBoxVisitor : public ElementVisitor
 {
@@ -43,184 +201,85 @@ struct BoundingBoxVisitor : public ElementVisitor
 
     void visitRelation(const Relation& relation)
     {
-        // TODO
+        for (const auto& element: relation.elements) {
+            element->accept(*this);
+        }
     }
 };
 
 // Modifies geometry of element by bounding box clipping
-class ElementGeometryClipper : private ElementVisitor
+class ElementGeometryVisitor : private ElementVisitor
 {
 public:
 
-    ElementGeometryClipper(ElementStore& elementStore) :
+    ElementGeometryVisitor(ElementStore& elementStore) :
         elementStore_(elementStore),
-        clipper_(),
-        quadKey_(nullptr),
-        quadKeyBbox_(nullptr)
+        quadKeyPtr_(nullptr),
+        geometryClipper_()
     {
     }
 
     void clipAndStore(const Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox)
     {
-        quadKey_ = &quadKey;
-        quadKeyBbox_ = &quadKeyBbox;
+        quadKeyPtr_ = &quadKey;
+        geometryClipper_.quadKeyBboxPtr = &quadKeyBbox;
         element.accept(*this);
     }
 
 private:
 
-    // Defines polygon points location relative to current quadkey.
-    enum PointLocation { AllInside, AllOutside, Mixed };
-
     void visitNode(const Node& node)
     {
-        if (quadKeyBbox_->contains(node.coordinate)) {
-            elementStore_.storeImpl(node, *quadKey_);
-        }
+        geometryClipper_.clipNode(node, [&](std::shared_ptr<Element> element) { elementStore_.storeImpl(*element, *quadKeyPtr_); });
     }
 
     void visitWay(const Way& way)
     {
-        ClipperLib::Path wayShape;
-        PointLocation pointLocation = setPath(way, wayShape);
-        // 1. all geometry inside current quadkey: no need to truncate.
-        if (pointLocation == PointLocation::AllInside) {
-            elementStore_.storeImpl(way, *quadKey_);
-            return;
-        }
-
-        // 2. all geometry outside : way should be skipped
-        if (pointLocation == PointLocation::AllOutside) {
-            return;
-        }
-
-        ClipperLib::PolyTree solution;
-        clipper_.AddPath(wayShape, ClipperLib::ptSubject, false);
-        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
-        clipper_.Execute(ClipperLib::ctIntersection, solution);
-        clipper_.Clear();
-
-        // 3. way intersects border only once: store a copy with clipped geometry
-        if (solution.ChildCount() == 1) {
-            ClipperLib::PolyNode* node = solution.Childs[0];
-            Way clippedWay;
-            clippedWay.id = way.id;
-            clippedWay.tags = way.tags;
-            setCoordinates(clippedWay, node->Contour);
-            elementStore_.storeImpl(clippedWay, *quadKey_);
-        }
-        // 4. in this case, result should be stored as relation (collection of ways)
-        else {
-            Relation relation;
-            relation.id = way.id;
-            relation.tags = way.tags;
-            relation.elements.reserve(solution.ChildCount());
-            for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
-                std::shared_ptr<Way> clippedWay(new Way());
-                clippedWay->id = way.id;
-                setCoordinates(*clippedWay, (*it)->Contour);
-                relation.elements.push_back(clippedWay);
-            }
-            elementStore_.storeImpl(relation, *quadKey_);
-        }
+        geometryClipper_.clipWay(way, [&](std::shared_ptr<Element>& element) { elementStore_.storeImpl(*element, *quadKeyPtr_); });
     }
 
     void visitArea(const Area& area)
     {
-        ClipperLib::Path areaShape;
-        PointLocation pointLocation = setPath(area, areaShape);
-        // 1. all geometry inside current quadkey: no need to truncate.
-        if (pointLocation == PointLocation::AllInside) {
-            elementStore_.storeImpl(area, *quadKey_);
-            return;
-        }
-
-        // 2. all geometry outside : pass empty
-        if (pointLocation == PointLocation::AllOutside) {
-            Area emptyArea;
-            emptyArea.id = area.id;
-            emptyArea.tags = area.tags;
-            elementStore_.storeImpl(emptyArea, *quadKey_);
-            return;
-        }
-
-        ClipperLib::Paths solution;
-        clipper_.AddPath(areaShape, ClipperLib::ptSubject, true);
-        clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
-        clipper_.Execute(ClipperLib::ctIntersection, solution);
-        clipper_.Clear();
-
-        // 3. way intersects border only once: store a copy with clipped geometry
-        if (solution.size() == 1) {
-            Area clippedArea;
-            clippedArea.id = area.id;
-            clippedArea.tags = area.tags;
-            setCoordinates(clippedArea, solution[0]);
-            elementStore_.storeImpl(clippedArea, *quadKey_);
-        }
-        // 4. in this case, result should be stored as relation (collection of areas)
-        else {
-            Relation relation;
-            relation.id = area.id;
-            relation.tags = area.tags;
-            relation.elements.reserve(solution.size());
-            for (auto it = solution.begin(); it != solution.end(); ++it) {
-                std::shared_ptr<Area> clippedArea(new Area());
-                clippedArea->id = area.id;
-                setCoordinates(*clippedArea, (*it));
-                relation.elements.push_back(clippedArea);
-            }
-            elementStore_.storeImpl(relation, *quadKey_);
-        }
+        geometryClipper_.clipArea(area, [&](std::shared_ptr<Element>& element) { elementStore_.storeImpl(*element, *quadKeyPtr_); });
     }
 
     void visitRelation(const Relation& relation)
     {
+        struct RelationVisitor : public ElementVisitor
+        {
+            Relation data;
+            ElementGeometryClipper& clipper;
+
+            RelationVisitor(ElementGeometryClipper& geometryClipper) : clipper(geometryClipper) { }
+
+            void visitNode(const Node& node) 
+            { 
+                clipper.clipNode(node, [&](std::shared_ptr<Element> element) { data.elements.push_back(element); });
+            }
+
+            void visitWay(const Way& way)
+            {
+                clipper.clipWay(way, [&](std::shared_ptr<Element> element) { data.elements.push_back(element); });
+            }
+
+            void visitArea(const Area& area)
+            {
+                clipper.clipArea(area, [&](std::shared_ptr<Element> element) { data.elements.push_back(element); });
+            }
+
+            void visitRelation(const Relation& relation)
+            {
+                for (const auto& element : relation.elements) { element->accept(*this); }
+            }
+        } visitor(geometryClipper_);
+
+        relation.accept(visitor);
+        elementStore_.storeImpl(visitor.data, *quadKeyPtr_);
     }
-
-    template<typename T>
-    PointLocation setPath(const T& t, ClipperLib::Path& shape) {
-        shape.reserve(t.coordinates.size());
-        bool allInside = false;
-        bool allOutside = true;
-        for (const GeoCoordinate& coord : t.coordinates) {
-            bool contains = quadKeyBbox_->contains(coord);
-            allInside &= contains;
-            allOutside &= !contains;
-            shape.push_back(ClipperLib::IntPoint(coord.longitude*Scale, coord.latitude*Scale));
-        }
-
-        return allInside ? PointLocation::AllInside :
-              (allOutside ? PointLocation::AllOutside : PointLocation::Mixed);
-    }
-
-    template<typename T>
-    void setCoordinates(T& t, const ClipperLib::Path& path) {
-        t.coordinates.reserve(path.size());
-        for (const auto& c : path) {
-            t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
-        }
-    }
-
-    ClipperLib::Path createPathFromBoundingBox()
-    {
-        double xMin = quadKeyBbox_->minPoint.longitude, yMin = quadKeyBbox_->minPoint.latitude,
-            xMax = quadKeyBbox_->maxPoint.longitude, yMax = quadKeyBbox_->maxPoint.latitude;
-        ClipperLib::Path rect;
-        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMin*Scale));
-        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMin*Scale));
-        rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMax*Scale));
-        rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMax*Scale));
-        return std::move(rect);
-    }
-
-    const double Scale = 1E8; // max precision for Lat/Lon
-    const double DoubleScale = Scale * Scale;
 
     ElementStore& elementStore_;
-    ClipperLib::Clipper clipper_;
-    const QuadKey* quadKey_;
-    const BoundingBox* quadKeyBbox_;
+    ElementGeometryClipper geometryClipper_;
+    const QuadKey* quadKeyPtr_;
 };
 
 ElementStore::ElementStore(const StyleProvider& styleProvider, StringTable& stringTable) :
@@ -257,7 +316,7 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
 
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
-    ElementGeometryClipper geometryClipper(*this);
+    ElementGeometryVisitor geometryClipper(*this);
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);

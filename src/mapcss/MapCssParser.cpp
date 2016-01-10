@@ -133,6 +133,7 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
                     ascii::string("node")
                   | ascii::string("way")
                   | ascii::string("area")
+                  | ascii::string("relation")
                 )
                 > zoom
                 > +condition

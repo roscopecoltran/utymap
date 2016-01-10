@@ -40,6 +40,7 @@ struct FilterCollection
     FilterMap nodes;
     FilterMap ways;
     FilterMap areas;
+    FilterMap relations;
     FilterMap canvases;
 };
 
@@ -70,8 +71,9 @@ public:
         build(area.tags, filters_.areas);
     }
 
-    inline void visitRelation(const Relation&)
+    inline void visitRelation(const Relation& relation)
     {
+        build(relation.tags, filters_.relations);
     }
 
     // checks tag's value assuming that the key is already checked.
@@ -147,6 +149,7 @@ public:
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
         filters.areas.reserve(24);
+        filters.relations.reserve(24);
         filters.canvases.reserve(24);
 
         for (const Rule& rule : stylesheet.rules) {
@@ -155,6 +158,7 @@ public:
                 if (selector.name == "node") filtersPtr = &filters.nodes;
                 else if (selector.name == "way") filtersPtr = &filters.ways;
                 else if (selector.name == "area") filtersPtr = &filters.areas;
+                else if (selector.name == "relation") filtersPtr = &filters.relations;
                 else if (selector.name == "canvas") filtersPtr = &filters.canvases;
                 else
                     std::domain_error("Unexpected selector name:" + selector.name);

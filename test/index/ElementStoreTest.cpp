@@ -213,4 +213,30 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
     BOOST_CHECK_EQUAL(elementStorePtr->times, 4);
 }
 
+BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_GeometryIsClipped)
+{
+    Area outer = ElementUtils::createElement<Area>(*stringTablePtr, {},
+    { { 5, 10 }, { 20, 10 }, { 20, -10 }, {5, -10} });
+    Area inner = ElementUtils::createElement<Area>(*stringTablePtr, {},
+    { { 10, 5 }, { 15, 5 }, { 15, -5 }, { 10, -5 } });
+    Relation relation;
+    relation.tags = std::vector<Tag>{ ElementUtils::createTag(*stringTablePtr, "test", "Foo") };
+    relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
+    relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
+    createElementStore("relation|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 0)) {
+            BOOST_CHECK_EQUAL(reinterpret_cast<const Relation&>(element).elements.size(), 1);
+        } else if(checkQuadKey(quadKey, 1, 0, 0)) {
+            BOOST_CHECK_EQUAL(reinterpret_cast<const Relation&>(element).elements.size(), 1);
+        } else {
+            BOOST_TEST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStorePtr->store(relation, LodRange(1, 1));
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

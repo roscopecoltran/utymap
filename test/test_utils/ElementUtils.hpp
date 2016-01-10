@@ -2,12 +2,14 @@
 #define TEST_ELEMENTUTILS_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "entities/Element.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 #include <cstdint>
+#include <string>
 #include <initializer_list>
 
 class ElementUtils
@@ -20,10 +22,7 @@ public:
     {
         T t;
         for (const auto& pair : tags) {
-            uint32_t key = stringTable.getId(pair.first);
-            uint32_t value = stringTable.getId(pair.second);
-            Tag tag(key, value);
-            t.tags.push_back(tag);
+            t.tags.push_back(createTag(stringTable, pair.first, pair.second));
         }
         return std::move(t);
     }
@@ -39,6 +38,15 @@ public:
             t.coordinates.push_back(utymap::GeoCoordinate(pair.first, pair.second));
         }
         return std::move(t);
+    }
+
+    static utymap::entities::Tag createTag(utymap::index::StringTable& stringTable, 
+                                           const std::string& key, 
+                                           const std::string& value)
+    {
+        uint32_t k = stringTable.getId(key);
+        uint32_t v = stringTable.getId(value);
+        return utymap::entities::Tag(k, v);
     }
 };
 

@@ -30,7 +30,7 @@ protected:
     virtual void storeImpl(const utymap::entities::Element& element, const QuadKey& quadKey) = 0;
 
 private:
-    friend class ElementGeometryClipper;
+    friend class ElementGeometryVisitor;
     void storeInTileRange(const utymap::entities::Element& element,
                           const utymap::BoundingBox& elementBbox,
                           int levelOfDetails,
