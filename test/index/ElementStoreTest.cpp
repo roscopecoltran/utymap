@@ -264,10 +264,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
             checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[1]), { { 10, 2 }, { 15, 2 }, { 15, 8 }, { 10, 8 } });
         }
         else if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(element),
-            {
-                { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 }
-            });
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
         }
         else {
             BOOST_TEST_FAIL("Unexpected quadKey!");
