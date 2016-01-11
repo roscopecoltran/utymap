@@ -226,9 +226,15 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_GeometryIsClipped)
     createElementStore("relation|z1[test=Foo] { key:val; clip: true;}",
         [&](const Element& element, const utymap::QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
-            BOOST_CHECK_EQUAL(reinterpret_cast<const Relation&>(element).elements.size(), 1);
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element),
+            { 
+                { 20, 10 }, { 20, 0 }, { 15, 0 }, { 15, 5 }, { 10, 5 }, { 10, 0 }, { 5, 0 }, {5, 10}
+            });
         } else if(checkQuadKey(quadKey, 1, 0, 0)) {
-            BOOST_CHECK_EQUAL(reinterpret_cast<const Relation&>(element).elements.size(), 1);
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element),
+            {
+                { 10, 0 }, { 10, -5 }, { 15, -5 }, { 15, 0 }, { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 }
+            });
         } else {
             BOOST_TEST_FAIL("Unexpected quadKey!");
         }
