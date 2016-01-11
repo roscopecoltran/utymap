@@ -99,9 +99,10 @@ public:
         clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
+        int count = solution.Total();
 
         // 3. way intersects border only once: store a copy with clipped geometry
-        if (solution.ChildCount() == 1) {
+        if (count == 1) {
             Way clippedWay;
             setData(clippedWay, way, solution.GetFirst()->Contour);
             elementStore_.storeImpl(clippedWay, *quadKeyPtr_);
@@ -111,12 +112,15 @@ public:
             Relation relation;
             relation.id = way.id;
             relation.tags = way.tags;
-            relation.elements.reserve(solution.ChildCount());
-            for (auto it = solution.Childs.begin(); it != solution.Childs.end(); ++it) {
+            relation.elements.reserve(count);
+            ClipperLib::PolyNode* polyNode = solution.GetFirst();
+            while (polyNode)
+            {
                 std::shared_ptr<Way> clippedWay(new Way());
                 clippedWay->id = way.id;
-                setCoordinates(*clippedWay, (*it)->Contour);
+                setCoordinates(*clippedWay, polyNode->Contour);
                 relation.elements.push_back(clippedWay);
+                polyNode = polyNode->GetNext();
             }
             elementStore_.storeImpl(relation, *quadKeyPtr_);
         }
@@ -220,7 +224,9 @@ public:
         clipper_.Execute(ClipperLib::ctIntersection, solution);
         clipper_.Clear();
 
-        if (solution.ChildCount() == 1) {
+        int count = solution.Total();
+        // Do not store one result as relation
+        if (count == 1) {
             ClipperLib::PolyNode* node = solution.GetFirst();
             if (node->IsOpen()) {
                 Way way;
@@ -235,8 +241,28 @@ public:
                 }
             }
         }
-        else {
-            // TODO
+        else if (count > 1) {
+            Relation newRelation;
+            newRelation.id = relation.id;
+            newRelation.tags = relation.tags;
+            newRelation.elements.reserve(count);
+
+            ClipperLib::PolyNode* polyNode = solution.GetFirst();
+            while (polyNode)
+            {
+                if (polyNode->IsOpen()) {
+                    std::shared_ptr<Way> way(new Way());
+                    setCoordinates(*way, polyNode->Contour);
+                    newRelation.elements.push_back(way);
+                }
+                else {
+                    std::shared_ptr<Area> area(new Area());
+                    setCoordinates(*area, polyNode->Contour);
+                    newRelation.elements.push_back(area);
+                }
+                polyNode = polyNode->GetNext();
+            }
+            elementStore_.storeImpl(newRelation, *quadKeyPtr_);
         }
     }
 

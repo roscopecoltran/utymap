@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
     BOOST_CHECK_EQUAL(elementStorePtr->times, 4);
 }
 
-BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_GeometryIsClipped)
+BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_AreaIsReturnedWithClippedGeometry)
 {
     Area outer = ElementUtils::createElement<Area>(*stringTablePtr, {},
     { { 5, 10 }, { 20, 10 }, { 20, -10 }, {5, -10} });
@@ -236,6 +236,40 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_GeometryIsClipped)
                 { 10, 0 }, { 10, -5 }, { 15, -5 }, { 15, 0 }, { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 }
             });
         } else {
+            BOOST_TEST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStorePtr->store(relation, LodRange(1, 1));
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
+}
+
+BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturnedWithClippedGeometry)
+{
+    Area outer = ElementUtils::createElement<Area>(*stringTablePtr, {},
+    { { 5, 10 }, { 20, 10 }, { 20, -10 }, { 5, -10 } });
+    Area inner = ElementUtils::createElement<Area>(*stringTablePtr, {},
+    { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
+    Relation relation;
+    relation.tags = std::vector<Tag>{ ElementUtils::createTag(*stringTablePtr, "test", "Foo") };
+    relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
+    relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
+    createElementStore("relation|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 0)) {
+            const Relation& relation = reinterpret_cast<const Relation&>(element);
+            BOOST_CHECK_EQUAL(relation.elements.size(), 2);
+            checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[0]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
+            checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[1]), { { 10, 2 }, { 15, 2 }, { 15, 8 }, { 10, 8 } });
+        }
+        else if (checkQuadKey(quadKey, 1, 0, 0)) {
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element),
+            {
+                { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 }
+            });
+        }
+        else {
             BOOST_TEST_FAIL("Unexpected quadKey!");
         }
     });
