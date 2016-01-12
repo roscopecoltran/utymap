@@ -38,7 +38,7 @@ public:
         {
             case FormatType::Shape:
             {
-                ShapeDataVisitor shpVisitor(*elementStorePtr, stringTable_, range);
+                ShapeDataVisitor shpVisitor(*elementStorePtr, styleProvider_, stringTable_, range);
                 utymap::formats::ShapeParser<ShapeDataVisitor> parser;
                 parser.parse(path, shpVisitor);
                 break;

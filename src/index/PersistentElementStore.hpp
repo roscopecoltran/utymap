@@ -16,12 +16,13 @@ class PersistentElementStore : public ElementStore
 {
 public:
     PersistentElementStore(const std::string& path,
-                           const utymap::mapcss::StyleProvider& styleProvider,
                            utymap::index::StringTable& stringTable);
 
     ~PersistentElementStore();
 
-    void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor);
+    void search(const utymap::QuadKey& quadKey, 
+                const utymap::mapcss::StyleProvider& styleProvider,
+                utymap::entities::ElementVisitor& visitor);
 
 protected:
     void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);

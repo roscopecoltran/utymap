@@ -12,6 +12,7 @@
 #include "index/ElementStore.hpp"
 #include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 #include <cstdint>
 
@@ -24,8 +25,12 @@ struct ShapeDataVisitor
     int areas;
     int relations;
 
-    ShapeDataVisitor(ElementStore& elementStore, StringTable& stringTable, const LodRange& lodRange) :
+    ShapeDataVisitor(ElementStore& elementStore, 
+                    const utymap::mapcss::StyleProvider& styleProvider, 
+                    StringTable& stringTable, 
+                    const LodRange& lodRange) :
         elementStore_(elementStore),
+        styleProvider_(styleProvider),
         stringTable_(stringTable),
         lodRange_(lodRange),
         nodes(0),
@@ -40,7 +45,7 @@ struct ShapeDataVisitor
         utymap::entities::Node node;
         node.coordinate = coordinate;
         setTags(node, tags);
-        if (elementStore_.store(node, lodRange_)) {
+        if (elementStore_.store(node, lodRange_, styleProvider_)) {
             nodes++;
         }
     }
@@ -51,14 +56,14 @@ struct ShapeDataVisitor
             utymap::entities::Area area;
             area.coordinates = coordinates;
             setTags(area, tags);
-            if (elementStore_.store(area, lodRange_))
+            if (elementStore_.store(area, lodRange_, styleProvider_))
                 areas++;
         }
         else {
             utymap::entities::Way way;
             way.coordinates = coordinates;
             setTags(way, tags);
-            if (elementStore_.store(way, lodRange_))
+            if (elementStore_.store(way, lodRange_, styleProvider_))
                 ways++;
         }
     }
@@ -76,6 +81,7 @@ struct ShapeDataVisitor
 
 private:
     ElementStore& elementStore_;
+    const utymap::mapcss::StyleProvider& styleProvider_;
     StringTable& stringTable_;
     const LodRange& lodRange_;
 

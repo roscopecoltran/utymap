@@ -27,14 +27,14 @@ public:
 
     int times;
 
-    TestElementStore(const StyleProvider& styleProvider, StringTable& stringTable, StoreCallback function) :
-        ElementStore(styleProvider, stringTable),
+    TestElementStore(StringTable& stringTable, StoreCallback function) :
+        ElementStore(stringTable),
         function_(function),
         times(0)
     {
     }
 
-    void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
+    void search(const utymap::QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
     {
     }
 
@@ -73,7 +73,7 @@ struct Index_ElementStoreFixture
     void createElementStore(std::string stylesheet, const StoreCallback callback)
     {
         styleProviderPtr = MapCssUtils::createStyleProviderFromString(*stringTablePtr, stylesheet);
-        elementStorePtr = new TestElementStore(*styleProviderPtr, *stringTablePtr, callback);
+        elementStorePtr = new TestElementStore(*stringTablePtr, callback);
     }
 
     StringTable* stringTablePtr;
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
         }
     });
 
-    elementStorePtr->store(way, LodRange(1,1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStor
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 3);
 }
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1));
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 4);
 }
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_AreaIsReturnedWith
         }
     });
 
-    elementStorePtr->store(relation, LodRange(1, 1));
+    elementStorePtr->store(relation, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
         }
     });
 
-    elementStorePtr->store(relation, LodRange(1, 1));
+    elementStorePtr->store(relation, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }

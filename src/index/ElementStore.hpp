@@ -18,15 +18,19 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    ElementStore(const utymap::mapcss::StyleProvider& styleProvider, utymap::index::StringTable& stringTable);
+    ElementStore(utymap::index::StringTable& stringTable);
 
     virtual ~ElementStore();
 
     // Searches elements for given quadKey
-    virtual void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor) = 0;
+    virtual void search(const utymap::QuadKey& quadKey,
+                        const utymap::mapcss::StyleProvider& styleProvider,
+                        utymap::entities::ElementVisitor& visitor) = 0;
 
     // Stores element in storage for given level of details range.
-    bool store(const utymap::entities::Element& element, const utymap::index::LodRange& range);
+    bool store(const utymap::entities::Element& element, 
+               const utymap::index::LodRange& range,
+               const utymap::mapcss::StyleProvider& styleProvider);
 
 protected:
     // Stores element in given quadkey.
@@ -39,7 +43,6 @@ private:
                           int levelOfDetails,
                           bool shouldClip);
 
-    const utymap::mapcss::StyleProvider& styleProvider_;
     utymap::index::StringTable& stringTable_;
 };
 

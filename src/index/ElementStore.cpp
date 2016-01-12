@@ -317,8 +317,7 @@ private:
     ClipperLib::Clipper clipper_;
 };
 
-ElementStore::ElementStore(const StyleProvider& styleProvider, StringTable& stringTable) :
-    styleProvider_(styleProvider),
+ElementStore::ElementStore(StringTable& stringTable) :
     stringTable_(stringTable)
 {
 }
@@ -327,14 +326,14 @@ ElementStore::~ElementStore()
 {
 }
 
-bool ElementStore::store(const Element& element, const utymap::index::LodRange& range)
+bool ElementStore::store(const Element& element, const utymap::index::LodRange& range, const StyleProvider& styleProvider)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
     uint32_t clipKeyId = stringTable_.getId("clip");
     for (int lod = range.start; lod <= range.end; ++lod) {
         // skip element for this lod
-        Style style = styleProvider_.forElement(element, lod);
+        Style style = styleProvider.forElement(element, lod);
         if (!style.isApplicable)
             continue;
         // initialize bounding box only once

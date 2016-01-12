@@ -42,8 +42,8 @@ private:
     QuadKey currentQuadKey_;
 };
 
-InMemoryElementStore::InMemoryElementStore(const StyleProvider& styleProvider, StringTable& stringTable) :
-ElementStore(styleProvider, stringTable),
+InMemoryElementStore::InMemoryElementStore(StringTable& stringTable) :
+ElementStore(stringTable),
     pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
         new InMemoryElementStore::InMemoryElementStoreImpl()))
 {
@@ -59,7 +59,7 @@ void InMemoryElementStore::storeImpl(const utymap::entities::Element& element, c
     element.accept(*pimpl_);
 }
 
-void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
+void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
 {
 
 }
