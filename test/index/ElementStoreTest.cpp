@@ -146,6 +146,31 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
+BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStore_IsSkipped)
+{
+    Way way = ElementUtils::createElement<Way>(*stringTablePtr,
+    { { "test", "Foo" } },
+    { { -10, 20 }, { -5, -10 }, { 10, -10 } });
+    createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 1) || 
+            checkQuadKey(quadKey, 1, 0, 0) || 
+            checkQuadKey(quadKey, 1, 0, 1)) {
+            BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
+        }
+        else if (checkQuadKey(quadKey, 1, 1, 0)) {
+            BOOST_TEST_FAIL("This quadkey should be skipped!!");
+        }
+        else {
+            BOOST_TEST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStorePtr->store(way, LodRange(1, 1));
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 3);
+}
+
 BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
 {
     Area way = ElementUtils::createElement<Area>(*stringTablePtr,
