@@ -35,6 +35,10 @@ public:
     }
 
 protected:
+    void searchImpl(const utymap::QuadKey& quadKey) 
+    {
+    }
+
     void storeImpl(const Element& element, const utymap::QuadKey& quadKey)
     {
         times++;

@@ -21,7 +21,8 @@ public:
     ~InMemoryElementStore();
 
 protected:
-    void storeImpl(const utymap::entities::Element& element, const QuadKey& quadKey);
+    void searchImpl(const utymap::QuadKey& quadKey);
+    void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
 
 private:
     class InMemoryElementStoreImpl;
