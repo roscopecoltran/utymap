@@ -60,7 +60,7 @@ void PersistentElementStore::storeImpl(const utymap::entities::Element& element,
     element.accept(*pimpl_);
 }
 
-void PersistentElementStore::searchImpl(const QuadKey& quadKey)
+void PersistentElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
 {
 
 }

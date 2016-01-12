@@ -20,8 +20,9 @@ public:
 
     ~InMemoryElementStore();
 
+    void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor);
+
 protected:
-    void searchImpl(const utymap::QuadKey& quadKey);
     void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
 
 private:

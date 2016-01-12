@@ -23,15 +23,12 @@ public:
     virtual ~ElementStore();
 
     // Searches elements for given quadKey
-    void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor);
+    virtual void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor) = 0;
 
     // Stores element in storage for given level of details range.
     bool store(const utymap::entities::Element& element, const utymap::index::LodRange& range);
 
 protected:
-    // Searches for elements inside given quadkey.
-    virtual void searchImpl(const utymap::QuadKey& quadKey) = 0;
-
     // Stores element in given quadkey.
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;
 

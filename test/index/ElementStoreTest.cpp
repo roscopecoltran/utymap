@@ -34,10 +34,11 @@ public:
     {
     }
 
-protected:
-    void searchImpl(const utymap::QuadKey& quadKey) 
+    void search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
     {
     }
+
+protected:
 
     void storeImpl(const Element& element, const utymap::QuadKey& quadKey)
     {

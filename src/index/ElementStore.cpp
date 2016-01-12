@@ -361,9 +361,4 @@ void ElementStore::storeInTileRange(const Element& element, const BoundingBox& e
     GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }
 
-void ElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
-{
-    // TODO
-}
-
 }}
