@@ -49,7 +49,7 @@ public:
     template<typename Visitor>
     static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor& visitor)
     {
-        if (!bbox.isValid()) 
+        if (!bbox.isValid())
             return;
 
         QuadKey start = latLonToQuadKey(bbox.minPoint, levelOfDetail);

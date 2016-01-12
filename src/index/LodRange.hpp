@@ -3,6 +3,7 @@
 
 #include "index/GeoUtils.hpp"
 
+#include <stdexcept>
 #include <string>
 
 namespace utymap { namespace index {

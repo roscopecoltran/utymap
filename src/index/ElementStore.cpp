@@ -182,10 +182,10 @@ public:
             RelationVisitor(const BoundingBox& quadKeyBbox, ClipperLib::Clipper& clipper) :
                 bbox_(quadKeyBbox), clipper_(clipper) { }
 
-            void visitNode(const Node& node) 
-            { 
-                if (bbox_.contains(node.coordinate)) { 
-                    data.elements.push_back(std::shared_ptr<Node>(new Node(node))); 
+            void visitNode(const Node& node)
+            {
+                if (bbox_.contains(node.coordinate)) {
+                    data.elements.push_back(std::shared_ptr<Node>(new Node(node)));
                 }
             }
 
@@ -205,8 +205,8 @@ public:
 
             void visitRelation(const Relation& relation)
             {
-                for (const auto& element : relation.elements) { 
-                    element->accept(*this); 
+                for (const auto& element : relation.elements) {
+                    element->accept(*this);
                 }
             }
 
@@ -352,12 +352,13 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
     ElementGeometryVisitor geometryClipper(*this);
-    GeoUtils::visitTileRange(elementBbox, levelOfDetails, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
         else
             storeImpl(element, quadKey);
-    });
+    };
+    GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }
 
 }}
