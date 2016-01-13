@@ -17,8 +17,6 @@ using namespace utymap::mapcss;
 
 class InMemoryElementStore::InMemoryElementStoreImpl : public ElementVisitor
 {
-    typedef std::vector<std::shared_ptr<Element>> Elements;
-
     struct QuadKeyComparator
     {
         bool operator() (const QuadKey& lhs, const QuadKey& rhs) const
@@ -32,6 +30,9 @@ class InMemoryElementStore::InMemoryElementStoreImpl : public ElementVisitor
             return lhs.levelOfDetail < rhs.levelOfDetail;
         }
     };
+
+    typedef std::vector<std::shared_ptr<Element>> Elements;
+    typedef std::map<QuadKey, Elements, QuadKeyComparator> ElementMap;
 
 public:
 
@@ -57,8 +58,18 @@ public:
         elementsMap_[currentQuadKey].push_back(std::shared_ptr<Relation>(new Relation(relation)));
     }
 
+    ElementMap::const_iterator begin()
+    {
+        return elementsMap_.find(currentQuadKey);
+    }
+
+    ElementMap::const_iterator end()
+    {
+        return elementsMap_.cend();
+    }
+
 private:
-    std::map<QuadKey, Elements, QuadKeyComparator> elementsMap_;
+    ElementMap elementsMap_;
 };
 
 InMemoryElementStore::InMemoryElementStore(StringTable& stringTable) :
@@ -80,5 +91,17 @@ void InMemoryElementStore::storeImpl(const utymap::entities::Element& element, c
 
 void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
 {
+    pimpl_->currentQuadKey = quadKey;
+    auto it = pimpl_->begin();
+    if (it == pimpl_->end()) {
+        // No elements for this quadkey
+        return;
+    }
 
+    for (const auto& element : it->second) {
+        Style style = styleProvider.forElement(*element, quadKey.levelOfDetail);
+        if (!style.isApplicable)
+            continue;
+        element->accept(visitor);
+    }
 }
