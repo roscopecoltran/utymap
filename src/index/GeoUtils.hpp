@@ -45,6 +45,26 @@ public:
         return BoundingBox { minPoint, maxPoint };
     }
 
+    static std::string quadKeyToString(const QuadKey& quadKey)
+    {
+        std::string code;
+        code.reserve(quadKey.levelOfDetail);
+        for (int i = quadKey.levelOfDetail; i > 0; --i)
+        {
+            char digit = '0';
+            int mask = 1 << (i - 1);
+            if ((quadKey.tileX & mask) != 0)
+                digit++;
+            if ((quadKey.tileY & mask) != 0)
+            {
+                digit++;
+                digit++;
+            }
+            code += digit;
+        }
+        return std::move(code);
+    }
+
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
     static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor& visitor)

@@ -2,7 +2,6 @@
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
-#include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
@@ -22,7 +21,7 @@ public:
 
     virtual ~ElementStore();
 
-    // Searches elements for given quadKey
+    // Searches for elements for given quadKey
     virtual void search(const utymap::QuadKey& quadKey,
                         const utymap::mapcss::StyleProvider& styleProvider,
                         utymap::entities::ElementVisitor& visitor) = 0;

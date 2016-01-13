@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenToString_ThenReturnValidCode)
     quadKey.tileX = 281640;
     quadKey.tileY = 171914;
 
-    std::string code = quadKey.toString();
+    std::string code = GeoUtils::quadKeyToString(quadKey);
 
     BOOST_CHECK_EQUAL("1202102332220103020", code);
 }
