@@ -65,7 +65,7 @@ extern "C"
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr);
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
         
-        geoStorePtr = new utymap::index::GeoStore(*styleProviderPtr, *stringTablePtr);
+        geoStorePtr = new utymap::index::GeoStore(*stringTablePtr);
         geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
         geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);
 
@@ -88,12 +88,12 @@ extern "C"
 
     void EXPORT_API addToPersistentStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(persistentStorageKey, utymap::index::LodRange(startLod, endLod), path);
+        geoStorePtr->add(persistentStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
     }
 
     void EXPORT_API addToInMemoryStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(inMemoryStorageKey, utymap::index::LodRange(startLod, endLod), path);
+        geoStorePtr->add(inMemoryStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,

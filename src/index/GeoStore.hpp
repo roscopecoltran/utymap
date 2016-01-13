@@ -23,7 +23,7 @@ namespace utymap { namespace index {
 class GeoStore
 {
 public:
-    GeoStore(const utymap::mapcss::StyleProvider& styleProvider, utymap::index::StringTable& stringTable);
+    GeoStore(utymap::index::StringTable& stringTable);
 
     ~GeoStore();
 
@@ -31,19 +31,27 @@ public:
     void registerStore(const std::string& storeKey, ElementStore& store);
 
     // Adds element to selected store.
-    void add(const std::string& storeKey, const utymap::index::LodRange& range, const utymap::entities::Element& element);
+    void add(const std::string& storeKey, 
+             const utymap::entities::Element& element,
+             const utymap::index::LodRange& range, 
+             const utymap::mapcss::StyleProvider& styleProvider);
 
     // Adds elements from given path to selected store.
-    void add(const std::string& storeKey, const utymap::index::LodRange& range, const std::string& path);
+    void add(const std::string& storeKey, 
+             const std::string& path,
+             const utymap::index::LodRange& range, 
+             const utymap::mapcss::StyleProvider& styleProvider);
 
     // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor,
+                const utymap::mapcss::StyleProvider& styleProvider);
 
     // Searches for elements inside circle with given parameters.
     void search(const GeoCoordinate& coordinate,
                 double radius,
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor,
+                const utymap::mapcss::StyleProvider& styleProvider);
 
 private:
     class GeoStoreImpl;

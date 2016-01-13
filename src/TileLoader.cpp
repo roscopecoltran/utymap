@@ -54,10 +54,11 @@ public:
 
     TileLoaderImpl(GeoStore& geoStore, const StyleProvider& styleProvider, StringTable& stringTable, ElevationProvider<double>& eleProvider) :
         geoStore_(geoStore),
+        styleProvider_(styleProvider),
         eleProvider_(eleProvider),
         stringTable_(stringTable)
     {
-        createBackgroundProperties(styleProvider);
+        createBackgroundProperties();
     }
 
     void loadTile(const QuadKey& quadKey, const std::function<void(Mesh<double>&)>& meshFunc, const std::function<void(Element&)>& elementFunc)
@@ -66,7 +67,7 @@ public:
         terraBuilder.setBackgroundProperties(backgroundPropertiesMap_[quadKey.levelOfDetail]);
 
         GeoStoreElementVisitor elementVisitor(terraBuilder);
-        geoStore_.search(quadKey, elementVisitor);
+        geoStore_.search(quadKey, elementVisitor, styleProvider_);
 
         Rectangle<double> tileRect = createRectFromQuadKey(quadKey);
         Mesh<double> mesh = terraBuilder.build(tileRect, quadKey.levelOfDetail);
@@ -86,10 +87,10 @@ private:
         );
     }
 
-    void createBackgroundProperties(const StyleProvider& styleProvider)
+    void createBackgroundProperties()
     {
         for (int lod = GeoUtils::MinLevelOfDetails; lod <= GeoUtils::MaxLevelOfDetails; ++lod) {
-            Style style = styleProvider.forCanvas(lod);
+            Style style = styleProvider_.forCanvas(lod);
             MeshRegion::Properties properties;
             properties.eleNoiseFreq = std::stof(getStyleValue(BackgroundEleNoiseFreq, style));
             properties.colorNoiseFreq = std::stof(getStyleValue(BackgroundColorNoiseFreq, style));
@@ -107,6 +108,7 @@ private:
 
     GeoStore& geoStore_;
     StringTable& stringTable_;
+    const StyleProvider& styleProvider_;
     ElevationProvider<double>& eleProvider_;
     std::unordered_map<int, MeshRegion::Properties> backgroundPropertiesMap_;
 };
