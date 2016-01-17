@@ -1,7 +1,10 @@
 set(HEADER_FILES
+                ${LIB_SOURCE}/clipper/clipper.hpp
+                ${LIB_SOURCE}/hashing/MurmurHash3.h
+                ${LIB_SOURCE}/triangle/triangle.h
+                ${LIB_SOURCE}/shapefile/shapefil.h
                 BoundingBox.hpp
                 Exceptions.hpp
-                ExportLib.h
                 GeoCoordinate.hpp
                 QuadKey.hpp
                 TileLoader.hpp
@@ -15,7 +18,6 @@ set(HEADER_FILES
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
-                formats/shape/shapefil.h
                 formats/shape/ShapeParser.hpp
                 formats/xml/OsmXmlParser.hpp
                 heightmap/ElevationProvider.hpp
@@ -32,27 +34,27 @@ set(HEADER_FILES
                 mapcss/StyleSheet.hpp
                 mapcss/Style.hpp
                 mapcss/StyleProvider.hpp
-                meshing/clipper.hpp
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
-                meshing/Triangle.h
                 terrain/LineGridSplitter.hpp
                 terrain/MeshRegion.hpp
                 terrain/TerraBuilder.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
-                utils/MurmurHash3.h
                 )
 
 add_library (UtyMap
                 ${HEADER_FILES}
+                ${LIB_SOURCE}/clipper/clipper.cpp
+                ${LIB_SOURCE}/hashing/MurmurHash3.cpp
+                ${LIB_SOURCE}/triangle/triangle.c
+                ${LIB_SOURCE}/shapefile/dbfopen.c
+                ${LIB_SOURCE}/shapefile/safileio.c
+                ${LIB_SOURCE}/shapefile/shpopen.c
                 TileLoader.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
-                formats/shape/dbfopen.c
-                formats/shape/safileio.c
-                formats/shape/shpopen.c
                 index/ElementStore.cpp
                 index/GeoStore.cpp
                 index/InMemoryElementStore.cpp
@@ -61,13 +63,10 @@ add_library (UtyMap
                 mapcss/MapCssParser.cpp
                 mapcss/StyleProvider.cpp
                 mapcss/StyleSheet.cpp
-                meshing/clipper.cpp
-                meshing/Triangle.c
                 meshing/MeshBuilder.cpp
                 terrain/TerraBuilder.cpp
-                utils/MurmurHash3.cpp
                 )
 
 set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)
 
-include_directories (${SOURCE})
+include_directories (${MAIN_SOURCE} ${LIB_SOURCE})

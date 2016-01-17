@@ -1,5 +1,5 @@
 #include "config.hpp"
-#include "ExportLib.h"
+#include "ExportLib.cpp"
 
 #include <boost/test/unit_test.hpp>
 

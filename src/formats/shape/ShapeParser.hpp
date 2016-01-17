@@ -4,7 +4,7 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
-#include "shapefil.h"
+#include "shapefile/shapefil.h"
 
 #include <iostream>
 #include <string>

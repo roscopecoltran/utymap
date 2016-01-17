@@ -2,7 +2,7 @@
 #define ANSI_DECLARATORS
 
 #include "meshing/MeshBuilder.hpp"
-#include "meshing/Triangle.h"
+#include "triangle/triangle.h"
 
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
@@ -48,7 +48,7 @@ public:
         out.trianglelist = nullptr;
         out.triangleattributelist = nullptr;
 
-        ::triangulate(const_cast<char*>("praqzBPQ"), &mid, &out, nullptr);
+        ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
 
         Mesh<double> mesh;
         fillMesh(&out, mesh);

@@ -47,9 +47,9 @@ extern "C"
     typedef void OnError(const char* errorMessage);
 
     void EXPORT_API configure(const char* stringPath, // path to string table directory
-                             const char* stylePath,   // path to mapcss file
-                             const char* dataPath,    // path to index directory
-                             OnError* errorCallback)
+                              const char* stylePath,   // path to mapcss file
+                              const char* dataPath,    // path to index directory
+                              OnError* errorCallback)
     {
         std::ifstream styleFile(stylePath);
         utymap::mapcss::Parser parser;

@@ -12,7 +12,7 @@
 #include "index/GeoUtils.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleProvider.hpp"
-#include "meshing/clipper.hpp"
+#include "clipper/clipper.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;

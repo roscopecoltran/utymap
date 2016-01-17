@@ -1,20 +1,22 @@
 cmake_minimum_required (VERSION 3.0)
 project ("UtyMap")
 
-set(SOURCE ${PROJECT_SOURCE_DIR}/src)
+set(MAIN_SOURCE ${PROJECT_SOURCE_DIR}/src)
+set(LIB_SOURCE ${PROJECT_SOURCE_DIR}/lib)
 set(TEST_SOURCE ${PROJECT_SOURCE_DIR}/test)
+set(SHARED_SOURCE ${PROJECT_SOURCE_DIR}/shared)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set (BOOST_ROOT /cygdrive/d/Dev/_libs/boost_1_59_0)
+set (BOOST_ROOT g:/__ASM/cpp/boost)
 set (BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib)
 
 # TODO improve the way how libs are included
-set (PROTOBUF_INCLUDE_DIR /cygdrive/d/Dev/_libs/protobuf-2.6.1/src)
-set (PROTOBUF_LIBRARY /cygdrive/d/Dev/_libs/protobuf-2.6.1/src/libprotobuf.a)
+set (PROTOBUF_INCLUDE_DIR g:/__ASM/cpp/protobuf/src)
+set (PROTOBUF_LIBRARY g:/__ASM/cpp/protobuf/vsprojects/x64/Debug/libprotobuf.lib)
 
-set (ZLIB_INCLUDE_DIR /cygdrive/d/Dev/_libs/zlib-1.2.8)
-set (ZLIB_LIBRARY /cygdrive/d/Dev/_libs/zlib-1.2.8/libz.a)
+set (ZLIB_INCLUDE_DIR g:/__ASM/cpp/zlib)
+set (ZLIB_LIBRARY g:/__ASM/cpp/zlib/build/Debug/zlibd.lib)
 
 # initialize boost
 find_package(Boost REQUIRED)
@@ -31,8 +33,9 @@ include_directories(${PROTOBUF_INCLUDE_DIR})
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIR})
 
-add_subdirectory (src)
-add_subdirectory (test)
+add_subdirectory(src)
+add_subdirectory(test)
+add_subdirectory(shared)
 
 add_definitions(-std=c++11)
 

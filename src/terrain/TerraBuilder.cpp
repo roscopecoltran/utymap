@@ -1,4 +1,4 @@
-#include "meshing/clipper.hpp"
+#include "clipper/clipper.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "terrain/LineGridSplitter.hpp"

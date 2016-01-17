@@ -1,5 +1,5 @@
 #include "heightmap/ElevationProvider.hpp"
-#include "meshing/clipper.hpp"
+#include "clipper/clipper.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"

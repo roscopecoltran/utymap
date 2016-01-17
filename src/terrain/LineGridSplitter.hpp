@@ -1,7 +1,7 @@
 #ifndef TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
 #define TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
 
-#include "meshing/clipper.hpp"
+#include "clipper/clipper.hpp"
 #include "meshing/MeshTypes.hpp"
 
 #include <algorithm>

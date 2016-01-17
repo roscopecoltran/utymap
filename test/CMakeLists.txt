@@ -6,7 +6,9 @@ string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
         MODIFIED_FILE_CONTENT "${FILE_CONTENT}")
 file(WRITE ${TEST_SOURCE}/config.hpp "${MODIFIED_FILE_CONTENT}")
 
-include_directories (${SOURCE}
+include_directories (${MAIN_SOURCE}
+                     ${LIB_SOURCE}
+                     ${SHARED_SOURCE}
                      ${TEST_SOURCE}
                      ${Boost_INCLUDE_DIRS}
                      )

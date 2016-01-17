@@ -1,4 +1,4 @@
-#include "utils/MurmurHash3.h"
+#include "hashing/MurmurHash3.h"
 #include "StringTable.hpp"
 
 #include <cstdio>
