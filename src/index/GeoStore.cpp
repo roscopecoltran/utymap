@@ -5,6 +5,7 @@
 #include "index/PersistentElementStore.hpp"
 #include "index/ShapeDataVisitor.hpp"
 
+#include <stdexcept>
 #include <unordered_map>
 
 using namespace utymap::entities;
@@ -47,12 +48,16 @@ public:
         }
     }
 
-    void search(const QuadKey& quadKey, ElementVisitor& visitor, const utymap::mapcss::StyleProvider& styleProvider)
+    void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
     {
+        for (const auto& pair : storeMap_) {
+            pair.second->search(quadKey, styleProvider, visitor);
+        }
     }
 
-    void search(const GeoCoordinate& coordinate, double radius, ElementVisitor& visitor, const StyleProvider& styleProvider)
+    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor)
     {
+        throw std::domain_error("Not implemented");
     }
 
 private:
@@ -90,12 +95,12 @@ void utymap::index::GeoStore::add(const std::string& storeKey, const std::string
     pimpl_->add(storeKey, path, range, styleProvider);
 }
 
-void utymap::index::GeoStore::search(const QuadKey& quadKey, ElementVisitor& visitor, const utymap::mapcss::StyleProvider& styleProvider)
+void utymap::index::GeoStore::search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
 {
-    pimpl_->search(quadKey, visitor, styleProvider);
+    pimpl_->search(quadKey, styleProvider, visitor);
 }
 
-void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, ElementVisitor& visitor, const StyleProvider& styleProvider)
+void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor)
 {
-    pimpl_->search(coordinate, radius, visitor, styleProvider);
+    pimpl_->search(coordinate, radius, styleProvider, visitor);
 }

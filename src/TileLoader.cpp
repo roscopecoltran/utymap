@@ -67,7 +67,7 @@ public:
         terraBuilder.setBackgroundProperties(backgroundPropertiesMap_[quadKey.levelOfDetail]);
 
         GeoStoreElementVisitor elementVisitor(terraBuilder);
-        geoStore_.search(quadKey, elementVisitor, styleProvider_);
+        geoStore_.search(quadKey, styleProvider_, elementVisitor);
 
         Rectangle<double> tileRect = createRectFromQuadKey(quadKey);
         Mesh<double> mesh = terraBuilder.build(tileRect, quadKey.levelOfDetail);

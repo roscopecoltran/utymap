@@ -62,5 +62,5 @@ void PersistentElementStore::storeImpl(const utymap::entities::Element& element,
 
 void PersistentElementStore::search(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
 {
-
+    // TODO
 }

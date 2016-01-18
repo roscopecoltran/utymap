@@ -44,14 +44,14 @@ public:
 
     // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
-                utymap::entities::ElementVisitor& visitor,
-                const utymap::mapcss::StyleProvider& styleProvider);
+                const utymap::mapcss::StyleProvider& styleProvider,
+                utymap::entities::ElementVisitor& visitor);
 
     // Searches for elements inside circle with given parameters.
     void search(const GeoCoordinate& coordinate,
                 double radius,
-                utymap::entities::ElementVisitor& visitor,
-                const utymap::mapcss::StyleProvider& styleProvider);
+                const utymap::mapcss::StyleProvider& styleProvider,
+                utymap::entities::ElementVisitor& visitor);
 
 private:
     class GeoStoreImpl;

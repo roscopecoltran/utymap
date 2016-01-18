@@ -29,8 +29,8 @@ static utymap::index::StringTable* stringTablePtr = nullptr;
 static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
 static utymap::heightmap::ElevationProvider<double>* eleProviderPtr = nullptr;
 
-const std::string inMemoryStorageKey;
-const std::string persistentStorageKey;
+const std::string InMemoryStorageKey = "InMemory";
+const std::string PersistentStorageKey = "OnDisk";
 
 extern "C"
 {
@@ -66,8 +66,8 @@ extern "C"
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
         
         geoStorePtr = new utymap::index::GeoStore(*stringTablePtr);
-        geoStorePtr->registerStore(inMemoryStorageKey, *inMemoryStorePtr);
-        geoStorePtr->registerStore(persistentStorageKey, *persistentStorePtr);
+        geoStorePtr->registerStore(InMemoryStorageKey, *inMemoryStorePtr);
+        geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *styleProviderPtr, *stringTablePtr, *eleProviderPtr);
@@ -88,12 +88,12 @@ extern "C"
 
     void EXPORT_API addToPersistentStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(persistentStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
+        geoStorePtr->add(PersistentStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
     }
 
     void EXPORT_API addToInMemoryStore(const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(inMemoryStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
+        geoStorePtr->add(InMemoryStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
     }
 
     void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
