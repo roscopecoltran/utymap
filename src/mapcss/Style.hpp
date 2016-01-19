@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 namespace utymap { namespace mapcss {
@@ -13,8 +14,6 @@ namespace utymap { namespace mapcss {
 // Represents style for element.
 struct Style
 {
-public:
-
     Style() : declarations_(), isApplicable(false)
     {
     }
@@ -26,22 +25,22 @@ public:
         return declarations_.find(key) != declarations_.end();
     }
 
-    inline void put(uint32_t key, uint32_t value) 
+    inline void put(const uint32_t key, const std::shared_ptr<std::string> value)
     {
         declarations_[key] = value;
     }
 
-    inline uint32_t get(uint32_t key) const
+    inline std::string& get(const uint32_t key) const
     {
         auto it = declarations_.find(key);
         if (it == declarations_.end())
             throw MapCssException(std::string("Cannot find declaration with the key:") + std::to_string(key));
 
-        return it->second;
+        return *it->second;
     }
 
 private:
-    std::unordered_map<uint32_t, uint32_t> declarations_;
+    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations_;
 };
 
 }}

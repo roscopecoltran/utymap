@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -29,7 +30,7 @@ struct Condition
 struct Filter
 {
     std::vector<::Condition> conditions;
-    std::unordered_map<uint32_t, uint32_t> declarations;
+    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations;
 };
 
 // key: level of detais, value: filters for specific element type.
@@ -117,7 +118,7 @@ public:
                     // merge declarations to style
                     if (isMatched) {
                         style_.isApplicable = true;
-                        for (auto& d : filter.declarations) {
+                        for (const auto& d : filter.declarations) {
                             style_.put(d.first, d.second);
                         }
                     }
@@ -182,8 +183,7 @@ public:
                 for (auto i = 0; i < rule.declarations.size(); ++i) {
                     Declaration declaration = rule.declarations[i];
                     uint32_t key = stringTable.getId(declaration.key);
-                    uint32_t value = stringTable.getId(declaration.value);
-                    filter.declarations[key] = value;
+                    filter.declarations[key] = std::shared_ptr<std::string>(new std::string(declaration.value));
                 }
 
                 std::sort(filter.conditions.begin(), filter.conditions.end(),
