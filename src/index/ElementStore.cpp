@@ -333,13 +333,15 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
     uint32_t clipKeyId = stringTable_.getId("clip");
     for (int lod = range.start; lod <= range.end; ++lod) {
         // skip element for this lod
-        Style style = styleProvider.forElement(element, lod);
-        if (!style.isApplicable)
+        if (!styleProvider.hasStyle(element, lod)) 
             continue;
+
         // initialize bounding box only once
         if (!bboxVisitor.boundingBox.isValid()) {
             element.accept(bboxVisitor);
         }
+
+        Style style = styleProvider.forElement(element, lod);
         storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId));
         wasStored = true;
     }

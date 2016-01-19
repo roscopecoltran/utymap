@@ -1,5 +1,5 @@
-#ifndef INDEX_RULE_HPP_INCLUDED
-#define INDEX_RULE_HPP_INCLUDED
+#ifndef MAPCSS_STYLE_HPP_INCLUDED
+#define MAPCSS_STYLE_HPP_INCLUDED
 
 #include "Exceptions.hpp"
 #include "utils/CompatibilityUtils.hpp"
@@ -14,18 +14,12 @@ namespace utymap { namespace mapcss {
 // Represents style for element.
 struct Style
 {
-    Style() : declarations_(), isApplicable(false)
-    {
-    }
-
-    bool isApplicable;
-
     inline bool has(uint32_t key) const 
     {
         return declarations_.find(key) != declarations_.end();
     }
 
-    inline void put(const uint32_t key, const std::shared_ptr<std::string> value)
+    inline void put(const uint32_t key, const std::shared_ptr<std::string>& value)
     {
         declarations_[key] = value;
     }
@@ -44,4 +38,4 @@ private:
 };
 
 }}
-#endif  // INDEX_RULE_HPP_INCLUDED
+#endif  // MAPCSS_STYLE_HPP_INCLUDED

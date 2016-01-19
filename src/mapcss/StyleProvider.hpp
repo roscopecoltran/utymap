@@ -19,10 +19,13 @@ public:
 
     ~StyleProvider();
 
-    // Creates style for given element at given level of details.
+    // Checks whether style is defined for the element.
+    bool hasStyle(const utymap::entities::Element&, int levelOfDetails) const;
+
+    // Returs style for given element at given level of details.
     utymap::mapcss::Style forElement(const utymap::entities::Element&, int levelOfDetails) const;
 
-    // Creates style for canvas at given level of details.
+    // Returs style for canvas at given level of details.
     utymap::mapcss::Style forCanvas(int levelOfDetails) const;
 
 private:

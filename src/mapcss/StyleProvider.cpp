@@ -50,32 +50,58 @@ class StyleBuilder : public ElementVisitor
     typedef std::vector<Tag>::const_iterator TagIterator;
 public:
 
-    StyleBuilder(const FilterCollection& filters, int levelOfDetails) :
+    StyleBuilder(const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
         filters_(filters),
         levelOfDetails_(levelOfDetails),
+        onlyCheck_(onlyCheck),
+        canBuild_(false),
         style_()
     {
     }
 
-    inline void visitNode(const Node& node)
+    void visitNode(const Node& node)
     {
-        build(node.tags, filters_.nodes);
+        if (onlyCheck_)
+            check(node.tags, filters_.nodes);
+        else
+            build(node.tags, filters_.nodes);
     }
 
-    inline void visitWay(const Way& way)
+    void visitWay(const Way& way)
     {
-        build(way.tags, filters_.ways);
+        if (onlyCheck_)
+            check(way.tags, filters_.ways);
+        else
+            build(way.tags, filters_.ways);
     }
 
-    inline void visitArea(const Area& area)
+    void visitArea(const Area& area)
     {
-        build(area.tags, filters_.areas);
+        if (onlyCheck_)
+            check(area.tags, filters_.areas);
+        else
+            build(area.tags, filters_.areas);
     }
 
-    inline void visitRelation(const Relation& relation)
+    void visitRelation(const Relation& relation)
     {
-        build(relation.tags, filters_.relations);
+        if (onlyCheck_)
+            check(relation.tags, filters_.relations);
+        else
+            build(relation.tags, filters_.relations);
     }
+
+    inline Style build()
+    {
+        if (onlyCheck_)
+            throw std::domain_error("Cannot build feature for check mode.");
+
+        return style_;
+    }
+
+    inline bool canBuild() { return canBuild_; }
+
+private:
 
     // checks tag's value assuming that the key is already checked.
     inline bool match_tag(const Tag& tag, const ::Condition& condition)
@@ -105,6 +131,7 @@ public:
         return false;
     }
 
+    // Builds style object. More expensive to call than check.
     inline void build(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
@@ -117,7 +144,7 @@ public:
                     }
                     // merge declarations to style
                     if (isMatched) {
-                        style_.isApplicable = true;
+                        canBuild_ = true;
                         for (const auto& d : filter.declarations) {
                             style_.put(d.first, d.second);
                         }
@@ -127,11 +154,30 @@ public:
         }
     }
 
-    inline Style get() { return style_; }
+    // Just checks whether style can be created without constructing actual style.
+    inline void check(const std::vector<Tag>& tags, const FilterMap& filters)
+    {
+        FilterMap::const_iterator iter = filters.find(levelOfDetails_);
+        if (iter != filters.end()) {
+            for (const Filter& filter : iter->second) {
+                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend(); ++it) {
+                    bool isMatched = true;
+                    for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
+                        isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                    }
+                    if (isMatched) {
+                        canBuild_ = true;
+                        return;
+                    }
+                }
+            }
+        }
+    }
 
-private:
     const FilterCollection& filters_;
     int levelOfDetails_;
+    bool onlyCheck_;
+    bool canBuild_;
     Style style_;
 };
 
@@ -205,11 +251,18 @@ StyleProvider::~StyleProvider()
 {
 }
 
+bool utymap::mapcss::StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
+{
+    StyleBuilder builder = { pimpl_->filters, levelOfDetails };
+    element.accept(builder);
+    return builder.canBuild();
+}
+
 Style utymap::mapcss::StyleProvider::forElement(const Element& element, int levelOfDetails) const
 {
     StyleBuilder builder = { pimpl_->filters, levelOfDetails };
     element.accept(builder);
-    return std::move(builder.get());
+    return std::move(builder.build());
 }
 
 Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const

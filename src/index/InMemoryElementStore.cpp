@@ -93,15 +93,13 @@ void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StylePro
 {
     pimpl_->currentQuadKey = quadKey;
     auto it = pimpl_->begin();
-    if (it == pimpl_->end()) {
-        // No elements for this quadkey
+
+    // No elements for this quadkey
+    if (it == pimpl_->end())
         return;
-    }
 
     for (const auto& element : it->second) {
-        Style style = styleProvider.forElement(*element, quadKey.levelOfDetail);
-        if (!style.isApplicable)
-            continue;
-        element->accept(visitor);
+        if (styleProvider.hasStyle(*element, quadKey.levelOfDetail))
+            element->accept(visitor);
     }
 }
