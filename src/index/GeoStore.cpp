@@ -1,3 +1,4 @@
+#include "entities/Element.hpp"
 #include "index/LodRange.hpp"
 #include "formats/shape/ShapeParser.hpp"
 #include "index/GeoStore.hpp"
@@ -5,7 +6,9 @@
 #include "index/PersistentElementStore.hpp"
 #include "index/ShapeDataVisitor.hpp"
 
+#include <set>
 #include <stdexcept>
+#include <cstdint>
 #include <unordered_map>
 
 using namespace utymap::entities;
@@ -15,6 +18,37 @@ using namespace utymap::mapcss;
 
 class GeoStore::GeoStoreImpl
 {
+    // Prevents to visit element twice if it exists in multiply stores.
+    class FilterElementVisitor : public ElementVisitor
+    {
+    public:
+        FilterElementVisitor(ElementVisitor& visitor) : visitor_(visitor)
+        {
+        }
+
+        void visitNode(const Node& node) { visitIfNecessary(node); }
+
+        void visitWay(const Way& way)  { visitIfNecessary(way); }
+
+        void visitArea(const Area& area)  { visitIfNecessary(area); }
+
+        void visitRelation(const Relation& relation)  { visitIfNecessary(relation); }
+
+    private:
+
+        inline bool visitIfNecessary(const Element& element)
+        { 
+            if (element.id == 0 || ids_.find(element.id) == ids_.end())
+            {
+                element.accept(visitor_);
+                ids_.insert(element.id);
+            }
+        }
+
+        ElementVisitor& visitor_;
+        std::set<std::uint64_t> ids_;
+    };
+
 public:
 
     GeoStoreImpl(StringTable& stringTable) :
@@ -50,8 +84,9 @@ public:
 
     void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
     {
+        FilterElementVisitor filter(visitor);
         for (const auto& pair : storeMap_) {
-            pair.second->search(quadKey, styleProvider, visitor);
+            pair.second->search(quadKey, styleProvider, filter);
         }
     }
 
