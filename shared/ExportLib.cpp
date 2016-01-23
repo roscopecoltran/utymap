@@ -7,6 +7,7 @@
 #include "QuadKey.hpp"
 #include "TileLoader.hpp"
 #include "builders/ElementBuilder.hpp"
+#include "builders/ExternalBuilder.hpp"
 #include "builders/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
@@ -75,11 +76,20 @@ extern "C"
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
 
-        // TODO register element builders
+        // register predefined element builders
         tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileLoader::MeshCallback& meshFunc,
                                                              const utymap::TileLoader::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(
                 new utymap::builders::TerraBuilder(*stringTablePtr, *styleProviderPtr, *eleProviderPtr, meshFunc));
+        });
+    }
+
+    // Registers external element builder.
+    void EXPORT_API registerElementBuilder(const char* name)
+    {
+        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::TileLoader::MeshCallback& meshFunc,
+                                                        const utymap::TileLoader::ElementCallback& elementFunc) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(elementFunc));
         });
     }
 
@@ -116,12 +126,12 @@ extern "C"
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        tileLoaderPtr->loadTile(quadKey, [&meshCallback](utymap::meshing::Mesh<double>& mesh) {
+        tileLoaderPtr->loadTile(quadKey, [&meshCallback](const utymap::meshing::Mesh<double>& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
                 mesh.triangles.data(), mesh.triangles.size(),
                 mesh.colors.data(), mesh.colors.size());
-        }, [&elementCallback](utymap::entities::Element& element) {
+        }, [&elementCallback](const utymap::entities::Element& element) {
             // TODO call elementCallback
         });
     }

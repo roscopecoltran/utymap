@@ -1,5 +1,5 @@
-#ifndef TERRAIN_TERRABUILDER_HPP_DEFINED
-#define TERRAIN_TERRABUILDER_HPP_DEFINED
+#ifndef BUILDERS_TERRABUILDER_HPP_DEFINED
+#define BUILDERS_TERRABUILDER_HPP_DEFINED
 
 #include "builders/ElementBuilder.hpp"
 #include "entities/Node.hpp"
@@ -17,7 +17,7 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to build tile.
+// Provides the way to terrain.
 class TerraBuilder : public ElementBuilder
 {
 public:
@@ -25,7 +25,7 @@ public:
     TerraBuilder(utymap::index::StringTable& stringTable,
                  const utymap::mapcss::StyleProvider& styleProvider, 
                  utymap::heightmap::ElevationProvider<double>& eleProvider,
-                 const std::function<void(utymap::meshing::Mesh<double>&)>& callback);
+                 const std::function<void(const utymap::meshing::Mesh<double>&)>& callback);
 
     ~TerraBuilder();
 
@@ -48,4 +48,4 @@ private:
 
 }}
 
-#endif // TERRAIN_TERRABUILDER_HPP_DEFINED
+#endif // BUILDERS_TERRABUILDER_HPP_DEFINED

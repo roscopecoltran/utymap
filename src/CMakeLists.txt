@@ -9,6 +9,7 @@ set(HEADER_FILES
                 QuadKey.hpp
                 TileLoader.hpp
                 builders/ElementBuilder.hpp
+                builders/ExternalBuilder.hpp
                 builders/TerraBuilder.hpp
                 entities/Element.hpp
                 entities/ElementVisitor.hpp

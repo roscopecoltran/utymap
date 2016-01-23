@@ -32,13 +32,14 @@ private:
 class AggregateElementBuilder : public ElementBuilder
 {
 public:
-    AggregateElementBuilder(const StyleProvider& styleProvider, BuilderFactoryMap& builderFactoryMap, std::uint64_t builderKeyId,
+    AggregateElementBuilder(const StyleProvider& styleProvider, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
         const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
         styleProvider_(styleProvider),
         builderFactoryMap_(builderFactoryMap),
         builderKeyId_(builderKeyId),
         meshFunc_(meshFunc),
-        elementFunc_(elementFunc)
+        elementFunc_(elementFunc),
+        quadKey_()
     {
     }
 
@@ -128,7 +129,7 @@ private:
 
     GeoStore& geoStore_;
     const StyleProvider& styleProvider_;
-    std::uint64_t builderKeyId_;
+    std::uint32_t builderKeyId_;
     BuilderFactoryMap builderFactory_;
 };
 
