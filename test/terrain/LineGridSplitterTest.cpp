@@ -1,11 +1,9 @@
-#include "terrain/LineGridSplitter.hpp"
-#include "terrain/MeshRegion.hpp"
+#include "meshing/LineGridSplitter.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 using namespace ClipperLib;
 using namespace utymap::meshing;
-using namespace utymap::terrain;
 
 typedef std::vector<Point<double>> DoublePoints;
 const double Precision = 0.1e-9;

@@ -1,24 +1,78 @@
+#include "BoundingBox.hpp"
 #include "clipper/clipper.hpp"
+#include "builders/TerraBuilder.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
-#include "terrain/LineGridSplitter.hpp"
-#include "terrain/TerraBuilder.hpp"
+#include "meshing/LineGridSplitter.hpp"
+#include "index/GeoUtils.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <unordered_map>
 #include <vector>
 
 using namespace ClipperLib;
+using namespace utymap::builders;
+using namespace utymap::entities;
 using namespace utymap::heightmap;
+using namespace utymap::mapcss;
 using namespace utymap::meshing;
-using namespace utymap::terrain;
 
 const uint64_t Scale = 1E8; // max precision for Lat/Lon
 const uint64_t DoubleScale = Scale * Scale;
+
+// Represents terrain region.
+struct MeshRegion
+{
+    struct Properties
+    {
+        const int NoValue = -1;
+
+        int gradientKey;
+        int textureAtlas;
+        int textureKey;
+        float eleNoiseFreq;
+        float colorNoiseFreq;
+        float heightOffset;
+
+        // Specific mesh action associated with given region.
+        std::function<void(utymap::meshing::Mesh<double>)> action;
+
+        Properties() :
+            gradientKey(NoValue),
+            textureAtlas(NoValue),
+            textureKey(NoValue),
+            eleNoiseFreq(0),
+            colorNoiseFreq(0),
+            heightOffset(0),
+            action(nullptr)
+        {
+        }
+
+        Properties& operator =(const Properties & obj)
+        {
+            if (this != &obj)
+            {
+                gradientKey = obj.gradientKey;
+                textureAtlas = obj.textureAtlas;
+                textureKey = obj.textureKey;
+                eleNoiseFreq = obj.eleNoiseFreq;
+                colorNoiseFreq = obj.colorNoiseFreq;
+                heightOffset = obj.heightOffset;
+                action = obj.action;
+            }
+            return *this;
+        }
+    };
+
+    utymap::meshing::Contour<double> points;
+    std::vector<utymap::meshing::Contour<double>> holes;
+    Properties properties;
+};
 
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
@@ -27,11 +81,24 @@ typedef std::vector<Point<double>> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl
 {
+    const std::string BackgroundColorNoiseFreq = "background-color-noise-freq";
+    const std::string BackgroundEleNoiseFreq = "background-ele-noise-freq";
 public:
 
-    TerraBuilderImpl(ElevationProvider<double>& eleProvider) :
-        meshBuilder_(eleProvider)
+    TerraBuilderImpl(utymap::index::StringTable& stringTable,
+                     const utymap::mapcss::StyleProvider& styleProvider,
+                     ElevationProvider<double>& eleProvider,
+                     const std::function<void(Mesh<double>&)>& callback) :
+        stringTable_(stringTable),
+        styleProvider_(styleProvider),
+        meshBuilder_(eleProvider),
+        callback_(callback)
     {
+    }
+
+    inline void setQuadKey(const QuadKey& quadKey)
+    {
+        quadKey_ = quadKey;
     }
 
     inline void addWater(const MeshRegion& water)
@@ -54,16 +121,11 @@ public:
         walkRoads_[width].push_back(walkRoad);
     }
 
-    inline void setBackgroundProperties(const MeshRegion::Properties& properties)
-    {
-        bgProperties_ = properties;
-    }
-
     // builds tile mesh using data provided.
-    utymap::meshing::Mesh<double> build(const utymap::meshing::Rectangle<double>& tileRect, int levelOfDetails)
+    void build()
     {
-        clipRect_ = createPathFromRect(tileRect);
-        configureSplitter(levelOfDetails);
+        //clipRect_ = createPathFromRect(tileRect);
+        configureSplitter(quadKey_.levelOfDetail);
 
         // fill context with layer specific data.
         buildWater();
@@ -71,7 +133,7 @@ public:
         buildSurfaces();
         buildBackground();
 
-        return std::move(mesh_);
+        callback_(mesh_);
     }
 private:
 
@@ -90,27 +152,6 @@ private:
 
         splitter_.setRoundDigits(roundDigits, coeff);
         splitter_.setScale(Scale);
-    }
-
-    Path createPathFromRect(const Rectangle<double>& tileRect)
-    {
-        Path rect;
-        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMin*Scale));
-        rect.push_back(IntPoint(tileRect.xMax*Scale, tileRect.yMin*Scale));
-        rect.push_back(IntPoint(tileRect.xMax*Scale, tileRect.yMax*Scale));
-        rect.push_back(IntPoint(tileRect.xMin*Scale, tileRect.yMax*Scale));
-
-        return std::move(rect);
-    }
-
-    Paths clipByRect(const Paths& subjects)
-    {
-        Paths solution;
-        clipper_.AddPaths(subjects, ptSubject, true);
-        clipper_.AddPath(clipRect_, ptClip, true);
-        clipper_.Execute(ctIntersection, solution);
-        clipper_.Clear();
-        return std::move(solution);
     }
 
     Paths buildPaths(const MeshRegions& regions) {
@@ -148,10 +189,10 @@ private:
         clipper_.AddPaths(roads, ptSubject, true);
         clipper_.Execute(ctDifference, resultRoads, pftPositive, pftPositive);
         clipper_.Clear();
-        return std::move(clipByRect(resultRoads));
+        return std::move(resultRoads);
     }
 
-    // populates mesh 
+    // populates mesh
     void populateMesh(const MeshRegion::Properties& properties, const Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
@@ -248,7 +289,7 @@ private:
         Paths solution;
         clipper_.Execute(ctUnion, solution);
         clipper_.Clear();
-        waterShape_ = std::move(clipByRect(solution));
+        waterShape_ = std::move(solution);
 
         // NOTE we use properties of first region for all water regions
         populateMesh(waters_[0].properties, waterShape_);
@@ -271,7 +312,7 @@ private:
         walkRoadShape_ = std::move(clipRoads(extrudedWalkRoads));
 
         // NOTE we use properties of first region for road regions
-        if (carRoads_.size() > 0) 
+        if (carRoads_.size() > 0)
             populateMesh(carRoads_.begin()->second[0].properties, carRoadShape_);
 
         if (walkRoads_.size() > 0)
@@ -296,7 +337,6 @@ private:
             Paths result;
             clipper_.Execute(ctDifference, result, pftPositive, pftPositive);
             clipper_.Clear();
-            result = clipByRect(result);
 
             // NOTE surfaces are merged by gradient key.
             populateMesh(surfacePair.second[0].properties, result);
@@ -312,7 +352,15 @@ private:
     // build background
     void buildBackground()
     {
-        clipper_.AddPath(clipRect_, ptSubject, true);
+        // construct clipRect
+        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        Path clipRect;
+        clipRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
+        clipRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
+        clipRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
+        clipRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
+
+        clipper_.AddPath(clipRect, ptSubject, true);
 
         clipper_.AddPaths(carRoadShape_, ptClip, true);
         clipper_.AddPaths(walkRoadShape_, ptClip, true);
@@ -322,23 +370,40 @@ private:
         clipper_.Clear();
 
         if (backgroundShape_.size() > 0)
-            populateMesh(bgProperties_, backgroundShape_);
+        {
+            auto style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
+            MeshRegion::Properties properties;
+            properties.eleNoiseFreq = std::stof(getStyleValue(BackgroundEleNoiseFreq, style));
+            properties.colorNoiseFreq = std::stof(getStyleValue(BackgroundColorNoiseFreq, style));
+            populateMesh(properties, backgroundShape_);
+        }
     }
+
+    inline std::string& getStyleValue(const std::string& key, const Style& style)
+    {
+        uint32_t keyId = stringTable_.getId(key);
+        return style.get(keyId);
+    }
+
+const utymap::mapcss::StyleProvider& styleProvider_;
+utymap::index::StringTable& stringTable_;
+const std::function<void(Mesh<double>&)>& callback_;
 
 // mesh builder
 MeshBuilder meshBuilder_;
+
+QuadKey quadKey_;
 
 // input data
 MeshRegions waters_;
 SurfaceMap surfaces_;
 RoadMap carRoads_;
 RoadMap walkRoads_;
-MeshRegion::Properties bgProperties_;
 
 // clipper data
 Clipper clipper_;
 ClipperOffset offset_;
-Path clipRect_;
+
 Paths waterShape_;
 Paths carRoadShape_;
 Paths walkRoadShape_;
@@ -352,7 +417,33 @@ LineGridSplitter<double> splitter_;
 Mesh<double> mesh_;
 };
 
-void TerraBuilder::addWater(const MeshRegion& water)
+void TerraBuilder::visitNode(const utymap::entities::Node& node)
+{
+}
+
+void TerraBuilder::visitWay(const utymap::entities::Way& way)
+{
+}
+
+void TerraBuilder::visitArea(const utymap::entities::Area& area)
+{
+}
+
+void TerraBuilder::visitRelation(const utymap::entities::Relation& relation)
+{
+}
+
+void TerraBuilder::prepare(const utymap::QuadKey& quadKey)
+{
+    pimpl_->setQuadKey(quadKey);
+}
+
+void TerraBuilder::complete()
+{
+    pimpl_->build();
+}
+
+/*void TerraBuilder::addWater(const MeshRegion& water)
 {
     pimpl_->addWater(water);
 }
@@ -380,11 +471,14 @@ Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect, int levelOfD
 void TerraBuilder::setBackgroundProperties(const MeshRegion::Properties& properties)
 {
     pimpl_->setBackgroundProperties(properties);
-}
-
-TerraBuilder::TerraBuilder(ElevationProvider<double>& eleProvider) :
-pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(eleProvider)))
-{
-}
+}*/
 
 TerraBuilder::~TerraBuilder() { }
+
+TerraBuilder::TerraBuilder(utymap::index::StringTable& stringTable,
+                           const utymap::mapcss::StyleProvider& styleProvider, 
+                           ElevationProvider<double>& eleProvider,
+                           const std::function<void(Mesh<double>&)>& callback) :
+pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, styleProvider, eleProvider, callback)))
+{
+}

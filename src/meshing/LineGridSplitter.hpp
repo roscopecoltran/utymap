@@ -10,7 +10,7 @@
 #include <limits>
 #include <vector>
 
-namespace utymap { namespace terrain {
+namespace utymap { namespace meshing {
 
 // Splits line to segments according to axis aligned grid.
 template<typename T>
@@ -44,7 +44,7 @@ class LineGridSplitter
 
 public:
 
-    LineGridSplitter() : 
+    LineGridSplitter() :
         roundVal_(1),
         step_(1),
         scale_(1)

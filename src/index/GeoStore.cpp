@@ -36,7 +36,7 @@ class GeoStore::GeoStoreImpl
 
     private:
 
-        inline bool visitIfNecessary(const Element& element)
+        inline void visitIfNecessary(const Element& element)
         { 
             if (element.id == 0 || ids_.find(element.id) == ids_.end())
             {

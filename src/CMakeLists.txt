@@ -8,6 +8,8 @@ set(HEADER_FILES
                 GeoCoordinate.hpp
                 QuadKey.hpp
                 TileLoader.hpp
+                builders/ElementBuilder.hpp
+                builders/TerraBuilder.hpp
                 entities/Element.hpp
                 entities/ElementVisitor.hpp
                 entities/Node.hpp
@@ -34,12 +36,10 @@ set(HEADER_FILES
                 mapcss/StyleSheet.hpp
                 mapcss/Style.hpp
                 mapcss/StyleProvider.hpp
+                meshing/LineGridSplitter.hpp
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
-                terrain/LineGridSplitter.hpp
-                terrain/MeshRegion.hpp
-                terrain/TerraBuilder.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 )
@@ -53,6 +53,7 @@ add_library (UtyMap
                 ${LIB_SOURCE}/shapefile/safileio.c
                 ${LIB_SOURCE}/shapefile/shpopen.c
                 TileLoader.cpp
+                builders/TerraBuilder.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 index/ElementStore.cpp
@@ -64,7 +65,6 @@ add_library (UtyMap
                 mapcss/StyleProvider.cpp
                 mapcss/StyleSheet.cpp
                 meshing/MeshBuilder.cpp
-                terrain/TerraBuilder.cpp
                 )
 
 set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)

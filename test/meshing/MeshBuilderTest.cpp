@@ -3,14 +3,13 @@
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
-#include "terrain/LineGridSplitter.hpp"
+#include "meshing/LineGridSplitter.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 using namespace ClipperLib;
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
-using namespace utymap::terrain;
 
 typedef Point<double> DPoint;
 

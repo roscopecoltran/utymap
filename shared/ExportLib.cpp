@@ -6,6 +6,8 @@
 
 #include "QuadKey.hpp"
 #include "TileLoader.hpp"
+#include "builders/ElementBuilder.hpp"
+#include "builders/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -46,6 +48,7 @@ extern "C"
     // Called when operation is completed
     typedef void OnError(const char* errorMessage);
 
+    // Composes object graph.
     void EXPORT_API configure(const char* stringPath, // path to string table directory
                               const char* stylePath,   // path to mapcss file
                               const char* dataPath,    // path to index directory
@@ -64,13 +67,20 @@ extern "C"
 
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr);
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
-        
+
         geoStorePtr = new utymap::index::GeoStore(*stringTablePtr);
         geoStorePtr->registerStore(InMemoryStorageKey, *inMemoryStorePtr);
         geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
-        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *styleProviderPtr, *stringTablePtr, *eleProviderPtr);
+        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
+
+        // TODO register element builders
+        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileLoader::MeshCallback& meshFunc,
+                                                             const utymap::TileLoader::ElementCallback& elementFunc) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(
+                new utymap::builders::TerraBuilder(*stringTablePtr, *styleProviderPtr, *eleProviderPtr, meshFunc));
+        });
     }
 
     void EXPORT_API cleanup()

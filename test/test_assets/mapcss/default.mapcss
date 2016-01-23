@@ -31,8 +31,9 @@ canvas|z1-16 {
 }
 
 area|z1-16[featurecla=Coastline] {
-    material: main;
     clip:true;
+    material: main;
+    builders: terrain;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);

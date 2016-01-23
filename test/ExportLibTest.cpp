@@ -13,6 +13,10 @@ struct ExportLibFixture {
             BOOST_TEST_FAIL(message);
         });
         BOOST_TEST_MESSAGE("setup fixture");
+        ::addToInMemoryStore("g:\\__ASM\\_data\\test\\ne_110m_coastline", 1, 1, [](const char* msg) 
+        { 
+            BOOST_CHECK(msg == nullptr);
+        });
     }
 
     ~ExportLibFixture()

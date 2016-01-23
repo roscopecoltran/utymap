@@ -1,13 +1,12 @@
 #ifndef TILELOADER_HPP_DEFINED
 #define TILELOADER_HPP_DEFINED
 
+#include "QuadKey.hpp"
+#include "builders/ElementBuilder.hpp"
 #include "entities/Element.hpp"
-#include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "meshing/MeshTypes.hpp"
-#include "QuadKey.hpp"
 
 #include <functional>
 #include <string>
@@ -20,17 +19,23 @@ class TileLoader
 {
 public:
 
-    TileLoader(utymap::index::GeoStore& geoStore, 
-               const utymap::mapcss::StyleProvider& styleProvider,
+    typedef std::function<void(utymap::meshing::Mesh<double>&)> MeshCallback;
+    typedef std::function<void(utymap::entities::Element&)> ElementCallback;
+    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const MeshCallback&, const ElementCallback&)> ElementBuilderFactory;
+
+    TileLoader(utymap::index::GeoStore& geoStore,
                utymap::index::StringTable& stringTable,
-               utymap::heightmap::ElevationProvider<double>& eleProvider);
+               const utymap::mapcss::StyleProvider& styleProvider);
 
     ~TileLoader();
 
+    // Registers factory method for element builder.
+    void registerElementBuilder(const std::string& name, const ElementBuilderFactory& factory);
+
     // Loads tile for given quadkey.
-    void loadTile(const utymap::QuadKey& quadKey,
-                  const std::function<void(utymap::meshing::Mesh<double>&)>& meshFunc,
-                  const std::function<void(utymap::entities::Element&)>& elementFunc);
+    // TODO rename to build() and class: TileBuilder
+    void loadTile(const utymap::QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc);
+
 
 private:
     class TileLoaderImpl;
