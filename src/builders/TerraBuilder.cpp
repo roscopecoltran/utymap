@@ -444,36 +444,6 @@ void TerraBuilder::complete()
     pimpl_->build();
 }
 
-/*void TerraBuilder::addWater(const MeshRegion& water)
-{
-    pimpl_->addWater(water);
-}
-
-void TerraBuilder::addSurface(const MeshRegion& surface)
-{
-    pimpl_->addSurface(surface);
-}
-
-void TerraBuilder::addCarRoad(const MeshRegion& carRoad, int width)
-{
-    pimpl_->addCarRoad(carRoad, width);
-}
-
-void TerraBuilder::addWalkRoad(const MeshRegion& walkRoad, int width)
-{
-    pimpl_->addWalkRoad(walkRoad, width);
-}
-
-Mesh<double> TerraBuilder::build(const Rectangle<double>& tileRect, int levelOfDetails)
-{
-    return std::move(pimpl_->build(tileRect, levelOfDetails));
-}
-
-void TerraBuilder::setBackgroundProperties(const MeshRegion::Properties& properties)
-{
-    pimpl_->setBackgroundProperties(properties);
-}*/
-
 TerraBuilder::~TerraBuilder() { }
 
 TerraBuilder::TerraBuilder(utymap::index::StringTable& stringTable,

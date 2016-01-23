@@ -1,5 +1,5 @@
-#include "heightmap/ElevationProvider.hpp"
 #include "builders/TerraBuilder.hpp"
+#include "heightmap/ElevationProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -57,4 +57,3 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenBuild_ThenMeshIsNotEmpty)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-
