@@ -193,7 +193,7 @@ private:
 
         // NOTE do not allow first vertex to be equal the last one
         if (result[0] == result[result.size() - 1])
-            result.erase(result.end() - 1);
+            result.pop_back();
     }
 
     uint32_t roundVal_;

@@ -26,14 +26,13 @@ using namespace utymap::meshing;
 
 const uint64_t Scale = 1E8; // max precision for Lat/Lon
 const uint64_t DoubleScale = Scale * Scale;
+const int NoValue = -1;
 
 // Represents terrain region.
 struct MeshRegion
 {
     struct Properties
     {
-        const int NoValue = -1;
-
         int gradientKey;
         int textureAtlas;
         int textureKey;
@@ -41,28 +40,9 @@ struct MeshRegion
         float colorNoiseFreq;
         float heightOffset;
 
-        Properties() :
-            gradientKey(NoValue),
-            textureAtlas(NoValue),
-            textureKey(NoValue),
-            eleNoiseFreq(0),
-            colorNoiseFreq(0),
-            heightOffset(0)
+        Properties() : gradientKey(NoValue), textureAtlas(NoValue), textureKey(NoValue),
+            eleNoiseFreq(0), colorNoiseFreq(0), heightOffset(0)
         {
-        }
-
-        Properties& operator =(const Properties & obj)
-        {
-            if (this != &obj)
-            {
-                gradientKey = obj.gradientKey;
-                textureAtlas = obj.textureAtlas;
-                textureKey = obj.textureKey;
-                eleNoiseFreq = obj.eleNoiseFreq;
-                colorNoiseFreq = obj.colorNoiseFreq;
-                heightOffset = obj.heightOffset;
-            }
-            return *this;
         }
     };
 
@@ -76,14 +56,14 @@ typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<int, MeshRegions> SurfaceMap;
 typedef std::vector<Point<double>> MeshPoints;
 
-const std::string TypeKey = "terrain-type";
-const std::string ColorNoiseFreqKey = "color-noise-freq";
-const std::string EleNoiseFreqKey = "ele-noise-freq";
-const std::string WaterKey = "water";
-const std::string SurfaceKey = "surface";
-
 class TerraBuilder::TerraBuilderImpl
 {
+    const std::string TypeKey = "terrain-type";
+    const std::string ColorNoiseFreqKey = "color-noise-freq";
+    const std::string EleNoiseFreqKey = "ele-noise-freq";
+    const std::string WaterKey = "water";
+    const std::string SurfaceKey = "surface";
+
 public:
 
     TerraBuilderImpl(utymap::index::StringTable& stringTable,
@@ -187,9 +167,11 @@ private:
 
     Paths buildPaths(const MeshRegions& regions) {
         // TODO holes are not processed
-        Paths paths(regions.size());
+        Paths paths;
+        paths.reserve(regions.size());
         for (const MeshRegion& region : regions) {
-            Path p(region.points.size());
+            Path p;
+            p.reserve(region.points.size());
             for (const Point<double> point : region.points) {
                 p.push_back(IntPoint(point.x*Scale, point.y*Scale));
             }
@@ -406,31 +388,17 @@ const utymap::mapcss::StyleProvider& styleProvider_;
 utymap::index::StringTable& stringTable_;
 std::function<void(const Mesh<double>&)> callback_;
 
-// mesh builder
-MeshBuilder meshBuilder_;
-
-QuadKey quadKey_;
-
-// input data
-MeshRegions waters_;
-SurfaceMap surfaces_;
-RoadMap carRoads_;
-RoadMap walkRoads_;
-
-// clipper data
 Clipper clipper_;
 ClipperOffset offset_;
-
-Paths waterShape_;
-Paths carRoadShape_;
-Paths walkRoadShape_;
-Paths surfaceShape_;
-Paths backgroundShape_;
-
-// splits segments using grid
 LineGridSplitter<double> splitter_;
+MeshBuilder meshBuilder_;
+QuadKey quadKey_;
 
-// output
+MeshRegions waters_;
+SurfaceMap surfaces_;
+RoadMap carRoads_, walkRoads_;
+Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
+
 Mesh<double> mesh_;
 };
 

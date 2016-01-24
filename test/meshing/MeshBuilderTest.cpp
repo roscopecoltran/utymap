@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
     });
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
-    BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 29);
+    BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 34);
 }
 
 BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
@@ -78,8 +78,8 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
         /* segmentSplit=*/ 0 
     });
 
-    BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 86);
-    BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 137);
+    BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 84);
+    BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 141);
 }
 
 BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrectly)

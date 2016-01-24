@@ -48,7 +48,7 @@ public:
         out.trianglelist = nullptr;
         out.triangleattributelist = nullptr;
 
-        ::triangulate(const_cast<char*>("praqzBPQ"), &mid, &out, nullptr);
+        ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
 
         Mesh<double> mesh;
         fillMesh(&out, mesh);
