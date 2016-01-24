@@ -88,7 +88,7 @@ public:
     TerraBuilderImpl(utymap::index::StringTable& stringTable,
                      const utymap::mapcss::StyleProvider& styleProvider,
                      ElevationProvider<double>& eleProvider,
-                     const std::function<void(const Mesh<double>&)>& callback) :
+                     std::function<void(const Mesh<double>&)> callback) :
         stringTable_(stringTable),
         styleProvider_(styleProvider),
         meshBuilder_(eleProvider),
@@ -388,7 +388,7 @@ private:
 
 const utymap::mapcss::StyleProvider& styleProvider_;
 utymap::index::StringTable& stringTable_;
-const std::function<void(const Mesh<double>&)>& callback_;
+std::function<void(const Mesh<double>&)> callback_;
 
 // mesh builder
 MeshBuilder meshBuilder_;
@@ -449,7 +449,7 @@ TerraBuilder::~TerraBuilder() { }
 TerraBuilder::TerraBuilder(utymap::index::StringTable& stringTable,
                            const utymap::mapcss::StyleProvider& styleProvider, 
                            ElevationProvider<double>& eleProvider,
-                           const std::function<void(const Mesh<double>&)>& callback) :
+                           std::function<void(const Mesh<double>&)> callback) :
 pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, styleProvider, eleProvider, callback)))
 {
 }

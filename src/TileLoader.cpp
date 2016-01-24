@@ -112,7 +112,7 @@ public:
     {
     }
 
-    void registerElementBuilder(const std::string& name, const ElementBuilderFactory& factory)
+    void registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
     {
         builderFactory_[name] = factory;
     }
@@ -133,12 +133,12 @@ private:
     BuilderFactoryMap builderFactory_;
 };
 
-void  TileLoader::registerElementBuilder(const std::string& name, const ElementBuilderFactory& factory)
+void  TileLoader::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
 {
     pimpl_->registerElementBuilder(name, factory);
 }
 
-void TileLoader::loadTile(const QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
+void TileLoader::loadTile(const QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc)
 {
     pimpl_->loadTile(quadKey, meshFunc, elementFunc);
 }

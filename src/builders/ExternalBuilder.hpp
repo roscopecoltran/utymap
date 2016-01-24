@@ -20,7 +20,7 @@ class ExternalBuilder : public ElementBuilder
 {
 public:
 
-    ExternalBuilder(const std::function<void(const utymap::entities::Element&)>& elementCallback) :
+    ExternalBuilder(std::function<void(const utymap::entities::Element&)> elementCallback) :
         elementCallback_(elementCallback)
     {
     }
@@ -44,7 +44,7 @@ public:
     }
 
 private:
-    const std::function<void(const utymap::entities::Element&)>& elementCallback_;
+    std::function<void(const utymap::entities::Element&)> elementCallback_;
 };
 
 }}

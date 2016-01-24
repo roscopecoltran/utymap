@@ -25,7 +25,7 @@ public:
     TerraBuilder(utymap::index::StringTable& stringTable,
                  const utymap::mapcss::StyleProvider& styleProvider, 
                  utymap::heightmap::ElevationProvider<double>& eleProvider,
-                 const std::function<void(const utymap::meshing::Mesh<double>&)>& callback);
+                 std::function<void(const utymap::meshing::Mesh<double>&)> callback);
 
     ~TerraBuilder();
 

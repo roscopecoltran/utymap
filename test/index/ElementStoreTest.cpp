@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStor
 
 BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
 {
-    Area way = ElementUtils::createElement<Area>(*stringTablePtr,
+    Area area = ElementUtils::createElement<Area>(*stringTablePtr,
     { { "test", "Foo" } },
     { { 10, 10 }, { 20, 10 }, { 20, -10 }, { 10, -10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
@@ -194,14 +194,14 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
+    elementStorePtr->store(area, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
 BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped)
 {
-    Area way = ElementUtils::createElement<Area>(*stringTablePtr,
+    Area area = ElementUtils::createElement<Area>(*stringTablePtr,
     { { "test", "Foo" } },
     { { 20, 10 }, { 20, -10 }, { 5, -10 }, { 5, 10 }, { 10, 10 }, { 10, -5 }, { 15, -5 }, { 15, 10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
@@ -221,14 +221,14 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
+    elementStorePtr->store(area, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
 BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
 {
-    Area way = ElementUtils::createElement<Area>(*stringTablePtr,
+    Area area = ElementUtils::createElement<Area>(*stringTablePtr,
     { { "test", "Foo" } },
     { { -10, -10 }, { -10, 181 }, { 91, 181 }, { 91, -10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
         }
     });
 
-    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
+    elementStorePtr->store(area, LodRange(1, 1), *styleProviderPtr);
 
     BOOST_CHECK_EQUAL(elementStorePtr->times, 4);
 }

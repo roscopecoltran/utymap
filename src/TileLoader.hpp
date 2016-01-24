@@ -30,11 +30,11 @@ public:
     ~TileLoader();
 
     // Registers factory method for element builder.
-    void registerElementBuilder(const std::string& name, const ElementBuilderFactory& factory);
+    void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
 
     // Loads tile for given quadkey.
     // TODO rename to build() and class: TileBuilder
-    void loadTile(const utymap::QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc);
+    void loadTile(const utymap::QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc);
 
 
 private:
