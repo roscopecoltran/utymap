@@ -19,6 +19,7 @@ class LineGridSplitter
     typedef utymap::meshing::Point<T> TPoint;
     typedef std::vector<TPoint> Points;
 
+    typedef ClipperLib::cInt Int;
     typedef ClipperLib::IntPoint IPoint;
     typedef std::vector<IPoint> IPoints;
 
@@ -51,7 +52,7 @@ public:
     {
     }
 
-    void setRoundDigits(uint8_t roundDigits, uint8_t coeff = 1)
+    void setRoundDigits(std::uint8_t roundDigits, std::uint16_t coeff = 1)
     {
         roundVal_ = std::pow(10, roundDigits);
         step_ = std::pow(10, roundDigits - 1) * coeff;
@@ -80,12 +81,12 @@ public:
 
 private:
 
-    inline uint64_t ceil(uint64_t value)
+    inline Int ceil(Int value)
     {
         return std::ceil(value / roundVal_) * roundVal_;
     }
 
-    inline uint64_t floor(uint64_t value)
+    inline Int floor(Int value)
     {
         return std::floor(value / roundVal_) * roundVal_;
     }
@@ -102,8 +103,8 @@ private:
                 end = tmp;
             }
 
-            uint64_t yStart = ceil(start.Y);
-            uint64_t yEnd = floor(end.Y);
+            Int yStart = ceil(start.Y);
+            Int yEnd = floor(end.Y);
             for (double y = yStart; y <= yEnd; y += step_)
                 points.push_back(IPoint(start.X, y));
 
@@ -122,8 +123,8 @@ private:
                 end = tmp;
             }
 
-            uint64_t xStart = ceil(start.X);
-            uint64_t xEnd = floor(end.X);
+            Int xStart = ceil(start.X);
+            Int xEnd = floor(end.X);
             for (double x = xStart; x <= xEnd; x += step_)
                 points.push_back(IPoint(x, start.Y));
 
@@ -147,8 +148,8 @@ private:
             end = tmp;
         }
 
-        uint64_t xStart = ceil(start.X);
-        uint64_t xEnd = floor(end.X);
+        Int xStart = ceil(start.X);
+        Int xEnd = floor(end.X);
         for (double x = xStart; x <= xEnd; x += step_)
             points.push_back(IPoint(x, slope * x + b));
 
@@ -160,8 +161,8 @@ private:
             end = tmp;
         }
 
-        uint64_t yStart = ceil(start.Y);
-        uint64_t yEnd = floor(end.Y);
+        Int yStart = ceil(start.Y);
+        Int yEnd = floor(end.Y);
         for (double y = yStart; y <= yEnd; y += step_)
             points.push_back(IPoint((y - b) * inverseSlope, y));
 
@@ -179,8 +180,8 @@ private:
             if (result.size() > 0)
             {
                 TPoint last = result[result.size() - 1];
-                uint64_t lastX = last.x * scale_;
-                uint64_t lastY = last.y * scale_;
+                Int lastX = last.x * scale_;
+                Int lastY = last.y * scale_;
                 double distance = std::sqrt((lastX - candidate.X) * (lastX - candidate.X) +
                                             (lastY - candidate.Y) * (lastY - candidate.Y));
                 if (std::abs(distance) < 1)

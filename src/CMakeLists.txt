@@ -43,6 +43,7 @@ set(HEADER_FILES
                 meshing/Polygon.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
+                utils/MapCssUtils.hpp
                 )
 
 add_library (UtyMap

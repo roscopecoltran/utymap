@@ -75,4 +75,22 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
     }
 }
 
+// These tests are for some bugs observed for real data
+BOOST_AUTO_TEST_CASE(GivenSpecificCase1_WhenSplit_CanSplit)
+{
+    LineGridSplitter<double> splitter;
+    splitter.setRoundDigits(7, 20);
+    splitter.setScale(100000000);
+    IntPoint start(5286462881, -916628251);
+    IntPoint end(5388136261, -968852454);
+    DoublePoints result;
+
+    splitter.split(start, end, result);
+
+    for (int i = 0; i < result.size(); ++i) {
+        BOOST_CHECK_LT(std::abs(result[i].x), 54);
+        BOOST_CHECK_LT(std::abs(result[i].y), 10);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

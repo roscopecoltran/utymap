@@ -1,38 +1,25 @@
 canvas|z1-16 {
-    behaviours: terrain_draw;
-    material: main;
-    water-material: main;
-    
-    /* background layer. */
-    background-color-noise-freq: 0.1;
-    background-ele-noise-freq: 0.05;
-    background-gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
-    background-texture: background;
-    
-    /* water layer. */
-    water-color-noise-freq: 0.1;
-    water-ele-noise-freq: 0.15;
-    water-surface-level: 1;
-    water-bottom-level: 3;
-    water-gradient: gradient(#87cefa, #1e90ff);
-    water-texture: water;
+    material: main;   
+    texture: background;
+    color-noise-freq: 0.1;
+    ele-noise-freq: 0.05;
+    gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+}
 
-    /* car road layer. */
-    car-color-noise-freq: 0.1;
-    car-ele-noise-freq: 0.0;
-    car-gradient: gradient(#4d4d4d, #404040);
-    car-texture: asphalt;
-    
-    /* pedestrian road layer. */
-    pedestrian-color-noise-freq: 0.1;
-    pedestrian-ele-noise-freq: 0.1;
-    pedestrian-gradient: gradient(#636363, #4d4d4d);
-    pedestrian-texture: road_brick;
+area|z1[natural=water] {
+    builders: terrain;
+    terrain-type: water;
+    color-noise-freq: 0.1;
+    ele-noise-freq: 0.15;
+    gradient: gradient(#87cefa, #1e90ff);
+    texture: water;
+    surface-level: 1;
+    bottom-level: 3;
 }
 
 area|z1-16[featurecla=Coastline] {
-    clip:true;
-    material: main;
+    builders: terrain;
+    terrain-type: surface;
     builders: terrain;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;

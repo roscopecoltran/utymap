@@ -1,10 +1,12 @@
 #include "BoundingBox.hpp"
+#include "Exceptions.hpp"
 #include "clipper/clipper.hpp"
 #include "builders/TerraBuilder.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/LineGridSplitter.hpp"
 #include "index/GeoUtils.hpp"
+#include "utils/MapCssUtils.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -39,17 +41,13 @@ struct MeshRegion
         float colorNoiseFreq;
         float heightOffset;
 
-        // Specific mesh action associated with given region.
-        std::function<void(utymap::meshing::Mesh<double>)> action;
-
         Properties() :
             gradientKey(NoValue),
             textureAtlas(NoValue),
             textureKey(NoValue),
             eleNoiseFreq(0),
             colorNoiseFreq(0),
-            heightOffset(0),
-            action(nullptr)
+            heightOffset(0)
         {
         }
 
@@ -63,7 +61,6 @@ struct MeshRegion
                 eleNoiseFreq = obj.eleNoiseFreq;
                 colorNoiseFreq = obj.colorNoiseFreq;
                 heightOffset = obj.heightOffset;
-                action = obj.action;
             }
             return *this;
         }
@@ -79,10 +76,14 @@ typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<int, MeshRegions> SurfaceMap;
 typedef std::vector<Point<double>> MeshPoints;
 
+const std::string TypeKey = "terrain-type";
+const std::string ColorNoiseFreqKey = "color-noise-freq";
+const std::string EleNoiseFreqKey = "ele-noise-freq";
+const std::string WaterKey = "water";
+const std::string SurfaceKey = "surface";
+
 class TerraBuilder::TerraBuilderImpl
 {
-    const std::string BackgroundColorNoiseFreq = "background-color-noise-freq";
-    const std::string BackgroundEleNoiseFreq = "background-ele-noise-freq";
 public:
 
     TerraBuilderImpl(utymap::index::StringTable& stringTable,
@@ -102,30 +103,39 @@ public:
         quadKey_ = quadKey;
     }
 
-    inline void addWater(const MeshRegion& water)
+    void addNode(const utymap::entities::Node& node)
     {
-        waters_.push_back(water);
     }
 
-    inline void addSurface(const MeshRegion& surface)
+    void addWay(const utymap::entities::Way& way)
     {
-        surfaces_[surface.properties.gradientKey].push_back(surface);
+        //carRoads_[width].push_back(carRoad);
+        // walkRoads_[width].push_back(walkRoad);
     }
 
-    inline void addCarRoad(const MeshRegion& carRoad, int width)
+    void addArea(const utymap::entities::Area& area)
     {
-        carRoads_[width].push_back(carRoad);
+        Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
+        MeshRegion region = createMeshRegion(style, area.coordinates);
+        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
+
+        if (type == SurfaceKey) {
+            surfaces_[region.properties.gradientKey].push_back(region);
+        } else  if (type == WaterKey) {
+            waters_.push_back(region);
+        }
+        else {
+            throw utymap::MapCssException(std::string("Unknown terrain type: ") + type);
+        }
     }
 
-    inline void addWalkRoad(const MeshRegion& walkRoad, int width)
+    void addRelation(const utymap::entities::Relation& relation)
     {
-        walkRoads_[width].push_back(walkRoad);
     }
 
     // builds tile mesh using data provided.
     void build()
     {
-        //clipRect_ = createPathFromRect(tileRect);
         configureSplitter(quadKey_.levelOfDetail);
 
         // fill context with layer specific data.
@@ -141,7 +151,7 @@ private:
     void configureSplitter(int levelOfDetails)
     {
         int roundDigits = 1;
-        int coeff = 1;
+        int coeff = 100;
 
         // TODO
         switch (levelOfDetails)
@@ -153,6 +163,26 @@ private:
 
         splitter_.setRoundDigits(roundDigits, coeff);
         splitter_.setScale(Scale);
+    }
+
+    MeshRegion createMeshRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
+    {
+        MeshRegion region;
+        region.properties = createMeshRegionProperties(style);
+        region.points.reserve(coordinates.size());
+        for (const GeoCoordinate& c : coordinates) {
+            region.points.push_back(Point<double>(c.longitude, c.latitude));
+        }
+        return std::move(region);
+    }
+
+    MeshRegion::Properties createMeshRegionProperties(const Style& style)
+    {
+        MeshRegion::Properties properties;
+        properties.eleNoiseFreq = utymap::utils::getFloat(EleNoiseFreqKey, stringTable_, style);
+        properties.colorNoiseFreq = utymap::utils::getFloat(ColorNoiseFreqKey, stringTable_, style);
+
+        return std::move(properties);
     }
 
     Paths buildPaths(const MeshRegions& regions) {
@@ -251,15 +281,10 @@ private:
         // TODO use valid area value
         Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
-            /* area=*/ 1,
+            /* area=*/ 10,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
             /* segmentSplit=*/ 0
         });
-
-        // TODO fill mesh colors based on region properties
-
-        if (properties.action != nullptr)
-            properties.action(regionMesh);
 
         mesh_.vertices.insert(mesh_.vertices.begin(),
             regionMesh.vertices.begin(),
@@ -373,17 +398,8 @@ private:
         if (backgroundShape_.size() > 0)
         {
             auto style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
-            MeshRegion::Properties properties;
-            properties.eleNoiseFreq = std::stof(getStyleValue(BackgroundEleNoiseFreq, style));
-            properties.colorNoiseFreq = std::stof(getStyleValue(BackgroundColorNoiseFreq, style));
-            populateMesh(properties, backgroundShape_);
+            populateMesh(createMeshRegionProperties(style), backgroundShape_);
         }
-    }
-
-    inline std::string& getStyleValue(const std::string& key, const Style& style)
-    {
-        uint32_t keyId = stringTable_.getId(key);
-        return style.get(keyId);
     }
 
 const utymap::mapcss::StyleProvider& styleProvider_;
@@ -420,18 +436,22 @@ Mesh<double> mesh_;
 
 void TerraBuilder::visitNode(const utymap::entities::Node& node)
 {
+    pimpl_->addNode(node);
 }
 
 void TerraBuilder::visitWay(const utymap::entities::Way& way)
 {
+    pimpl_->addWay(way);
 }
 
 void TerraBuilder::visitArea(const utymap::entities::Area& area)
 {
+    pimpl_->addArea(area);
 }
 
 void TerraBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
+    pimpl_->addRelation(relation);
 }
 
 void TerraBuilder::prepare(const utymap::QuadKey& quadKey)
