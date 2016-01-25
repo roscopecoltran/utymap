@@ -6,6 +6,7 @@
 #include "index/StringTable.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "utils/GradientUtils.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -191,7 +192,8 @@ public:
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         stringTable(stringTable),
-        filters()
+        filters(),
+        gradients_()
     {
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
@@ -240,6 +242,19 @@ public:
             }
         }
     }
+
+    const ColorGradient& getGradient(const std::string& key)
+    {
+        // TODO make thread safe
+        if (gradients_.find(key) == gradients_.end()) {
+            gradients_[key] = utymap::utils::GradientUtils::parse(key);
+        }
+
+        return gradients_[key];
+    }
+
+private:
+    std::unordered_map<std::string, ColorGradient> gradients_;
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
@@ -276,4 +291,9 @@ Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const
         }
     }
     return std::move(style);
+}
+
+const utymap::mapcss::ColorGradient& utymap::mapcss::StyleProvider::getGradient(const std::string& key)
+{
+    return pimpl_->getGradient(key);
 }

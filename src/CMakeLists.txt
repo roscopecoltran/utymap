@@ -33,6 +33,7 @@ set(HEADER_FILES
                 index/PersistentElementStore.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
+                mapcss/ColorGradient.hpp
                 mapcss/MapCssParser.hpp
                 mapcss/StyleSheet.hpp
                 mapcss/Style.hpp
@@ -43,7 +44,9 @@ set(HEADER_FILES
                 meshing/Polygon.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
+                utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp
+                utils/SimplexNoise.hpp
                 )
 
 add_library (UtyMap
@@ -67,6 +70,7 @@ add_library (UtyMap
                 mapcss/StyleProvider.cpp
                 mapcss/StyleSheet.cpp
                 meshing/MeshBuilder.cpp
+                utils/SimplexNoise.cpp
                 )
 
 set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)

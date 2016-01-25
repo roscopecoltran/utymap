@@ -3,9 +3,11 @@
 
 #include "index/StringTable.hpp"
 #include "entities/Element.hpp"
+#include "mapcss/ColorGradient.hpp"
 #include "mapcss/Stylesheet.hpp"
 #include "mapcss/Style.hpp"
 
+#include <string>
 #include <memory>
 
 namespace utymap { namespace mapcss {
@@ -27,6 +29,9 @@ public:
 
     // Returs style for canvas at given level of details.
     utymap::mapcss::Style forCanvas(int levelOfDetails) const;
+
+    // Returns color gradient for given key.
+    const utymap::mapcss::ColorGradient& getGradient(const std::string& key);
 
 private:
     class StyleProviderImpl;

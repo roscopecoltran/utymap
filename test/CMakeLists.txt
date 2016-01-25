@@ -41,6 +41,7 @@ add_executable (TestLauncher
                         meshing/LineGridSplitterTest.cpp
                         test_utils/ElementUtils.hpp
                         test_utils/MapCssUtils.hpp
+                        utils/GradientUtilsTest.cpp
                         ${HEADER_FILES}
                       )
 
