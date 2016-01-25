@@ -8,9 +8,9 @@
 using namespace utymap::mapcss;
 using namespace utymap::utils;
 
-BOOST_AUTO_TEST_SUITE(Utils_GradientUtilsTest)
+BOOST_AUTO_TEST_SUITE(Utils_GradientUtils)
 
-BOOST_AUTO_TEST_CASE(GivenGradientString_WhenParse_ThenReturnGradient)
+BOOST_AUTO_TEST_CASE(GivenSimpleGradientString_WhenParse_ThenReturnGradient)
 {
      std::string gradientKey = "gradient(#0fffff, #099999 50%, #033333 70%, #000000)";
 

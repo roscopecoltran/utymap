@@ -70,6 +70,7 @@ add_library (UtyMap
                 mapcss/StyleProvider.cpp
                 mapcss/StyleSheet.cpp
                 meshing/MeshBuilder.cpp
+                utils/GradientUtils.cpp
                 utils/SimplexNoise.cpp
                 )
 

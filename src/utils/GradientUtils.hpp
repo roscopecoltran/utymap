@@ -3,6 +3,7 @@
 
 #include "mapcss/ColorGradient.hpp"
 
+#include <string>
 #include <regex>
 
 namespace utymap { namespace utils {
@@ -10,12 +11,9 @@ namespace utymap { namespace utils {
 class GradientUtils
 {
 public:
-
-    static utymap::mapcss::ColorGradient parse(const std::string& gradientStr)
-    {
-        utymap::mapcss::ColorGradient gradient;
-        return std::move(gradient);
-    }
+    static utymap::mapcss::ColorGradient parse(const std::string& gradientStr);
+private:
+    static const std::regex gradientRegEx;
 };
 
 }}
