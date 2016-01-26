@@ -1,6 +1,7 @@
 #ifndef MAPCSS_COLORGRADIENT_HPP_INCLUDED
 #define MAPCSS_COLORGRADIENT_HPP_INCLUDED
 
+#include <cstdint>
 #include <vector>
 #include <utility>
 
@@ -9,12 +10,14 @@ namespace utymap { namespace mapcss {
 // Represents color gradient.
 class ColorGradient
 {
-    typedef std::vector<std::pair<int, int>> ColorData;
 public:
+
+    // gradient data: first - time, second - color.
+    typedef std::vector<std::pair<float, std::uint32_t>> GradientData;
 
     ColorGradient() {}
 
-    ColorGradient(ColorData& colors) :
+    ColorGradient(GradientData& colors) :
         colors_(std::move(colors))
     {
     }
@@ -26,7 +29,7 @@ public:
     }
 
 private:
-    ColorData colors_;
+    GradientData colors_;
 };
 
 }}

@@ -247,7 +247,7 @@ public:
     {
         // TODO make thread safe
         if (gradients_.find(key) == gradients_.end()) {
-            gradients_[key] = utymap::utils::GradientUtils::parse(key);
+            gradients_[key] = utymap::utils::GradientUtils::parseGradient(key);
         }
 
         return gradients_[key];
