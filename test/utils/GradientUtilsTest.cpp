@@ -23,9 +23,9 @@ BOOST_AUTO_TEST_CASE(GivenHexColorString_WhenParse_ThenReturnColor)
 {
     std::string colorStr = "#aa0000";
 
-    std::uint32_t color = GradientUtils::parseColor(colorStr);
+    Color color = GradientUtils::parseColor(colorStr);
 
-    BOOST_CHECK_EQUAL(color, 0xAA0000);
+    BOOST_CHECK_EQUAL(color, 0xAA0000FF);
 }
 
 BOOST_AUTO_TEST_CASE(GivenNamedColorString_WhenParse_ThenReturnColor)
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(GivenNamedColorString_WhenParse_ThenReturnColor)
 
     std::uint32_t color = GradientUtils::parseColor(colorStr);
 
-    BOOST_CHECK_EQUAL(color, 0xFF0000);
+    BOOST_CHECK_EQUAL(color, 0xFF0000FF);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

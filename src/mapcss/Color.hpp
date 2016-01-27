@@ -7,13 +7,12 @@
 namespace utymap { namespace mapcss {
 
 struct Color {
-    Color() {};
 
     Color(int r, int g, int b, int a) :
-        r(std::min(0, std::max(r, 0xff))),
-        g(std::min(0, std::max(g, 0xff))),
-        b(std::min(0, std::max(b, 0xff))),
-        a(std::min(0, std::max(a, 0xff)))
+        r(std::max(0, std::min(r, 0xff))),
+        g(std::max(0, std::min(g, 0xff))),
+        b(std::max(0, std::min(b, 0xff))),
+        a(std::max(0, std::min(a, 0xff)))
     {
     };
 
@@ -30,7 +29,8 @@ struct Color {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
 
-    Color operator+(const Color& o) const {
+    Color operator+(const Color& o) const 
+    {
         return Color(r + o.r, g + o.g, b + o.b, a + o.a);
     }
 
@@ -44,7 +44,7 @@ struct Color {
         return (1.0 - r) * a + r * b;
     }
 private:
-    unsigned char r = 0, g = 0, b = 0, a = 0;
+    unsigned char r, g, b, a;
 };
 
 }}
