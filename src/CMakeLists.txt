@@ -33,6 +33,7 @@ set(HEADER_FILES
                 index/PersistentElementStore.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
+                mapcss/Color.hpp
                 mapcss/ColorGradient.hpp
                 mapcss/MapCssParser.hpp
                 mapcss/StyleSheet.hpp
