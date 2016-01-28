@@ -293,7 +293,7 @@ Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const
     return std::move(style);
 }
 
-const utymap::mapcss::ColorGradient& utymap::mapcss::StyleProvider::getGradient(const std::string& key)
+const utymap::mapcss::ColorGradient& utymap::mapcss::StyleProvider::getGradient(const std::string& key) const
 {
     return pimpl_->getGradient(key);
 }

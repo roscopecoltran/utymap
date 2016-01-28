@@ -3,7 +3,7 @@ canvas|z1-16 {
     texture: background;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+    color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
 }
 
 area|z1[natural=water] {
@@ -11,7 +11,7 @@ area|z1[natural=water] {
     terrain-type: water;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.15;
-    gradient: gradient(#87cefa, #1e90ff);
+    color: gradient(#87cefa, #1e90ff);
     texture: water;
     surface-level: 1;
     bottom-level: 3;
@@ -23,6 +23,6 @@ area|z1-16[featurecla=Coastline] {
     builders: terrain;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    gradient: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+    color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
     texture: background;
 }

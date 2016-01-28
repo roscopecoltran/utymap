@@ -26,21 +26,20 @@ using namespace utymap::meshing;
 
 const uint64_t Scale = 1E8; // max precision for Lat/Lon
 const uint64_t DoubleScale = Scale * Scale;
-const int NoValue = -1;
 
 // Represents terrain region.
 struct MeshRegion
 {
     struct Properties
     {
-        int gradientKey;
-        int textureAtlas;
-        int textureKey;
+        std::string gradientKey;
+        std::string textureAtlas;
+        std::string textureKey;
         float eleNoiseFreq;
         float colorNoiseFreq;
         float heightOffset;
 
-        Properties() : gradientKey(NoValue), textureAtlas(NoValue), textureKey(NoValue),
+        Properties() : gradientKey(), textureAtlas(), textureKey(),
             eleNoiseFreq(0), colorNoiseFreq(0), heightOffset(0)
         {
         }
@@ -53,7 +52,7 @@ struct MeshRegion
 
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
-typedef std::map<int, MeshRegions> SurfaceMap;
+typedef std::map<std::string, MeshRegions> SurfaceMap;
 typedef std::vector<Point<double>> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl
@@ -61,6 +60,7 @@ class TerraBuilder::TerraBuilderImpl
     const std::string TypeKey = "terrain-type";
     const std::string ColorNoiseFreqKey = "color-noise-freq";
     const std::string EleNoiseFreqKey = "ele-noise-freq";
+    const std::string GradientKey = "color";
     const std::string WaterKey = "water";
     const std::string SurfaceKey = "surface";
 
@@ -161,6 +161,7 @@ private:
         MeshRegion::Properties properties;
         properties.eleNoiseFreq = utymap::utils::getFloat(EleNoiseFreqKey, stringTable_, style);
         properties.colorNoiseFreq = utymap::utils::getFloat(ColorNoiseFreqKey, stringTable_, style);
+        properties.gradientKey = utymap::utils::getString(GradientKey, stringTable_, style);
 
         return std::move(properties);
     }
@@ -267,6 +268,8 @@ private:
             /* elevation noise frequency*/ properties.eleNoiseFreq,
             /* segmentSplit=*/ 0
         });
+
+        ColorGradient gradient = styleProvider_.getGradient(properties.gradientKey);
 
         mesh_.vertices.insert(mesh_.vertices.begin(),
             regionMesh.vertices.begin(),
