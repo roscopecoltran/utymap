@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleGradientString_WhenEvaluate_ThenReturnCorrectCol
 
      ColorGradient gradient = GradientUtils::parseGradient(gradientKey);
 
-     BOOST_CHECK_EQUAL(gradient.evaluate(0.5), 0x033333);
+     BOOST_CHECK_EQUAL(gradient.evaluate(0.5), 0x099999FF);
 }
 
 BOOST_AUTO_TEST_CASE(GivenHexColorString_WhenParse_ThenReturnColor)

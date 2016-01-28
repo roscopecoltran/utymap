@@ -38,11 +38,6 @@ struct Color {
     {
         return Color(r * f, g * f, b * f, a * f);
     }
-
-    static Color mid(const Color& a, const Color& b, double r)
-    {
-        return (1.0 - r) * a + r * b;
-    }
 private:
     unsigned char r, g, b, a;
 };

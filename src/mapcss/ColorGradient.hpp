@@ -1,6 +1,8 @@
 #ifndef MAPCSS_COLORGRADIENT_HPP_INCLUDED
 #define MAPCSS_COLORGRADIENT_HPP_INCLUDED
 
+#include "mapcss/Color.hpp"
+
 #include <cstdint>
 #include <vector>
 #include <utility>
@@ -13,7 +15,7 @@ class ColorGradient
 public:
 
     // gradient data: first - time, second - color.
-    typedef std::vector<std::pair<float, std::uint32_t>> GradientData;
+    typedef std::vector<std::pair<float, utymap::mapcss::Color>> GradientData;
 
     ColorGradient() {}
 
@@ -22,7 +24,7 @@ public:
     {
     }
 
-    inline std::uint32_t evaluate(float time) const
+    inline utymap::mapcss::Color evaluate(float time) const
     {
         GradientData::size_type index = 0;
         for (; index < colors_.size(); ++index) {
@@ -30,21 +32,26 @@ public:
                 break;
             }
         }
-        auto y1 = colors_[index != 0 ? index - 1 : 0].second;
-        auto y2 = colors_[index].second;
-        float mu = time;
-        // TODO find correct mu
-        return interpolate(y1, y2, time);
+
+        auto pairA = colors_[index != 0 ? index - 1 : 0];
+        auto pairB = colors_[index]; 
+
+        float timeA = pairA.first;
+        float timeB = pairB.first;
+        float mu = index == 0 ? 0 : (time - timeA) / (timeB - timeA);
+
+        return interpolate(pairA.second, pairB.second, mu);
     }
 
 private:
-    GradientData colors_;
-
-    // So far, using linear interpolation algorithm as the fastest.
-    inline std::uint32_t interpolate(std::uint32_t y1, std::uint32_t y2, float mu) const
-    { 
-        return static_cast<std::uint32_t>(y1 * (1 - mu) + y2 * mu); 
+    
+    // So far, use linear interpolation algorithm as the fastest.
+    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a, const utymap::mapcss::Color& b, double r) const
+    {
+        return (1.0 - r) * a + r * b;
     }
+
+    GradientData colors_;
 };
 
 }}
