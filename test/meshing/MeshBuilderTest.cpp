@@ -1,5 +1,6 @@
 #include "heightmap/ElevationProvider.hpp"
 #include "clipper/clipper.hpp"
+#include "mapcss/ColorGradient.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
@@ -12,6 +13,8 @@ using namespace utymap::heightmap;
 using namespace utymap::meshing;
 
 typedef Point<double> DPoint;
+
+utymap::mapcss::ColorGradient colorGradient;
 
 class TestElevationProvider: public ElevationProvider<double>
 {
@@ -46,6 +49,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
     {
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
+        /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });
 
@@ -75,6 +79,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
     { 
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
+        /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0 
     });
 
@@ -110,6 +115,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
     {
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,
+        /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });
 
