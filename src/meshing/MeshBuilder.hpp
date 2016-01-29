@@ -21,8 +21,11 @@ public:
         // Max area of triangle in refined mesh.
         double area;
 
-        // Elevation noise
+        // Elevation noise freq.
         double eleNoiseFreq;
+
+        // Color noise freq.
+        double colorNoiseFreq;
 
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;

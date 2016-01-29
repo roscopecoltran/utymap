@@ -3,9 +3,11 @@
 
 #include "meshing/MeshBuilder.hpp"
 #include "triangle/triangle.h"
+#include "utils/NoiseUtils.hpp"
 
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
+using namespace utymap::utils;
 
 class MeshBuilder::MeshBuilderImpl
 {
@@ -77,18 +79,22 @@ private:
     {
         mesh.vertices.reserve(io->numberofpoints * 3 / 2);
         mesh.triangles.reserve(io->numberoftriangles * 3);
-
-        //SimplexNoise eleNoise(options.eleNoiseFreq);
-        //SimplexNoise colorNoise(options.eleNoiseFreq);
+        mesh.colors.reserve(io->numberofpoints);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
+            double ele = eleProvider_.getElevation(x, y);
+
+            ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq);
+
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
-            // TODO Use elevation noise
-            //float eleNoise = 
-            mesh.vertices.push_back(eleProvider_.getElevation(x, y));
+            mesh.vertices.push_back(ele);
+
+            double colorTime = NoiseUtils::perlin3D(x, ele, y, options.colorNoiseFreq);
+            auto color = options.gradient.evaluate(colorTime);
+            mesh.colors.push_back(color);
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {

@@ -266,6 +266,7 @@ private:
         {
             /* area=*/ 10,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
+            /* color noise frequency. */ properties.colorNoiseFreq,
             styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         });

@@ -15,7 +15,7 @@ class ColorGradient
 public:
 
     // gradient data: first - time, second - color.
-    typedef std::vector<std::pair<float, utymap::mapcss::Color>> GradientData;
+    typedef std::vector<std::pair<double, utymap::mapcss::Color>> GradientData;
 
     ColorGradient() {}
 
@@ -24,21 +24,19 @@ public:
     {
     }
 
-    inline utymap::mapcss::Color evaluate(float time) const
+    inline utymap::mapcss::Color evaluate(double time) const
     {
         GradientData::size_type index = 0;
-        for (; index < colors_.size(); ++index) {
-            if (colors_[index].first > time) {
-                break;
-            }
+        while (index < colors_.size() - 1 && colors_[index].first < time) {
+            index++;
         }
 
         auto pairA = colors_[index != 0 ? index - 1 : 0];
-        auto pairB = colors_[index]; 
+        auto pairB = colors_[index];
 
-        float timeA = pairA.first;
-        float timeB = pairB.first;
-        float mu = index == 0 ? 0 : (time - timeA) / (timeB - timeA);
+        double timeA = pairA.first;
+        double timeB = pairB.first;
+        double mu = index == 0 ? 0 : (time - timeA) / (timeB - timeA);
 
         return interpolate(pairA.second, pairB.second, mu);
     }
@@ -46,7 +44,9 @@ public:
 private:
     
     // So far, use linear interpolation algorithm as the fastest.
-    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a, const utymap::mapcss::Color& b, double r) const
+    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a, 
+                                             const utymap::mapcss::Color& b, 
+                                             double r) const
     {
         return (1.0 - r) * a + r * b;
     }

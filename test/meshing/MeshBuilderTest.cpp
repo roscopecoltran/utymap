@@ -10,11 +10,12 @@
 
 using namespace ClipperLib;
 using namespace utymap::heightmap;
+using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 typedef Point<double> DPoint;
 
-utymap::mapcss::ColorGradient colorGradient;
+const ColorGradient colorGradient(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
 
 class TestElevationProvider: public ElevationProvider<double>
 {
@@ -49,6 +50,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
     {
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
+        /* color noise frequency */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });
@@ -79,6 +81,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
     { 
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
+        /* color noise frequency */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0 
     });
@@ -115,6 +118,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
     {
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,
+        /* color noise frequency */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });
