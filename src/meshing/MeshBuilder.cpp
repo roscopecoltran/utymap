@@ -92,7 +92,7 @@ private:
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            double colorTime = NoiseUtils::perlin3D(x, ele, y, options.colorNoiseFreq);
+            double colorTime = (NoiseUtils::perlin3D(x, ele, y, options.colorNoiseFreq) + 1) / 2;
             auto color = options.gradient.evaluate(colorTime);
             mesh.colors.push_back(color);
         }

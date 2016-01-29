@@ -20,7 +20,7 @@ private:
 
 public:
 
-    // Calculates perlin 3D noise.
+    // Calculates perlin 3D noise in [-1;1] range.
     static double perlin3D(double x, double y, double z, double freq);
 
 private:
