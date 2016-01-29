@@ -261,14 +261,12 @@ private:
 
     void fillMesh(const MeshRegion::Properties& properties, Polygon<double>& polygon)
     {
-        ColorGradient gradient = styleProvider_.getGradient(properties.gradientKey);
-
         // TODO use valid area value
         Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
             /* area=*/ 10,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
-            gradient,
+            styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         });
 

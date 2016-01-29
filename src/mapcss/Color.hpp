@@ -6,8 +6,8 @@
 
 namespace utymap { namespace mapcss {
 
-struct Color {
-
+struct Color 
+{
     Color(int r, int g, int b, int a) :
         r(std::max(0, std::min(r, 0xff))),
         g(std::max(0, std::min(g, 0xff))),

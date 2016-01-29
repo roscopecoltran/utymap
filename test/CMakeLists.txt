@@ -42,6 +42,7 @@ add_executable (TestLauncher
                         test_utils/ElementUtils.hpp
                         test_utils/MapCssUtils.hpp
                         utils/GradientUtilsTest.cpp
+                        utils/NoiseUtilsTest.cpp
                         ${HEADER_FILES}
                       )
 

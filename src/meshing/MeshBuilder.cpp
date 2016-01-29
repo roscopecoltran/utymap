@@ -51,7 +51,7 @@ public:
         ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
 
         Mesh<double> mesh;
-        fillMesh(&out, mesh);
+        fillMesh(&out, options, mesh);
 
         free(in.pointmarkerlist);
 
@@ -73,10 +73,13 @@ public:
 private:
     ElevationProvider<double>& eleProvider_;
 
-    void fillMesh(triangulateio* io, Mesh<double>& mesh)
+    void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh<double>& mesh)
     {
         mesh.vertices.reserve(io->numberofpoints * 3 / 2);
         mesh.triangles.reserve(io->numberoftriangles * 3);
+
+        //SimplexNoise eleNoise(options.eleNoiseFreq);
+        //SimplexNoise colorNoise(options.eleNoiseFreq);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
@@ -84,6 +87,7 @@ private:
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
             // TODO Use elevation noise
+            //float eleNoise = 
             mesh.vertices.push_back(eleProvider_.getElevation(x, y));
         }
 

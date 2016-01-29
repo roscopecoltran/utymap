@@ -47,7 +47,7 @@ set(HEADER_FILES
                 utils/CoreUtils.hpp
                 utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp
-                utils/SimplexNoise.hpp
+                utils/NoiseUtils.hpp
                 )
 
 add_library (UtyMap
@@ -72,7 +72,7 @@ add_library (UtyMap
                 mapcss/StyleSheet.cpp
                 meshing/MeshBuilder.cpp
                 utils/GradientUtils.cpp
-                utils/SimplexNoise.cpp
+                utils/NoiseUtils.cpp
                 )
 
 set_target_properties(UtyMap PROPERTIES LINKER_LANGUAGE CXX)

@@ -21,8 +21,6 @@ using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-const double Precision = 0.1e-7;
-
 const char* StyleSheetString =
 "canvas|z1 { ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red);}"
 "area|z1[natural=water] { builders:terrain; terrain-type:water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); }";
