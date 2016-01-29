@@ -153,6 +153,17 @@ BOOST_AUTO_TEST_CASE( GivenSingleDeclaraion_WhenParse_ThenKeyValueAreSet )
     BOOST_CHECK( declaration.value == "value1" );
 }
 
+BOOST_AUTO_TEST_CASE(GivenGradientDeclaraion_WhenParse_ThenGradientValueIsCorrect)
+{
+    std::string str = "color:gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);";
+
+    bool success = phrase_parse(str.cbegin(), str.cend(), declarationGrammar, skipper, declaration);
+
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(declaration.key, "color");
+    BOOST_CHECK_EQUAL(declaration.value, "gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080)");
+}
+
 /* Rule */
 BOOST_AUTO_TEST_CASE( GivenSimpleRule_WhenParse_ThenSelectorAndDeclarationAreSet )
 {
@@ -238,6 +249,18 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoo
     Selector selector = stylesheet.rules[0].selectors[0];
     BOOST_CHECK_EQUAL(1, selector.zoom.start);
     BOOST_CHECK_EQUAL(12, selector.zoom.end);
+}
+
+BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientValue)
+{
+    std::string str = "way|z1-12[highway]{color:gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);}";
+    Parser parser;
+
+    StyleSheet stylesheet = parser.parse(str);
+
+    BOOST_CHECK(parser.getError().empty());
+    BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
+    BOOST_CHECK_EQUAL(stylesheet.rules[0].declarations[0].value, "gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080)");
 }
 
 BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentation)

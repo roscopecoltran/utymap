@@ -10,6 +10,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 
 #include <cstdint>
+#include <streambuf>
 #include <vector>
 
 namespace qi = boost::spirit::qi;
@@ -231,7 +232,10 @@ StyleSheet Parser::parse(const std::string& str)
 
 StyleSheet Parser::parse(std::istream& istream)
 {
-    boost::spirit::istream_iterator begin(istream);
-    boost::spirit::istream_iterator end;
-    return parse(begin, end);
+    // TODO from some reason, this approach will skip some spaces in declaration (e.g. gradient)
+    //boost::spirit::istream_iterator begin(istream);
+    //boost::spirit::istream_iterator end;
+    //return parse(begin, end);
+    std::string styleContent((std::istreambuf_iterator<char>(istream)), std::istreambuf_iterator<char>());
+    return parse(styleContent);
 }
