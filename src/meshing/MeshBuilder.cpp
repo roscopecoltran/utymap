@@ -98,8 +98,8 @@ private:
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {
-            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 0]);
             mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 1]);
+            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 0]);
             mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 2]);
           }
     }

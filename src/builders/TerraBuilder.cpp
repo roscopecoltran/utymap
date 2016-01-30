@@ -74,7 +74,8 @@ public:
         styleProvider_(styleProvider),
         meshBuilder_(eleProvider),
         callback_(callback),
-        quadKey_()
+        quadKey_(),
+        splitter_()
     {
     }
 
@@ -129,20 +130,13 @@ public:
 private:
 
     void configureSplitter(int levelOfDetails)
-    {
-        int roundDigits = 1;
-        int coeff = 100;
-
+    {    
         // TODO
         switch (levelOfDetails)
         {
-            case 1: roundDigits = 7; break;
-            default:
-                throw std::domain_error("Unknown LoD");
+        case 1: splitter_.setParams(Scale, 3); break;
+        default: throw std::domain_error("Unknown LoD");
         };
-
-        splitter_.setRoundDigits(roundDigits, coeff);
-        splitter_.setScale(Scale);
     }
 
     MeshRegion createMeshRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -206,7 +200,7 @@ private:
         return std::move(resultRoads);
     }
 
-    // populates mesh
+    // populates mesh 
     void populateMesh(const MeshRegion::Properties& properties, const Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;

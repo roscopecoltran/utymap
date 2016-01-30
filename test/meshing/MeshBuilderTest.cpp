@@ -95,8 +95,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
     std::vector<Point<double>> contour;
     LineGridSplitter<double> splitter;
     int scale = 10;
-    splitter.setRoundDigits(1);
-    splitter.setScale(scale);
+    splitter.setParams(scale, 1);
     std::vector<IntPoint> inputPoints
     {
         IntPoint(0 * scale, 0 * scale),

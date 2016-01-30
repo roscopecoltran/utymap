@@ -44,23 +44,16 @@ class LineGridSplitter
     };
 
 public:
-
     LineGridSplitter() :
-        roundVal_(1),
         step_(1),
         scale_(1)
     {
     }
 
-    void setRoundDigits(std::uint8_t roundDigits, std::uint16_t coeff = 1)
-    {
-        roundVal_ = std::pow(10, roundDigits);
-        step_ = std::pow(10, roundDigits - 1) * coeff;
-    }
-
-    void setScale(uint64_t scale)
+    void setParams(uint64_t scale, double step)
     {
         scale_ = scale;
+        step_ = step * scale;
     }
 
     // Splits line to segments.
@@ -83,12 +76,12 @@ private:
 
     inline Int ceil(Int value)
     {
-        return std::ceil(value / roundVal_) * roundVal_;
+        return std::ceil(value / step_) * step_;
     }
 
     inline Int floor(Int value)
     {
-        return std::floor(value / roundVal_) * roundVal_;
+        return std::floor(value / (Int) step_) * step_;
     }
 
     void zeroSlope(IPoint start, IPoint end, IPoints& points)
@@ -196,9 +189,8 @@ private:
             result.pop_back();
     }
 
-    uint32_t roundVal_;
     double scale_;
-    uint64_t step_;
+    double step_;
 };
 
 }}
