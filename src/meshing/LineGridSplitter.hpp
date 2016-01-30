@@ -59,8 +59,8 @@ public:
     // Splits line to segments.
     void split(IPoint start, IPoint end, Points& result)
     {
-        // TODO reserve capacity
         std::vector<IPoint> points;
+        points.reserve(2);
         points.push_back(start);
 
         double slope = (end.Y - start.Y) / ((double)end.X - start.X);
@@ -68,6 +68,8 @@ public:
             zeroSlope(start, end, points);
         else
             normalCase(start, end, slope, points);
+
+        points.push_back(end);
 
         filterResults(points, result);
     }
@@ -77,11 +79,6 @@ private:
     inline Int ceil(Int value)
     {
         return std::ceil(value / step_) * step_;
-    }
-
-    inline Int floor(Int value)
-    {
-        return std::floor(value / (Int) step_) * step_;
     }
 
     void zeroSlope(IPoint start, IPoint end, IPoints& points)
@@ -97,8 +94,8 @@ private:
             }
 
             Int yStart = ceil(start.Y);
-            Int yEnd = floor(end.Y);
-            for (double y = yStart; y <= yEnd; y += step_)
+            Int yEnd = end.Y;
+            for (double y = yStart; y < yEnd; y += step_)
                 points.push_back(IPoint(start.X, y));
 
             if (isBottomTop)
@@ -117,8 +114,8 @@ private:
             }
 
             Int xStart = ceil(start.X);
-            Int xEnd = floor(end.X);
-            for (double x = xStart; x <= xEnd; x += step_)
+            Int xEnd = end.X;
+            for (double x = xStart; x < xEnd; x += step_)
                 points.push_back(IPoint(x, start.Y));
 
             if (isLeftRight)
@@ -142,8 +139,8 @@ private:
         }
 
         Int xStart = ceil(start.X);
-        Int xEnd = floor(end.X);
-        for (double x = xStart; x <= xEnd; x += step_)
+        Int xEnd = end.X;
+        for (double x = xStart; x < xEnd; x += step_)
             points.push_back(IPoint(x, slope * x + b));
 
         bool isBottomTop = start.Y < end.Y;
@@ -155,8 +152,8 @@ private:
         }
 
         Int yStart = ceil(start.Y);
-        Int yEnd = floor(end.Y);
-        for (double y = yStart; y <= yEnd; y += step_)
+        Int yEnd = end.Y;
+        for (double y = yStart; y < yEnd; y += step_)
             points.push_back(IPoint((y - b) * inverseSlope, y));
 
         if (isLeftRight)
@@ -175,9 +172,8 @@ private:
                 TPoint last = result[result.size() - 1];
                 Int lastX = last.x * scale_;
                 Int lastY = last.y * scale_;
-                double distance = std::sqrt((lastX - candidate.X) * (lastX - candidate.X) +
-                                            (lastY - candidate.Y) * (lastY - candidate.Y));
-                if (std::abs(distance) < 1)
+                IPoint point(last.x * scale_, last.y * scale_);
+                if (candidate == point) 
                     continue;
             }
 

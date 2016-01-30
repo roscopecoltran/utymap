@@ -24,7 +24,7 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-const uint64_t Scale = 1E8; // max precision for Lat/Lon
+const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal positions
 const uint64_t DoubleScale = Scale * Scale;
 
 // Represents terrain region.

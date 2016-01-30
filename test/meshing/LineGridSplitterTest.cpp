@@ -89,4 +89,18 @@ BOOST_AUTO_TEST_CASE(GivenSpecificCase1_WhenSplit_CanSplit)
     }
 }
 
+// These tests are for some bugs observed for real data
+BOOST_AUTO_TEST_CASE(GivenSpecificCase2_WhenSplit_CanSplit)
+{
+    LineGridSplitter<double> splitter;
+    splitter.setParams(1E7, 3);
+    IntPoint start(-428193799, 626823300);
+    IntPoint end(-411886999, 634824599);
+    DoublePoints result;
+
+    splitter.split(start, end, result);
+
+    BOOST_CHECK_EQUAL(result.size(), 4);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
