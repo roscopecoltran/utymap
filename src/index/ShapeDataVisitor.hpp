@@ -43,6 +43,7 @@ struct ShapeDataVisitor
     void visitNode(utymap::GeoCoordinate& coordinate, utymap::formats::Tags& tags)
     {
         utymap::entities::Node node;
+        node.id = 0;
         node.coordinate = coordinate;
         setTags(node, tags);
         if (elementStore_.store(node, lodRange_, styleProvider_)) {
@@ -53,10 +54,11 @@ struct ShapeDataVisitor
     void visitWay(utymap::formats::Coordinates& coordinates, utymap::formats::Tags& tags, bool isRing)
     {
         if (isRing) {
-            utymap::entities::Area area;
             if (coordinates[0] == coordinates[coordinates.size() - 1]) {
                 coordinates.pop_back();
             }
+            utymap::entities::Area area;
+            area.id = 0;
             area.coordinates = std::move(coordinates);
             setTags(area, tags);
             if (elementStore_.store(area, lodRange_, styleProvider_))
@@ -64,6 +66,7 @@ struct ShapeDataVisitor
         }
         else {
             utymap::entities::Way way;
+            way.id = 0;
             way.coordinates = std::move(coordinates);;
             setTags(way, tags);
             if (elementStore_.store(way, lodRange_, styleProvider_))
