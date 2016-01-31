@@ -46,7 +46,8 @@ class LineGridSplitter
 public:
     LineGridSplitter() :
         step_(1),
-        scale_(1)
+        scale_(1),
+        tolerance_(0.00001)
     {
     }
 
@@ -54,6 +55,7 @@ public:
     {
         scale_ = scale;
         step_ = step * scale;
+        tolerance_ = scale / 100000.;
     }
 
     // Splits line to segments.
@@ -172,8 +174,9 @@ private:
                 TPoint last = result[result.size() - 1];
                 Int lastX = last.x * scale_;
                 Int lastY = last.y * scale_;
-                IPoint point(last.x * scale_, last.y * scale_);
-                if (candidate == point) 
+                double distance = std::sqrt((lastX - candidate.X) * (lastX - candidate.X) +
+                    (lastY - candidate.Y) * (lastY - candidate.Y));
+                if (std::abs(distance) < tolerance_)
                     continue;
             }
 
@@ -181,12 +184,13 @@ private:
         }
 
         // NOTE do not allow first vertex to be equal the last one
-        if (result[0] == result[result.size() - 1])
-            result.pop_back();
+        //if (result[previousLast] == result[result.size() - 1])
+        //    result.pop_back();
     }
 
     double scale_;
     double step_;
+    double tolerance_;
 };
 
 }}

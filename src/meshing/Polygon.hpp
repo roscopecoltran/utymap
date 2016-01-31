@@ -51,7 +51,7 @@ private:
 
         int count = contour.size();
         if (contour[0] == contour[count - 1])
-            throw std::domain_error("Invalid contour: first vertex equals last one!");
+            count--;
 
         int offset = segments.size() / 2;
         for (int i = 0; i < count; ++i) {
