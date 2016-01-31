@@ -160,7 +160,8 @@ private:
         return std::move(properties);
     }
 
-    Paths buildPaths(const MeshRegions& regions) {
+    Paths buildPaths(const MeshRegions& regions) 
+    {
         // TODO holes are not processed
         Paths paths;
         paths.reserve(regions.size());
@@ -266,15 +267,17 @@ private:
             /* segmentSplit=*/ 0
         });
 
-        mesh_.vertices.insert(mesh_.vertices.begin(),
+        auto startVertIndex = mesh_.vertices.size() / 3;
+
+        mesh_.vertices.insert(mesh_.vertices.end(),
             regionMesh.vertices.begin(),
             regionMesh.vertices.end());
 
-        mesh_.triangles.insert(mesh_.triangles.begin(),
-            regionMesh.triangles.begin(),
-            regionMesh.triangles.end());
+        for (const auto& tri : regionMesh.triangles) {
+            mesh_.triangles.push_back(startVertIndex + tri);
+        }
 
-        mesh_.colors.insert(mesh_.colors.begin(),
+        mesh_.colors.insert(mesh_.colors.end(),
             regionMesh.colors.begin(),
             regionMesh.colors.end());
     }

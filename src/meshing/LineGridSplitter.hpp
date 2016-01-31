@@ -58,7 +58,7 @@ public:
     }
 
     // Splits line to segments.
-    void split(IPoint start, IPoint end, Points& result)
+    void split(const IPoint& start, const IPoint& end, Points& result)
     {
         std::vector<IPoint> points;
         points.reserve(2);
