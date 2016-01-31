@@ -6,11 +6,10 @@
 namespace utymap { namespace heightmap {
 
 // Provides the way to get elevation for given location.
-template <typename T>
-class FlatElevationProvider: public ElevationProvider<T>
+class FlatElevationProvider: public ElevationProvider
 {
 public:
-    inline T getElevation(T x, T y) { return 0; };
+    inline double getElevation(double x, double y) { return 0; };
 };
 
 }}

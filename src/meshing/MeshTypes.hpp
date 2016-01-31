@@ -3,36 +3,37 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cmath>
+#include <limits>
 #include <string>
 #include <vector>
 
 namespace utymap { namespace meshing {
 
 // represents point in 2D space.
-template <typename T>
 struct Point
 {
-    T x;
-    T y;
+    double x;
+    double y;
     Point() : x(0), y(0)  { }
-    Point(T x, T y) : x(x), y(y) { }
+    Point(double x, double y) : x(x), y(y) { }
 
     bool operator==(const Point& rhs) const
     {
-        return x == rhs.x && y == rhs.y;
+        return std::fabs(x - rhs.x) < std::numeric_limits<double>::epsilon() &&
+               std::fabs(y - rhs.y) < std::numeric_limits<double>::epsilon();
     }
 
     bool operator!=(const Point& rhs) const
     {
-        return this != rhs;
+        return !(*this == rhs);
     }
 };
 
 // Represents axis aligned rectangle in 2D space.
-template <typename T>
 struct Rectangle
 {
-    T xMin, xMax, yMin, yMax;
+    double xMin, xMax, yMin, yMax;
 
     Rectangle() :
         xMin(0),
@@ -42,7 +43,7 @@ struct Rectangle
     {
     }
 
-    Rectangle(T xMin, T yMin, T xMax, T yMax) :
+    Rectangle(double xMin, double yMin, double xMax, double yMax) :
         xMin(xMin),
         yMin(yMin),
         xMax(xMax),
@@ -50,9 +51,9 @@ struct Rectangle
     {
     }
 
-    void expand(const std::vector<Point<T>>& contour)
+    void expand(const std::vector<Point>& contour)
     {
-        for (const Point<T>& p : contour) {
+        for (const Point& p : contour) {
             xMin = std::min(xMin, p.x);
             yMin = std::min(yMin, p.y);
             xMax = std::max(xMax, p.x);
@@ -60,24 +61,22 @@ struct Rectangle
         }
     }
 
-    inline bool contains(Point<T> pt)
+    inline bool contains(const Point& pt) const
     {
         return ((pt.x >= xMin) && (pt.x <= xMax) && (pt.y >= yMin) && (pt.y <= yMax));
     }
 };
 
 // Represents mesh. It uses only primitive types due to interoperability.
-template <typename T>
 struct Mesh
 {
     std::string name;
-    std::vector<T> vertices;
+    std::vector<double> vertices;
     std::vector<int> triangles;
     std::vector<int> colors;
 };
 
-template<typename T>
-using Contour = std::vector<utymap::meshing::Point<T>>;
+using Contour = std::vector<utymap::meshing::Point>;
 
 }}
 

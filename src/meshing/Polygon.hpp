@@ -8,12 +8,11 @@
 namespace utymap { namespace meshing {
 
 // Represents polygon in 2D space
-template <typename T>
 class Polygon
 {
 public:
-    std::vector<T> points;
-    std::vector<T> holes;
+    std::vector<double> points;
+    std::vector<double> holes;
     std::vector<int> segments;
 
     Polygon(size_t numberOfPoints, size_t numberOfHoles)
@@ -24,23 +23,23 @@ public:
     }
 
     // adds outer poings.
-    void addContour(const std::vector<Point<T>>& points)
+    void addContour(const std::vector<Point>& points)
     {
         addContour(points, false);
     }
 
     // adds hole
-    void addHole(const std::vector<Point<T>>& points)
+    void addHole(const std::vector<Point>& points)
     {
         addContour(points, true);
     }
 
 private:
 
-    void addContour(const std::vector<Point<T>>& contour, bool isHole)
+    void addContour(const std::vector<Point>& contour, bool isHole)
     {
         if (isHole) {
-            Point<T> pointInside;
+            Point pointInside;
             if (!findPointInPolygon(contour, pointInside)) {
                 // TODO log error
                 return;
@@ -55,7 +54,7 @@ private:
 
         int offset = segments.size() / 2;
         for (int i = 0; i < count; ++i) {
-            Point<T> point = contour[i];
+            Point point = contour[i];
             points.push_back(point.x);
             points.push_back(point.y);
             segments.push_back(offset + i);
@@ -64,20 +63,20 @@ private:
     }
 
     // tries to find point in polygon.
-    bool findPointInPolygon(const std::vector<Point<T>>& contour, Point<T>& point)
+    bool findPointInPolygon(const std::vector<Point>& contour, Point& point)
     {
-        Rectangle<T> bounds;
+        Rectangle bounds;
         bounds.expand(contour);
 
         int length = contour.size();
         int limit = 8;
 
-        Point<T> a, b; // Current edge.
+        Point a, b; // Current edge.
         double cx, cy; // Center of current edge.
         double dx, dy; // Direction perpendicular to edge.
 
         if (contour.size() == 3) {
-            point = Point<T>((contour[0].x + contour[1].x + contour[2].x) / 3,
+            point = Point((contour[0].x + contour[1].x + contour[2].x) / 3,
                 (contour[0].y + contour[1].y + contour[2].y) / 3);
             return true;
         }
@@ -114,7 +113,7 @@ private:
     }
 
     // checks whether point in polygon using ray casting algorithm
-    bool isPointInPolygon(Point<T>& point, const std::vector<Point<T>>& poly)
+    bool isPointInPolygon(Point& point, const std::vector<Point>& poly)
     {
         bool inside = false;
 

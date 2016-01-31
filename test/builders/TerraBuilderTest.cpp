@@ -25,9 +25,9 @@ const char* StyleSheetString =
 "canvas|z1 { ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red);}"
 "area|z1[natural=water] { builders:terrain; terrain-type:water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); }";
 
-typedef std::function<void(const Mesh<double>&)> MeshCallback;
+typedef std::function<void(const Mesh&)> MeshCallback;
 
-class TestElevationProvider : public ElevationProvider<double>
+class TestElevationProvider : public ElevationProvider
 {
 public:
     double getElevation(double x, double y) { return 0; }
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_SUITE(Terrain_TerraBuilder, Terrain_TerraBuilderFixture)
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {
     bool isCalled = false;
-    setCallback([&](const Mesh<double>& mesh) {
+    setCallback([&](const Mesh& mesh) {
         isCalled = true;
         BOOST_CHECK_GT(mesh.vertices.size(), 0);
         BOOST_CHECK_GT(mesh.triangles.size(), 0);

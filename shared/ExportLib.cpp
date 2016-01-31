@@ -30,7 +30,7 @@ static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
 static utymap::index::StringTable* stringTablePtr = nullptr;
 static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
-static utymap::heightmap::ElevationProvider<double>* eleProviderPtr = nullptr;
+static utymap::heightmap::ElevationProvider* eleProviderPtr = nullptr;
 
 const std::string InMemoryStorageKey = "InMemory";
 const std::string PersistentStorageKey = "OnDisk";
@@ -73,7 +73,7 @@ extern "C"
         geoStorePtr->registerStore(InMemoryStorageKey, *inMemoryStorePtr);
         geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
-        eleProviderPtr = new utymap::heightmap::FlatElevationProvider<double>();
+        eleProviderPtr = new utymap::heightmap::FlatElevationProvider();
         tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
 
         // register predefined element builders
@@ -126,7 +126,7 @@ extern "C"
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        tileLoaderPtr->loadTile(quadKey, [&meshCallback](const utymap::meshing::Mesh<double>& mesh) {
+        tileLoaderPtr->loadTile(quadKey, [&meshCallback](const utymap::meshing::Mesh& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
                 mesh.triangles.data(), mesh.triangles.size(),

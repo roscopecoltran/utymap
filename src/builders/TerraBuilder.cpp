@@ -45,15 +45,15 @@ struct MeshRegion
         }
     };
 
-    utymap::meshing::Contour<double> points;
-    std::vector<utymap::meshing::Contour<double>> holes;
+    utymap::meshing::Contour points;
+    std::vector<utymap::meshing::Contour> holes;
     Properties properties;
 };
 
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<std::string, MeshRegions> SurfaceMap;
-typedef std::vector<Point<double>> MeshPoints;
+typedef std::vector<Point> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl
 {
@@ -68,8 +68,8 @@ public:
 
     TerraBuilderImpl(utymap::index::StringTable& stringTable,
                      const utymap::mapcss::StyleProvider& styleProvider,
-                     ElevationProvider<double>& eleProvider,
-                     std::function<void(const Mesh<double>&)> callback) :
+                     ElevationProvider& eleProvider,
+                     std::function<void(const Mesh&)> callback) :
         stringTable_(stringTable),
         styleProvider_(styleProvider),
         meshBuilder_(eleProvider),
@@ -145,7 +145,7 @@ private:
         region.properties = createMeshRegionProperties(style);
         region.points.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates) {
-            region.points.push_back(Point<double>(c.longitude, c.latitude));
+            region.points.push_back(Point(c.longitude, c.latitude));
         }
         return std::move(region);
     }
@@ -167,7 +167,7 @@ private:
         for (const MeshRegion& region : regions) {
             Path p;
             p.reserve(region.points.size());
-            for (const Point<double> point : region.points) {
+            for (const Point point : region.points) {
                 p.push_back(IntPoint(point.x*Scale, point.y*Scale));
             }
             paths.push_back(p);
@@ -205,7 +205,7 @@ private:
     {
         bool hasHeightOffset = properties.heightOffset > 0;
         // TODO precalculate capacity somehow?
-        Polygon<double> polygon(256, 1);
+        Polygon polygon(256, 1);
         std::vector<MeshPoints> contours(hasHeightOffset ? 4 : 0);
 
         for (Path path : paths) {
@@ -253,10 +253,10 @@ private:
         // TODO
     }
 
-    void fillMesh(const MeshRegion::Properties& properties, Polygon<double>& polygon)
+    void fillMesh(const MeshRegion::Properties& properties, Polygon& polygon)
     {
         // TODO use valid area value
-        Mesh<double> regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
+        Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
             /* area=*/ 10,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
@@ -285,7 +285,7 @@ private:
 
         for (const MeshRegion& region : waters_) {
             Path p(region.points.size());
-            for (const Point<double> point : region.points) {
+            for (const Point point : region.points) {
                 p.push_back(IntPoint(point.x*Scale, point.y*Scale));
             }
             clipper_.AddPath(p, ptSubject, true);
@@ -383,11 +383,11 @@ private:
 
 const utymap::mapcss::StyleProvider& styleProvider_;
 utymap::index::StringTable& stringTable_;
-std::function<void(const Mesh<double>&)> callback_;
+std::function<void(const Mesh&)> callback_;
 
 Clipper clipper_;
 ClipperOffset offset_;
-LineGridSplitter<double> splitter_;
+LineGridSplitter splitter_;
 MeshBuilder meshBuilder_;
 QuadKey quadKey_;
 
@@ -396,7 +396,7 @@ SurfaceMap surfaces_;
 RoadMap carRoads_, walkRoads_;
 Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
 
-Mesh<double> mesh_;
+Mesh mesh_;
 };
 
 void TerraBuilder::visitNode(const utymap::entities::Node& node)
@@ -433,8 +433,8 @@ TerraBuilder::~TerraBuilder() { }
 
 TerraBuilder::TerraBuilder(utymap::index::StringTable& stringTable,
                            const utymap::mapcss::StyleProvider& styleProvider, 
-                           ElevationProvider<double>& eleProvider,
-                           std::function<void(const Mesh<double>&)> callback) :
+                           ElevationProvider& eleProvider,
+                           std::function<void(const Mesh&)> callback) :
 pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, styleProvider, eleProvider, callback)))
 {
 }

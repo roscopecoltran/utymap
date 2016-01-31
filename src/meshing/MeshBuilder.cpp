@@ -13,10 +13,10 @@ class MeshBuilder::MeshBuilderImpl
 {
 public:
 
-    MeshBuilderImpl(ElevationProvider<double>& eleProvider)
+    MeshBuilderImpl(ElevationProvider& eleProvider)
     : eleProvider_(eleProvider) { }
 
-    Mesh<double> build(Polygon<double>& polygon, const MeshBuilder::Options& options)
+    Mesh build(Polygon& polygon, const MeshBuilder::Options& options)
     {
         triangulateio in, mid, out;
 
@@ -52,7 +52,7 @@ public:
 
         ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
 
-        Mesh<double> mesh;
+        Mesh mesh;
         fillMesh(&out, options, mesh);
 
         free(in.pointmarkerlist);
@@ -73,9 +73,9 @@ public:
     }
 
 private:
-    ElevationProvider<double>& eleProvider_;
+    ElevationProvider& eleProvider_;
 
-    void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh<double>& mesh)
+    void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh& mesh)
     {
         mesh.vertices.reserve(io->numberofpoints * 3 / 2);
         mesh.triangles.reserve(io->numberoftriangles * 3);
@@ -105,14 +105,14 @@ private:
     }
 };
 
-MeshBuilder::MeshBuilder(ElevationProvider<double>& eleProvider) :
+MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
     pimpl_(std::unique_ptr<MeshBuilder::MeshBuilderImpl>(new MeshBuilder::MeshBuilderImpl(eleProvider)))
 {
 }
 
 MeshBuilder::~MeshBuilder() { }
 
-Mesh<double> utymap::meshing::MeshBuilder::build(Polygon<double>& polygon, const MeshBuilder::Options& options)
+Mesh utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options)
 {
     return pimpl_->build(polygon, options);
 }

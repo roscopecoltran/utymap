@@ -38,11 +38,11 @@ public:
     };
 
     // Creates builder with given elevation provider.
-    MeshBuilder(utymap::heightmap::ElevationProvider<double>& eleProvider);
+    MeshBuilder(utymap::heightmap::ElevationProvider& eleProvider);
     ~MeshBuilder();
 
     // Builds mesh from given 2D polygon
-    Mesh<double> build(Polygon<double>& polygon, const MeshBuilder::Options& options);
+    Mesh build(Polygon& polygon, const MeshBuilder::Options& options);
 
 private:
     class MeshBuilderImpl;

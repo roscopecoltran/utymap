@@ -5,7 +5,7 @@
 using namespace ClipperLib;
 using namespace utymap::meshing;
 
-typedef std::vector<Point<double>> DoublePoints;
+typedef std::vector<Point> DoublePoints;
 const double Precision = 0.1e-9;
 
 BOOST_AUTO_TEST_SUITE(Terrain_LineGridSplitter)
@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
 {
     IntPoint start(0, 0);
     IntPoint end(10, 0);
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     DoublePoints result;
 
     splitter.split(start, end, result);
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(GivenVertical_WhenSplitWithIntStep_CanSplit)
 {
     IntPoint start(0, 0);
     IntPoint end(0, 10);
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     DoublePoints result;
 
     splitter.split(start, end, result);
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
 {
     IntPoint start(0, 0);
     IntPoint end(-10, 10);
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     DoublePoints result;
 
     splitter.split(start, end, result);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 {
     int roundDigits = 1;
     double scale = 1;
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     IntPoint start(0, 0);
     IntPoint end(10, 10);
     DoublePoints result;
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 // These tests are for some bugs observed for real data
 BOOST_AUTO_TEST_CASE(GivenSpecificCase1_WhenSplit_CanSplit)
 {
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     splitter.setParams(1E8, 3); 
     IntPoint start(5286462881, -916628251);
     IntPoint end(5388136261, -968852454);
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(GivenSpecificCase1_WhenSplit_CanSplit)
 // These tests are for some bugs observed for real data
 BOOST_AUTO_TEST_CASE(GivenSpecificCase2_WhenSplit_CanSplit)
 {
-    LineGridSplitter<double> splitter;
+    LineGridSplitter splitter;
     splitter.setParams(1E7, 3);
     IntPoint start(-428193799, 626823300);
     IntPoint end(-411886999, 634824599);

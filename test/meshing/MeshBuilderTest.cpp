@@ -13,11 +13,11 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-typedef Point<double> DPoint;
+typedef Point DPoint;
 
 const ColorGradient colorGradient(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
 
-class TestElevationProvider: public ElevationProvider<double>
+class TestElevationProvider: public ElevationProvider
 {
 public:
     double getElevation(double x, double y) { return 0; }
@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_SUITE(Meshing_MeshBuilder, Meshing_MeshingFixture)
 
 BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
 {
-    Polygon<double> polygon(4, 0);
+    Polygon polygon(4, 0);
     polygon.addContour(std::vector<DPoint>
     {
         DPoint(0, 0),
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
         DPoint(0, 10)
     });
 
-    Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
+    Mesh mesh = builder.build(polygon, MeshBuilder::Options
     {
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
 
 BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
 {
-    Polygon<double> polygon(8, 1);
+    Polygon polygon(8, 1);
     polygon.addContour(std::vector<DPoint>
     {
         DPoint(0, 0),
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
         DPoint(3, 6)
     });
 
-    Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
+    Mesh mesh = builder.build(polygon, MeshBuilder::Options
     { 
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
 
 BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrectly)
 {
-    std::vector<Point<double>> contour;
-    LineGridSplitter<double> splitter;
+    std::vector<Point> contour;
+    LineGridSplitter splitter;
     int scale = 10;
     splitter.setParams(scale, 1);
     std::vector<IntPoint> inputPoints
@@ -110,10 +110,10 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
         splitter.split(start, end, contour);
     }
 
-    Polygon<double> polygon(contour.size(), 0);
+    Polygon polygon(contour.size(), 0);
     polygon.addContour(contour);
 
-    Mesh<double> mesh = builder.build(polygon, MeshBuilder::Options
+    Mesh mesh = builder.build(polygon, MeshBuilder::Options
     {
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,

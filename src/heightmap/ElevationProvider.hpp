@@ -4,11 +4,10 @@
 namespace utymap { namespace heightmap {
 
 // Provides the way to get elevation for given location.
-template <typename T>
 class ElevationProvider
 {
 public:
-    virtual T getElevation(T x, T y) = 0;
+    virtual double getElevation(double x, double y) = 0;
 
     virtual ~ElevationProvider() {}
 };

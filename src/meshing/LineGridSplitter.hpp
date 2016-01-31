@@ -13,10 +13,9 @@
 namespace utymap { namespace meshing {
 
 // Splits line to segments according to axis aligned grid.
-template<typename T>
 class LineGridSplitter
 {
-    typedef utymap::meshing::Point<T> TPoint;
+    typedef utymap::meshing::Point TPoint;
     typedef std::vector<TPoint> Points;
 
     typedef ClipperLib::cInt Int;
