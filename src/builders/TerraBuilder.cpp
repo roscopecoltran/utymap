@@ -201,35 +201,36 @@ private:
     }
 
     // populates mesh 
-    void populateMesh(const MeshRegion::Properties& properties, const Paths& paths)
+    void populateMesh(const MeshRegion::Properties& properties, Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
-        // TODO precalculate capacity somehow?
-        Polygon polygon(256, 1);
-        std::vector<MeshPoints> contours(hasHeightOffset ? 4 : 0);
+        //std::vector<MeshPoints> contours;
+        //contours.reserve(hasHeightOffset ? 4 : 0);
+
+        ClipperLib::SimplifyPolygons(paths);
 
         for (Path path : paths) {
             double area = ClipperLib::Area(path);
-
             // TODO skip small polygons to prevent triangulation issues?
             //if (std::abs(area / DoubleScale) < 0.0000001) continue;
+            bool isHole = area < 0;
 
             MeshPoints points = restorePoints(path);
-            if (area < 0)
+            Polygon polygon(points.size() * 2, isHole ? 1 : 0);
+            if (isHole)
                 polygon.addHole(points);
             else
                 polygon.addContour(points);
+            fillMesh(properties, polygon);
 
-            if (hasHeightOffset)
-                contours.push_back(points);
+            //if (hasHeightOffset)
+            //    contours.push_back(points);
         }
 
-        if (hasHeightOffset) {
-            std::reverse(contours.begin(), contours.end());
-            processHeightOffset(contours);
-        }
-
-        fillMesh(properties, polygon);
+        //if (hasHeightOffset) {
+        //    std::reverse(contours.begin(), contours.end());
+        //    processHeightOffset(contours);
+        //}
     }
 
     // restores mesh points from clipper points and injects new ones according to grid.
