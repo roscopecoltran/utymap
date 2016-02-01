@@ -105,10 +105,10 @@ public:
             }
 
             out << string_format(svg_path_format,
-                colorToHex(pi.si.brushClr),
+                colorToHex(pi.si.brushClr).c_str(),
                 (float)pi.si.brushClr.a / 255,
                 (pi.si.pft == ClipperLib::PolyFillType::pftEvenOdd ? "evenodd" : "nonzero"),
-                colorToHex(pi.si.penClr),
+                colorToHex(pi.si.penClr).c_str(),
                 (float)pi.si.penClr.a / 255,
                 pi.si.penWidth);
 
@@ -159,7 +159,7 @@ private:
             brushClr = utymap::mapcss::Color(0xfa, 0xeb, 0xd7, 0xff);
             penClr = utymap::mapcss::Color(0, 0, 0, 0xff);
             penWidth = 0.8;
-            showCoords = true;
+            showCoords = false;
         }
     };
 
@@ -169,7 +169,7 @@ private:
         StyleInfo si;
     };
 
-    std::string string_format(const std::string fmt, ...)
+    std::string string_format(const std::string& fmt, ...)
     {
         int size = ((int)fmt.size()) * 2 + 50;
         std::string str;
@@ -191,20 +191,20 @@ private:
 
     inline std::string colorToHex(const utymap::mapcss::Color& color)
     {
-        return string_format("#%0x%0x%0x%0x", color.a, color.r, color.g, color.b);
+        return string_format("#%0x%0x%0x", color.r, color.g, color.b);
     }
 
     StyleInfo style;
     std::vector<PolyInfo> polyInfoList;
-    const std::string svg_header = R"(<?xml version=\"1.0\" standalone=\"no\"?>\n)"
-                                   R"(<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n)"
-                                   R"(\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">\n\n)"
-                                   R"(<svg width=\"%dpx\" height=\"%dpx\" viewBox=\"0 0 %d %d\" )"
-                                   R"(version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n\n)";
+    const std::string svg_header = R"(<?xml version="1.0" standalone="no"?>)" "\n"
+                                   R"(<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN")" "\n"
+                                   R"("http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">)" "\n"
+                                   R"(<svg width="%dpx" height="%dpx" viewBox="0 0 %d %d" )"
+                                   R"(version="1.1" xmlns="http://www.w3.org/2000/svg">)" "\n\n";
 
-    const std::string svg_path_format = R"(\"\n style=\"fill:{0};)"
-                                        R"( fill-opacity:{1:f2}; fill-rule:{2}; stroke:{3};)"
-                                        R"( stroke-opacity:{4:f2}; stroke-width:{5:f2};\"/>\n\n)";
+    const std::string svg_path_format = R"(" style="fill:%s;)"
+                                        R"( fill-opacity:%.2f; fill-rule:%s; stroke:%s;)"
+                                        R"( stroke-opacity:%.2f; stroke-width:%.2f;"/>)" "\n\n";
 };
 
 }}
