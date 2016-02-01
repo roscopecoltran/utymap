@@ -8,6 +8,12 @@ namespace utymap { namespace mapcss {
 
 struct Color 
 {
+    unsigned char r, g, b, a;
+
+    Color() : r(0), g(0), b(0), a(0)
+    {
+    }
+
     Color(int r, int g, int b, int a) :
         r(std::max(0, std::min(r, 0xff))),
         g(std::max(0, std::min(g, 0xff))),
@@ -38,8 +44,6 @@ struct Color
     {
         return Color(r * f, g * f, b * f, a * f);
     }
-private:
-    unsigned char r, g, b, a;
 };
 
 }}

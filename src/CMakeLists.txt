@@ -48,6 +48,7 @@ set(HEADER_FILES
                 utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp
                 utils/NoiseUtils.hpp
+                utils/SvgBuilder.hpp
                 )
 
 add_library (UtyMap
