@@ -19,8 +19,8 @@ public:
 
     ColorGradient() {}
 
-    ColorGradient(GradientData& colors) :
-        colors_(std::move(colors))
+    ColorGradient(const GradientData& colors) :
+        colors_(colors)
     {
     }
 
@@ -42,10 +42,10 @@ public:
     }
 
 private:
-    
+
     // So far, use linear interpolation algorithm as the fastest.
-    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a, 
-                                             const utymap::mapcss::Color& b, 
+    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a,
+                                             const utymap::mapcss::Color& b,
                                              double r) const
     {
         return (1.0 - r) * a + r * b;
