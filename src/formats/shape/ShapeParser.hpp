@@ -150,7 +150,7 @@ private:
             coordinates.push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
 
-        visitor.visitWay(coordinates, tags, shape.panPartType[0] == SHPP_RING);
+        visitor.visitWay(coordinates, tags,coordinates[0] == coordinates[coordinates.size() - 1]);
     }
 
     inline void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor)
@@ -162,7 +162,7 @@ private:
             int startIndex = shape.panPartStart[partNum];
             if (partNum < shape.nParts && startIndex == i) {
                 members.push_back(PolygonMember());
-                // TODO check inner/outer?
+                // TODO check inner/outer? Check whether this flag is true for closed polygon only
                 members[partNum].isRing = shape.panPartType[partNum] == SHPP_RING;
                 coordinates = &members[partNum].coordinates;
                 int endIndex = partNum == shape.nParts - 1
