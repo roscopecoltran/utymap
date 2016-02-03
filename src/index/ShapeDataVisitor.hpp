@@ -54,9 +54,6 @@ struct ShapeDataVisitor
     void visitWay(utymap::formats::Coordinates& coordinates, utymap::formats::Tags& tags, bool isRing)
     {
         if (isRing) {
-            if (coordinates[0] == coordinates[coordinates.size() - 1]) {
-                coordinates.pop_back();
-            }
             utymap::entities::Area area;
             area.id = 0;
             area.coordinates = std::move(coordinates);
