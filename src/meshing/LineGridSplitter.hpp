@@ -50,11 +50,11 @@ public:
     {
     }
 
-    void setParams(uint64_t scale, double step)
+    void setParams(uint64_t scale, double step, double tolerance = 10)
     {
         scale_ = scale;
         step_ = step * scale;
-        tolerance_ = scale / 100000.;
+        tolerance_ = tolerance;
     }
 
     // Splits line to segments.

@@ -26,7 +26,8 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal positions
-const uint64_t DoubleScale = Scale * Scale;
+const double Tolerance = 10; // Tolerance for splitting algorithm
+const double AreaTolerance = 100; // Tolerance for meshing
 
 // Represents terrain region.
 struct MeshRegion
@@ -140,7 +141,7 @@ private:
         // TODO
         switch (levelOfDetails)
         {
-        case 1: splitter_.setParams(Scale, 3); break;
+        case 1: splitter_.setParams(Scale, 3, Tolerance); break;
         default: throw std::domain_error("Unknown LoD");
         };
     }
@@ -218,8 +219,9 @@ private:
 
         for (Path path : paths) {
             double area = ClipperLib::Area(path);
-            // TODO skip small polygons to prevent triangulation issues?
-            //if (std::abs(area / DoubleScale) < 0.0000001) continue;
+            if (std::abs(area) < AreaTolerance) 
+                continue;
+            
             bool isHole = area < 0;
 
             MeshPoints points = restorePoints(path);
