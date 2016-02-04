@@ -1,28 +1,19 @@
-canvas|z1-16 {
+canvas|z1 {
+    clip:true;
     material: main;   
     texture: background;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+    color: gradient(green);
 }
 
-area|z1[natural=water] {
-    builders: terrain;
-    terrain-type: water;
-    color-noise-freq: 0.1;
-    ele-noise-freq: 0.15;
-    color: gradient(#87cefa, #1e90ff);
-    texture: water;
-    surface-level: 1;
-    bottom-level: 3;
-}
-
-area|z1-16[featurecla=Coastline] {
+area|z1[featurecla=Country][scalerank=1],
+relation|z1[featurecla=Country][scalerank=1] {
+    clip:true;
     builders: terrain;
     terrain-type: surface;
-    builders: terrain;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
+    color: gradient(red);
     texture: background;
 }

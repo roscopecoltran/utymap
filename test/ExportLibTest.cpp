@@ -13,7 +13,7 @@ struct ExportLibFixture {
             BOOST_TEST_FAIL(message);
         });
         BOOST_TEST_MESSAGE("setup fixture");
-        ::addToInMemoryStore("g:\\__ASM\\_data\\test\\ne_110m_coastline", 1, 1, [](const char* msg) 
+        ::addToInMemoryStore(TEST_SHAPE_NE_110M_LAND, 1, 1, [](const char* msg)
         { 
             BOOST_CHECK(msg == nullptr);
         });
@@ -37,7 +37,9 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenTileLoad_ThenCallbacksAreCalled)
            const double* vertices, int vertexCount,
            const int* triangles, int triCount,
            const int* colors, int colorCount) {
-            // TODO basic checks
+            BOOST_CHECK_GT(vertexCount, 0);
+            BOOST_CHECK_GT(triCount, 0);
+            BOOST_CHECK_GT(colorCount, 0);
         },
         [](uint64_t id, const char* name,
             const char** tags, int size,
