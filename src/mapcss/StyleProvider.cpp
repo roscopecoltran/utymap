@@ -268,7 +268,7 @@ StyleProvider::~StyleProvider()
 
 bool utymap::mapcss::StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
 {
-    StyleBuilder builder = { pimpl_->filters, levelOfDetails };
+    StyleBuilder builder = { pimpl_->filters, levelOfDetails, true };
     element.accept(builder);
     return builder.canBuild();
 }
