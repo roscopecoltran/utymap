@@ -54,7 +54,6 @@ struct MeshRegion
 
 typedef std::vector<MeshRegion> MeshRegions;
 typedef std::unordered_map<int, MeshRegions> RoadMap;
-typedef std::map<std::string, MeshRegions> SurfaceMap;
 typedef std::vector<Point> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
@@ -103,8 +102,8 @@ public:
         std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
 
         if (type == SurfaceKey) {
-            surfaces_[region.properties.gradientKey].push_back(region);
-        } else  if (type == WaterKey) {
+            surfaces_.push_back(region);
+        } else if (type == WaterKey) {
             waters_.push_back(region);
         }
         else {
@@ -115,7 +114,7 @@ public:
     void visitRelation(const utymap::entities::Relation& relation)
     {
         for (const auto& element : relation.elements) {
-            // If there are no tags, then this element is result of clipping
+            // if there are no tags, then this element is result of clipping
             if (element->tags.size() == 0) 
                 element->tags = relation.tags;
             element->accept(*this);
@@ -341,24 +340,19 @@ private:
     // build surfaces layer
     void buildSurfaces()
     {
-        for (auto surfacePair : surfaces_) {
-            Paths paths = buildPaths(surfacePair.second);
-            clipper_.AddPaths(paths, ptSubject, true);
-            Paths surfacesUnion;
-            clipper_.Execute(ctUnion, surfacesUnion);
-            clipper_.Clear();
-
+        Paths paths = buildPaths(surfaces_);
+        for (auto i = 0; i < surfaces_.size(); ++i) {
             clipper_.AddPaths(carRoadShape_, ptClip, true);
             clipper_.AddPaths(walkRoadShape_, ptClip, true);
             clipper_.AddPaths(waterShape_, ptClip, true);
             clipper_.AddPaths(surfaceShape_, ptClip, true);
-            clipper_.AddPaths(surfacesUnion, ptSubject, true);
+            clipper_.AddPath(paths[i], ptSubject, true);
+
             Paths result;
             clipper_.Execute(ctDifference, result, pftPositive, pftPositive);
             clipper_.Clear();
 
-            // NOTE surfaces are merged by gradient key.
-            populateMesh(surfacePair.second[0].properties, result);
+            populateMesh(surfaces_[i].properties, result);
 
             surfaceShape_.insert(
                 surfaceShape_.end(),
@@ -406,7 +400,7 @@ MeshBuilder meshBuilder_;
 QuadKey quadKey_;
 
 MeshRegions waters_;
-SurfaceMap surfaces_;
+MeshRegions surfaces_;
 RoadMap carRoads_, walkRoads_;
 Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
 
