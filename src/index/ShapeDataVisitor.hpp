@@ -15,6 +15,7 @@
 #include "mapcss/StyleProvider.hpp"
 
 #include <cstdint>
+#include <memory>
 
 namespace utymap { namespace index {
 
@@ -73,8 +74,31 @@ struct ShapeDataVisitor
 
     void visitRelation(utymap::formats::PolygonMembers& members, utymap::formats::Tags& tags)
     {
-        // TODO
-        relations++;
+        utymap::entities::Relation relation;
+        relation.id = 0;
+        setTags(relation, tags);
+        for (const auto& member : members) {
+            if (member.coordinates.size() == 1) {
+                std::shared_ptr<utymap::entities::Node> node(new utymap::entities::Node());
+                node->id = 0;
+                node->coordinate = member.coordinates[0];
+                relation.elements.push_back(node);
+            }
+            else if (member.isRing) {
+                std::shared_ptr<utymap::entities::Area> area(new utymap::entities::Area());
+                area->id = 0;
+                area->coordinates = std::move(member.coordinates);
+                relation.elements.push_back(area);
+            }
+            else {
+                std::shared_ptr<utymap::entities::Way> way(new utymap::entities::Way());
+                way->id = 0;
+                way->coordinates = std::move(member.coordinates);
+                relation.elements.push_back(way);
+            }
+        }
+        if (elementStore_.store(relation, lodRange_, styleProvider_))
+            relations++;
     }
 
 private:
