@@ -2,11 +2,13 @@
 #include "Exceptions.hpp"
 #include "clipper/clipper.hpp"
 #include "builders/TerraBuilder.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/LineGridSplitter.hpp"
 #include "index/GeoUtils.hpp"
 #include "utils/MapCssUtils.hpp"
+#include "utils/SvgBuilder.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -55,7 +57,7 @@ typedef std::unordered_map<int, MeshRegions> RoadMap;
 typedef std::map<std::string, MeshRegions> SurfaceMap;
 typedef std::vector<Point> MeshPoints;
 
-class TerraBuilder::TerraBuilderImpl
+class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
     const std::string TypeKey = "terrain-type";
     const std::string ColorNoiseFreqKey = "color-noise-freq";
@@ -84,17 +86,17 @@ public:
         quadKey_ = quadKey;
     }
 
-    void addNode(const utymap::entities::Node& node)
+    void visitNode(const utymap::entities::Node& node)
     {
     }
 
-    void addWay(const utymap::entities::Way& way)
+    void visitWay(const utymap::entities::Way& way)
     {
         //carRoads_[width].push_back(carRoad);
         // walkRoads_[width].push_back(walkRoad);
     }
 
-    void addArea(const utymap::entities::Area& area)
+    void visitArea(const utymap::entities::Area& area)
     {
         Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
         MeshRegion region = createMeshRegion(style, area.coordinates);
@@ -110,8 +112,14 @@ public:
         }
     }
 
-    void addRelation(const utymap::entities::Relation& relation)
+    void visitRelation(const utymap::entities::Relation& relation)
     {
+        for (const auto& element : relation.elements) {
+            // If there are no tags, then this element is result of clipping
+            if (element->tags.size() == 0) 
+                element->tags = relation.tags;
+            element->accept(*this);
+        }
     }
 
     // builds tile mesh using data provided.
@@ -209,6 +217,8 @@ private:
         //contours.reserve(hasHeightOffset ? 4 : 0);
 
         ClipperLib::SimplifyPolygons(paths);
+
+        utymap::utils::SvgBuilder::saveToFile(paths, "original.png", 0.00001);
 
         for (Path path : paths) {
             double area = ClipperLib::Area(path);
@@ -405,22 +415,22 @@ Mesh mesh_;
 
 void TerraBuilder::visitNode(const utymap::entities::Node& node)
 {
-    pimpl_->addNode(node);
+    pimpl_->visitNode(node);
 }
 
 void TerraBuilder::visitWay(const utymap::entities::Way& way)
 {
-    pimpl_->addWay(way);
+    pimpl_->visitWay(way);
 }
 
 void TerraBuilder::visitArea(const utymap::entities::Area& area)
 {
-    pimpl_->addArea(area);
+    pimpl_->visitArea(area);
 }
 
 void TerraBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
-    pimpl_->addRelation(relation);
+    pimpl_->visitRelation(relation);
 }
 
 void TerraBuilder::prepare(const utymap::QuadKey& quadKey)
