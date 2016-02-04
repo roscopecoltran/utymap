@@ -17,7 +17,7 @@ struct Formats_ShapeDataVisitorFixture
     Formats_ShapeDataVisitorFixture() :
         shapeFile(TEST_SHAPE_LINE_FILE),
         stringTablePtr(new StringTable("")),
-        styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, "area|z1-16[test=Foo] { key:val; }"))
+        styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, "way|z1-16[test=Foo] { key:val; }"))
     {
         BOOST_TEST_MESSAGE("setup fixture");
         storePtr = new InMemoryElementStore(*stringTablePtr);
@@ -49,8 +49,8 @@ BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount
     parser.parse(shapeFile, visitor);
 
     BOOST_CHECK_EQUAL(0, visitor.nodes);
-    BOOST_CHECK_EQUAL(0, visitor.ways);
-    BOOST_CHECK_EQUAL(1, visitor.areas);
+    BOOST_CHECK_EQUAL(1, visitor.ways);
+    BOOST_CHECK_EQUAL(0, visitor.areas);
     BOOST_CHECK_EQUAL(0, visitor.relations);
 }
 

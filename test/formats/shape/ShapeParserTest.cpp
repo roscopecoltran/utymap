@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLineFile_WhenParse_ThenHasCorrectCoordinates)
     parser.parse(TEST_SHAPE_LINE_FILE, visitor);
 
     BOOST_CHECK_EQUAL(visitor.lastCoordinates.size(), 6);
-    BOOST_CHECK(visitor.isRing == true);
+    BOOST_CHECK(visitor.isRing == false);
     BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].latitude, -0.488351110417178, Precision);
     BOOST_CHECK_CLOSE(visitor.lastCoordinates[0].longitude, -1.42333489468323, Precision);
     BOOST_CHECK_CLOSE(visitor.lastCoordinates[5].latitude, -0.576696034914758, Precision);
