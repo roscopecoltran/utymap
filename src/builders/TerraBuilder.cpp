@@ -8,7 +8,6 @@
 #include "meshing/LineGridSplitter.hpp"
 #include "index/GeoUtils.hpp"
 #include "utils/MapCssUtils.hpp"
-#include "utils/SvgBuilder.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -216,8 +215,6 @@ private:
         //contours.reserve(hasHeightOffset ? 4 : 0);
 
         ClipperLib::SimplifyPolygons(paths);
-
-        utymap::utils::SvgBuilder::saveToFile(paths, "original.png", 0.00001);
 
         for (Path path : paths) {
             double area = ClipperLib::Area(path);
