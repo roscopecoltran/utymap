@@ -2,9 +2,10 @@ canvas|z1 {
     clip:true;
     material: main;   
     texture: background;
+    max-area: 10;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    color: gradient(green);
+    color: gradient(#72e4de);
 }
 
 area|z1[featurecla=Country][scalerank=1],
@@ -12,6 +13,7 @@ relation|z1[featurecla=Country][scalerank=1] {
     clip:true;
     builders: terrain;
     terrain-type: surface;
+    max-area: 10;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(red);

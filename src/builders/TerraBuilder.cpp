@@ -40,9 +40,10 @@ struct MeshRegion
         float eleNoiseFreq;
         float colorNoiseFreq;
         float heightOffset;
+        float maxArea;
 
         Properties() : gradientKey(), textureAtlas(), textureKey(),
-            eleNoiseFreq(0), colorNoiseFreq(0), heightOffset(0)
+            eleNoiseFreq(0), colorNoiseFreq(0), heightOffset(0), maxArea(0)
         {
         }
     };
@@ -64,6 +65,7 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
     const std::string GradientKey = "color";
     const std::string WaterKey = "water";
     const std::string SurfaceKey = "surface";
+    const std::string MaxArea = "max-area";
 
 public:
 
@@ -163,6 +165,7 @@ private:
         properties.eleNoiseFreq = utymap::utils::getFloat(EleNoiseFreqKey, stringTable_, style);
         properties.colorNoiseFreq = utymap::utils::getFloat(ColorNoiseFreqKey, stringTable_, style);
         properties.gradientKey = utymap::utils::getString(GradientKey, stringTable_, style);
+        properties.maxArea = utymap::utils::getFloat(MaxArea, stringTable_, style);
 
         return std::move(properties);
     }
@@ -228,8 +231,6 @@ private:
             bool isHole = area < 0;
 
             MeshPoints points = restorePoints(path);
-            auto size = points.size();
-
             if (isHole)
                 polygon.addHole(points);
             else
@@ -266,7 +267,7 @@ private:
         // TODO use valid area value
         Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
-            /* area=*/ 10,
+            /* area=*/ properties.maxArea,
             /* elevation noise frequency*/ properties.eleNoiseFreq,
             /* color noise frequency. */ properties.colorNoiseFreq,
             styleProvider_.getGradient(properties.gradientKey),
@@ -351,11 +352,9 @@ private:
 
             populateMesh(surfaces_[i].properties, result);
 
-            surfaceShape_.insert(
-                surfaceShape_.end(),
+            surfaceShape_.insert(surfaceShape_.end(),
                 std::make_move_iterator(result.begin()),
-                std::make_move_iterator(result.end())
-                );
+                std::make_move_iterator(result.end()));
         }
     }
 
