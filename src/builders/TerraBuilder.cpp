@@ -208,16 +208,19 @@ private:
         return std::move(resultRoads);
     }
 
-    // populates mesh 
     void populateMesh(const MeshRegion::Properties& properties, Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
-        //std::vector<MeshPoints> contours;
-        //contours.reserve(hasHeightOffset ? 4 : 0);
-
         ClipperLib::SimplifyPolygons(paths);
 
-        for (Path path : paths) {
+        // calculate approximate size of overall points
+        auto size = 0;
+        for (auto i = 0; i < paths.size(); ++i) {
+            size += paths[i].size() * 1.5;
+        }
+
+        Polygon polygon(size);
+        for (const Path& path : paths) {
             double area = ClipperLib::Area(path);
             if (std::abs(area) < AreaTolerance) 
                 continue;
@@ -225,21 +228,16 @@ private:
             bool isHole = area < 0;
 
             MeshPoints points = restorePoints(path);
-            Polygon polygon(points.size() * 2, isHole ? 1 : 0);
+            auto size = points.size();
+
             if (isHole)
                 polygon.addHole(points);
             else
                 polygon.addContour(points);
-            fillMesh(properties, polygon);
-
-            //if (hasHeightOffset)
-            //    contours.push_back(points);
         }
 
-        //if (hasHeightOffset) {
-        //    std::reverse(contours.begin(), contours.end());
-        //    processHeightOffset(contours);
-        //}
+        if (polygon.points.size() > 0)
+            fillMesh(properties, polygon);
     }
 
     // restores mesh points from clipper points and injects new ones according to grid.

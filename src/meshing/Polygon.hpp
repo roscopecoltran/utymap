@@ -15,7 +15,7 @@ public:
     std::vector<double> holes;
     std::vector<int> segments;
 
-    Polygon(size_t numberOfPoints, size_t numberOfHoles)
+    Polygon(size_t numberOfPoints, size_t numberOfHoles = 1)
     {
         points.reserve(numberOfPoints * 2);
         holes.reserve(numberOfHoles * 2);
