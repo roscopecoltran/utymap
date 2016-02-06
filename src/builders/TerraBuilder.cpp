@@ -54,7 +54,7 @@ struct MeshRegion
 };
 
 typedef std::vector<MeshRegion> MeshRegions;
-typedef std::unordered_map<int, MeshRegions> RoadMap;
+typedef std::unordered_map<std::string, MeshRegions> OffsetWayMap;
 typedef std::vector<Point> MeshPoints;
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
@@ -65,7 +65,8 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
     const std::string GradientKey = "color";
     const std::string WaterKey = "water";
     const std::string SurfaceKey = "surface";
-    const std::string MaxArea = "max-area";
+    const std::string MaxAreaKey = "max-area";
+    const std::string WidthKey = "width";
 
 public:
 
@@ -93,8 +94,15 @@ public:
 
     void visitWay(const utymap::entities::Way& way)
     {
-        //carRoads_[width].push_back(carRoad);
-        // walkRoads_[width].push_back(walkRoad);
+        Style style = styleProvider_.forElement(way, quadKey_.levelOfDetail);
+        MeshRegion region = createMeshRegion(style, way.coordinates);
+        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
+        // use string as key to prevent float point issues.
+        std::string widthKey = style.get(stringTable_.getId(WidthKey));
+
+        if (type == WaterKey) {
+            rivers_[widthKey].push_back(region);
+        }
     }
 
     void visitArea(const utymap::entities::Area& area)
@@ -165,7 +173,7 @@ private:
         properties.eleNoiseFreq = utymap::utils::getFloat(EleNoiseFreqKey, stringTable_, style);
         properties.colorNoiseFreq = utymap::utils::getFloat(ColorNoiseFreqKey, stringTable_, style);
         properties.gradientKey = utymap::utils::getString(GradientKey, stringTable_, style);
-        properties.maxArea = utymap::utils::getFloat(MaxArea, stringTable_, style);
+        properties.maxArea = utymap::utils::getFloat(MaxAreaKey, stringTable_, style);
 
         return std::move(properties);
     }
@@ -186,18 +194,20 @@ private:
         return std::move(paths);
     }
 
-    Paths buildOffsetSolution(const RoadMap& roads)
+    Paths buildOffsetSolution(const OffsetWayMap& offsetWays)
     {
-        for (auto r : roads) {
+        for (const auto& way : offsetWays) {
             Paths offsetSolution;
-            offset_.AddPaths(buildPaths(r.second), jtMiter, etOpenSquare);
-            offset_.Execute(offsetSolution, r.first);
-            clipper_.AddPaths(offsetSolution, ptSubject, true);
+            offset_.AddPaths(buildPaths(way.second), jtMiter, etOpenSquare);
+            offset_.Execute(offsetSolution, std::stof(way.first) * Scale);
             offset_.Clear();
+            clipper_.AddPaths(offsetSolution, ptSubject, true);
         }
+
         Paths polySolution;
         clipper_.Execute(ctUnion, polySolution, pftPositive, pftPositive);
         clipper_.Clear();
+
         return std::move(polySolution);
     }
 
@@ -292,8 +302,6 @@ private:
     // build water layer
     void buildWater()
     {
-        if (waters_.size() == 0) return;
-
         for (const MeshRegion& region : waters_) {
             Path p(region.points.size());
             for (const Point point : region.points) {
@@ -301,20 +309,29 @@ private:
             }
             clipper_.AddPath(p, ptSubject, true);
         }
+        waters_.clear();
+
+        Paths rivers = buildOffsetSolution(rivers_);
+        rivers_.clear();
+        clipper_.AddPaths(rivers, ptSubject, true);
 
         Paths solution;
         clipper_.Execute(ctUnion, solution);
         clipper_.Clear();
         waterShape_ = std::move(solution);
 
-        // NOTE we use properties of first region for all water regions
-        populateMesh(waters_[0].properties, waterShape_);
+        if (waters_.size() == 0 && rivers_.size() == 0) 
+            return;
+
+        // TODO define these properties on canvas
+        auto properties = waters_.size() != 0 ? waters_[0].properties : rivers_.begin()->second[0].properties;
+
+        populateMesh(properties, waterShape_);
     }
 
     // build road layer
     void buildRoads()
     {
-        ClipperOffset offset;
         Paths carRoadPaths = buildOffsetSolution(carRoads_);
         Paths walkRoadsPaths = buildOffsetSolution(walkRoads_);
 
@@ -397,7 +414,7 @@ QuadKey quadKey_;
 
 MeshRegions waters_;
 MeshRegions surfaces_;
-RoadMap carRoads_, walkRoads_;
+OffsetWayMap carRoads_, walkRoads_, rivers_;
 Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
 
 Mesh mesh_;

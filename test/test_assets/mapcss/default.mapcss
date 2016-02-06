@@ -14,7 +14,7 @@ relation|z1[featurecla=River][scalerank=2] {
     builders: terrain;
     terrain-type: water;
     max-area: 5;
-    width: 0.5;
+    width: 0.2;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(blue);
