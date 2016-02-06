@@ -65,7 +65,7 @@ struct ShapeDataVisitor
         else {
             utymap::entities::Way way;
             way.id = 0;
-            way.coordinates = std::move(coordinates);;
+            way.coordinates = std::move(coordinates);
             setTags(way, tags);
             if (elementStore_.store(way, lodRange_, styleProvider_))
                 ways++;
