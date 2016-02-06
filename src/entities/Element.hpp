@@ -20,6 +20,8 @@ struct Tag
     uint32_t value;
 
     Tag(uint32_t key, uint32_t value) : key(key), value(value) { }
+
+    bool operator<(const Tag& a) const { return key < a.key; }
 };
 
 // Represents element stored in index.
