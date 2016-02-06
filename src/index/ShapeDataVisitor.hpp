@@ -14,6 +14,7 @@
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 
@@ -115,6 +116,8 @@ private:
             element.tags.push_back(utymap::entities::Tag(key, value));
         }
         stringTable_.flush();
+        // NOTE: tags should be sorted to speed up mapcss styling
+        std::sort(element.tags.begin(), element.tags.end());
     }
 };
 
