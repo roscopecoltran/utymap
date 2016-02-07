@@ -13,3 +13,4 @@
 #define TEST_SHAPE_NE_110M TEST_ASSETS_PATH "shape/ne_110m/"
 #define TEST_SHAPE_NE_110M_LAND TEST_SHAPE_NE_110M "ne_110m_land"
 #define TEST_SHAPE_NE_110M_RIVERS TEST_SHAPE_NE_110M "ne_110m_rivers_lake_centerlines"
+#define TEST_SHAPE_NE_110M_LAKES TEST_SHAPE_NE_110M "ne_110m_lakes"
