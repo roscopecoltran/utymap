@@ -29,45 +29,72 @@ const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal position
 const double Tolerance = 10; // Tolerance for splitting algorithm
 const double AreaTolerance = 100; // Tolerance for meshing
 
-// Represents terrain region.
-struct MeshRegion
+// Properties of region
+struct RegionProperties
 {
-    struct Properties
+    std::string gradientKey;
+    float eleNoiseFreq;
+    float colorNoiseFreq;
+    float maxArea;
+
+    float heightOffset;
+
+    RegionProperties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
+        heightOffset(0), maxArea(0)
     {
-        std::string gradientKey;
-        std::string textureAtlas;
-        std::string textureKey;
-        float eleNoiseFreq;
-        float colorNoiseFreq;
-        float heightOffset;
-        float maxArea;
-
-        Properties() : gradientKey(), textureAtlas(), textureKey(),
-            eleNoiseFreq(0), colorNoiseFreq(0), heightOffset(0), maxArea(0)
-        {
-        }
-    };
-
-    utymap::meshing::Contour points;
-    std::vector<utymap::meshing::Contour> holes;
-    Properties properties;
+    }
 };
 
-typedef std::vector<MeshRegion> MeshRegions;
-typedef std::unordered_map<std::string, MeshRegions> OffsetWayMap;
-typedef std::vector<Point> MeshPoints;
+// Represents terrain region.
+struct Region
+{
+    utymap::meshing::Contour points;
+    std::vector<utymap::meshing::Contour> holes;
+    RegionProperties properties;
+};
+
+typedef std::vector<Region> Regions;
+typedef std::vector<Point> Points;
+typedef std::unordered_map<std::string, Regions> OffsetWayMap;
+
+// mapcss specific keys
+const static std::string TypeKey = "terrain-type";
+
+const static std::string ColorNoiseFreqKey = "color-noise-freq";
+const static std::string EleNoiseFreqKey = "ele-noise-freq";
+const static std::string GradientKey= "color";
+const static std::string MaxAreaKey = "max-area";
+
+const static std::string BackgroundPrefix = "bg-";
+const static std::string BackgroundColorNoiseFreqKey = BackgroundPrefix + ColorNoiseFreqKey;
+const static std::string BackgroundEleNoiseFreqKey = BackgroundPrefix + EleNoiseFreqKey;
+const static std::string BackgroundGradientKey = BackgroundPrefix + GradientKey;
+const static std::string BackgroundMaxAreaKey = BackgroundPrefix + MaxAreaKey;
+
+const static std::string WaterPrefix = "water-";
+const static std::string WaterColorNoiseFreqKey = WaterPrefix + ColorNoiseFreqKey;
+const static std::string WaterEleNoiseFreqKey = WaterPrefix + EleNoiseFreqKey;
+const static std::string WaterGradientKey = WaterPrefix + GradientKey;
+const static std::string WaterMaxAreaKey = WaterPrefix + MaxAreaKey;
+
+const static std::string CarPrefix = "car-";
+const static std::string CarColorNoiseFreqKey = CarPrefix + ColorNoiseFreqKey;
+const static std::string CarEleNoiseFreqKey = CarPrefix + EleNoiseFreqKey;
+const static std::string CarGradientKey = CarPrefix + GradientKey;
+const static std::string CarMaxAreaKey = CarPrefix + MaxAreaKey;
+
+const static std::string WalkPrefix = "walk-";
+const static std::string WalkColorNoiseFreqKey = WalkPrefix + ColorNoiseFreqKey;
+const static std::string WalkEleNoiseFreqKey = WalkPrefix + EleNoiseFreqKey;
+const static std::string WalkGradientKey = WalkPrefix + GradientKey;
+const static std::string WalkMaxAreaKey = WalkPrefix + MaxAreaKey;
+
+const static std::string WaterKey = "water";
+const static std::string SurfaceKey = "surface";
+const static std::string WidthKey = "width";
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
-    const std::string TypeKey = "terrain-type";
-    const std::string ColorNoiseFreqKey = "color-noise-freq";
-    const std::string EleNoiseFreqKey = "ele-noise-freq";
-    const std::string GradientKey = "color";
-    const std::string WaterKey = "water";
-    const std::string SurfaceKey = "surface";
-    const std::string MaxAreaKey = "max-area";
-    const std::string WidthKey = "width";
-
 public:
 
     TerraBuilderImpl(utymap::index::StringTable& stringTable,
@@ -95,7 +122,7 @@ public:
     void visitWay(const utymap::entities::Way& way)
     {
         Style style = styleProvider_.forElement(way, quadKey_.levelOfDetail);
-        MeshRegion region = createMeshRegion(style, way.coordinates);
+        Region region = createRegion(style, way.coordinates);
         std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
         // use string as key to prevent float point issues.
         std::string widthKey = style.get(stringTable_.getId(WidthKey));
@@ -108,10 +135,12 @@ public:
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
-        MeshRegion region = createMeshRegion(style, area.coordinates);
+        Region region = createRegion(style, area.coordinates);
         std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
 
         if (type == SurfaceKey) {
+            region.properties = createRegionProperties(style, EleNoiseFreqKey, 
+                ColorNoiseFreqKey, GradientKey, MaxAreaKey);
             surfaces_.push_back(region);
         } else if (type == WaterKey) {
             waters_.push_back(region);
@@ -136,6 +165,8 @@ public:
     {
         configureSplitter(quadKey_.levelOfDetail);
 
+        canvasStyle_ = styleProvider_.forCanvas(quadKey_.levelOfDetail);
+
         // fill context with layer specific data.
         buildWater();
         buildRoads();
@@ -156,10 +187,14 @@ private:
         };
     }
 
-    MeshRegion createMeshRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
+    void createCanvasProperties()
     {
-        MeshRegion region;
-        region.properties = createMeshRegionProperties(style);
+        auto style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
+    }
+
+    Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
+    {
+        Region region;
         region.points.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates) {
             region.points.push_back(Point(c.longitude, c.latitude));
@@ -167,23 +202,24 @@ private:
         return std::move(region);
     }
 
-    MeshRegion::Properties createMeshRegionProperties(const Style& style)
+    RegionProperties createRegionProperties(const Style& style, const std::string& eleNoiseFreqKey,
+        const std::string& colorNoiseFreqKey, const std::string& gradientKey, const std::string& maxAreaKey)
     {
-        MeshRegion::Properties properties;
-        properties.eleNoiseFreq = utymap::utils::getFloat(EleNoiseFreqKey, stringTable_, style);
-        properties.colorNoiseFreq = utymap::utils::getFloat(ColorNoiseFreqKey, stringTable_, style);
-        properties.gradientKey = utymap::utils::getString(GradientKey, stringTable_, style);
-        properties.maxArea = utymap::utils::getFloat(MaxAreaKey, stringTable_, style);
+        RegionProperties properties;
+        properties.eleNoiseFreq = utymap::utils::getFloat(eleNoiseFreqKey, stringTable_, style);
+        properties.colorNoiseFreq = utymap::utils::getFloat(colorNoiseFreqKey, stringTable_, style);
+        properties.gradientKey = utymap::utils::getString(gradientKey, stringTable_, style);
+        properties.maxArea = utymap::utils::getFloat(maxAreaKey, stringTable_, style);
 
         return std::move(properties);
     }
 
-    Paths buildPaths(const MeshRegions& regions) 
+    Paths buildPaths(const Regions& regions) 
     {
         // TODO holes are not processed
         Paths paths;
         paths.reserve(regions.size());
-        for (const MeshRegion& region : regions) {
+        for (const Region& region : regions) {
             Path p;
             p.reserve(region.points.size());
             for (const Point point : region.points) {
@@ -221,7 +257,7 @@ private:
         return std::move(resultRoads);
     }
 
-    void populateMesh(const MeshRegion::Properties& properties, Paths& paths)
+    void populateMesh(const RegionProperties& properties, Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
         ClipperLib::SimplifyPolygons(paths);
@@ -240,7 +276,7 @@ private:
             
             bool isHole = area < 0;
 
-            MeshPoints points = restorePoints(path);
+            Points points = restorePoints(path);
             if (isHole)
                 polygon.addHole(points);
             else
@@ -252,10 +288,10 @@ private:
     }
 
     // restores mesh points from clipper points and injects new ones according to grid.
-    MeshPoints restorePoints(const Path& path)
+    Points restorePoints(const Path& path)
     {
         int lastItemIndex = path.size() - 1;
-        MeshPoints points;
+        Points points;
         points.reserve(path.size());
         for (int i = 0; i <= lastItemIndex; i++) {
             IntPoint start = path[i];
@@ -267,12 +303,12 @@ private:
         return std::move(points);
     }
 
-    void processHeightOffset(const std::vector<MeshPoints>& contours)
+    void processHeightOffset(const std::vector<Points>& contours)
     {
         // TODO
     }
 
-    void fillMesh(const MeshRegion::Properties& properties, Polygon& polygon)
+    void fillMesh(const RegionProperties& properties, Polygon& polygon)
     {
         // TODO use valid area value
         Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
@@ -302,7 +338,7 @@ private:
     // build water layer
     void buildWater()
     {
-        for (const MeshRegion& region : waters_) {
+        for (const Region& region : waters_) {
             Path p(region.points.size());
             for (const Point point : region.points) {
                 p.push_back(IntPoint(point.x*Scale, point.y*Scale));
@@ -323,8 +359,8 @@ private:
         if (waters_.size() == 0 && rivers_.size() == 0) 
             return;
 
-        // TODO define these properties on canvas
-        auto properties = waters_.size() != 0 ? waters_[0].properties : rivers_.begin()->second[0].properties;
+        auto properties = createRegionProperties(canvasStyle_, WaterEleNoiseFreqKey,
+            WaterColorNoiseFreqKey, WaterGradientKey, WaterMaxAreaKey);
 
         populateMesh(properties, waterShape_);
     }
@@ -344,12 +380,17 @@ private:
         carRoadShape_ = std::move(clipRoads(carRoadPaths));
         walkRoadShape_ = std::move(clipRoads(extrudedWalkRoads));
 
-        // NOTE we use properties of first region for road regions
-        if (carRoads_.size() > 0)
-            populateMesh(carRoads_.begin()->second[0].properties, carRoadShape_);
+        if (carRoads_.size() > 0) {
+            auto properties = createRegionProperties(canvasStyle_, CarEleNoiseFreqKey,
+                CarColorNoiseFreqKey, CarGradientKey, CarMaxAreaKey);
+            populateMesh(properties, carRoadShape_);
+        }
 
-        if (walkRoads_.size() > 0)
-            populateMesh(walkRoads_.begin()->second[0].properties, walkRoadShape_);
+        if (walkRoads_.size() > 0) {
+            auto properties = createRegionProperties(canvasStyle_, WalkEleNoiseFreqKey,
+                WalkColorNoiseFreqKey, WalkGradientKey, WalkMaxAreaKey);
+            populateMesh(properties, walkRoadShape_);
+        }
     }
 
     // build surfaces layer
@@ -397,8 +438,9 @@ private:
 
         if (backgroundShape_.size() > 0)
         {
-            auto style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
-            populateMesh(createMeshRegionProperties(style), backgroundShape_);
+            auto properties = createRegionProperties(canvasStyle_, BackgroundEleNoiseFreqKey, 
+                BackgroundColorNoiseFreqKey, BackgroundGradientKey, BackgroundMaxAreaKey);
+            populateMesh(properties, backgroundShape_);
         }
     }
 
@@ -412,8 +454,9 @@ LineGridSplitter splitter_;
 MeshBuilder meshBuilder_;
 QuadKey quadKey_;
 
-MeshRegions waters_;
-MeshRegions surfaces_;
+Style canvasStyle_;
+Regions waters_;
+Regions surfaces_;
 OffsetWayMap carRoads_, walkRoads_, rivers_;
 Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
 

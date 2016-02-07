@@ -2,22 +2,26 @@ canvas|z1 {
     clip:true;
     builders: terrain;
     terrain-type: water;
-    max-area: 5;
-    color-noise-freq: 0.1;
-    ele-noise-freq: 0.05;
-    color: gradient(#72e4de);
+    
+    bg-max-area: 5;
+    bg-color-noise-freq: 0.1;
+    bg-ele-noise-freq: 0.05;
+    bg-color: gradient(#72e4de);
+    
+    water-max-area: 5;
+    water-color-noise-freq: 0.1;
+    water-ele-noise-freq: 0.05;
+    water-color: gradient(blue);
 }
 
+way|z1[featurecla=River][scalerank=1],
 way|z1[featurecla=River][scalerank=2],
+relation|z1[featurecla=River][scalerank=1],
 relation|z1[featurecla=River][scalerank=2] {
     clip:true;
     builders: terrain;
     terrain-type: water;
-    max-area: 5;
     width: 0.2;
-    color-noise-freq: 0.1;
-    ele-noise-freq: 0.05;
-    color: gradient(blue);
 }
 
 area|z1[featurecla=Country][scalerank=1],
