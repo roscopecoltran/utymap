@@ -37,7 +37,6 @@ struct RegionProperties
     float eleNoiseFreq;
     float colorNoiseFreq;
     float maxArea;
-
     float heightOffset;
 
     RegionProperties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
@@ -60,36 +59,36 @@ typedef std::unordered_map<std::string, Regions> OffsetWayMap;
 
 // mapcss specific keys
 const static std::string TypeKey = "terrain-type";
-
+// surfaces
 const static std::string ColorNoiseFreqKey = "color-noise-freq";
 const static std::string EleNoiseFreqKey = "ele-noise-freq";
 const static std::string GradientKey= "color";
 const static std::string MaxAreaKey = "max-area";
-
+// background layer
 const static std::string BackgroundPrefix = "bg-";
 const static std::string BackgroundColorNoiseFreqKey = BackgroundPrefix + ColorNoiseFreqKey;
 const static std::string BackgroundEleNoiseFreqKey = BackgroundPrefix + EleNoiseFreqKey;
 const static std::string BackgroundGradientKey = BackgroundPrefix + GradientKey;
 const static std::string BackgroundMaxAreaKey = BackgroundPrefix + MaxAreaKey;
-
+// water layer
 const static std::string WaterPrefix = "water-";
 const static std::string WaterColorNoiseFreqKey = WaterPrefix + ColorNoiseFreqKey;
 const static std::string WaterEleNoiseFreqKey = WaterPrefix + EleNoiseFreqKey;
 const static std::string WaterGradientKey = WaterPrefix + GradientKey;
 const static std::string WaterMaxAreaKey = WaterPrefix + MaxAreaKey;
-
+// car roads layer
 const static std::string CarPrefix = "car-";
 const static std::string CarColorNoiseFreqKey = CarPrefix + ColorNoiseFreqKey;
 const static std::string CarEleNoiseFreqKey = CarPrefix + EleNoiseFreqKey;
 const static std::string CarGradientKey = CarPrefix + GradientKey;
 const static std::string CarMaxAreaKey = CarPrefix + MaxAreaKey;
-
+// pedestrian roads layer
 const static std::string WalkPrefix = "walk-";
 const static std::string WalkColorNoiseFreqKey = WalkPrefix + ColorNoiseFreqKey;
 const static std::string WalkEleNoiseFreqKey = WalkPrefix + EleNoiseFreqKey;
 const static std::string WalkGradientKey = WalkPrefix + GradientKey;
 const static std::string WalkMaxAreaKey = WalkPrefix + MaxAreaKey;
-
+// other..
 const static std::string WaterKey = "water";
 const static std::string SurfaceKey = "surface";
 const static std::string WidthKey = "width";
@@ -181,14 +180,9 @@ private:
         // TODO
         switch (levelOfDetails)
         {
-        case 1: splitter_.setParams(Scale, 3, Tolerance); break;
-        default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
+            case 1: splitter_.setParams(Scale, 3, Tolerance); break;
+            default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
         };
-    }
-
-    void createCanvasProperties()
-    {
-        auto style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
     }
 
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -244,16 +238,6 @@ private:
         clipper_.Clear();
 
         return std::move(polySolution);
-    }
-
-    Paths clipRoads(const Paths& roads)
-    {
-        Paths resultRoads;
-        clipper_.AddPaths(waterShape_, ptClip, true);
-        clipper_.AddPaths(roads, ptSubject, true);
-        clipper_.Execute(ctDifference, resultRoads, pftPositive, pftPositive);
-        clipper_.Clear();
-        return std::move(resultRoads);
     }
 
     void populateMesh(const RegionProperties& properties, Paths& paths)
@@ -355,7 +339,7 @@ private:
         clipper_.Clear();
         waterShape_ = std::move(solution);
 
-        if (waters_.size() == 0 && rivers_.size() == 0) 
+        if (waterShape_.size() == 0)
             return;
 
         auto properties = createRegionProperties(canvasStyle_, WaterEleNoiseFreqKey,
@@ -392,7 +376,18 @@ private:
         }
     }
 
-    // build surfaces layer
+    // clips roads by water surface
+    Paths clipRoads(const Paths& roads)
+    {
+        Paths resultRoads;
+        clipper_.AddPaths(waterShape_, ptClip, true);
+        clipper_.AddPaths(roads, ptSubject, true);
+        clipper_.Execute(ctDifference, resultRoads, pftPositive, pftPositive);
+        clipper_.Clear();
+        return std::move(resultRoads);
+    }
+
+    // build surfaces
     void buildSurfaces()
     {
         Paths paths = buildPaths(surfaces_);

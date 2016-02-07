@@ -22,13 +22,11 @@ public:
         segments.reserve(numberOfPoints * 2);
     }
 
-    // adds outer poings.
-    void addContour(const std::vector<Point>& contour)
-    {
-        addContour(contour, false);
+    void addContour(const std::vector<Point>& contour) 
+    { 
+        addContour(contour, false); 
     }
 
-    // adds hole
     void addHole(const std::vector<Point>& hole)
     {
         addContour(hole, true);
