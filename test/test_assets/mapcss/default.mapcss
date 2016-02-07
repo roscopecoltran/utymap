@@ -11,7 +11,7 @@ canvas|z1 {
     water-max-area: 5;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
-    water-color: gradient(blue);
+    water-color: gradient(#72e4de);
 }
 
 way|z1[featurecla=River][scalerank=1],
@@ -21,7 +21,14 @@ relation|z1[featurecla=River][scalerank=2] {
     clip:true;
     builders: terrain;
     terrain-type: water;
-    width: 0.2;
+    width: 0.15;
+}
+
+area|z1[featurecla=Lake][scalerank=0],
+relation|z1[featurecla=Lake][scalerank=0] {
+    clip:true;
+    builders: terrain;
+    terrain-type: water;
 }
 
 area|z1[featurecla=Country][scalerank=1],
