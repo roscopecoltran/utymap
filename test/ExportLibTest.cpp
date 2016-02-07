@@ -13,10 +13,13 @@ struct ExportLibFixture {
             BOOST_TEST_FAIL(message);
         });
         BOOST_TEST_MESSAGE("setup fixture");
-        ::addToInMemoryStore(TEST_SHAPE_NE_110M_LAND, 1, 1, [](const char* msg)
-        { 
+        auto callback = [](const char* msg)
+        {
             BOOST_CHECK(msg == nullptr);
-        });
+        };
+
+        ::addToInMemoryStore(TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
+        ::addToInMemoryStore(TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
     }
 
     ~ExportLibFixture()
