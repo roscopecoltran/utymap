@@ -48,13 +48,13 @@ struct RegionProperties
 // Represents terrain region.
 struct Region
 {
-    utymap::meshing::Contour points;
-    std::vector<utymap::meshing::Contour> holes;
+    Path points;
+    Paths holes;
     RegionProperties properties;
 };
 
-typedef std::vector<Region> Regions;
 typedef std::vector<Point> Points;
+typedef std::vector<Region> Regions;
 typedef std::unordered_map<std::string, Regions> OffsetWayMap;
 
 // mapcss specific keys
@@ -190,7 +190,7 @@ private:
         Region region;
         region.points.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates) {
-            region.points.push_back(Point(c.longitude, c.latitude));
+            region.points.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
         }
         return std::move(region);
     }
@@ -206,28 +206,13 @@ private:
 
         return std::move(properties);
     }
-
-    Paths buildPaths(const Regions& regions) 
-    {
-        // TODO holes are not processed
-        Paths paths;
-        paths.reserve(regions.size());
-        for (const Region& region : regions) {
-            Path p;
-            p.reserve(region.points.size());
-            for (const Point point : region.points) {
-                p.push_back(IntPoint(point.x*Scale, point.y*Scale));
-            }
-            paths.push_back(p);
-        }
-        return std::move(paths);
-    }
-
     Paths buildOffsetSolution(const OffsetWayMap& offsetWays)
     {
         for (const auto& way : offsetWays) {
             Paths offsetSolution;
-            offset_.AddPaths(buildPaths(way.second), jtMiter, etOpenSquare);
+            for (const auto& region : way.second) {
+                offset_.AddPath(region.points, jtMiter, etOpenSquare);
+            }
             offset_.Execute(offsetSolution, std::stof(way.first) * Scale);
             offset_.Clear();
             clipper_.AddPaths(offsetSolution, ptSubject, true);
@@ -320,11 +305,7 @@ private:
     void buildWater()
     {
         for (const Region& region : waters_) {
-            Path p(region.points.size());
-            for (const Point point : region.points) {
-                p.push_back(IntPoint(point.x*Scale, point.y*Scale));
-            }
-            clipper_.AddPath(p, ptSubject, true);
+            clipper_.AddPath(region.points, ptSubject, true);
         }
         waters_.clear();
 
@@ -388,13 +369,12 @@ private:
     // build surfaces
     void buildSurfaces()
     {
-        Paths paths = buildPaths(surfaces_);
         for (auto i = 0; i < surfaces_.size(); ++i) {
             clipper_.AddPaths(carRoadShape_, ptClip, true);
             clipper_.AddPaths(walkRoadShape_, ptClip, true);
             clipper_.AddPaths(waterShape_, ptClip, true);
             clipper_.AddPaths(surfaceShape_, ptClip, true);
-            clipper_.AddPath(paths[i], ptSubject, true);
+            clipper_.AddPath(surfaces_[i].points, ptSubject, true);
 
             Paths result;
             clipper_.Execute(ctDifference, result, pftPositive, pftPositive);
