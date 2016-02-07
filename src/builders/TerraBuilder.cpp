@@ -7,6 +7,7 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/LineGridSplitter.hpp"
 #include "index/GeoUtils.hpp"
+#include "utils/CompatibilityUtils.hpp"
 #include "utils/MapCssUtils.hpp"
 
 #include <algorithm>
@@ -164,10 +165,8 @@ public:
     void build()
     {
         configureSplitter(quadKey_.levelOfDetail);
-
         canvasStyle_ = styleProvider_.forCanvas(quadKey_.levelOfDetail);
 
-        // fill context with layer specific data.
         buildWater();
         buildRoads();
         buildSurfaces();
@@ -183,7 +182,7 @@ private:
         switch (levelOfDetails)
         {
         case 1: splitter_.setParams(Scale, 3, Tolerance); break;
-        default: throw std::domain_error("Unknown LoD");
+        default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
         };
     }
 

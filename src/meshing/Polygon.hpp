@@ -23,15 +23,15 @@ public:
     }
 
     // adds outer poings.
-    void addContour(const std::vector<Point>& points)
+    void addContour(const std::vector<Point>& contour)
     {
-        addContour(points, false);
+        addContour(contour, false);
     }
 
     // adds hole
-    void addHole(const std::vector<Point>& points)
+    void addHole(const std::vector<Point>& hole)
     {
-        addContour(points, true);
+        addContour(hole, true);
     }
 
 private:
