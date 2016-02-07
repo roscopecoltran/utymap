@@ -254,13 +254,11 @@ private:
         Polygon polygon(size);
         for (const Path& path : paths) {
             double area = ClipperLib::Area(path);
-            if (std::abs(area) < AreaTolerance) 
-                continue;
-            
-            bool isHole = area < 0;
+
+            if (std::abs(area) < AreaTolerance) continue;
 
             Points points = restorePoints(path);
-            if (isHole)
+            if (area < 0)
                 polygon.addHole(points);
             else
                 polygon.addContour(points);
