@@ -48,8 +48,7 @@ struct RegionProperties
 // Represents terrain region.
 struct Region
 {
-    Path points;
-    Paths holes;
+    Paths points;
     RegionProperties properties;
 };
 
@@ -136,27 +135,48 @@ public:
     {
         Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
-        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
-
-        if (type == SurfaceKey) {
-            region.properties = createRegionProperties(style, EleNoiseFreqKey, 
-                ColorNoiseFreqKey, GradientKey, MaxAreaKey);
-            surfaces_.push_back(region);
-        } else if (type == WaterKey) {
-            waters_.push_back(region);
-        }
-        else {
-            throw utymap::MapCssException(std::string("Unknown terrain type: ") + type);
-        }
+        addRegion(region, style);
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
     {
+        Region region;
+        struct RelationVisitor : public ElementVisitor
+        {
+            const Relation& relation;
+            TerraBuilder::TerraBuilderImpl& builder;
+            Region& region;
+
+            RelationVisitor(TerraBuilder::TerraBuilderImpl& builder, const Relation& relation, Region& region) :
+                builder(builder), relation(relation), region(region) {}
+
+            void visitNode(const utymap::entities::Node& node) { node.accept(builder); }
+
+            void visitWay(const utymap::entities::Way& way) { way.accept(builder); }
+
+            void visitArea(const utymap::entities::Area& area) 
+            {
+                Path path;
+                path.reserve(area.coordinates.size());
+                for (const GeoCoordinate& c : area.coordinates) {
+                    path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
+                }
+                region.points.push_back(path);
+            }
+
+            void visitRelation(const utymap::entities::Relation& relation)  { relation.accept(builder); }
+        } visitor(*this, relation, region);
+
         for (const auto& element : relation.elements) {
             // if there are no tags, then this element is result of clipping
-            if (element->tags.size() == 0) 
+            if (element->tags.size() == 0)
                 element->tags = relation.tags;
-            element->accept(*this);
+            element->accept(visitor);
+        }
+
+        if (region.points.size() > 0) {
+            Style style = styleProvider_.forElement(relation, quadKey_.levelOfDetail);
+            addRegion(region, style);
         }
     }
 
@@ -188,11 +208,29 @@ private:
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
     {
         Region region;
-        region.points.reserve(coordinates.size());
+        Path path;
+        path.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates) {
-            region.points.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
+            path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
         }
+        region.points.push_back(path);
         return std::move(region);
+    }
+
+    void addRegion(Region& region, const Style& style)
+    {
+        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
+        if (type == SurfaceKey) {
+            region.properties = createRegionProperties(style, EleNoiseFreqKey,
+                ColorNoiseFreqKey, GradientKey, MaxAreaKey);
+            surfaces_.push_back(region);
+        }
+        else if (type == WaterKey) {
+            waters_.push_back(region);
+        }
+        else {
+            throw utymap::MapCssException(std::string("Unknown terrain type: ") + type);
+        }
     }
 
     RegionProperties createRegionProperties(const Style& style, const std::string& eleNoiseFreqKey,
@@ -211,7 +249,7 @@ private:
         for (const auto& way : offsetWays) {
             Paths offsetSolution;
             for (const auto& region : way.second) {
-                offset_.AddPath(region.points, jtMiter, etOpenSquare);
+                offset_.AddPaths(region.points, jtMiter, etOpenSquare);
             }
             offset_.Execute(offsetSolution, std::stof(way.first) * Scale);
             offset_.Clear();
@@ -305,7 +343,7 @@ private:
     void buildWater()
     {
         for (const Region& region : waters_) {
-            clipper_.AddPath(region.points, ptSubject, true);
+            clipper_.AddPaths(region.points, ptSubject, true);
         }
         waters_.clear();
 
@@ -374,7 +412,7 @@ private:
             clipper_.AddPaths(walkRoadShape_, ptClip, true);
             clipper_.AddPaths(waterShape_, ptClip, true);
             clipper_.AddPaths(surfaceShape_, ptClip, true);
-            clipper_.AddPath(surfaces_[i].points, ptSubject, true);
+            clipper_.AddPaths(surfaces_[i].points, ptSubject, true);
 
             Paths result;
             clipper_.Execute(ctDifference, result, pftPositive, pftPositive);
