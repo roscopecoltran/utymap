@@ -22,8 +22,9 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 const char* StyleSheetString =
-"canvas|z1 { ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red);}"
-"area|z1[natural=water] { builders:terrain; terrain-type:water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); }";
+"canvas|z1 { bg-ele-noise-freq: 0.05; bg-color-noise-freq: 0.1; bg-color:gradient(red); bg-max-area: 5;"
+            "water-ele-noise-freq: 0.05; water-color-noise-freq: 0.1; water-color:gradient(red);  water-max-area: 5;}"
+"area|z1[natural=water] { builders:terrain; terrain-type:water; }";
 
 typedef std::function<void(const Mesh&)> MeshCallback;
 
