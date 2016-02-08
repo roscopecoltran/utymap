@@ -7,10 +7,10 @@ set(HEADER_FILES
                 Exceptions.hpp
                 GeoCoordinate.hpp
                 QuadKey.hpp
-                TileLoader.hpp
                 builders/ElementBuilder.hpp
                 builders/ExternalBuilder.hpp
                 builders/TerraBuilder.hpp
+                builders/TileBuilder.hpp
                 entities/Element.hpp
                 entities/ElementVisitor.hpp
                 entities/Node.hpp
@@ -59,8 +59,8 @@ add_library (UtyMap
                 ${LIB_SOURCE}/shapefile/dbfopen.c
                 ${LIB_SOURCE}/shapefile/safileio.c
                 ${LIB_SOURCE}/shapefile/shpopen.c
-                TileLoader.cpp
                 builders/TerraBuilder.cpp
+                builders/TileBuilder.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 index/ElementStore.cpp

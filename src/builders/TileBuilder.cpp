@@ -1,6 +1,6 @@
 #include "Exceptions.hpp"
-#include "TileLoader.hpp"
 #include "builders/ElementBuilder.hpp"
+#include "builders/TileBuilder.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -23,7 +23,7 @@ using namespace utymap::meshing;
 
 const std::string BuilderKeyName = "builders";
 
-class TileLoader::TileLoaderImpl
+class TileBuilder::TileBuilderImpl
 {
 private:
 
@@ -105,7 +105,7 @@ private:
 
 public:
 
-    TileLoaderImpl(GeoStore& geoStore, const StyleProvider& styleProvider, std::uint32_t builderKeyId) :
+    TileBuilderImpl(GeoStore& geoStore, const StyleProvider& styleProvider, std::uint32_t builderKeyId) :
         geoStore_(geoStore),
         styleProvider_(styleProvider),
         builderKeyId_(builderKeyId)
@@ -117,7 +117,7 @@ public:
         builderFactory_[name] = factory;
     }
 
-    void loadTile(const QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
+    void build(const QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
     {
         AggregateElementBuilder elementVisitor(styleProvider_, builderFactory_, builderKeyId_, meshFunc, elementFunc);
         elementVisitor.prepare(quadKey);
@@ -133,21 +133,21 @@ private:
     BuilderFactoryMap builderFactory_;
 };
 
-void  TileLoader::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
+void  TileBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
 {
     pimpl_->registerElementBuilder(name, factory);
 }
 
-void TileLoader::loadTile(const QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc)
+void TileBuilder::build(const QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc)
 {
-    pimpl_->loadTile(quadKey, meshFunc, elementFunc);
+    pimpl_->build(quadKey, meshFunc, elementFunc);
 }
 
-TileLoader::TileLoader(GeoStore& geoStore, StringTable& stringTable, const StyleProvider& styleProvider) :
-    pimpl_(std::unique_ptr<TileLoader::TileLoaderImpl>(new TileLoader::TileLoaderImpl(geoStore, styleProvider, stringTable.getId(BuilderKeyName))))
+TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable, const StyleProvider& styleProvider) :
+    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, styleProvider, stringTable.getId(BuilderKeyName))))
 {
 }
 
-TileLoader::~TileLoader()
+TileBuilder::~TileBuilder()
 {
 }

@@ -5,10 +5,10 @@
 #endif
 
 #include "QuadKey.hpp"
-#include "TileLoader.hpp"
 #include "builders/ElementBuilder.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/TerraBuilder.hpp"
+#include "builders/TileBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -24,7 +24,7 @@
 #include <string>
 #include <fstream>
 
-static utymap::TileLoader* tileLoaderPtr = nullptr;
+static utymap::TileBuilder* tileLoaderPtr = nullptr;
 static utymap::index::GeoStore* geoStorePtr = nullptr;
 static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
@@ -74,11 +74,11 @@ extern "C"
         geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider();
-        tileLoaderPtr = new utymap::TileLoader(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
+        tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
 
         // register predefined element builders
-        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileLoader::MeshCallback& meshFunc,
-                                                             const utymap::TileLoader::ElementCallback& elementFunc) {
+        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileBuilder::MeshCallback& meshFunc,
+                                                             const utymap::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(
                 new utymap::builders::TerraBuilder(*stringTablePtr, *styleProviderPtr, *eleProviderPtr, meshFunc));
         });
@@ -87,8 +87,8 @@ extern "C"
     // Registers external element builder.
     void EXPORT_API registerElementBuilder(const char* name)
     {
-        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::TileLoader::MeshCallback& meshFunc,
-                                                        const utymap::TileLoader::ElementCallback& elementFunc) {
+        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::TileBuilder::MeshCallback& meshFunc,
+                                                        const utymap::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(elementFunc));
         });
     }
@@ -126,7 +126,7 @@ extern "C"
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        tileLoaderPtr->loadTile(quadKey, [&meshCallback](const utymap::meshing::Mesh& mesh) {
+        tileLoaderPtr->build(quadKey, [&meshCallback](const utymap::meshing::Mesh& mesh) {
             meshCallback(mesh.name.data(),
                 mesh.vertices.data(), mesh.vertices.size(),
                 mesh.triangles.data(), mesh.triangles.size(),
