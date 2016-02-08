@@ -25,7 +25,9 @@ relation|z1[featurecla=River][scalerank=2] {
 }
 
 area|z1[featurecla=Lake][scalerank=0],
-relation|z1[featurecla=Lake][scalerank=0] {
+relation|z1[featurecla=Lake][scalerank=0],
+area|z1[featurecla=Lake][scalerank=1],
+relation|z1[featurecla=Lake][scalerank=1] {
     clip:true;
     builders: terrain;
     terrain-type: water;
