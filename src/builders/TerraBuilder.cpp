@@ -266,7 +266,9 @@ private:
     void populateMesh(const RegionProperties& properties, Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
+
         ClipperLib::SimplifyPolygons(paths);
+        ClipperLib::CleanPolygons(backgroundShape_);
 
         // calculate approximate size of overall points
         auto size = 0;
