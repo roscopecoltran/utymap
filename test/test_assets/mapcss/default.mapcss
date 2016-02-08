@@ -24,6 +24,17 @@ relation|z1[featurecla=River][scalerank=2] {
     width: 0.15;
 }
 
+area|z2[featurecla=Adm-0 scale ranks],
+relation|z2[featurecla=Adm-0 scale ranks]{
+    clip:true;
+    builders: terrain;
+    terrain-type: surface;
+    max-area: 5;
+    color-noise-freq: 0.1;
+    ele-noise-freq: 0.05;
+    color: gradient(red);
+}
+
 area|z1[featurecla=Lake][scalerank=0],
 relation|z1[featurecla=Lake][scalerank=0],
 area|z1[featurecla=Lake][scalerank=1],
