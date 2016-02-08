@@ -169,12 +169,12 @@ public:
 
         for (const auto& element : relation.elements) {
             // if there are no tags, then this element is result of clipping
-            if (element->tags.size() == 0)
+            if (element->tags.empty())
                 element->tags = relation.tags;
             element->accept(visitor);
         }
 
-        if (region.points.size() > 0) {
+        if (!region.points.empty()) {
             Style style = styleProvider_.forElement(relation, quadKey_.levelOfDetail);
             addRegion(region, style);
         }
@@ -287,7 +287,7 @@ private:
                 polygon.addContour(points);
         }
 
-        if (polygon.points.size() > 0)
+        if (!polygon.points.empty())
             fillMesh(properties, polygon);
     }
 
@@ -356,7 +356,7 @@ private:
         clipper_.Clear();
         waterShape_ = std::move(solution);
 
-        if (waterShape_.size() == 0)
+        if (waterShape_.empty())
             return;
 
         auto properties = createRegionProperties(canvasStyle_, WaterEleNoiseFreqKey,
@@ -380,13 +380,13 @@ private:
         carRoadShape_ = std::move(clipRoads(carRoadPaths));
         walkRoadShape_ = std::move(clipRoads(extrudedWalkRoads));
 
-        if (carRoads_.size() > 0) {
+        if (!carRoads_.empty()) {
             auto properties = createRegionProperties(canvasStyle_, CarEleNoiseFreqKey,
                 CarColorNoiseFreqKey, CarGradientKey, CarMaxAreaKey);
             populateMesh(properties, carRoadShape_);
         }
 
-        if (walkRoads_.size() > 0) {
+        if (!walkRoads_.empty()) {
             auto properties = createRegionProperties(canvasStyle_, WalkEleNoiseFreqKey,
                 WalkColorNoiseFreqKey, WalkGradientKey, WalkMaxAreaKey);
             populateMesh(properties, walkRoadShape_);
@@ -446,7 +446,7 @@ private:
         clipper_.Execute(ctDifference, backgroundShape_, pftPositive, pftPositive);
         clipper_.Clear();
 
-        if (backgroundShape_.size() > 0)
+        if (!backgroundShape_.empty())
         {
             auto properties = createRegionProperties(canvasStyle_, BackgroundEleNoiseFreqKey, 
                 BackgroundColorNoiseFreqKey, BackgroundGradientKey, BackgroundMaxAreaKey);

@@ -24,7 +24,7 @@ public:
     // adds path to save.
     void addPaths(const ClipperLib::Paths& poly)
     {
-        if (poly.size() == 0)
+        if (poly.empty())
             return;
 
         PolyInfo pi;
