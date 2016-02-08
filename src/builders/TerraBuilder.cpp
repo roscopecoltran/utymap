@@ -413,7 +413,13 @@ private:
             clipper_.AddPaths(carRoadShape_, ptClip, true);
             clipper_.AddPaths(walkRoadShape_, ptClip, true);
             clipper_.AddPaths(waterShape_, ptClip, true);
-            clipper_.AddPaths(surfaceShape_, ptClip, true);
+
+            // NOTE the line below prevents polygons to be intersected and it has huge performance impact. 
+            // So far it is disabled as this case considered as invalid: input data should not contain such
+            // polygons. If it is not valid, then one possible solution is to modify clipper to avoid adding
+            // the same clipping polygons on each iteration.
+            //clipper_.AddPaths(surfaceShape_, ptClip, true);
+
             clipper_.AddPaths(surfaces_[i].points, ptSubject, true);
 
             Paths result;
