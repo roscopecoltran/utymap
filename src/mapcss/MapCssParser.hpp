@@ -9,7 +9,7 @@
 namespace utymap { namespace mapcss {
 
 // Provides the way to parse mapcss data into stylesheets object graph.
-class Parser
+class MapCssParser
 {
 public:
 

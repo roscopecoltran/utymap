@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules 
 BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasValidStyleSheet )
 {
     std::string str = "way|z1[highway]  { key1:value1; }\n";
-    Parser parser;
+    MapCssParser parser;
 
     StyleSheet stylesheet = parser.parse(str);
 
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
 BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
 {
     std::string str = "canvas|z1 { key1:value1; }\n";
-    Parser parser;
+    MapCssParser parser;
 
     StyleSheet stylesheet = parser.parse(str);
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
 BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoomStartAndEnd)
 {
     std::string str = "way|z1-12[highway]{key1:value1;}";
-    Parser parser;
+    MapCssParser parser;
 
     StyleSheet stylesheet = parser.parse(str);
 
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoo
 BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientValue)
 {
     std::string str = "way|z1-12[highway]{color:gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);}";
-    Parser parser;
+    MapCssParser parser;
 
     StyleSheet stylesheet = parser.parse(str);
 
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientVa
 BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentation)
 {
     std::string str = "way|z1-12[highway]{key1:value1;}";
-    Parser parser;
+    MapCssParser parser;
 
     StyleSheet stylesheet = parser.parse(str);
 

@@ -20,7 +20,7 @@ public:
                                                                       const std::string& filePath)
     {
         std::ifstream styleFile(filePath);
-        utymap::mapcss::Parser parser;
+        utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
         BOOST_TEST_CHECK(parser.getError().empty());
         return new utymap::mapcss::StyleProvider(stylesheet, stringTable);
@@ -29,7 +29,7 @@ public:
     static utymap::mapcss::StyleProvider* createStyleProviderFromString(utymap::index::StringTable& stringTable,
                                                                         const std::string& str)
     {
-        utymap::mapcss::Parser parser;
+        utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(str);
         BOOST_TEST_CHECK(parser.getError().empty());
         return new utymap::mapcss::StyleProvider(stylesheet, stringTable);

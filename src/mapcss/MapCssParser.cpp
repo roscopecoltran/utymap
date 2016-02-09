@@ -213,7 +213,7 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
 };
 
 template<typename Iterator>
-StyleSheet Parser::parse(Iterator begin, Iterator end)
+StyleSheet MapCssParser::parse(Iterator begin, Iterator end)
 {
     StyleSheetGrammar<Iterator> grammar;
     CommentSkipper<Iterator> skipper;
@@ -225,12 +225,12 @@ StyleSheet Parser::parse(Iterator begin, Iterator end)
     return std::move(stylesheet);
 }
 
-StyleSheet Parser::parse(const std::string& str)
+StyleSheet MapCssParser::parse(const std::string& str)
 {
     return parse(str.begin(), str.end());
 }
 
-StyleSheet Parser::parse(std::istream& istream)
+StyleSheet MapCssParser::parse(std::istream& istream)
 {
     // TODO from some reason, this approach will skip some spaces in declaration (e.g. gradient)
     //boost::spirit::istream_iterator begin(istream);
