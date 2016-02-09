@@ -185,13 +185,29 @@ struct RuleGrammar : qi::grammar < Iterator, Rule(), CommentSkipper<Iterator>>
 };
 
 template <typename Iterator>
+struct ImportGrammar : qi::grammar < Iterator, CommentSkipper<Iterator>>
+{
+    ImportGrammar(const std::string& directory) : ImportGrammar::base_type(start, "import"),
+        directory(directory)
+    {
+        start =
+            ascii::string("@import")
+        ;
+        start.name("import");
+    }
+    qi::rule<Iterator, CommentSkipper<Iterator>> start;
+    const std::string& directory;
+};
+
+template <typename Iterator>
 struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<Iterator>>
 {
-    StyleSheetGrammar() : StyleSheetGrammar::base_type(start, "stylesheet")
+    StyleSheetGrammar(const std::string& directory) : StyleSheetGrammar::base_type(start, "stylesheet"),
+        import(directory)
     {
         start =
             qi::eps
-            > +rule
+            > (+rule | +import)
         ;
 
         start.name("stylesheet");
@@ -210,12 +226,17 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
     std::stringstream error;
     qi::rule<Iterator, StyleSheet(), CommentSkipper<Iterator>> start;
     RuleGrammar<Iterator> rule;
+    ImportGrammar<Iterator> import;
 };
+
+MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)
+{
+}
 
 template<typename Iterator>
 StyleSheet MapCssParser::parse(Iterator begin, Iterator end)
 {
-    StyleSheetGrammar<Iterator> grammar;
+    StyleSheetGrammar<Iterator> grammar(directory_);
     CommentSkipper<Iterator> skipper;
     StyleSheet stylesheet;
 

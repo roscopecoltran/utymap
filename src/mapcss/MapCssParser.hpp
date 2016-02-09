@@ -13,10 +13,13 @@ class MapCssParser
 {
 public:
 
-    // Parses stylesheet from string.
-    StyleSheet parse(const std::string& str);
+    // Directory parameter specifies root path for import.
+    MapCssParser(const std::string& directory = "");
 
-    // Parses stylsheet from input stream (e.g. file).
+    // Parses stylesheet from string.
+    StyleSheet parse(const std::string& content);
+
+    // Parses stylsheet from input stream (e.g. file). 
     StyleSheet parse(std::istream& istream);
 
     // Returns last error if parse fails.
@@ -27,6 +30,7 @@ private:
     StyleSheet parse(Iterator begin, Iterator end);
 
     std::string error_;
+    std::string directory_;
 };
 
 }}

@@ -12,7 +12,8 @@ using namespace utymap::mapcss;
 typedef std::string::const_iterator StringIterator;
 
 struct MapCss_MapCssParserFixture {
-    MapCss_MapCssParserFixture()        { BOOST_TEST_MESSAGE("setup fixture"); }
+    MapCss_MapCssParserFixture() : styleSheetGrammar("")
+    { BOOST_TEST_MESSAGE("setup fixture"); }
     ~MapCss_MapCssParserFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
     // grammars
