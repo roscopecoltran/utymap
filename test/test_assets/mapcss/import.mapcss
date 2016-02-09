@@ -1,0 +1,4 @@
+canvas|z1 { import_file: root; }
+
+@import url("import/import1.mapcss")
+@import url("import/import2.mapcss")

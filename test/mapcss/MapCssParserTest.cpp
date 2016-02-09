@@ -1,9 +1,11 @@
+#include "config.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/MapCssParser.cpp"
 #include "utils/CoreUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
+#include <fstream>
 #include <string>
 #include <memory>
 
@@ -274,6 +276,16 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentatio
     BOOST_CHECK(parser.getError().empty());
     BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
     BOOST_CHECK_EQUAL(str, utymap::utils::toString(stylesheet.rules[0]));
+}
+
+BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
+{
+    std::ifstream styleFile(TEST_MAPCSS_PATH "import.mapcss");
+    MapCssParser parser(TEST_MAPCSS_PATH "import");
+
+    StyleSheet stylesheet = parser.parse(styleFile);
+
+    BOOST_CHECK_EQUAL(4, stylesheet.rules.size());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
