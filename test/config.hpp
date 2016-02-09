@@ -1,6 +1,7 @@
 #define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
 
-#define TEST_MAPCSS_DEFAULT TEST_ASSETS_PATH "mapcss/default.mapcss"
+#define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
+#define TEST_MAPCSS_DEFAULT TEST_MAPCSS_PATH "default.mapcss"
 
 #define TEST_PBF_FILE TEST_ASSETS_PATH "osm/berlin.osm.pbf"
 #define TEST_XML_FILE TEST_ASSETS_PATH "osm/berlin.osm.xml"
