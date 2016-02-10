@@ -23,9 +23,6 @@ public:
     StyleSheet parse(std::istream& istream);
 
 private:
-    template<typename Iterator>
-    StyleSheet parse(Iterator begin, Iterator end);
-
     std::string directory_;
 };
 

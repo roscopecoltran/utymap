@@ -2,6 +2,7 @@
 #include "mapcss/MapCssParser.hpp"
 #include "Exceptions.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
@@ -11,6 +12,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 
 #include <cstdint>
+#include <fstream>
 #include <streambuf>
 #include <vector>
 
@@ -56,6 +58,9 @@ BOOST_FUSION_ADAPT_STRUCT(
     StyleSheet,
     (std::vector<Rule>, rules)
 )
+
+template<typename Iterator>
+void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet);
 
 template <typename Iterator>
 struct CommentSkipper : public qi::grammar<Iterator>
@@ -188,23 +193,41 @@ struct RuleGrammar : qi::grammar < Iterator, Rule(), CommentSkipper<Iterator>>
 template <typename Iterator>
 struct ImportGrammar : qi::grammar < Iterator, CommentSkipper<Iterator>>
 {
-    ImportGrammar(const std::string& directory) : ImportGrammar::base_type(start, "import"),
-        directory(directory)
+    ImportGrammar(const std::string& directory, StyleSheet& stylesheet) : ImportGrammar::base_type(start, "import"),
+        directory(directory), stylesheet(stylesheet)
     {
         start =
-            ascii::string("@import")
+            ascii::string("@import url(\"") >
+            qi::as_string[qi::lexeme[+(ascii::char_ - (qi::lit('"')))]]
+              [boost::bind(&ImportGrammar::readImport, this, _1)]
+            > "\");"
         ;
         start.name("import");
     }
+
+private:
+
+    void readImport(const std::string& url)
+    {
+        std::ifstream importFile(directory + url);
+        std::string content((std::istreambuf_iterator<char>(importFile)), std::istreambuf_iterator<char>());
+        // NOTE indirected recursion: caller must ensure that there is no recursive import.
+        ::parse(directory, content.begin(), content.end(), stylesheet);
+    }
+
     qi::rule<Iterator, CommentSkipper<Iterator>> start;
-    const std::string& directory;
+    const std::string directory;
+    StyleSheet& stylesheet;
 };
 
 template <typename Iterator>
 struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<Iterator>>
 {
-    StyleSheetGrammar(const std::string& directory) : StyleSheetGrammar::base_type(start, "stylesheet"),
-        import(directory)
+    // NOTE stylesheet is passed here only because of import grammar: I simply don't know
+    // how to get stylesheet instance from attributes or context of import grammar. However, 
+    // it seems to be possible somehow.
+    StyleSheetGrammar(const std::string& directory, StyleSheet& stylesheet) : StyleSheetGrammar::base_type(start, "stylesheet"),
+        import(directory, stylesheet)
     {
         start =
             qi::eps
@@ -235,21 +258,20 @@ MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)
 }
 
 template<typename Iterator>
-StyleSheet MapCssParser::parse(Iterator begin, Iterator end)
+void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet)
 {
-    StyleSheetGrammar<Iterator> grammar(directory_);
+    StyleSheetGrammar<Iterator> grammar(directory, stylesheet);
     CommentSkipper<Iterator> skipper;
-    StyleSheet stylesheet;
 
     if (!phrase_parse(begin, end, grammar, skipper, stylesheet))
-        throw MapCssException(grammar.error.str());
-
-    return std::move(stylesheet);
+        throw utymap::MapCssException(grammar.error.str());
 }
 
 StyleSheet MapCssParser::parse(const std::string& str)
 {
-    return parse(str.begin(), str.end());
+    StyleSheet stylesheet;
+    ::parse(directory_, str.begin(), str.end(), stylesheet);
+    return std::move(stylesheet);
 }
 
 StyleSheet MapCssParser::parse(std::istream& istream)

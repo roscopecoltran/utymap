@@ -14,10 +14,20 @@ using namespace utymap::mapcss;
 typedef std::string::const_iterator StringIterator;
 
 struct MapCss_MapCssParserFixture {
-    MapCss_MapCssParserFixture() : styleSheetGrammar("")
-    { BOOST_TEST_MESSAGE("setup fixture"); }
+    MapCss_MapCssParserFixture() : stylesheet(), styleSheetGrammar("", stylesheet)
+    { 
+        BOOST_TEST_MESSAGE("setup fixture"); 
+    }
+
     ~MapCss_MapCssParserFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
+    // parsed data
+    StyleSheet stylesheet;
+    Condition condition;
+    Zoom zoom;
+    Selector selector;
+    Declaration declaration;
+    Rule rule;
     // grammars
     CommentSkipper<StringIterator> skipper;
     StyleSheetGrammar<StringIterator> styleSheetGrammar;
@@ -26,13 +36,6 @@ struct MapCss_MapCssParserFixture {
     SelectorGrammar<StringIterator> selectorGrammar;
     DeclarationGrammar<StringIterator> declarationGrammar;
     RuleGrammar<StringIterator> ruleGrammar;
-    // parsed data
-    StyleSheet stylesheet;
-    Condition condition;
-    Zoom zoom;
-    Selector selector;
-    Declaration declaration;
-    Rule rule;
 };
 
 BOOST_FIXTURE_TEST_SUITE( MapCss_MapCssParser, MapCss_MapCssParserFixture )
@@ -215,6 +218,16 @@ BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules 
     bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
     BOOST_CHECK( stylesheet.rules.size() == 4) ;
+}
+
+BOOST_AUTO_TEST_CASE(GivenImport_WhenParse_ThenStyleSheetIsImported)
+{
+    std::string str = "@import url(\"import.mapcss\");";
+    ImportGrammar<StringIterator> importGrammar(TEST_MAPCSS_PATH, stylesheet);
+
+    bool success = phrase_parse(str.cbegin(), str.cend(), importGrammar, skipper);
+
+    BOOST_CHECK(success == true);
 }
 
 BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasValidStyleSheet )
