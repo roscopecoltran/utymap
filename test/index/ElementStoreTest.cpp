@@ -70,7 +70,7 @@ struct Index_ElementStoreFixture
         std::remove("string.dat");
     }
 
-    void createElementStore(std::string stylesheet, const StoreCallback callback)
+    void createElementStore(const std::string& stylesheet, const StoreCallback& callback)
     {
         styleProviderPtr = MapCssUtils::createStyleProviderFromString(*stringTablePtr, stylesheet);
         elementStorePtr = new TestElementStore(*stringTablePtr, callback);

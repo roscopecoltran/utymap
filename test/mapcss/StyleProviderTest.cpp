@@ -36,14 +36,14 @@ struct Index_StyleProviderFixture
         std::remove("string.dat");
     }
 
-    void setSingleSelector(std::string name, int zoomStart, int zoomEnd,
-        std::initializer_list<utymap::mapcss::Condition> conditions)
+    void setSingleSelector(const std::string& name, int zoomStart, int zoomEnd,
+        const std::initializer_list<utymap::mapcss::Condition>& conditions)
     {
         Selector selector;
         selector.name = name;
         selector.zoom.start = zoomStart;
         selector.zoom.end = zoomEnd;
-        for (const utymap::mapcss::Condition& condition : conditions) {
+        for (const auto& condition : conditions) {
             selector.conditions.push_back(condition);
         }
         stylesheetPtr->rules[0].selectors.push_back(selector);
