@@ -1,5 +1,6 @@
-#include "StyleSheet.hpp"
-#include "MapCssParser.hpp"
+#include "mapcss/StyleSheet.hpp"
+#include "mapcss/MapCssParser.hpp"
+#include "Exceptions.hpp"
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -241,7 +242,7 @@ StyleSheet MapCssParser::parse(Iterator begin, Iterator end)
     StyleSheet stylesheet;
 
     if (!phrase_parse(begin, end, grammar, skipper, stylesheet))
-        error_ = grammar.error.str();
+        throw MapCssException(grammar.error.str());
 
     return std::move(stylesheet);
 }

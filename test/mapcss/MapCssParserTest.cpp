@@ -214,7 +214,6 @@ BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules 
 
     bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
-    BOOST_CHECK( success == true );
     BOOST_CHECK( stylesheet.rules.size() == 4) ;
 }
 
@@ -225,7 +224,6 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK( parser.getError().empty() == true );
     BOOST_CHECK( stylesheet.rules.size() == 1 );
 }
 
@@ -236,7 +234,6 @@ BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK(parser.getError().empty() == true);
     BOOST_CHECK(stylesheet.rules.size() == 1);
 }
 
@@ -248,7 +245,6 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoo
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK(parser.getError().empty());
     Selector selector = stylesheet.rules[0].selectors[0];
     BOOST_CHECK_EQUAL(1, selector.zoom.start);
     BOOST_CHECK_EQUAL(12, selector.zoom.end);
@@ -261,7 +257,6 @@ BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientVa
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK(parser.getError().empty());
     BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
     BOOST_CHECK_EQUAL(stylesheet.rules[0].declarations[0].value, "gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080)");
 }
@@ -273,7 +268,6 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentatio
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK(parser.getError().empty());
     BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
     BOOST_CHECK_EQUAL(str, utymap::utils::toString(stylesheet.rules[0]));
 }

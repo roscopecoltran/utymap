@@ -22,7 +22,6 @@ public:
         std::ifstream styleFile(filePath);
         utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        BOOST_TEST_CHECK(parser.getError().empty());
         return new utymap::mapcss::StyleProvider(stylesheet, stringTable);
     }
 
@@ -31,7 +30,6 @@ public:
     {
         utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(str);
-        BOOST_TEST_CHECK(parser.getError().empty());
         return new utymap::mapcss::StyleProvider(stylesheet, stringTable);
     }
 };

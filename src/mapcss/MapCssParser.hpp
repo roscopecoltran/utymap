@@ -1,7 +1,7 @@
 #ifndef MAPCSS_MAPCSSPARSER_HPP_DEFINED
 #define MAPCSS_MAPCSSPARSER_HPP_DEFINED
 
-#include "StyleSheet.hpp"
+#include "mapcss/StyleSheet.hpp"
 
 #include <istream>
 #include <string>
@@ -13,7 +13,7 @@ class MapCssParser
 {
 public:
 
-    // Directory parameter specifies root path for import.
+    // Directory parameter specifies root path for import lookup.
     MapCssParser(const std::string& directory = "");
 
     // Parses stylesheet from string.
@@ -22,14 +22,10 @@ public:
     // Parses stylsheet from input stream (e.g. file). 
     StyleSheet parse(std::istream& istream);
 
-    // Returns last error if parse fails.
-    std::string getError() { return error_;  };
-
 private:
     template<typename Iterator>
     StyleSheet parse(Iterator begin, Iterator end);
 
-    std::string error_;
     std::string directory_;
 };
 

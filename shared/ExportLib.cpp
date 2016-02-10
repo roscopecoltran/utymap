@@ -58,10 +58,6 @@ extern "C"
         std::ifstream styleFile(stylePath);
         utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        if (!parser.getError().empty()) {
-            errorCallback(parser.getError().c_str());
-            return;
-        }
 
         stringTablePtr = new utymap::index::StringTable(stringPath);
         styleProviderPtr = new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr);
