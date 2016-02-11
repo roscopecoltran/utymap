@@ -288,11 +288,11 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentatio
 BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
 {
     std::ifstream styleFile(TEST_MAPCSS_PATH "import.mapcss");
-    MapCssParser parser(TEST_MAPCSS_PATH "import");
+    MapCssParser parser(TEST_MAPCSS_PATH);
 
     StyleSheet stylesheet = parser.parse(styleFile);
 
-    BOOST_CHECK_EQUAL(4, stylesheet.rules.size());
+    BOOST_CHECK_EQUAL(5, stylesheet.rules.size());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

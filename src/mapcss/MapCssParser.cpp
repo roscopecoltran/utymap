@@ -11,6 +11,7 @@
 #include <boost/spirit/include/phoenix_object.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 
+#include <algorithm>
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
@@ -231,7 +232,7 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
     {
         start =
             qi::eps
-            > (+rule | +import)
+            > *(rule | import)
         ;
 
         start.name("stylesheet");
@@ -271,6 +272,14 @@ StyleSheet MapCssParser::parse(const std::string& str)
 {
     StyleSheet stylesheet;
     ::parse(directory_, str.begin(), str.end(), stylesheet);
+
+    // NOTE workaround for import: each import grammar adds empty rule
+    auto& rules = stylesheet.rules;
+    rules.erase(std::remove_if(rules.begin(), rules.end(), [](const Rule& rule) {
+        return rule.selectors.empty();
+    }), rules.end());
+
+    rules.shrink_to_fit();
     return std::move(stylesheet);
 }
 
