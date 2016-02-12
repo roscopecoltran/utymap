@@ -4461,4 +4461,24 @@ std::ostream& operator <<(std::ostream &s, const Paths &p)
 }
 //------------------------------------------------------------------------------
 
+void ClipperEx::moveSubjectToClip()
+{
+    for (auto& edge : m_edges) {
+        if (edge->PolyTyp == ptClip) continue;
+        TEdge* e = edge;
+        do {
+            e->PolyTyp = ptClip;
+            e = e->Next;
+        } while (e->Next && e != edge);
+    }
+    for (auto lm = m_MinimaList.begin(); lm != m_MinimaList.end(); ++lm)
+    {
+        TEdge* e = lm->LeftBound;
+        if (e) e->PolyTyp = ptClip;
+
+        e = lm->RightBound;
+        if (e) e->PolyTyp = ptClip;
+    }
+}
+
 } //ClipperLib namespace

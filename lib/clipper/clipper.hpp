@@ -388,6 +388,12 @@ class clipperException : public std::exception
 };
 //------------------------------------------------------------------------------
 
+class ClipperEx : public Clipper
+{
+public:
+    void moveSubjectToClip();
+};
+
 } //ClipperLib namespace
 
 #endif //clipper_hpp
