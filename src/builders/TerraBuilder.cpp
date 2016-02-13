@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <functional>
 #include <iterator>
+#include <sstream>
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -30,8 +31,8 @@ const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal position
 const double Tolerance = 10; // Tolerance for splitting algorithm
 const double AreaTolerance = 100; // Tolerance for meshing
 
-// Properties of region
-struct RegionProperties
+// Properties of terrain region union.
+struct Properties
 {
     std::string gradientKey;
     float eleNoiseFreq;
@@ -39,58 +40,32 @@ struct RegionProperties
     float maxArea;
     float heightOffset;
 
-    RegionProperties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
+    Properties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
         heightOffset(0), maxArea(0)
     {
     }
 };
 
-// Represents terrain region.
+// Represents terrain region points.
 struct Region
 {
+    bool isLayer;
+    Properties properties;
     Paths points;
-    RegionProperties properties;
 };
 
 typedef std::vector<Point> Points;
 typedef std::vector<Region> Regions;
-typedef std::unordered_map<std::string, Regions> OffsetWayMap;
+typedef std::unordered_map<std::string, Regions> Layers;
 
 // mapcss specific keys
-const static std::string TypeKey = "terrain-type";
-// surfaces
+const static std::string TerrainLayerKey = "terrain-layer";
 const static std::string ColorNoiseFreqKey = "color-noise-freq";
 const static std::string EleNoiseFreqKey = "ele-noise-freq";
 const static std::string GradientKey= "color";
 const static std::string MaxAreaKey = "max-area";
-// background layer
-const static std::string BackgroundPrefix = "bg-";
-const static std::string BackgroundColorNoiseFreqKey = BackgroundPrefix + ColorNoiseFreqKey;
-const static std::string BackgroundEleNoiseFreqKey = BackgroundPrefix + EleNoiseFreqKey;
-const static std::string BackgroundGradientKey = BackgroundPrefix + GradientKey;
-const static std::string BackgroundMaxAreaKey = BackgroundPrefix + MaxAreaKey;
-// water layer
-const static std::string WaterPrefix = "water-";
-const static std::string WaterColorNoiseFreqKey = WaterPrefix + ColorNoiseFreqKey;
-const static std::string WaterEleNoiseFreqKey = WaterPrefix + EleNoiseFreqKey;
-const static std::string WaterGradientKey = WaterPrefix + GradientKey;
-const static std::string WaterMaxAreaKey = WaterPrefix + MaxAreaKey;
-// car roads layer
-const static std::string CarPrefix = "car-";
-const static std::string CarColorNoiseFreqKey = CarPrefix + ColorNoiseFreqKey;
-const static std::string CarEleNoiseFreqKey = CarPrefix + EleNoiseFreqKey;
-const static std::string CarGradientKey = CarPrefix + GradientKey;
-const static std::string CarMaxAreaKey = CarPrefix + MaxAreaKey;
-// pedestrian roads layer
-const static std::string WalkPrefix = "walk-";
-const static std::string WalkColorNoiseFreqKey = WalkPrefix + ColorNoiseFreqKey;
-const static std::string WalkEleNoiseFreqKey = WalkPrefix + EleNoiseFreqKey;
-const static std::string WalkGradientKey = WalkPrefix + GradientKey;
-const static std::string WalkMaxAreaKey = WalkPrefix + MaxAreaKey;
-// other..
-const static std::string WaterKey = "water";
-const static std::string SurfaceKey = "surface";
 const static std::string WidthKey = "width";
+const static std::string LayerPriorityKey = "layer-priority";
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
@@ -122,20 +97,27 @@ public:
     {
         Style style = styleProvider_.forElement(way, quadKey_.levelOfDetail);
         Region region = createRegion(style, way.coordinates);
-        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
-        // use string as key to prevent float point issues.
-        std::string widthKey = style.get(stringTable_.getId(WidthKey));
 
-        if (type == WaterKey) {
-            rivers_[widthKey].push_back(region);
-        }
+        // make polygon from line by offsetting it using width specified
+        float width = utymap::utils::getFloat(WidthKey, stringTable_, style);
+        Paths offsetSolution;
+        offset_.AddPaths(region.points, jtMiter, etOpenSquare);
+        offset_.Execute(offsetSolution, width * Scale);
+        offset_.Clear();
+        region.points = offsetSolution;
+
+        std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, stringTable_, style) : "";
+        layers_[type].push_back(region);
     }
 
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
-        addRegion(region, style);
+        std::string type = region.isLayer 
+            ? utymap::utils::getString(TerrainLayerKey, stringTable_, style)
+            : "";
+        layers_[type].push_back(region);
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
@@ -176,7 +158,12 @@ public:
 
         if (!region.points.empty()) {
             Style style = styleProvider_.forElement(relation, quadKey_.levelOfDetail);
-            addRegion(region, style);
+            region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
+            if (!region.isLayer) {
+                region.properties = createRegionProperties(style, "");
+            }
+            std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, stringTable_, style) : "";
+            layers_[type].push_back(region);
         }
     }
 
@@ -184,12 +171,10 @@ public:
     void build()
     {
         configureSplitter(quadKey_.levelOfDetail);
-        canvasStyle_ = styleProvider_.forCanvas(quadKey_.levelOfDetail);
+        Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
 
-        buildWater();
-        buildRoads();
-        buildSurfaces();
-        buildBackground();
+        buildLayers(style);
+        buildBackground(style);
 
         callback_(mesh_);
     }
@@ -214,61 +199,97 @@ private:
             path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
         }
         region.points.push_back(path);
+
+        region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
+
+        if (!region.isLayer)
+            region.properties = createRegionProperties(style, "");
+
         return std::move(region);
     }
 
-    void addRegion(Region& region, const Style& style)
+    Properties createRegionProperties(const Style& style, const std::string& prefix)
     {
-        std::string type = utymap::utils::getString(TypeKey, stringTable_, style);
-        if (type == SurfaceKey) {
-            region.properties = createRegionProperties(style, EleNoiseFreqKey,
-                ColorNoiseFreqKey, GradientKey, MaxAreaKey);
-            surfaces_.push_back(region);
-        }
-        else if (type == WaterKey) {
-            waters_.push_back(region);
-        }
-        else {
-            throw utymap::MapCssException(std::string("Unknown terrain type: ") + type);
-        }
-    }
-
-    RegionProperties createRegionProperties(const Style& style, const std::string& eleNoiseFreqKey,
-        const std::string& colorNoiseFreqKey, const std::string& gradientKey, const std::string& maxAreaKey)
-    {
-        RegionProperties properties;
-        properties.eleNoiseFreq = utymap::utils::getFloat(eleNoiseFreqKey, stringTable_, style);
-        properties.colorNoiseFreq = utymap::utils::getFloat(colorNoiseFreqKey, stringTable_, style);
-        properties.gradientKey = utymap::utils::getString(gradientKey, stringTable_, style);
-        properties.maxArea = utymap::utils::getFloat(maxAreaKey, stringTable_, style);
-
+        Properties properties;
+        properties.eleNoiseFreq = utymap::utils::getFloat(prefix + EleNoiseFreqKey, stringTable_, style);
+        properties.colorNoiseFreq = utymap::utils::getFloat(prefix + ColorNoiseFreqKey, stringTable_, style);
+        properties.gradientKey = utymap::utils::getString(prefix + GradientKey, stringTable_, style);
+        properties.maxArea = utymap::utils::getFloat(prefix + MaxAreaKey, stringTable_, style);
         return std::move(properties);
     }
-    Paths buildOffsetSolution(const OffsetWayMap& offsetWays)
+
+    void buildFromRegions(const Regions& regions, const Properties& properties)
     {
-        for (const auto& way : offsetWays) {
-            Paths offsetSolution;
-            for (const auto& region : way.second) {
-                offset_.AddPaths(region.points, jtMiter, etOpenSquare);
-            }
-            offset_.Execute(offsetSolution, std::stof(way.first) * Scale);
-            offset_.Clear();
-            clipper_.AddPaths(offsetSolution, ptSubject, true);
+        // merge all regions together
+        Clipper clipper;
+        for (const Region& region : regions) {
+            clipper.AddPaths(region.points, ptSubject, true);
         }
+        Paths result;
+        clipper.Execute(ctUnion, result, pftPositive, pftPositive);
 
-        Paths polySolution;
-        clipper_.Execute(ctUnion, polySolution, pftPositive, pftPositive);
-        clipper_.Clear();
-
-        return std::move(polySolution);
+        buildFromPaths(result, properties);
     }
 
-    void populateMesh(const RegionProperties& properties, Paths& paths)
+    void buildFromPaths(Paths& path, const Properties& properties)
+    {
+        clipper_.AddPaths(path, ptSubject, true);
+        path.clear();
+        clipper_.Execute(ctDifference, path, pftPositive, pftPositive);
+        clipper_.moveSubjectToClip();
+        populateMesh(properties, path);
+    }
+
+    // process all found layers.
+    void buildLayers(const Style& style)
+    {
+        // 1. process layers: regions with shared properties.
+        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, stringTable_, style));
+        while (ss.good())
+        {
+            std::string name;
+            getline(ss, name, ',');
+            auto layer = layers_.find(name);
+            if (layer != layers_.end()) {
+                Properties properties = createRegionProperties(style, name + "-");
+                buildFromRegions(layer->second, properties);
+                layers_.erase(layer);
+            }
+        }
+
+        // 2. Process the rest: each region has aready its own properties.
+        for (auto& layer : layers_) {
+            for (auto& region : layer.second) {
+                buildFromPaths(region.points, region.properties);
+            }
+        }
+    }
+
+    // process the rest area.
+    void buildBackground(const Style& style)
+    {
+        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        Path tileRect;
+        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
+        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
+        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
+        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
+
+        clipper_.AddPath(tileRect, ptSubject, true);
+        Paths background;
+        clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
+        clipper_.Clear();
+
+        if (!background.empty())
+            populateMesh(createRegionProperties(style, ""), background);
+    }
+    
+    void populateMesh(const Properties& properties, Paths& paths)
     {
         bool hasHeightOffset = properties.heightOffset > 0;
 
         ClipperLib::SimplifyPolygons(paths);
-        ClipperLib::CleanPolygons(backgroundShape_);
+        ClipperLib::CleanPolygons(paths);
 
         // calculate approximate size of overall points
         auto size = 0;
@@ -314,7 +335,7 @@ private:
         // TODO
     }
 
-    void fillMesh(const RegionProperties& properties, Polygon& polygon)
+    void fillMesh(const Properties& properties, Polygon& polygon)
     {
         // TODO use valid area value
         Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
@@ -341,143 +362,16 @@ private:
             regionMesh.colors.end());
     }
 
-    // build water layer
-    void buildWater()
-    {
-        for (const Region& region : waters_) {
-            clipper_.AddPaths(region.points, ptSubject, true);
-        }
-        waters_.clear();
-
-        Paths rivers = buildOffsetSolution(rivers_);
-        rivers_.clear();
-        clipper_.AddPaths(rivers, ptSubject, true);
-
-        Paths solution;
-        clipper_.Execute(ctUnion, solution);
-        clipper_.Clear();
-        waterShape_ = std::move(solution);
-
-        if (waterShape_.empty())
-            return;
-
-        auto properties = createRegionProperties(canvasStyle_, WaterEleNoiseFreqKey,
-            WaterColorNoiseFreqKey, WaterGradientKey, WaterMaxAreaKey);
-
-        populateMesh(properties, waterShape_);
-    }
-
-    // build road layer
-    void buildRoads()
-    {
-        Paths carRoadPaths = buildOffsetSolution(carRoads_);
-        Paths walkRoadsPaths = buildOffsetSolution(walkRoads_);
-
-        clipper_.AddPaths(carRoadPaths, ptClip, true);
-        clipper_.AddPaths(walkRoadsPaths, ptSubject, true);
-        Paths extrudedWalkRoads;
-        clipper_.Execute(ctDifference, extrudedWalkRoads);
-        clipper_.Clear();
-
-        carRoadShape_ = std::move(clipRoads(carRoadPaths));
-        walkRoadShape_ = std::move(clipRoads(extrudedWalkRoads));
-
-        if (!carRoads_.empty()) {
-            auto properties = createRegionProperties(canvasStyle_, CarEleNoiseFreqKey,
-                CarColorNoiseFreqKey, CarGradientKey, CarMaxAreaKey);
-            populateMesh(properties, carRoadShape_);
-        }
-
-        if (!walkRoads_.empty()) {
-            auto properties = createRegionProperties(canvasStyle_, WalkEleNoiseFreqKey,
-                WalkColorNoiseFreqKey, WalkGradientKey, WalkMaxAreaKey);
-            populateMesh(properties, walkRoadShape_);
-        }
-    }
-
-    // clips roads by water surface
-    Paths clipRoads(const Paths& roads)
-    {
-        Paths resultRoads;
-        clipper_.AddPaths(waterShape_, ptClip, true);
-        clipper_.AddPaths(roads, ptSubject, true);
-        clipper_.Execute(ctDifference, resultRoads, pftPositive, pftPositive);
-        clipper_.Clear();
-        return std::move(resultRoads);
-    }
-
-    // build surfaces
-    void buildSurfaces()
-    {
-        for (auto i = 0; i < surfaces_.size(); ++i) {
-            clipper_.AddPaths(carRoadShape_, ptClip, true);
-            clipper_.AddPaths(walkRoadShape_, ptClip, true);
-            clipper_.AddPaths(waterShape_, ptClip, true);
-
-            // NOTE the line below prevents polygons to be intersected and it has huge performance impact. 
-            // So far it is disabled as this case considered as invalid: input data should not contain such
-            // polygons. If it is not valid, then one possible solution is to modify clipper to avoid adding
-            // the same clipping polygons on each iteration.
-            //clipper_.AddPaths(surfaceShape_, ptClip, true);
-
-            clipper_.AddPaths(surfaces_[i].points, ptSubject, true);
-
-            Paths result;
-            clipper_.Execute(ctDifference, result, pftPositive, pftPositive);
-            clipper_.Clear();
-
-            populateMesh(surfaces_[i].properties, result);
-
-            surfaceShape_.insert(surfaceShape_.end(),
-                std::make_move_iterator(result.begin()),
-                std::make_move_iterator(result.end()));
-        }
-    }
-
-    // build background
-    void buildBackground()
-    {
-        // construct clipRect
-        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
-        Path clipRect;
-        clipRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
-        clipRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
-        clipRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
-        clipRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
-
-        clipper_.AddPath(clipRect, ptSubject, true);
-
-        clipper_.AddPaths(carRoadShape_, ptClip, true);
-        clipper_.AddPaths(walkRoadShape_, ptClip, true);
-        clipper_.AddPaths(waterShape_, ptClip, true);
-        clipper_.AddPaths(surfaceShape_, ptClip, true);
-        clipper_.Execute(ctDifference, backgroundShape_, pftPositive, pftPositive);
-        clipper_.Clear();
-
-        if (!backgroundShape_.empty())
-        {
-            auto properties = createRegionProperties(canvasStyle_, BackgroundEleNoiseFreqKey, 
-                BackgroundColorNoiseFreqKey, BackgroundGradientKey, BackgroundMaxAreaKey);
-            populateMesh(properties, backgroundShape_);
-        }
-    }
-
 const utymap::mapcss::StyleProvider& styleProvider_;
 utymap::index::StringTable& stringTable_;
 std::function<void(const Mesh&)> callback_;
 
-Clipper clipper_;
+ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
 MeshBuilder meshBuilder_;
 QuadKey quadKey_;
-
-Style canvasStyle_;
-Regions waters_;
-Regions surfaces_;
-OffsetWayMap carRoads_, walkRoads_, rivers_;
-Paths waterShape_, carRoadShape_, walkRoadShape_, surfaceShape_, backgroundShape_;
-
+Layers layers_;
 Mesh mesh_;
 };
 
