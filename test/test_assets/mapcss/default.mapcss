@@ -58,7 +58,6 @@ area|z1[featurecla=Adm-0 scale ranks],
 relation|z1[featurecla=Adm-0 scale ranks]{
     clip:true;
     builders: terrain;
-    terrain-type: surface;
     max-area: 5;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;

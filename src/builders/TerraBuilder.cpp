@@ -36,10 +36,10 @@ const double AreaTolerance = 100; // Tolerance for meshing
 struct Properties
 {
     std::string gradientKey;
-    float eleNoiseFreq;
-    float colorNoiseFreq;
-    float maxArea;
-    float heightOffset;
+    double eleNoiseFreq;
+    double colorNoiseFreq;
+    double heightOffset;
+    double maxArea;
 
     Properties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
         heightOffset(0), maxArea(0)
@@ -94,7 +94,7 @@ public:
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        float width = utymap::utils::getFloat(WidthKey, stringTable_, style);
+        double width = utymap::utils::getDouble(WidthKey, stringTable_, style);
         Paths offsetSolution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
         offset_.Execute(offsetSolution, width * Scale);
@@ -205,10 +205,10 @@ private:
     Properties createRegionProperties(const Style& style, const std::string& prefix)
     {
         Properties properties;
-        properties.eleNoiseFreq = utymap::utils::getFloat(prefix + EleNoiseFreqKey, stringTable_, style);
-        properties.colorNoiseFreq = utymap::utils::getFloat(prefix + ColorNoiseFreqKey, stringTable_, style);
+        properties.eleNoiseFreq = utymap::utils::getDouble(prefix + EleNoiseFreqKey, stringTable_, style);
+        properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, stringTable_, style);
         properties.gradientKey = utymap::utils::getString(prefix + GradientKey, stringTable_, style);
-        properties.maxArea = utymap::utils::getFloat(prefix + MaxAreaKey, stringTable_, style);
+        properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, stringTable_, style);
         return std::move(properties);
     }
 
@@ -283,7 +283,7 @@ private:
         ClipperLib::SimplifyPolygons(paths);
         ClipperLib::CleanPolygons(paths);
 
-        bool hasHeightOffset = properties.heightOffset > 0;
+        bool hasHeightOffset = std::abs(properties.heightOffset) > 1E-8;
         // calculate approximate size of overall points
         auto size = 0;
         for (auto i = 0; i < paths.size(); ++i) {
@@ -293,18 +293,22 @@ private:
         Polygon polygon(size);
         for (const Path& path : paths) {
             double area = ClipperLib::Area(path);
-
-            if (std::abs(area) < AreaTolerance) continue;
+            bool isHole = area < 0;
+            if (std::abs(area) < AreaTolerance) 
+                continue;
 
             Points points = restorePoints(path);
-            if (area < 0)
+            if (isHole)
                 polygon.addHole(points);
             else
                 polygon.addContour(points);
+
+            processHeightOffset(properties, path, isHole);
         }
 
-        if (!polygon.points.empty())
+        if (!polygon.points.empty()) {
             fillMesh(properties, polygon);
+        }
     }
 
     // restores mesh points from clipper points and injects new ones according to grid.
@@ -318,11 +322,6 @@ private:
         }
 
         return std::move(points);
-    }
-
-    void processHeightOffset(const std::vector<Points>& contours)
-    {
-        // TODO
     }
 
     void fillMesh(const Properties& properties, Polygon& polygon)
@@ -348,6 +347,12 @@ private:
         mesh_.colors.insert(mesh_.colors.end(),
             regionMesh.colors.begin(),
             regionMesh.colors.end());
+    }
+
+    void processHeightOffset(const Properties& properties, const Path& path, bool isHole)
+    {
+        // TODO
+        // Create
     }
 
 const StyleProvider& styleProvider_;

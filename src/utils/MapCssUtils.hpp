@@ -25,12 +25,12 @@ namespace utymap { namespace utils {
     }
 
     // Gets declaration value as float.
-    inline float getFloat(const std::string& key,
+    inline float getDouble(const std::string& key,
                           utymap::index::StringTable& stringTable,
                           const utymap::mapcss::Style& style)
     {
         uint32_t keyId = stringTable.getId(key);
-        return std::stof(style.get(keyId));
+        return std::stod(style.get(keyId));
     }
 
 }}
