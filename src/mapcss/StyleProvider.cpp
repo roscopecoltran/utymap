@@ -266,21 +266,21 @@ StyleProvider::~StyleProvider()
 {
 }
 
-bool utymap::mapcss::StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
+bool StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
 {
     StyleBuilder builder = { pimpl_->filters, levelOfDetails, true };
     element.accept(builder);
     return builder.canBuild();
 }
 
-Style utymap::mapcss::StyleProvider::forElement(const Element& element, int levelOfDetails) const
+Style StyleProvider::forElement(const Element& element, int levelOfDetails) const
 {
     StyleBuilder builder = { pimpl_->filters, levelOfDetails };
     element.accept(builder);
     return std::move(builder.build());
 }
 
-Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const
+Style StyleProvider::forCanvas(int levelOfDetails) const
 {
     Style style;
     for (const auto& rule : pimpl_->filters.canvases[levelOfDetails]) {
@@ -293,7 +293,7 @@ Style utymap::mapcss::StyleProvider::forCanvas(int levelOfDetails) const
     return std::move(style);
 }
 
-const utymap::mapcss::ColorGradient& utymap::mapcss::StyleProvider::getGradient(const std::string& key) const
+const ColorGradient& StyleProvider::getGradient(const std::string& key) const
 {
     return pimpl_->getGradient(key);
 }

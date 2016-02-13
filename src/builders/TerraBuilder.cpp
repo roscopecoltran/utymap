@@ -328,9 +328,9 @@ private:
     {
         Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
-            /* area=*/ properties.maxArea,
-            /* elevation noise frequency*/ properties.eleNoiseFreq,
-            /* color noise frequency. */ properties.colorNoiseFreq,
+            properties.maxArea,
+            properties.eleNoiseFreq,
+            properties.colorNoiseFreq,
             styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         });
@@ -352,7 +352,6 @@ private:
     void processHeightOffset(const Properties& properties, const Path& path, bool isHole)
     {
         // TODO
-        // Create
     }
 
 const StyleProvider& styleProvider_;
