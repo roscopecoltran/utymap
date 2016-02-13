@@ -2,7 +2,7 @@ canvas|z1 {
     clip:true;
     builders: terrain;
     
-    layer-priority: water, borders;
+    layer-priority: water,border;
     
     max-area: 5;
     color-noise-freq: 0.1;
