@@ -23,6 +23,7 @@
 using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::entities;
+using namespace utymap::index;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
@@ -71,16 +72,10 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
 public:
 
-    TerraBuilderImpl(utymap::index::StringTable& stringTable,
-                     const utymap::mapcss::StyleProvider& styleProvider,
-                     ElevationProvider& eleProvider,
-                     std::function<void(const Mesh&)> callback) :
-        stringTable_(stringTable),
-        styleProvider_(styleProvider),
-        meshBuilder_(eleProvider),
-        callback_(callback),
-        quadKey_(),
-        splitter_()
+    TerraBuilderImpl(StringTable& stringTable, const StyleProvider& styleProvider, 
+        ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
+            stringTable_(stringTable), styleProvider_(styleProvider), meshBuilder_(eleProvider), 
+            callback_(callback), quadKey_(),splitter_()
     {
     }
 
@@ -286,11 +281,10 @@ private:
     
     void populateMesh(const Properties& properties, Paths& paths)
     {
-        bool hasHeightOffset = properties.heightOffset > 0;
-
         ClipperLib::SimplifyPolygons(paths);
         ClipperLib::CleanPolygons(paths);
 
+        bool hasHeightOffset = properties.heightOffset > 0;
         // calculate approximate size of overall points
         auto size = 0;
         for (auto i = 0; i < paths.size(); ++i) {
@@ -321,10 +315,7 @@ private:
         Points points;
         points.reserve(path.size());
         for (int i = 0; i <= lastItemIndex; i++) {
-            IntPoint start = path[i];
-            IntPoint end = path[i == lastItemIndex ? 0 : i + 1];
-
-            splitter_.split(start, end, points);
+            splitter_.split(path[i], path[i == lastItemIndex ? 0 : i + 1], points);
         }
 
         return std::move(points);
@@ -337,7 +328,6 @@ private:
 
     void fillMesh(const Properties& properties, Polygon& polygon)
     {
-        // TODO use valid area value
         Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
             /* area=*/ properties.maxArea,
@@ -348,7 +338,6 @@ private:
         });
 
         auto startVertIndex = mesh_.vertices.size() / 3;
-
         mesh_.vertices.insert(mesh_.vertices.end(),
             regionMesh.vertices.begin(),
             regionMesh.vertices.end());
@@ -362,8 +351,8 @@ private:
             regionMesh.colors.end());
     }
 
-const utymap::mapcss::StyleProvider& styleProvider_;
-utymap::index::StringTable& stringTable_;
+const StyleProvider& styleProvider_;
+StringTable& stringTable_;
 std::function<void(const Mesh&)> callback_;
 
 ClipperEx clipper_;
@@ -375,42 +364,22 @@ Layers layers_;
 Mesh mesh_;
 };
 
-void TerraBuilder::visitNode(const utymap::entities::Node& node)
-{
-    pimpl_->visitNode(node);
-}
+void TerraBuilder::visitNode(const utymap::entities::Node& node) { pimpl_->visitNode(node); }
 
-void TerraBuilder::visitWay(const utymap::entities::Way& way)
-{
-    pimpl_->visitWay(way);
-}
+void TerraBuilder::visitWay(const utymap::entities::Way& way) { pimpl_->visitWay(way); }
 
-void TerraBuilder::visitArea(const utymap::entities::Area& area)
-{
-    pimpl_->visitArea(area);
-}
+void TerraBuilder::visitArea(const utymap::entities::Area& area) { pimpl_->visitArea(area); }
 
-void TerraBuilder::visitRelation(const utymap::entities::Relation& relation)
-{
-    pimpl_->visitRelation(relation);
-}
+void TerraBuilder::visitRelation(const utymap::entities::Relation& relation) { pimpl_->visitRelation(relation); }
 
-void TerraBuilder::prepare(const utymap::QuadKey& quadKey)
-{
-    pimpl_->setQuadKey(quadKey);
-}
+void TerraBuilder::prepare(const utymap::QuadKey& quadKey) { pimpl_->setQuadKey(quadKey); }
 
-void TerraBuilder::complete()
-{
-    pimpl_->build();
-}
+void TerraBuilder::complete() { pimpl_->build(); }
 
 TerraBuilder::~TerraBuilder() { }
 
-TerraBuilder::TerraBuilder(utymap::index::StringTable& stringTable,
-                           const utymap::mapcss::StyleProvider& styleProvider, 
-                           ElevationProvider& eleProvider,
+TerraBuilder::TerraBuilder(StringTable& stringTable, const StyleProvider& styleProvider, ElevationProvider& eleProvider,
                            std::function<void(const Mesh&)> callback) :
-pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, styleProvider, eleProvider, callback)))
+    pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, styleProvider, eleProvider, callback)))
 {
 }

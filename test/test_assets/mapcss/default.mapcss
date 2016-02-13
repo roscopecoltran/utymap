@@ -57,7 +57,7 @@ relation|z1[featurecla=International boundary (verify)] {
     width: 0.05;
 }
 
-/*area|z1[featurecla=Adm-0 scale ranks],
+area|z1[featurecla=Adm-0 scale ranks],
 relation|z1[featurecla=Adm-0 scale ranks]{
     clip:true;
     builders: terrain;
@@ -66,9 +66,9 @@ relation|z1[featurecla=Adm-0 scale ranks]{
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
-}*/
+}
 
-/*area|z1[sr_geounit=Germany],
+area|z1[sr_geounit=Germany],
 relation|z1[sr_geounit=Germany] {
     color: gradient(orange);
 }
@@ -96,4 +96,3 @@ area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
     color: gradient(red);
 }
-*/
