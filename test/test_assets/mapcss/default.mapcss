@@ -1,7 +1,4 @@
 canvas|z1 {
-    clip:true;
-    builders: terrain;
-    
     layer-priority: water,border;
     
     max-area: 5;
