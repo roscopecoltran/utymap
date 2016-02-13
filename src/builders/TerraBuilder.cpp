@@ -196,7 +196,6 @@ private:
         region.points.push_back(path);
 
         region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
-
         if (!region.isLayer)
             region.properties = createRegionProperties(style, "");
 
