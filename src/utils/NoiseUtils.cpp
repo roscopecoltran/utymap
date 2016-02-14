@@ -62,6 +62,8 @@ const NoiseUtils::Vector3 NoiseUtils::Gradients3D[] =
 
 double NoiseUtils::perlin3D(double x, double y, double z, double frequency)
 {
+    if (frequency < 1E-5) return 0;
+
     Vector3 point(x * frequency, y* frequency, z* frequency);
     int ix0 = std::floor(point.x);
     int iy0 = std::floor(point.y);

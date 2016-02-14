@@ -9,6 +9,7 @@
 #include "index/GeoUtils.hpp"
 #include "utils/CompatibilityUtils.hpp"
 #include "utils/MapCssUtils.hpp"
+#include "utils/NoiseUtils.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,6 +28,7 @@ using namespace utymap::index;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
+using namespace utymap::utils;
 
 const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal positions
 const double Tolerance = 10; // Tolerance for splitting algorithm
@@ -66,6 +68,7 @@ const static std::string EleNoiseFreqKey = "ele-noise-freq";
 const static std::string GradientKey= "color";
 const static std::string MaxAreaKey = "max-area";
 const static std::string WidthKey = "width";
+const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
@@ -74,8 +77,8 @@ public:
 
     TerraBuilderImpl(StringTable& stringTable, const StyleProvider& styleProvider, 
         ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
-            stringTable_(stringTable), styleProvider_(styleProvider), meshBuilder_(eleProvider), 
-            callback_(callback), quadKey_(),splitter_()
+            stringTable_(stringTable), styleProvider_(styleProvider), eleProvider_(eleProvider),
+            meshBuilder_(eleProvider), callback_(callback), quadKey_(),splitter_()
     {
     }
 
@@ -166,7 +169,11 @@ public:
     void build()
     {
         configureSplitter(quadKey_.levelOfDetail);
+
         Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
+        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude, 
+            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
 
         buildLayers(style);
         buildBackground(style);
@@ -209,6 +216,12 @@ private:
         properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, stringTable_, style);
         properties.gradientKey = utymap::utils::getString(prefix + GradientKey, stringTable_, style);
         properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, stringTable_, style);
+
+        auto heightOffset = prefix + HeightKey;
+        properties.heightOffset = utymap::utils::hasKey(heightOffset, stringTable_, style)
+            ? utymap::utils::getDouble(heightOffset, stringTable_, style)
+            : 0;
+
         return std::move(properties);
     }
 
@@ -303,7 +316,8 @@ private:
             else
                 polygon.addContour(points);
 
-            processHeightOffset(properties, path, isHole);
+            if (hasHeightOffset)
+                processHeightOffset(properties, points, isHole);
         }
 
         if (!polygon.points.empty()) {
@@ -331,6 +345,7 @@ private:
             properties.maxArea,
             properties.eleNoiseFreq,
             properties.colorNoiseFreq,
+            properties.heightOffset,
             styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         });
@@ -349,12 +364,50 @@ private:
             regionMesh.colors.end());
     }
 
-    void processHeightOffset(const Properties& properties, const Path& path, bool isHole)
+    void processHeightOffset(const Properties& properties, const Points& points, bool isHole)
     {
-        // TODO
+        ColorGradient gradient = styleProvider_.getGradient(properties.gradientKey);
+        auto index = mesh_.vertices.size() / 3;
+        for (auto i = 0; i < points.size(); ++i) {
+            Point p1 = points[i];
+            Point p2 = points[i == (points.size() - 1) ? 0 : i + 1];
+
+            // check whether two points are on cell rect
+            if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))
+                continue;
+
+            double ele1 = eleProvider_.getElevation(p1.x, p1.y);
+            double ele2 = eleProvider_.getElevation(p2.x, p2.y);
+
+            ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, properties.eleNoiseFreq);
+            ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, properties.eleNoiseFreq);
+
+            Color color1 = gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, properties.colorNoiseFreq) + 1) / 2);
+            Color color2 = gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, properties.colorNoiseFreq) + 1) / 2);
+
+            addVertex(p1, ele1, color1, index);
+            addVertex(p2, ele2, color1, index + 2);
+            addVertex(p2, ele2 + properties.heightOffset, color1, index + 1);
+            index += 3;
+
+            addVertex(p1, ele1 + properties.heightOffset, color1, index);
+            addVertex(p1, ele1, color1, index + 2);
+            addVertex(p2, ele2 + properties.heightOffset, color1, index + 1);
+            index += 3;
+        }
+    }
+
+    inline void addVertex(const Point& p, double ele, const Color& color, int index)
+    {
+        mesh_.vertices.push_back(p.x);
+        mesh_.vertices.push_back(p.y);
+        mesh_.vertices.push_back(ele);
+        mesh_.colors.push_back(color);
+        mesh_.triangles.push_back(index);
     }
 
 const StyleProvider& styleProvider_;
+ElevationProvider& eleProvider_;
 StringTable& stringTable_;
 std::function<void(const Mesh&)> callback_;
 
@@ -363,6 +416,7 @@ ClipperOffset offset_;
 LineGridSplitter splitter_;
 MeshBuilder meshBuilder_;
 QuadKey quadKey_;
+Rectangle rect_;
 Layers layers_;
 Mesh mesh_;
 };

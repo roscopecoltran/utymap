@@ -86,7 +86,7 @@ private:
             double y = io->pointlist[i * 2 + 1];
             double ele = eleProvider_.getElevation(x, y);
 
-            ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq);
+            ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq) + options.heightOffset;
 
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);

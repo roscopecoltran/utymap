@@ -27,6 +27,9 @@ public:
         // Color noise freq.
         double colorNoiseFreq;
 
+        // height offset.
+        double heightOffset;
+
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;
 

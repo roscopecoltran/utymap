@@ -51,6 +51,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
+        /* height offset */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });
@@ -82,6 +83,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
+        /* height offset */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0 
     });
@@ -118,6 +120,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
+        /* height offset */ 0,
         /* color gradient */ colorGradient,
         /* segmentSplit=*/ 0
     });

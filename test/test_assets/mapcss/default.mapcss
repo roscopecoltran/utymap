@@ -67,6 +67,7 @@ relation|z1[featurecla=Adm-0 scale ranks]{
 area|z1[sr_geounit=Germany],
 relation|z1[sr_geounit=Germany] {
     color: gradient(orange);
+    height: 1;
 }
 
 area|z1[sr_geounit=China],
