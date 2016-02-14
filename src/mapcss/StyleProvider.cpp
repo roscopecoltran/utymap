@@ -60,37 +60,15 @@ public:
     {
     }
 
-    void visitNode(const Node& node)
-    {
-        if (onlyCheck_)
-            check(node.tags, filters_.nodes);
-        else
-            build(node.tags, filters_.nodes);
-    }
+    void visitNode(const Node& node) { checkOrBuild(node.tags, filters_.nodes); }
 
-    void visitWay(const Way& way)
-    {
-        if (onlyCheck_)
-            check(way.tags, filters_.ways);
-        else
-            build(way.tags, filters_.ways);
-    }
+    void visitWay(const Way& way) { checkOrBuild(way.tags, filters_.ways); }
 
-    void visitArea(const Area& area)
-    {
-        if (onlyCheck_)
-            check(area.tags, filters_.areas);
-        else
-            build(area.tags, filters_.areas);
-    }
+    void visitArea(const Area& area) { checkOrBuild(area.tags, filters_.areas); }
 
-    void visitRelation(const Relation& relation)
-    {
-        if (onlyCheck_)
-            check(relation.tags, filters_.relations);
-        else
-            build(relation.tags, filters_.relations);
-    }
+    void visitRelation(const Relation& relation) { checkOrBuild(relation.tags, filters_.relations); }
+
+    inline bool canBuild() { return canBuild_; }
 
     inline Style build()
     {
@@ -100,9 +78,15 @@ public:
         return style_;
     }
 
-    inline bool canBuild() { return canBuild_; }
-
 private:
+
+    inline void checkOrBuild(const std::vector<Tag>& tags, const FilterMap& filters)
+    {
+        if (onlyCheck_)
+            check(tags, filters);
+        else
+            build(tags, filters);
+    }
 
     // checks tag's value assuming that the key is already checked.
     inline bool match_tag(const Tag& tag, const ::Condition& condition)
