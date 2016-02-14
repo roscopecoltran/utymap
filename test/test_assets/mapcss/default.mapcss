@@ -73,16 +73,19 @@ relation|z1[sr_geounit=Germany] {
 area|z1[sr_geounit=China],
 relation|z1[sr_geounit=China] {
     color: gradient(orange);
+    height: 2.5;
 }
 
 area|z1[sr_geounit=Italy],
 relation|z1[sr_geounit=Italy] {
     color: gradient(blue);
+    height: 1;
 }
 
 area|z1[sr_geounit=France],
 relation|z1[sr_geounit=France] {
     color: gradient(lime);
+    height: 0.5;
 }
 
 area|z1[sr_geounit=Russia],
@@ -92,4 +95,5 @@ relation|z1[sr_geounit=Belarus],
 area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
     color: gradient(red);
+    height: 3;
 }
