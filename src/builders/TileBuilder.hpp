@@ -21,7 +21,8 @@ public:
 
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
-    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const MeshCallback&, const ElementCallback&)> ElementBuilderFactory;
+    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const QuadKey&, const utymap::mapcss::StyleProvider&, 
+        const MeshCallback&, const ElementCallback&)> ElementBuilderFactory;
 
     TileBuilder(utymap::index::GeoStore& geoStore, utymap::index::StringTable& stringTable);
 

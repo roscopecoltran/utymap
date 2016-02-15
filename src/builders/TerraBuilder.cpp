@@ -75,16 +75,11 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
 public:
 
-    TerraBuilderImpl(StringTable& stringTable, ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
-        stringTable_(stringTable), eleProvider_(eleProvider), meshBuilder_(eleProvider), 
-        styleProviderPtr_(nullptr), callback_(callback), quadKey_(), splitter_()
+    TerraBuilderImpl(const QuadKey& quadKey, const StyleProvider& styleProvider, StringTable& stringTable, 
+                     ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
+         quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable), 
+         eleProvider_(eleProvider), meshBuilder_(eleProvider), callback_(callback), splitter_()
     {
-    }
-
-    inline void prepare(const QuadKey& quadKey, const StyleProvider& styleProvider)
-    {
-        quadKey_ = quadKey;
-        styleProviderPtr_ = &styleProvider;
     }
 
     void visitNode(const utymap::entities::Node& node)
@@ -93,7 +88,7 @@ public:
 
     void visitWay(const utymap::entities::Way& way)
     {
-        Style style = styleProviderPtr_->forElement(way, quadKey_.levelOfDetail);
+        Style style = styleProvider_.forElement(way, quadKey_.levelOfDetail);
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
@@ -110,7 +105,7 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
-        Style style = styleProviderPtr_->forElement(area, quadKey_.levelOfDetail);
+        Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
         std::string type = region.isLayer 
             ? utymap::utils::getString(TerrainLayerKey, stringTable_, style)
@@ -155,7 +150,7 @@ public:
         }
 
         if (!region.points.empty()) {
-            Style style = styleProviderPtr_->forElement(relation, quadKey_.levelOfDetail);
+            Style style = styleProvider_.forElement(relation, quadKey_.levelOfDetail);
             region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
             if (!region.isLayer) {
                 region.properties = createRegionProperties(style, "");
@@ -170,7 +165,7 @@ public:
     {
         configureSplitter(quadKey_.levelOfDetail);
 
-        Style style = styleProviderPtr_->forCanvas(quadKey_.levelOfDetail);
+        Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
         BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
         rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude, 
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
@@ -346,7 +341,7 @@ private:
             properties.eleNoiseFreq,
             properties.colorNoiseFreq,
             properties.heightOffset,
-            styleProviderPtr_->getGradient(properties.gradientKey),
+            styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         });
 
@@ -366,7 +361,7 @@ private:
 
     void processHeightOffset(const Properties& properties, const Points& points, bool isHole)
     {
-        ColorGradient gradient = styleProviderPtr_->getGradient(properties.gradientKey);
+        ColorGradient gradient = styleProvider_.getGradient(properties.gradientKey);
         auto index = mesh_.vertices.size() / 3;
         for (auto i = 0; i < points.size(); ++i) {
             Point p1 = points[i];
@@ -406,7 +401,7 @@ private:
         mesh_.triangles.push_back(index);
     }
 
-const StyleProvider* styleProviderPtr_;
+const StyleProvider& styleProvider_;
 ElevationProvider& eleProvider_;
 StringTable& stringTable_;
 std::function<void(const Mesh&)> callback_;
@@ -429,16 +424,15 @@ void TerraBuilder::visitArea(const utymap::entities::Area& area) { pimpl_->visit
 
 void TerraBuilder::visitRelation(const utymap::entities::Relation& relation) { pimpl_->visitRelation(relation); }
 
-void TerraBuilder::prepare(const utymap::QuadKey& quadKey,
-                           const utymap::mapcss::StyleProvider& styleProvider) {
-    pimpl_->prepare(quadKey, styleProvider);
-}
-
 void TerraBuilder::complete() { pimpl_->build(); }
 
 TerraBuilder::~TerraBuilder() { }
 
-TerraBuilder::TerraBuilder(StringTable& stringTable, ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
-    pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(stringTable, eleProvider, callback)))
+TerraBuilder::TerraBuilder(const utymap::QuadKey& quadKey,
+                           const utymap::mapcss::StyleProvider& styleProvider,
+                           utymap::index::StringTable& stringTable,
+                           utymap::heightmap::ElevationProvider& eleProvider,
+                           std::function<void(const utymap::meshing::Mesh&)> callback) :
+    pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback)))
 {
 }

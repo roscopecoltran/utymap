@@ -32,21 +32,15 @@ private:
 class AggregateElementBuilder : public ElementBuilder
 {
 public:
-    AggregateElementBuilder(BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
-                const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
+    AggregateElementBuilder(const QuadKey& quadKey, const StyleProvider& styleProvider, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
+        const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
+        quadKey_(quadKey),
+        styleProvider_(styleProvider),
         builderFactoryMap_(builderFactoryMap),
         builderKeyId_(builderKeyId),
         meshFunc_(meshFunc),
-        elementFunc_(elementFunc),
-        styleProviderPtr_(nullptr),
-        quadKey_()
+        elementFunc_(elementFunc)
     {
-    }
-
-    void prepare(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider) 
-    { 
-        quadKey_ = quadKey; 
-        styleProviderPtr_ = &styleProvider;
     }
 
     void visitNode(const Node& node) { buildElement(node); }
@@ -69,7 +63,7 @@ private:
     // Calls appropriate builders for given element
     void buildElement(const Element& element)
     {
-        Style style = styleProviderPtr_->forElement(element, quadKey_.levelOfDetail);
+        Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
         std::stringstream ss(style.get(builderKeyId_));
         while (ss.good())
         {
@@ -92,14 +86,13 @@ private:
             throw std::domain_error("Unknown element builder");
         }
 
-        auto builder = factory->second(meshFunc_, elementFunc_);
+        auto builder = factory->second(quadKey_, styleProvider_, meshFunc_, elementFunc_);
         builders_[name] = builder;
-        builder->prepare(quadKey_, *styleProviderPtr_);
         return *builder;
     }
 
     BuilderFactoryMap& builderFactoryMap_;
-    const StyleProvider* styleProviderPtr_;
+    const StyleProvider& styleProvider_;
     const MeshCallback& meshFunc_;
     const ElementCallback& elementFunc_;
     utymap::QuadKey quadKey_;
@@ -120,10 +113,9 @@ public:
         builderFactory_[name] = factory;
     }
 
-    void build(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
+    void build(const QuadKey& quadKey, const StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
     {
-        AggregateElementBuilder elementVisitor(builderFactory_, builderKeyId_, meshFunc, elementFunc);
-        elementVisitor.prepare(quadKey, styleProvider);
+        AggregateElementBuilder elementVisitor(quadKey, styleProvider, builderFactory_, builderKeyId_, meshFunc, elementFunc);
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
     }
@@ -140,7 +132,7 @@ void  TileBuilder::registerElementBuilder(const std::string& name, ElementBuilde
     pimpl_->registerElementBuilder(name, factory);
 }
 
-void TileBuilder::build(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
+void TileBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
 {
     pimpl_->build(quadKey, styleProvider, meshFunc, elementFunc);
 }

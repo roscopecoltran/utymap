@@ -33,12 +33,6 @@ public:
 
     void visitRelation(const utymap::entities::Relation& relation) { elementCallback_(relation); }
 
-    void prepare(const utymap::QuadKey& quadKey,
-                 const utymap::mapcss::StyleProvider& styleProvider)
-    {
-        // TODO implement when need
-    }
-
     void complete()
     {
         // TODO implement when need

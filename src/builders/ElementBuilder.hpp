@@ -11,10 +11,6 @@ namespace utymap { namespace builders {
 class ElementBuilder: public utymap::entities::ElementVisitor
 {
 public:
-    // This method called before first matched element is visited.
-    virtual void prepare(const utymap::QuadKey& quadKey, 
-                         const utymap::mapcss::StyleProvider& styleProvider) = 0;
-
     // This method called once all elements are visited.
     virtual void complete() = 0;
 };

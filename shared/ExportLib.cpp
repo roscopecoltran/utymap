@@ -84,17 +84,21 @@ extern "C"
         tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr);
 
         // register predefined element builders
-        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileBuilder::MeshCallback& meshFunc,
+        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::QuadKey& quadKey,
+                                                             const utymap::mapcss::StyleProvider& styleProvider,
+                                                             const utymap::TileBuilder::MeshCallback& meshFunc,
                                                              const utymap::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(
-                new utymap::builders::TerraBuilder(*stringTablePtr, *eleProviderPtr, meshFunc));
+                new utymap::builders::TerraBuilder(quadKey, styleProvider, *stringTablePtr, *eleProviderPtr, meshFunc));
         });
     }
 
     // Registers external element builder.
     void EXPORT_API registerElementBuilder(const char* name)
     {
-        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::TileBuilder::MeshCallback& meshFunc,
+        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::QuadKey& quadKey,
+                                                        const utymap::mapcss::StyleProvider& styleProvider, 
+                                                        const utymap::TileBuilder::MeshCallback& meshFunc,
                                                         const utymap::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(elementFunc));
         });
