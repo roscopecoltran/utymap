@@ -5,10 +5,10 @@
 #endif
 
 #include "QuadKey.hpp"
-#include "builders/ElementBuilder.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/TerraBuilder.hpp"
 #include "builders/TileBuilder.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -81,26 +81,17 @@ extern "C"
         geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider();
-        tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr);
-
-        // register predefined element builders
-        tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::QuadKey& quadKey,
-                                                             const utymap::mapcss::StyleProvider& styleProvider,
-                                                             const utymap::TileBuilder::MeshCallback& meshFunc,
-                                                             const utymap::TileBuilder::ElementCallback& elementFunc) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(
-                new utymap::builders::TerraBuilder(quadKey, styleProvider, *stringTablePtr, *eleProviderPtr, meshFunc));
-        });
+        tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr, *eleProviderPtr);
     }
 
-    // Registers external element builder.
-    void EXPORT_API registerElementBuilder(const char* name)
+    // Registers external element visitor.
+    void EXPORT_API registerElementVisitor(const char* name)
     {
-        tileLoaderPtr->registerElementBuilder(name, [&](const utymap::QuadKey& quadKey,
+        tileLoaderPtr->registerElementVisitor(name, [&](const utymap::QuadKey& quadKey,
                                                         const utymap::mapcss::StyleProvider& styleProvider, 
                                                         const utymap::TileBuilder::MeshCallback& meshFunc,
                                                         const utymap::TileBuilder::ElementCallback& elementFunc) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(elementFunc));
+            return std::shared_ptr<utymap::entities::ElementVisitor>(new utymap::builders::ExternalBuilder(elementFunc));
         });
     }
 

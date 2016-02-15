@@ -1,11 +1,12 @@
 #include "Exceptions.hpp"
-#include "builders/ElementBuilder.hpp"
 #include "builders/TileBuilder.hpp"
+#include "builders/TerraBuilder.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "index/GeoUtils.hpp"
 #include "utils/CompatibilityUtils.hpp"
 #include "utils/CoreUtils.hpp"
@@ -17,119 +18,137 @@
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
+using namespace utymap::heightmap;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 const std::string BuilderKeyName = "builders";
+const std::string TerrainBuilderName = "terrain";
 
 class TileBuilder::TileBuilderImpl
 {
 private:
 
-    typedef std::unordered_map<std::string, ElementBuilderFactory> BuilderFactoryMap;
+    typedef std::unordered_map<std::string, ElementVisitorFactory> VisitorFactoryMap;
 
-class AggregateElementBuilder : public ElementBuilder
+class AggregateElemenVisitor : public ElementVisitor
 {
 public:
-    AggregateElementBuilder(const QuadKey& quadKey, const StyleProvider& styleProvider, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
-        const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
+    AggregateElemenVisitor(StringTable& stringTable,
+                           const QuadKey& quadKey,
+                           const StyleProvider& styleProvider, 
+                           ElevationProvider& eleProvider,
+                           VisitorFactoryMap& visitorFactoryMap, 
+                           std::uint32_t visitorKeyId,
+                           const MeshCallback& meshFunc, 
+                           const ElementCallback& elementFunc) :
         quadKey_(quadKey),
         styleProvider_(styleProvider),
-        builderFactoryMap_(builderFactoryMap),
-        builderKeyId_(builderKeyId),
+        visitorFactoryMap_(visitorFactoryMap),
+        visitorKeyId_(visitorKeyId),
         meshFunc_(meshFunc),
         elementFunc_(elementFunc)
     {
+        visitorFactoryMap_[TerrainBuilderName] = [&](const utymap::QuadKey& quadKey,
+                                                     const StyleProvider& styleProvider,
+                                                     const MeshCallback& meshFunc,
+                                                     const ElementCallback& elementFunc) {
+            return std::shared_ptr<ElementVisitor>(new TerraBuilder(quadKey, styleProvider, stringTable, eleProvider, meshFunc));
+        };
     }
 
-    void visitNode(const Node& node) { buildElement(node); }
+    void visitNode(const Node& node) { visitElement(node); }
 
-    void visitWay(const Way& way) { buildElement(way); }
+    void visitWay(const Way& way) { visitElement(way); }
 
-    void visitArea(const Area& area) { buildElement(area); }
+    void visitArea(const Area& area) { visitElement(area); }
 
-    void visitRelation(const Relation& relation) { buildElement(relation); }
+    void visitRelation(const Relation& relation) { visitElement(relation); }
 
     void complete()
     {
-        for (const auto& pair : builders_) {
-            pair.second->complete();
+        auto terraBuilderPair = visitors_.find(TerrainBuilderName);
+        if (terraBuilderPair != visitors_.end()) {
+            dynamic_cast<TerraBuilder*>(terraBuilderPair->second.get())->complete();
         }
     }
 
 private:
 
-    // Calls appropriate builders for given element
-    void buildElement(const Element& element)
+    // Calls appropriate visitor for given element
+    void visitElement(const Element& element)
     {
         Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
-        std::stringstream ss(style.get(builderKeyId_));
+        std::stringstream ss(style.get(visitorKeyId_));
         while (ss.good())
         {
             std::string name;
             getline(ss, name, ',');
-            element.accept(getBuilder(name));
+            element.accept(getVisitor(name));
         }
     }
 
-    // Gets element builder which is ready for element visiting
-    ElementBuilder& getBuilder(const std::string& name)
+    ElementVisitor& getVisitor(const std::string& name)
     {
-        auto builderPair = builders_.find(name);
-        if (builderPair != builders_.end()) {
-            return *builderPair->second;
+        auto visitorPair = visitors_.find(name);
+        if (visitorPair != visitors_.end()) {
+            return *visitorPair->second;
         }
 
-        auto factory = builderFactoryMap_.find(name);
-        if (factory == builderFactoryMap_.end()) {
-            throw std::domain_error("Unknown element builder");
+        auto factory = visitorFactoryMap_.find(name);
+        if (factory == visitorFactoryMap_.end()) {
+            throw std::domain_error("Unknown element visitor");
         }
 
-        auto builder = factory->second(quadKey_, styleProvider_, meshFunc_, elementFunc_);
-        builders_[name] = builder;
-        return *builder;
+        auto visitor = factory->second(quadKey_, styleProvider_, meshFunc_, elementFunc_);
+        visitors_[name] = visitor;
+        return *visitor;
     }
 
-    BuilderFactoryMap& builderFactoryMap_;
+    utymap::QuadKey quadKey_;
     const StyleProvider& styleProvider_;
     const MeshCallback& meshFunc_;
     const ElementCallback& elementFunc_;
-    utymap::QuadKey quadKey_;
-    std::uint32_t builderKeyId_;
-    std::unordered_map<std::string, std::shared_ptr<ElementBuilder>> builders_;
+    VisitorFactoryMap& visitorFactoryMap_;
+    std::uint32_t visitorKeyId_;
+    std::unordered_map<std::string, std::shared_ptr<ElementVisitor>> visitors_;
 };
 
 public:
 
-    TileBuilderImpl(GeoStore& geoStore, std::uint32_t builderKeyId) :
+    TileBuilderImpl(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
         geoStore_(geoStore),
-        builderKeyId_(builderKeyId)
+        stringTable_(stringTable),
+        eleProvider_(eleProvider),
+        visitorKeyId_(stringTable.getId(BuilderKeyName)),
+        visitorFactory_()
     {
     }
 
-    void registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
+    void registerElementVisitor(const std::string& name, ElementVisitorFactory factory)
     {
-        builderFactory_[name] = factory;
+        visitorFactory_[name] = factory;
     }
 
     void build(const QuadKey& quadKey, const StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
     {
-        AggregateElementBuilder elementVisitor(quadKey, styleProvider, builderFactory_, builderKeyId_, meshFunc, elementFunc);
+        AggregateElemenVisitor elementVisitor(stringTable_, quadKey, styleProvider, eleProvider_, visitorFactory_, visitorKeyId_, meshFunc, elementFunc);
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
     }
 
 private:
-
     GeoStore& geoStore_;
-    std::uint32_t builderKeyId_;
-    BuilderFactoryMap builderFactory_;
+    StringTable& stringTable_;
+    ElevationProvider& eleProvider_;
+    std::uint32_t visitorKeyId_;
+    VisitorFactoryMap visitorFactory_;
 };
 
-void  TileBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
+void TileBuilder::registerElementVisitor(const std::string& name, ElementVisitorFactory factory)
 {
-    pimpl_->registerElementBuilder(name, factory);
+    pimpl_->registerElementVisitor(name, factory);
 }
 
 void TileBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
@@ -137,8 +156,8 @@ void TileBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvid
     pimpl_->build(quadKey, styleProvider, meshFunc, elementFunc);
 }
 
-TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable) :
-    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, stringTable.getId(BuilderKeyName))))
+TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
+    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, stringTable, eleProvider)))
 {
 }
 

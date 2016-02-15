@@ -1,11 +1,11 @@
 #ifndef BUILDERS_EXTERNALBUILDER_HPP_DEFINED
 #define BUILDERS_EXTERNALBUILDER_HPP_DEFINED
 
-#include "builders/ElementBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "meshing/MeshTypes.hpp"
 
@@ -16,7 +16,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way delegate building logic to external code.
-class ExternalBuilder : public ElementBuilder
+class ExternalBuilder : public utymap::entities::ElementVisitor
 {
 public:
 
@@ -32,11 +32,6 @@ public:
     void visitArea(const utymap::entities::Area& area) { elementCallback_(area); }
 
     void visitRelation(const utymap::entities::Relation& relation) { elementCallback_(relation); }
-
-    void complete()
-    {
-        // TODO implement when need
-    }
 
 private:
     std::function<void(const utymap::entities::Element&)> elementCallback_;

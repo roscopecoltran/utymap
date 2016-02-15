@@ -2,11 +2,11 @@
 #define BUILDERS_TERRABUILDER_HPP_DEFINED
 
 #include "QuadKey.hpp"
-#include "builders/ElementBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "entities/ElementVisitor.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "meshing/MeshTypes.hpp"
@@ -19,7 +19,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way build terrain mesh.
-class TerraBuilder : public ElementBuilder
+class TerraBuilder : public utymap::entities::ElementVisitor
 {
 public:
 

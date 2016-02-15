@@ -2,8 +2,9 @@
 #define BUILDERS_TILEBUILDER_HPP_DEFINED
 
 #include "QuadKey.hpp"
-#include "builders/ElementBuilder.hpp"
 #include "entities/Element.hpp"
+#include "entities/ElementVisitor.hpp"
+#include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "meshing/MeshTypes.hpp"
@@ -14,26 +15,32 @@
 
 namespace utymap {
 
-// Responsible for building tile.
+// Responsible for building single tile.
 class TileBuilder
 {
 public:
 
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
-    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const QuadKey&, const utymap::mapcss::StyleProvider&, 
-        const MeshCallback&, const ElementCallback&)> ElementBuilderFactory;
+    typedef std::function<std::shared_ptr<utymap::entities::ElementVisitor>(const QuadKey&, 
+                                                                            const utymap::mapcss::StyleProvider&, 
+                                                                            const MeshCallback&, 
+                                                                            const ElementCallback&)> ElementVisitorFactory;
 
-    TileBuilder(utymap::index::GeoStore& geoStore, utymap::index::StringTable& stringTable);
+    TileBuilder(utymap::index::GeoStore& geoStore, 
+                utymap::index::StringTable& stringTable,
+                utymap::heightmap::ElevationProvider& eleProvider);
 
     ~TileBuilder();
 
     // Registers factory method for element builder.
-    void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
+    void registerElementVisitor(const std::string& name, ElementVisitorFactory factory);
 
     // Builds tile for given quadkey.
-    void build(const utymap::QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider,
-        MeshCallback meshFunc, ElementCallback elementFunc);
+    void build(const utymap::QuadKey& quadKey, 
+               const utymap::mapcss::StyleProvider& styleProvider,
+               MeshCallback meshFunc, 
+               ElementCallback elementFunc);
 
 
 private:

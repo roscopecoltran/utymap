@@ -7,7 +7,6 @@ set(HEADER_FILES
                 Exceptions.hpp
                 GeoCoordinate.hpp
                 QuadKey.hpp
-                builders/ElementBuilder.hpp
                 builders/ExternalBuilder.hpp
                 builders/TerraBuilder.hpp
                 builders/TileBuilder.hpp
