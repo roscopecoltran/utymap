@@ -23,7 +23,6 @@ class TerraBuilder : public ElementBuilder
 public:
 
     TerraBuilder(utymap::index::StringTable& stringTable,
-                 const utymap::mapcss::StyleProvider& styleProvider, 
                  utymap::heightmap::ElevationProvider& eleProvider,
                  std::function<void(const utymap::meshing::Mesh&)> callback);
 
@@ -37,7 +36,8 @@ public:
 
     void visitRelation(const utymap::entities::Relation&);
 
-    void prepare(const utymap::QuadKey& quadKey);
+    void prepare(const utymap::QuadKey& quadKey,
+                 const utymap::mapcss::StyleProvider& styleProvider);
 
     void complete();
 

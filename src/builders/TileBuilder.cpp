@@ -32,18 +32,22 @@ private:
 class AggregateElementBuilder : public ElementBuilder
 {
 public:
-    AggregateElementBuilder(const StyleProvider& styleProvider, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
-        const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
-        styleProvider_(styleProvider),
+    AggregateElementBuilder(BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId,
+                const MeshCallback& meshFunc, const ElementCallback& elementFunc) :
         builderFactoryMap_(builderFactoryMap),
         builderKeyId_(builderKeyId),
         meshFunc_(meshFunc),
         elementFunc_(elementFunc),
+        styleProviderPtr_(nullptr),
         quadKey_()
     {
     }
 
-    void prepare(const utymap::QuadKey& quadKey) { quadKey_ = quadKey; }
+    void prepare(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider) 
+    { 
+        quadKey_ = quadKey; 
+        styleProviderPtr_ = &styleProvider;
+    }
 
     void visitNode(const Node& node) { buildElement(node); }
 
@@ -65,7 +69,7 @@ private:
     // Calls appropriate builders for given element
     void buildElement(const Element& element)
     {
-        Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
+        Style style = styleProviderPtr_->forElement(element, quadKey_.levelOfDetail);
         std::stringstream ss(style.get(builderKeyId_));
         while (ss.good())
         {
@@ -90,12 +94,12 @@ private:
 
         auto builder = factory->second(meshFunc_, elementFunc_);
         builders_[name] = builder;
-        builder->prepare(quadKey_);
+        builder->prepare(quadKey_, *styleProviderPtr_);
         return *builder;
     }
 
     BuilderFactoryMap& builderFactoryMap_;
-    const StyleProvider& styleProvider_;
+    const StyleProvider* styleProviderPtr_;
     const MeshCallback& meshFunc_;
     const ElementCallback& elementFunc_;
     utymap::QuadKey quadKey_;
@@ -105,9 +109,8 @@ private:
 
 public:
 
-    TileBuilderImpl(GeoStore& geoStore, const StyleProvider& styleProvider, std::uint32_t builderKeyId) :
+    TileBuilderImpl(GeoStore& geoStore, std::uint32_t builderKeyId) :
         geoStore_(geoStore),
-        styleProvider_(styleProvider),
         builderKeyId_(builderKeyId)
     {
     }
@@ -117,18 +120,17 @@ public:
         builderFactory_[name] = factory;
     }
 
-    void build(const QuadKey& quadKey, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
+    void build(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
     {
-        AggregateElementBuilder elementVisitor(styleProvider_, builderFactory_, builderKeyId_, meshFunc, elementFunc);
-        elementVisitor.prepare(quadKey);
-        geoStore_.search(quadKey, styleProvider_, elementVisitor);
+        AggregateElementBuilder elementVisitor(builderFactory_, builderKeyId_, meshFunc, elementFunc);
+        elementVisitor.prepare(quadKey, styleProvider);
+        geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
     }
 
 private:
 
     GeoStore& geoStore_;
-    const StyleProvider& styleProvider_;
     std::uint32_t builderKeyId_;
     BuilderFactoryMap builderFactory_;
 };
@@ -138,13 +140,13 @@ void  TileBuilder::registerElementBuilder(const std::string& name, ElementBuilde
     pimpl_->registerElementBuilder(name, factory);
 }
 
-void TileBuilder::build(const QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc)
+void TileBuilder::build(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
 {
-    pimpl_->build(quadKey, meshFunc, elementFunc);
+    pimpl_->build(quadKey, styleProvider, meshFunc, elementFunc);
 }
 
-TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable, const StyleProvider& styleProvider) :
-    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, styleProvider, stringTable.getId(BuilderKeyName))))
+TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable) :
+    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, stringTable.getId(BuilderKeyName))))
 {
 }
 

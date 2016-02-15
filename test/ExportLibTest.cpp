@@ -8,8 +8,7 @@
 struct ExportLibFixture {
     ExportLibFixture()
     {
-        ::configure(TEST_ASSETS_PATH, TEST_MAPCSS_DEFAULT, TEST_ASSETS_PATH,
-            [](const char* message) {
+        ::configure(TEST_ASSETS_PATH, TEST_ASSETS_PATH, [](const char* message) {
             BOOST_TEST_FAIL(message);
         });
         BOOST_TEST_MESSAGE("setup fixture");
@@ -18,11 +17,11 @@ struct ExportLibFixture {
             BOOST_CHECK(msg == nullptr);
         };
 
-        ::addToInMemoryStore(TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
-        ::addToInMemoryStore(TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
-        ::addToInMemoryStore(TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
+        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
+        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
+        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
         //::addToInMemoryStore(TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
-        ::addToInMemoryStore(TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
+        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
     }
 
     ~ExportLibFixture()
@@ -40,7 +39,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoaded_ThenCallbacksAreCalled)
 {
     for (int i = 0; i <= 1; ++i) {
         for (int j = 0; j <= 1; j++) {
-            ::loadTile(i, j, 1,
+            ::loadTile(TEST_MAPCSS_DEFAULT, i, j, 1,
             [](const char* name,
                const double* vertices, int vertexCount,
                const int* triangles, int triCount,

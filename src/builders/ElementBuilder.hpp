@@ -3,6 +3,7 @@
 
 #include "QuadKey.hpp"
 #include "entities/ElementVisitor.hpp"
+#include "mapcss/StyleProvider.hpp"
 
 namespace utymap { namespace builders {
 
@@ -11,7 +12,8 @@ class ElementBuilder: public utymap::entities::ElementVisitor
 {
 public:
     // This method called before first matched element is visited.
-    virtual void prepare(const utymap::QuadKey& quadKey) = 0;
+    virtual void prepare(const utymap::QuadKey& quadKey, 
+                         const utymap::mapcss::StyleProvider& styleProvider) = 0;
 
     // This method called once all elements are visited.
     virtual void complete() = 0;

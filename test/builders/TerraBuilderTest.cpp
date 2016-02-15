@@ -47,7 +47,7 @@ struct Terrain_TerraBuilderFixture
 
     void setCallback(const MeshCallback& callback)
     {
-        builderPtr = new TerraBuilder(*stringTablePtr, *styleProviderPtr, eleProvider, callback);
+        builderPtr = new TerraBuilder(*stringTablePtr, eleProvider, callback);
     }
 
     ~Terrain_TerraBuilderFixture()
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
         BOOST_CHECK_GT(mesh.vertices.size(), 0);
         BOOST_CHECK_GT(mesh.triangles.size(), 0);
     });
-    builderPtr->prepare(QuadKey { 1, 0, 0 });
+    builderPtr->prepare(QuadKey{ 1, 0, 0 }, *styleProviderPtr);
     ElementUtils::createElement<Area>(*stringTablePtr, 
         { { "natural", "water" } },
         { { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } }).accept(*builderPtr);

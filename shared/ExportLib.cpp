@@ -21,19 +21,37 @@
 #include "meshing/MeshTypes.hpp"
 
 #include <cstdint>
-#include <string>
 #include <fstream>
+#include <string>
+#include <memory>
+#include <unordered_map>
 
 static utymap::TileBuilder* tileLoaderPtr = nullptr;
 static utymap::index::GeoStore* geoStorePtr = nullptr;
 static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
 static utymap::index::StringTable* stringTablePtr = nullptr;
-static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
+//static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
 static utymap::heightmap::ElevationProvider* eleProviderPtr = nullptr;
+
+static std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders;
 
 const std::string InMemoryStorageKey = "InMemory";
 const std::string PersistentStorageKey = "OnDisk";
+
+
+std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& path)
+{
+    auto pair = styleProviders.find(path);
+    if (pair != styleProviders.end())
+        return pair->second;
+
+    std::ifstream styleFile(path);
+    utymap::mapcss::MapCssParser parser;
+    utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
+    styleProviders[path] = std::shared_ptr<utymap::mapcss::StyleProvider>(new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr));
+    return styleProviders[path];
+}
 
 extern "C"
 {
@@ -51,17 +69,10 @@ extern "C"
 
     // Composes object graph.
     void EXPORT_API configure(const char* stringPath, // path to string table directory
-                              const char* stylePath,   // path to mapcss file
                               const char* dataPath,    // path to index directory
                               OnError* errorCallback)
     {
-        std::ifstream styleFile(stylePath);
-        utymap::mapcss::MapCssParser parser;
-        utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-
         stringTablePtr = new utymap::index::StringTable(stringPath);
-        styleProviderPtr = new utymap::mapcss::StyleProvider(stylesheet, *stringTablePtr);
-
         inMemoryStorePtr = new utymap::index::InMemoryElementStore(*stringTablePtr);
         persistentStorePtr = new utymap::index::PersistentElementStore(dataPath, *stringTablePtr);
 
@@ -70,13 +81,13 @@ extern "C"
         geoStorePtr->registerStore(PersistentStorageKey, *persistentStorePtr);
 
         eleProviderPtr = new utymap::heightmap::FlatElevationProvider();
-        tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr, *styleProviderPtr);
+        tileLoaderPtr = new utymap::TileBuilder(*geoStorePtr, *stringTablePtr);
 
         // register predefined element builders
         tileLoaderPtr->registerElementBuilder("terrain", [&](const utymap::TileBuilder::MeshCallback& meshFunc,
                                                              const utymap::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(
-                new utymap::builders::TerraBuilder(*stringTablePtr, *styleProviderPtr, *eleProviderPtr, meshFunc));
+                new utymap::builders::TerraBuilder(*stringTablePtr, *eleProviderPtr, meshFunc));
         });
     }
 
@@ -89,6 +100,10 @@ extern "C"
         });
     }
 
+    void EXPORT_API registerStylesheet(const char* path) {
+        getStyleProvider(path);
+    }
+
     void EXPORT_API cleanup()
     {
         delete tileLoaderPtr;
@@ -96,23 +111,23 @@ extern "C"
         delete persistentStorePtr;
         delete inMemoryStorePtr;
         delete stringTablePtr;
-        delete styleProviderPtr;
         delete eleProviderPtr;
     }
 
     // TODO for single element as well
 
-    void EXPORT_API addToPersistentStore(const char* path, int startLod, int endLod, OnError* errorCallback)
+    void EXPORT_API addToPersistentStore(const char* styleFile, const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(PersistentStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
+        geoStorePtr->add(PersistentStorageKey, path, utymap::index::LodRange(startLod, endLod), *getStyleProvider(styleFile).get());
     }
 
-    void EXPORT_API addToInMemoryStore(const char* path, int startLod, int endLod, OnError* errorCallback)
+    void EXPORT_API addToInMemoryStore(const char* styleFile, const char* path, int startLod, int endLod, OnError* errorCallback)
     {
-        geoStorePtr->add(InMemoryStorageKey, path, utymap::index::LodRange(startLod, endLod), *styleProviderPtr);
+        geoStorePtr->add(InMemoryStorageKey, path, utymap::index::LodRange(startLod, endLod), *getStyleProvider(styleFile).get());
     }
 
-    void EXPORT_API loadTile(int tileX, int tileY, int levelOfDetail,
+    void EXPORT_API loadTile(const char* styleFile,
+                             int tileX, int tileY, int levelOfDetail,
                              OnMeshBuilt* meshCallback,
                              OnElementLoaded* elementCallback,
                              OnError* errorCallback)
@@ -122,11 +137,12 @@ extern "C"
         quadKey.tileY = tileY;
         quadKey.levelOfDetail = levelOfDetail;
 
-        tileLoaderPtr->build(quadKey, [&meshCallback](const utymap::meshing::Mesh& mesh) {
-            meshCallback(mesh.name.data(),
-                mesh.vertices.data(), mesh.vertices.size(),
-                mesh.triangles.data(), mesh.triangles.size(),
-                mesh.colors.data(), mesh.colors.size());
+        tileLoaderPtr->build(quadKey, *getStyleProvider(styleFile).get(), 
+            [&meshCallback](const utymap::meshing::Mesh& mesh) {
+                meshCallback(mesh.name.data(),
+                    mesh.vertices.data(), mesh.vertices.size(),
+                    mesh.triangles.data(), mesh.triangles.size(),
+                    mesh.colors.data(), mesh.colors.size());
         }, [&elementCallback](const utymap::entities::Element& element) {
             // TODO call elementCallback
         });

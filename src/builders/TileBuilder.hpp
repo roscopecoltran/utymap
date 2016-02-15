@@ -23,9 +23,7 @@ public:
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
     typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const MeshCallback&, const ElementCallback&)> ElementBuilderFactory;
 
-    TileBuilder(utymap::index::GeoStore& geoStore,
-               utymap::index::StringTable& stringTable,
-               const utymap::mapcss::StyleProvider& styleProvider);
+    TileBuilder(utymap::index::GeoStore& geoStore, utymap::index::StringTable& stringTable);
 
     ~TileBuilder();
 
@@ -33,7 +31,8 @@ public:
     void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
 
     // Builds tile for given quadkey.
-    void build(const utymap::QuadKey& quadKey, MeshCallback meshFunc, ElementCallback elementFunc);
+    void build(const utymap::QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider,
+        MeshCallback meshFunc, ElementCallback elementFunc);
 
 
 private:
