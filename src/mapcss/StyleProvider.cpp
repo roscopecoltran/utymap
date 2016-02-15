@@ -101,7 +101,7 @@ private:
     }
 
     // tries to find tag which satisfy condition using binary search.
-    inline bool match_tags(TagIterator begin, TagIterator end, const ::Condition& condition)
+    bool match_tags(TagIterator begin, TagIterator end, const ::Condition& condition)
     {
         while (begin < end)
         {
@@ -117,7 +117,7 @@ private:
     }
 
     // Builds style object. More expensive to call than check.
-    inline void build(const std::vector<Tag>& tags, const FilterMap& filters)
+    void build(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {
@@ -140,7 +140,7 @@ private:
     }
 
     // Just checks whether style can be created without constructing actual style.
-    inline void check(const std::vector<Tag>& tags, const FilterMap& filters)
+    void check(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {

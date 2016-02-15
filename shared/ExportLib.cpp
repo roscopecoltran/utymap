@@ -95,6 +95,7 @@ extern "C"
         });
     }
 
+    // Registers stylesheet in advance.
     void EXPORT_API registerStylesheet(const char* path) {
         getStyleProvider(path);
     }
