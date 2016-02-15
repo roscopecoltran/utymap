@@ -237,7 +237,7 @@ ColorGradient GradientUtils::parseGradient(const std::string& gradientStr)
 
     for (std::sregex_iterator iter = begin; iter != end; ++iter) {
         std::stringstream ss(iter->str());
-        std::pair<float, Color> pair(iter == begin ? 0 : 1, 0);
+        std::pair<double, Color> pair(iter == begin ? 0 : 1, 0);
         std::string partStr;
         int part = 0;
         while (std::getline(ss, partStr, ' ')) {
@@ -247,7 +247,7 @@ ColorGradient GradientUtils::parseGradient(const std::string& gradientStr)
             }
             // NOTE assume that for all intermediate colors time is always defined
             // and skipped for first and last.
-            pair.first = std::stof(partStr.substr(0, partStr.size() - 1)) / 100.;
+            pair.first = std::stod(partStr.substr(0, partStr.size() - 1)) / 100.;
         }
         data.push_back(pair);
     }

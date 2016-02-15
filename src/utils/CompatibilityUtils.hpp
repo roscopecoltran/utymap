@@ -14,7 +14,7 @@ namespace std
         return static_cast<std::ostringstream*>( &(std::ostringstream() << t) )->str();
     }
 
-    inline double stof(const std::string &Text)
+    inline double stod(const std::string &Text)
     {
         std::istringstream ss(Text);
         double result;
