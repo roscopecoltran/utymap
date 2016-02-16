@@ -27,7 +27,7 @@ namespace utymap { namespace utils {
     inline std::string getString(const std::string& key,
                                  utymap::index::StringTable& stringTable,
                                  const utymap::mapcss::Style& style,
-                                 const std::string defaultValue)
+                                 const std::string& defaultValue)
     {
         return utymap::utils::hasKey(key, stringTable, style) ? getString(key, stringTable, style) : defaultValue;
     }
