@@ -4471,13 +4471,30 @@ void ClipperEx::moveSubjectToClip()
             e = e->Next;
         } while (e->Next && e != edge);
     }
-    for (auto lm = m_MinimaList.begin(); lm != m_MinimaList.end(); ++lm)
-    {
-        TEdge* e = lm->LeftBound;
-        if (e) e->PolyTyp = ptClip;
+}
 
-        e = lm->RightBound;
-        if (e) e->PolyTyp = ptClip;
+void ClipperEx::removeSubject()
+{
+    for (auto it = m_edges.begin(); it != m_edges.end();)
+    {
+        if ((*it)->PolyTyp == ptClip)
+        {
+            ++it;
+            continue;
+        }
+        TEdge* e = *it;
+        it = m_edges.erase(it);
+        delete[] e;
+    }
+
+    for (auto it = m_MinimaList.begin(); it != m_MinimaList.end();)
+    {
+        if (it->LeftBound->PolyTyp == ptClip)
+        {
+            ++it;
+            continue;
+        }
+        it = m_MinimaList.erase(it);
     }
 }
 

@@ -392,6 +392,7 @@ class ClipperEx : public Clipper
 {
 public:
     void moveSubjectToClip();
+    void removeSubject();
 };
 
 } //ClipperLib namespace

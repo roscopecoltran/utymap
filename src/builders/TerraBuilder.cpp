@@ -174,7 +174,7 @@ public:
 
         buildLayers(style);
         buildBackground(style);
-
+        
         mesh_.name = "terrain";
         callback_(mesh_);
     }
@@ -188,6 +188,51 @@ private:
             case 1: splitter_.setParams(Scale, 3, Tolerance); break;
             default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
         };
+    }
+
+    // process all found layers.
+    void buildLayers(const Style& style)
+    {
+        // 1. process layers: regions with shared properties.
+        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, stringTable_, style));
+        while (ss.good())
+        {
+            std::string name;
+            getline(ss, name, ',');
+            auto layer = layers_.find(name);
+            if (layer != layers_.end()) {
+                Properties properties = createRegionProperties(style, name + "-");
+                buildFromRegions(layer->second, properties);
+                layers_.erase(layer);
+            }
+        }
+
+        // 2. Process the rest: each region has aready its own properties.
+        for (auto& layer : layers_) {
+            for (auto& region : layer.second) {
+                buildFromPaths(region.points, region.properties, false);
+            }
+        }
+    }
+
+    // process the rest area.
+    void buildBackground(const Style& style)
+    {
+        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        Path tileRect;
+        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
+        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
+        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
+        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
+
+        clipper_.AddPath(tileRect, ptSubject, true);
+        clipper_.AddPaths(backgroundClipArea_, ptClip, true);
+        Paths background;
+        clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
+        clipper_.Clear();
+
+        if (!background.empty())
+            populateMesh(createRegionProperties(style, ""), background);
     }
 
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -235,59 +280,22 @@ private:
         buildFromPaths(result, properties);
     }
 
-    void buildFromPaths(Paths& path, const Properties& properties)
+    void buildFromPaths(Paths& paths, const Properties& properties, bool moveSubjectToClip = true)
     {
-        clipper_.AddPaths(path, ptSubject, true);
-        path.clear();
-        clipper_.Execute(ctDifference, path, pftPositive, pftPositive);
-        clipper_.moveSubjectToClip();
-        populateMesh(properties, path);
-    }
-
-    // process all found layers.
-    void buildLayers(const Style& style)
-    {
-        // 1. process layers: regions with shared properties.
-        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, stringTable_, style));
-        while (ss.good())
-        {
-            std::string name;
-            getline(ss, name, ',');
-            auto layer = layers_.find(name);
-            if (layer != layers_.end()) {
-                Properties properties = createRegionProperties(style, name + "-");
-                buildFromRegions(layer->second, properties);
-                layers_.erase(layer);
-            }
+        clipper_.AddPaths(paths, ptSubject, true);
+        paths.clear();
+        clipper_.Execute(ctDifference, paths, pftPositive, pftPositive);
+        // NOTE: this is performance optimization: we cannot make all 
+        // polygons to be clipping as it slows down clipper dramatically.
+        if (moveSubjectToClip)
+            clipper_.moveSubjectToClip();
+        else {
+            backgroundClipArea_.insert(backgroundClipArea_.end(), paths.begin(), paths.end());
+            clipper_.removeSubject();
         }
-
-        // 2. Process the rest: each region has aready its own properties.
-        for (auto& layer : layers_) {
-            for (auto& region : layer.second) {
-                buildFromPaths(region.points, region.properties);
-            }
-        }
+        populateMesh(properties, paths);
     }
-
-    // process the rest area.
-    void buildBackground(const Style& style)
-    {
-        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
-        Path tileRect;
-        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
-        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
-        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
-        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
-
-        clipper_.AddPath(tileRect, ptSubject, true);
-        Paths background;
-        clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
-        clipper_.Clear();
-
-        if (!background.empty())
-            populateMesh(createRegionProperties(style, ""), background);
-    }
-    
+   
     void populateMesh(const Properties& properties, Paths& paths)
     {
         ClipperLib::SimplifyPolygons(paths);
@@ -421,6 +429,7 @@ MeshBuilder meshBuilder_;
 QuadKey quadKey_;
 Rectangle rect_;
 Layers layers_;
+Paths backgroundClipArea_;
 Mesh mesh_;
 };
 
