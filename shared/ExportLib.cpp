@@ -31,7 +31,6 @@ static utymap::index::GeoStore* geoStorePtr = nullptr;
 static utymap::index::InMemoryElementStore* inMemoryStorePtr = nullptr;
 static utymap::index::PersistentElementStore* persistentStorePtr = nullptr;
 static utymap::index::StringTable* stringTablePtr = nullptr;
-//static utymap::mapcss::StyleProvider* styleProviderPtr = nullptr;
 static utymap::heightmap::ElevationProvider* eleProviderPtr = nullptr;
 
 static std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders;
@@ -108,6 +107,7 @@ extern "C"
         delete inMemoryStorePtr;
         delete stringTablePtr;
         delete eleProviderPtr;
+        styleProviders.clear();
     }
 
     // TODO for single element as well
