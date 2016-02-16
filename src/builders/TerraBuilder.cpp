@@ -42,9 +42,10 @@ struct Properties
     double colorNoiseFreq;
     double heightOffset;
     double maxArea;
+    std::string meshName;
 
     Properties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
-        heightOffset(0), maxArea(0)
+        heightOffset(0), maxArea(0), meshName()
     {
     }
 };
@@ -70,6 +71,7 @@ const static std::string MaxAreaKey = "max-area";
 const static std::string WidthKey = "width";
 const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
+const static std::string MeshNameKey = "mesh-name";
 
 class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
@@ -163,7 +165,7 @@ public:
     // builds tile mesh using data provided.
     void build()
     {
-        configureSplitter(quadKey_.levelOfDetail);
+         configureSplitter(quadKey_.levelOfDetail);
 
         Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
         BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
@@ -173,6 +175,7 @@ public:
         buildLayers(style);
         buildBackground(style);
 
+        mesh_.name = "terrain";
         callback_(mesh_);
     }
 private:
@@ -207,15 +210,14 @@ private:
     Properties createRegionProperties(const Style& style, const std::string& prefix)
     {
         Properties properties;
+        // required
         properties.eleNoiseFreq = utymap::utils::getDouble(prefix + EleNoiseFreqKey, stringTable_, style);
         properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, stringTable_, style);
         properties.gradientKey = utymap::utils::getString(prefix + GradientKey, stringTable_, style);
         properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, stringTable_, style);
-
-        auto heightOffset = prefix + HeightKey;
-        properties.heightOffset = utymap::utils::hasKey(heightOffset, stringTable_, style)
-            ? utymap::utils::getDouble(heightOffset, stringTable_, style)
-            : 0;
+        // optional
+        properties.heightOffset = utymap::utils::getDouble(prefix + HeightKey, stringTable_, style, 0);
+        properties.meshName = utymap::utils::getString(prefix + MeshNameKey, stringTable_, style, "");
 
         return std::move(properties);
     }
@@ -335,7 +337,7 @@ private:
 
     void fillMesh(const Properties& properties, Polygon& polygon)
     {
-        Mesh regionMesh = meshBuilder_.build(polygon, MeshBuilder::Options
+        Mesh polygonMesh = meshBuilder_.build(polygon, MeshBuilder::Options
         {
             properties.maxArea,
             properties.eleNoiseFreq,
@@ -345,18 +347,24 @@ private:
             /* segmentSplit=*/ 0
         });
 
-        auto startVertIndex = mesh_.vertices.size() / 3;
-        mesh_.vertices.insert(mesh_.vertices.end(),
-            regionMesh.vertices.begin(),
-            regionMesh.vertices.end());
-
-        for (const auto& tri : regionMesh.triangles) {
-            mesh_.triangles.push_back(startVertIndex + tri);
+        if (properties.meshName != "") {
+            polygonMesh.name = properties.meshName;
+            callback_(polygonMesh);
         }
+        else {
+            auto startVertIndex = mesh_.vertices.size() / 3;
+            mesh_.vertices.insert(mesh_.vertices.end(),
+                polygonMesh.vertices.begin(),
+                polygonMesh.vertices.end());
 
-        mesh_.colors.insert(mesh_.colors.end(),
-            regionMesh.colors.begin(),
-            regionMesh.colors.end());
+            for (const auto& tri : polygonMesh.triangles) {
+                mesh_.triangles.push_back(startVertIndex + tri);
+            }
+
+            mesh_.colors.insert(mesh_.colors.end(),
+                polygonMesh.colors.begin(),
+                polygonMesh.colors.end());
+        }
     }
 
     void processHeightOffset(const Properties& properties, const Points& points, bool isHole)

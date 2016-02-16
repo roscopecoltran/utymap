@@ -94,6 +94,7 @@ area|z1[sr_geounit=Belarus],
 relation|z1[sr_geounit=Belarus],
 area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
+    mesh-name: ussr;
     color: gradient(red);
     height: 3;
 }
