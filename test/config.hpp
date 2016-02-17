@@ -17,3 +17,4 @@
 #define TEST_SHAPE_NE_110M_LAKES TEST_SHAPE_NE_110M "ne_110m_lakes"
 #define TEST_SHAPE_NE_110M_ADMIN TEST_SHAPE_NE_110M "ne_110m_admin_0_scale_rank"
 #define TEST_SHAPE_NE_110M_BORDERS TEST_SHAPE_NE_110M "ne_110m_admin_0_boundary_lines_land"
+#define TEST_SHAPE_NE_110M_POPULATED_PLACES TEST_SHAPE_NE_110M "ne_110m_populated_places_simple"
