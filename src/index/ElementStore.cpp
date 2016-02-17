@@ -22,6 +22,7 @@ using namespace utymap::mapcss;
 namespace utymap { namespace index {
 
 const static double Scale = 1E8; // max precision for Lat/Lon
+const static std::string ClipKey = "clip";
 
 // Creates bounding box of given element.
 struct BoundingBoxVisitor : public ElementVisitor
@@ -330,7 +331,7 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
-    uint32_t clipKeyId = stringTable_.getId("clip");
+    uint32_t clipKeyId = stringTable_.getId(ClipKey);
     for (int lod = range.start; lod <= range.end; ++lod) {
         // skip element for this lod
         if (!styleProvider.hasStyle(element, lod)) 
