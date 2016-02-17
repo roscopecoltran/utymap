@@ -549,8 +549,8 @@ bool SlopesEqual(const TEdge &e1, const TEdge &e2, bool UseFullInt64Range)
 }
 //------------------------------------------------------------------------------
 
-bool SlopesEqual(const IntPoint pt1, const IntPoint pt2,
-  const IntPoint pt3, bool UseFullInt64Range)
+bool SlopesEqual(const IntPoint& pt1, const IntPoint& pt2,
+  const IntPoint& pt3, bool UseFullInt64Range)
 {
 #ifndef use_int32
   if (UseFullInt64Range)
@@ -561,8 +561,8 @@ bool SlopesEqual(const IntPoint pt1, const IntPoint pt2,
 }
 //------------------------------------------------------------------------------
 
-bool SlopesEqual(const IntPoint pt1, const IntPoint pt2,
-  const IntPoint pt3, const IntPoint pt4, bool UseFullInt64Range)
+bool SlopesEqual(const IntPoint& pt1, const IntPoint& pt2,
+    const IntPoint& pt3, const IntPoint& pt4, bool UseFullInt64Range)
 {
 #ifndef use_int32
   if (UseFullInt64Range)
@@ -579,7 +579,7 @@ inline bool IsHorizontal(TEdge &e)
 }
 //------------------------------------------------------------------------------
 
-inline double GetDx(const IntPoint pt1, const IntPoint pt2)
+inline double GetDx(const IntPoint& pt1, const IntPoint& pt2)
 {
   return (pt1.Y == pt2.Y) ?
     HORIZONTAL : (double)(pt2.X - pt1.X) / (pt2.Y - pt1.Y);
@@ -852,8 +852,8 @@ OutPt* GetBottomPt(OutPt *pp)
 }
 //------------------------------------------------------------------------------
 
-bool Pt2IsBetweenPt1AndPt3(const IntPoint pt1,
-  const IntPoint pt2, const IntPoint pt3)
+bool Pt2IsBetweenPt1AndPt3(const IntPoint& pt1,
+    const IntPoint& pt2, const IntPoint& pt3)
 {
   if ((pt1 == pt3) || (pt1 == pt2) || (pt3 == pt2))
     return false;
@@ -1816,7 +1816,7 @@ void Clipper::CopyAELToSEL()
 }
 //------------------------------------------------------------------------------
 
-void Clipper::AddJoin(OutPt *op1, OutPt *op2, const IntPoint OffPt)
+void Clipper::AddJoin(OutPt *op1, OutPt *op2, const IntPoint& OffPt)
 {
   Join* j = new Join;
   j->OutPt1 = op1;
@@ -1842,7 +1842,7 @@ void Clipper::ClearGhostJoins()
 }
 //------------------------------------------------------------------------------
 
-void Clipper::AddGhostJoin(OutPt *op, const IntPoint OffPt)
+void Clipper::AddGhostJoin(OutPt *op, const IntPoint& OffPt)
 {
   Join* j = new Join;
   j->OutPt1 = op;
@@ -2863,7 +2863,7 @@ void Clipper::DoMaxima(TEdge *e)
   }
   else if( e->OutIdx >= 0 && eMaxPair->OutIdx >= 0 )
   {
-    if (e->OutIdx >= 0) AddLocalMaxPoly(e, eMaxPair, e->Top);
+    AddLocalMaxPoly(e, eMaxPair, e->Top);
     DeleteFromAEL(e);
     DeleteFromAEL(eMaxPair);
   }
@@ -3217,7 +3217,7 @@ OutPt* DupOutPt(OutPt* outPt, bool InsertAfter)
 //------------------------------------------------------------------------------
 
 bool JoinHorz(OutPt* op1, OutPt* op1b, OutPt* op2, OutPt* op2b,
-  const IntPoint Pt, bool DiscardLeft)
+    const IntPoint& Pt, bool DiscardLeft)
 {
   Direction Dir1 = (op1->Pt.X > op1b->Pt.X ? dRightToLeft : dLeftToRight);
   Direction Dir2 = (op2->Pt.X > op2b->Pt.X ? dRightToLeft : dLeftToRight);
@@ -4205,7 +4205,7 @@ bool SlopesNearCollinear(const IntPoint& pt1,
 }
 //------------------------------------------------------------------------------
 
-bool PointsAreClose(IntPoint pt1, IntPoint pt2, double distSqrd)
+bool PointsAreClose(const IntPoint& pt1, const IntPoint& pt2, double distSqrd)
 {
     double Dx = (double)pt1.X - pt2.X;
     double dy = (double)pt1.Y - pt2.Y;
@@ -4355,7 +4355,7 @@ void MinkowskiSum(const Path& pattern, const Path& path, Paths& solution, bool p
 }
 //------------------------------------------------------------------------------
 
-void TranslatePath(const Path& input, Path& output, IntPoint delta) 
+void TranslatePath(const Path& input, Path& output, const IntPoint& delta) 
 {
   //precondition: input != output
   output.resize(input.size());
@@ -4497,5 +4497,5 @@ void ClipperEx::removeSubject()
         it = m_MinimaList.erase(it);
     }
 }
-
+ 
 } //ClipperLib namespace
