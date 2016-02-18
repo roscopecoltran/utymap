@@ -14,27 +14,26 @@ namespace utymap { namespace mapcss {
 // Represents style for element.
 struct Style
 {
+    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations;
+
     inline bool has(uint32_t key) const 
     {
-        return declarations_.find(key) != declarations_.end();
+        return declarations.find(key) != declarations.end();
     }
 
     inline void put(const uint32_t key, const std::shared_ptr<std::string>& value)
     {
-        declarations_[key] = value;
+        declarations[key] = value;
     }
 
     inline std::string& get(const uint32_t key) const
     {
-        auto it = declarations_.find(key);
-        if (it == declarations_.end())
+        auto it = declarations.find(key);
+        if (it == declarations.end())
             throw MapCssException(std::string("Cannot find declaration with the key:") + std::to_string(key));
 
         return *it->second;
     }
-
-private:
-    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations_;
 };
 
 }}
