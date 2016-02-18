@@ -99,3 +99,8 @@ relation|z1[sr_geounit=Ukraine] {
     color: gradient(red);
     height: 3;
 }
+
+node|z1[featurecla=Populated place],
+node|z1[featurecla=Admin-0 capital] {
+     builders: place;
+}

@@ -22,6 +22,7 @@ struct ExportLibFixture {
         ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
         //::addToInMemoryStore(TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
         ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
+        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
     }
 
     ~ExportLibFixture()
