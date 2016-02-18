@@ -1,4 +1,4 @@
-find_package (Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
+find_package (Boost COMPONENTS unit_test_framework REQUIRED)
 
 # Define test assets path
 file (READ ${TEST_SOURCE}/config.hpp FILE_CONTENT)
@@ -48,8 +48,6 @@ add_executable (TestLauncher
 
 target_link_libraries (TestLauncher
                         UtyMap
-                        ${Boost_FILESYSTEM_LIBRARY}
-                        ${Boost_SYSTEM_LIBRARY}
                         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                         ${PROTOBUF_LIBRARY}
                         ${ZLIB_LIBRARY}
