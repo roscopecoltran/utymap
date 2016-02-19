@@ -17,6 +17,10 @@ public:
 
     // Creates instance of StringTable using file path provided.
     StringTable(const std::string& path);
+
+    StringTable(const StringTable&) = delete;
+    StringTable& operator=(StringTable const&) = delete;
+
     ~StringTable();
 
     // Gets id of given string.

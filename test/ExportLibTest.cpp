@@ -12,17 +12,30 @@ struct ExportLibFixture {
             BOOST_TEST_FAIL(message);
         });
         BOOST_TEST_MESSAGE("setup fixture");
-        auto callback = [](const char* msg)
-        {
-            BOOST_CHECK(msg == nullptr);
-        };
+        ::registerElementVisitor("place");
+    }
 
-        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
-        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
-        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
-        //::addToInMemoryStore(TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
-        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
-        ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
+    void loadTiles(int startX, int endX, int startY, int endY)
+    {
+        for (int i = startX; i <= endX; ++i) {
+            for (int j = startY; j <= endY; j++) {
+                ::loadTile(TEST_MAPCSS_DEFAULT, i, j, 1,
+                    [](const char* name, const double* vertices, int vertexCount,
+                       const int* triangles, int triCount, const int* colors, int colorCount) {
+                    BOOST_CHECK_GT(vertexCount, 0);
+                    BOOST_CHECK_GT(triCount, 0);
+                    BOOST_CHECK_GT(colorCount, 0);
+                },
+                    [](uint64_t id, const char** tags, int size, const double* vertices,
+                       int vertexCount, const char** style, int styleSize) {
+                    // TODO basic checks
+                },
+                    [](const char* message) {
+                    BOOST_TEST_FAIL(message);
+                }
+                );
+            }
+        }
     }
 
     ~ExportLibFixture()
@@ -36,31 +49,24 @@ struct ExportLibFixture {
 
 BOOST_FIXTURE_TEST_SUITE(ExportLib, ExportLibFixture)
 
-BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoaded_ThenCallbacksAreCalled)
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacksAreCalled)
 {
-    for (int i = 0; i <= 1; ++i) {
-        for (int j = 0; j <= 1; j++) {
-            ::loadTile(TEST_MAPCSS_DEFAULT, i, j, 1,
-            [](const char* name,
-               const double* vertices, int vertexCount,
-               const int* triangles, int triCount,
-               const int* colors, int colorCount) {
-                 BOOST_CHECK_GT(vertexCount, 0);
-                 BOOST_CHECK_GT(triCount, 0);
-                 BOOST_CHECK_GT(colorCount, 0);
-            },
-            [](uint64_t id, const char** tags, int size,
-               const double* vertices, int vertexCount,
-               const char** style, int styleSize) {
-               // TODO basic checks
-            },
-            [](const char* message)
-            {
-                 BOOST_TEST_FAIL(message);
-            }
-            );
-        }
-    }
+    auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
+    //::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
+
+    loadTiles(0, 1, 0, 1);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomNineteen_ThenCallbacksAreCalled)
+{
+    // TODO
+    //auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
+    //::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_PBF_FILE, 19, 19, callback);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

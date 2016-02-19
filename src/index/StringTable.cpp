@@ -123,8 +123,9 @@ private:
 };
 
 StringTable::StringTable(const std::string& path) :
-    pimpl_(std::unique_ptr<StringTable::StringTableImpl>(
-        new StringTable::StringTableImpl(path + "string.idx", path + "string.dat", 0))) { }
+    pimpl_(new StringTable::StringTableImpl(path + "string.idx", path + "string.dat", 0)) 
+{
+}
 
 StringTable::~StringTable() { }
 

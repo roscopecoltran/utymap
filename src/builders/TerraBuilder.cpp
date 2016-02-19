@@ -450,6 +450,6 @@ TerraBuilder::TerraBuilder(const utymap::QuadKey& quadKey,
                            utymap::index::StringTable& stringTable,
                            utymap::heightmap::ElevationProvider& eleProvider,
                            std::function<void(const utymap::meshing::Mesh&)> callback) :
-    pimpl_(std::unique_ptr<TerraBuilder::TerraBuilderImpl>(new TerraBuilder::TerraBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback)))
+    pimpl_(new TerraBuilder::TerraBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback))
 {
 }

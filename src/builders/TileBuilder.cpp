@@ -157,7 +157,7 @@ void TileBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvid
 }
 
 TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
-    pimpl_(std::unique_ptr<TileBuilder::TileBuilderImpl>(new TileBuilder::TileBuilderImpl(geoStore, stringTable, eleProvider)))
+    pimpl_(new TileBuilder::TileBuilderImpl(geoStore, stringTable, eleProvider))
 {
 }
 

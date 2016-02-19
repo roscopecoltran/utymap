@@ -106,8 +106,7 @@ private:
     }
 };
 
-GeoStore::GeoStore(StringTable& stringTable) :
-    pimpl_(std::unique_ptr<GeoStore::GeoStoreImpl>(new GeoStore::GeoStoreImpl(stringTable)))
+GeoStore::GeoStore(StringTable& stringTable) : pimpl_(new GeoStore::GeoStoreImpl(stringTable))
 {
 }
 

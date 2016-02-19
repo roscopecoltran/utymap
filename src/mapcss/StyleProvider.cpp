@@ -242,7 +242,7 @@ private:
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
-    pimpl_(std::unique_ptr<StyleProvider::StyleProviderImpl>(new StyleProvider::StyleProviderImpl(stylesheet, stringTable)))
+    pimpl_(new StyleProvider::StyleProviderImpl(stylesheet, stringTable))
 {
 }
 

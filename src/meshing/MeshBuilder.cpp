@@ -106,7 +106,7 @@ private:
 };
 
 MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
-    pimpl_(std::unique_ptr<MeshBuilder::MeshBuilderImpl>(new MeshBuilder::MeshBuilderImpl(eleProvider)))
+    pimpl_(new MeshBuilder::MeshBuilderImpl(eleProvider))
 {
 }
 

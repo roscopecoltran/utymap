@@ -5,12 +5,13 @@ canvas|z1 {
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(#72e4de);
+    height:-1;
     
     water-max-area: 5;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
     water-color: gradient(#72e4de);
-    water-height:-1;
+    water-height:-0.2;
     
     border-max-area: 5;
     border-color-noise-freq: 0.1;
@@ -68,25 +69,25 @@ relation|z1[featurecla=Adm-0 scale ranks]{
 area|z1[sr_geounit=Germany],
 relation|z1[sr_geounit=Germany] {
     color: gradient(orange);
-    height: 1;
+    height: 0.1;
 }
 
 area|z1[sr_geounit=China],
 relation|z1[sr_geounit=China] {
     color: gradient(orange);
-    height: 2.5;
+    height: 0.2;
 }
 
 area|z1[sr_geounit=Italy],
 relation|z1[sr_geounit=Italy] {
     color: gradient(blue);
-    height: 1;
+    height: 0.1;
 }
 
 area|z1[sr_geounit=France],
 relation|z1[sr_geounit=France] {
     color: gradient(lime);
-    height: 0.5;
+    height: 0.1;
 }
 
 area|z1[sr_geounit=Russia],
@@ -97,7 +98,7 @@ area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
     mesh-name: ussr;
     color: gradient(red);
-    height: 3;
+    height: 0.2;
 }
 
 node|z1[featurecla=Populated place],

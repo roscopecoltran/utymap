@@ -318,8 +318,7 @@ private:
     ClipperLib::Clipper clipper_;
 };
 
-ElementStore::ElementStore(StringTable& stringTable) :
-    stringTable_(stringTable)
+ElementStore::ElementStore(StringTable& stringTable) : stringTable_(stringTable)
 {
 }
 

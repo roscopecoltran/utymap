@@ -127,10 +127,12 @@ class Application
 
 public:
     // Composes object graph.
-    Application(const char* stringPath, const char* dataPath, OnError* errorCallback):
+    Application(const char* stringPath, const char* dataPath, OnError* errorCallback) :
         stringTable_(stringPath), inMemoryStore_(stringTable_), persistentStore_(dataPath, stringTable_),
-        geoStore_(stringTable_), eleProvider_(), tileLoader_(geoStore_, stringTable_, eleProvider_)
+        geoStore_(stringTable_), eleProvider_(), tileBuilder_(geoStore_, stringTable_, eleProvider_)
     {
+        geoStore_.registerStore(InMemoryStorageKey, inMemoryStore_);
+        geoStore_.registerStore(PersistentStorageKey, persistentStore_);
     }
 
     // Register stylesheet.
@@ -142,7 +144,7 @@ public:
     // Register element visitor.
     void registerElementVisitor(const char* name)
     {
-        tileLoader_.registerElementVisitor(name, [&](const utymap::QuadKey& quadKey,
+        tileBuilder_.registerElementVisitor(name, [&](const utymap::QuadKey& quadKey,
                                                      const utymap::mapcss::StyleProvider& styleProvider,
                                                      const utymap::builders::TileBuilder::MeshCallback& meshFunc,
                                                      const utymap::builders::TileBuilder::ElementCallback& elementFunc) {
@@ -166,10 +168,9 @@ public:
     void loadTile(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
                   OnElementLoaded* elementCallback, OnError* errorCallback)
     {
-        utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile).get();
-
+        utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
         TileElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-        tileLoader_.build(quadKey, styleProvider,
+        tileBuilder_.build(quadKey, styleProvider,
             [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 meshCallback(mesh.name.data(),
                     mesh.vertices.data(), mesh.vertices.size(),
@@ -195,13 +196,14 @@ private:
         return styleProviders_[path];
     }
 
-    utymap::builders::TileBuilder tileLoader_;
-    utymap::index::GeoStore geoStore_;
+    utymap::index::StringTable stringTable_;
     utymap::index::InMemoryElementStore inMemoryStore_;
     utymap::index::PersistentElementStore persistentStore_;
-    utymap::index::StringTable stringTable_;
+    utymap::index::GeoStore geoStore_;
     utymap::heightmap::FlatElevationProvider eleProvider_;
+    utymap::builders::TileBuilder tileBuilder_;
 
+   
     std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders_;
 };
 

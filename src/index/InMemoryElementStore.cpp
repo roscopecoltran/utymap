@@ -73,9 +73,7 @@ private:
 };
 
 InMemoryElementStore::InMemoryElementStore(StringTable& stringTable) :
-ElementStore(stringTable),
-    pimpl_(std::unique_ptr<InMemoryElementStore::InMemoryElementStoreImpl>(
-        new InMemoryElementStore::InMemoryElementStoreImpl()))
+    ElementStore(stringTable), pimpl_(new InMemoryElementStore::InMemoryElementStoreImpl())
 {
 }
 

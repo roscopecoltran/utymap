@@ -44,9 +44,7 @@ private:
 };
 
 PersistentElementStore::PersistentElementStore(const std::string& path, StringTable& stringTable) :
-    ElementStore(stringTable),
-    pimpl_(std::unique_ptr<PersistentElementStore::PersistentElementStoreImpl>(
-        new PersistentElementStore::PersistentElementStoreImpl(path)))
+    ElementStore(stringTable), pimpl_(new PersistentElementStore::PersistentElementStoreImpl(path))
 {
 }
 
