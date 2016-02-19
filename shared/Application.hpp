@@ -144,8 +144,8 @@ public:
     {
         tileLoader_.registerElementVisitor(name, [&](const utymap::QuadKey& quadKey,
                                                      const utymap::mapcss::StyleProvider& styleProvider,
-                                                     const utymap::TileBuilder::MeshCallback& meshFunc,
-                                                     const utymap::TileBuilder::ElementCallback& elementFunc) {
+                                                     const utymap::builders::TileBuilder::MeshCallback& meshFunc,
+                                                     const utymap::builders::TileBuilder::ElementCallback& elementFunc) {
             return std::shared_ptr<utymap::entities::ElementVisitor>(new utymap::builders::ExternalBuilder(elementFunc));
         });
     }
@@ -195,7 +195,7 @@ private:
         return styleProviders_[path];
     }
 
-    utymap::TileBuilder tileLoader_;
+    utymap::builders::TileBuilder tileLoader_;
     utymap::index::GeoStore geoStore_;
     utymap::index::InMemoryElementStore inMemoryStore_;
     utymap::index::PersistentElementStore persistentStore_;

@@ -37,11 +37,11 @@ class AggregateElemenVisitor : public ElementVisitor
 public:
     AggregateElemenVisitor(StringTable& stringTable,
                            const QuadKey& quadKey,
-                           const StyleProvider& styleProvider, 
+                           const StyleProvider& styleProvider,
                            ElevationProvider& eleProvider,
-                           VisitorFactoryMap& visitorFactoryMap, 
+                           VisitorFactoryMap& visitorFactoryMap,
                            std::uint32_t visitorKeyId,
-                           const MeshCallback& meshFunc, 
+                           const MeshCallback& meshFunc,
                            const ElementCallback& elementFunc) :
         quadKey_(quadKey),
         styleProvider_(styleProvider),
