@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoaded_ThenCallbacksAreCalled)
                  BOOST_CHECK_GT(triCount, 0);
                  BOOST_CHECK_GT(colorCount, 0);
             },
-            [](uint64_t id, const char* name,
-               const char** tags, int size,
-               const double* vertices, int vertexCount) {
+            [](uint64_t id, const char** tags, int size,
+               const double* vertices, int vertexCount,
+               const char** style, int styleSize) {
                // TODO basic checks
             },
             [](const char* message)

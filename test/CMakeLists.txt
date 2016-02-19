@@ -25,7 +25,7 @@ add_executable (TestLauncher
                         main.cpp
                         BoundingBoxTest.cpp
                         ExportLibTest.cpp
-                    builders/TerraBuilderTest.cpp
+                        builders/TerraBuilderTest.cpp
                         entities/ElementTest.cpp
                         formats/pbf/OsmPbfParserTest.cpp
                         formats/shape/ShapeParserTest.cpp
