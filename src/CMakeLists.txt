@@ -66,6 +66,7 @@ add_library (UtyMap
                 formats/pbf/osmformat.pb.cc
                 index/ElementStore.cpp
                 index/GeoStore.cpp
+                index/OsmDataVisitor.cpp
                 index/InMemoryElementStore.cpp
                 index/PersistentElementStore.cpp
                 index/StringTable.cpp

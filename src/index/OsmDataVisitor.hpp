@@ -15,62 +15,59 @@
 #include "mapcss/StyleProvider.hpp"
 #include "utils/ElementUtils.hpp"
 
+#include <string>
 #include <memory>
+#include <vector>
+#include <unordered_set>
 #include <unordered_map>
 
 namespace utymap { namespace index {
 
-struct OsmDataVisitor
+class OsmDataVisitor
 {
-    int bounds;
-    int nodes;
-    int areas;
-    int ways;
-    int relations;
+    static std::unordered_set<std::string> AreaKeys;
+    static std::unordered_set<std::string> FalseKeys; 
 
-    OsmDataVisitor(ElementStore& elementStore, const utymap::mapcss::StyleProvider& styleProvider, 
-                   StringTable& stringTable, const LodRange& lodRange) :
-        elementStore_(elementStore), styleProvider_(styleProvider), stringTable_(stringTable), 
-        lodRange_(lodRange), bounds(0), nodes(0), ways(0), areas(0), relations(0)
+public:
+ 
+    struct Statistics
     {
-    }
+        int bounds, nodes, areas, ways, relations;
+        int skipNodes, skipWays, skipRelations;
 
-    void visitBounds(utymap::BoundingBox bbox)
-    {
-        bounds++;
-    }
+        Statistics() : bounds(0), nodes(0), ways(0), areas(0), relations(0),
+            skipNodes(0), skipWays(0), skipRelations(0)
+        {
+        }
+    };
 
-    void visitNode(std::uint64_t id, utymap::GeoCoordinate& coordinate, utymap::formats::Tags& tags)
-    {
-        std::shared_ptr<utymap::entities::Node> node(new utymap::entities::Node());
-        node->id = id;
-        node->coordinate = coordinate;
-        utymap::utils::setTags(stringTable_, *node, tags);
-        nodeMap_[id] = node;
+    Statistics statistics;
 
-        if(elementStore_.store(*node, lodRange_, styleProvider_)) 
-            nodes++;
-    }
+    OsmDataVisitor(ElementStore& elementStore, 
+                   const utymap::mapcss::StyleProvider& styleProvider,
+                   StringTable& stringTable, 
+                   const LodRange& lodRange);
 
-    void visitWay(std::uint64_t id, std::vector<std::uint64_t>& nodeIds, utymap::formats::Tags& tags)
-    {
-        ways++;
-    }
+    void visitBounds(utymap::BoundingBox bbox);
 
-    void visitRelation(std::uint64_t id, utymap::formats::RelationMembers& members, utymap::formats::Tags& tags)
-    {
-        relations++;
-    }
+    void visitNode(std::uint64_t id, utymap::GeoCoordinate& coordinate, utymap::formats::Tags& tags);
+
+    void visitWay(std::uint64_t id, std::vector<std::uint64_t>& nodeIds, utymap::formats::Tags& tags);
+
+    void visitRelation(std::uint64_t id, utymap::formats::RelationMembers& members, utymap::formats::Tags& tags);
+
 private:
+
+    bool isArea(const utymap::formats::Tags& tags);
+    bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags);
 
     ElementStore& elementStore_;
     const utymap::mapcss::StyleProvider& styleProvider_;
     StringTable& stringTable_;
     const LodRange& lodRange_;
 
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Node>> nodeMap_;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> wayMap_;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>> areaMap_;
+    std::unordered_map<std::uint64_t, utymap::GeoCoordinate> nodeMap_;
+    std::unordered_map<std::uint64_t, std::vector<utymap::GeoCoordinate>> wayMap_;
 };
 
 }}

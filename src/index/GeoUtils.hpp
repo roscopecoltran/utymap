@@ -67,7 +67,7 @@ public:
 
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
-    static void visitTileRange(BoundingBox bbox, int levelOfDetail, Visitor& visitor)
+    static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, Visitor& visitor)
     {
         if (!bbox.isValid())
             return;
@@ -84,6 +84,20 @@ public:
                 }
             }
         }
+    }
+
+    // Checks whether given point inside polygon.
+    template <typename Iter>
+    static bool isPointInPolygon(const GeoCoordinate& point, Iter begin, Iter end)
+    {
+        bool c = false;
+        for (auto iCoord = begin, jCoord = end - 1; iCoord != end; jCoord = iCoord++) {
+            if (((iCoord->latitude > point.latitude) != (jCoord->latitude > point.latitude)) &&
+                (point.longitude < (jCoord->longitude - iCoord->longitude) * (point.latitude - iCoord->latitude) /
+                (jCoord->latitude - iCoord->latitude) + iCoord->longitude))
+                c = !c;
+        }
+        return c;
     }
 
 private:

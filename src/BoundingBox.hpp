@@ -29,7 +29,7 @@ struct BoundingBox
         return *this;
     }
 
-    inline bool isValid() {
+    inline bool isValid() const {
         // TODO possible that minLon > maxLon at some locations
         return minPoint.latitude <= maxPoint.latitude &&
                minPoint.longitude <= maxPoint.longitude;
