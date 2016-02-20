@@ -29,6 +29,7 @@ set(HEADER_FILES
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
                 index/LodRange.hpp
+                index/OsmDataVisitor.hpp
                 index/PersistentElementStore.hpp
                 index/ShapeDataVisitor.hpp
                 index/StringTable.hpp

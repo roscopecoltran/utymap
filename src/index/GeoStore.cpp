@@ -1,14 +1,18 @@
 #include "entities/Element.hpp"
 #include "index/LodRange.hpp"
 #include "formats/shape/ShapeParser.hpp"
+#include "formats/xml/OsmXmlParser.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
 #include "index/ShapeDataVisitor.hpp"
+#include "index/OsmDataVisitor.hpp"
+#include "utils/CoreUtils.hpp"
 
+#include <cstdint>
 #include <set>
 #include <stdexcept>
-#include <cstdint>
+#include <fstream>
 #include <unordered_map>
 
 using namespace utymap::entities;
@@ -73,8 +77,16 @@ public:
             case FormatType::Shape:
             {
                 ShapeDataVisitor shpVisitor(*elementStorePtr, styleProvider, stringTable_, range);
-                utymap::formats::ShapeParser<ShapeDataVisitor> parser;
+                ShapeParser<ShapeDataVisitor> parser;
                 parser.parse(path, shpVisitor);
+                break;
+            }
+            case FormatType::Xml:
+            {
+                OsmDataVisitor osmVisitor;
+                OsmXmlParser<OsmDataVisitor> parser;
+                std::ifstream xmlFile(path);
+                parser.parse(xmlFile, osmVisitor);
                 break;
             }
             default:
@@ -101,7 +113,11 @@ private:
 
     FormatType getFormatTypeFromPath(const std::string& path)
     {
-        // TODO
+        if (utymap::utils::endsWith(path, "pbf"))
+            return FormatType::Pbf;
+        if (utymap::utils::endsWith(path, "xml"))
+            return FormatType::Xml;
+
         return FormatType::Shape;
     }
 };

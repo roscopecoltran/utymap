@@ -20,7 +20,7 @@ class GeoUtils
 {
 public:
     static const int MinLevelOfDetails = 1;
-    static const int MaxLevelOfDetails = 16;
+    static const int MaxLevelOfDetails = 19;
 
     // Converts Latitude/Longitude to quadkey
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
