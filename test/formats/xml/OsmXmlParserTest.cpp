@@ -28,10 +28,10 @@ BOOST_AUTO_TEST_CASE( GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCoun
 {
     parser.parse(istream, visitor);
 
-    BOOST_CHECK( visitor.bounds == 1 );
-    BOOST_CHECK( visitor.nodes == 1263 );
-    BOOST_CHECK( visitor.ways == 151 );
-    BOOST_CHECK( visitor.relations == 54 );
+    BOOST_CHECK_EQUAL(1, visitor.bounds);
+    BOOST_CHECK_EQUAL(7653, visitor.nodes);
+    BOOST_CHECK_EQUAL(1116, visitor.ways);
+    BOOST_CHECK_EQUAL(92, visitor.relations);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
