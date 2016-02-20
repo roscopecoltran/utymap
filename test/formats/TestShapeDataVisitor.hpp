@@ -9,7 +9,7 @@
 
 using namespace utymap::formats;
 
-struct ShapeDataVisitor
+struct TestShapeDataVisitor
 {
     int bounds;
     int nodes;
@@ -22,7 +22,7 @@ struct ShapeDataVisitor
     Tags lastTags;
     bool isRing;
 
-    ShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0),
+    TestShapeDataVisitor() : bounds(0), nodes(0), ways(0), relations(0),
         lastCoordinate(), lastCoordinates(), lastTags(), isRing() {}
 
     void visitBounds(utymap::BoundingBox bbox)

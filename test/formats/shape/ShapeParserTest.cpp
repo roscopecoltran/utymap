@@ -1,10 +1,11 @@
 #include "config.hpp"
 #include "formats/shape/ShapeParser.hpp"
-#include "formats/ShapeDataVisitor.hpp"
+#include "formats/TestShapeDataVisitor.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::formats;
+using namespace utymap::index;
 
 const double Precision = 0.1e-7;
 
@@ -13,8 +14,8 @@ struct Formats_Shape_ShapeParserFixture
     Formats_Shape_ShapeParserFixture() { BOOST_TEST_MESSAGE("setup fixture"); }
     ~Formats_Shape_ShapeParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
 
-    ShapeParser<ShapeDataVisitor> parser;
-    ShapeDataVisitor visitor;
+    ShapeParser<TestShapeDataVisitor> parser;
+    TestShapeDataVisitor visitor;
 };
 
 BOOST_FIXTURE_TEST_SUITE(Formats_ShapeParser, Formats_Shape_ShapeParserFixture)

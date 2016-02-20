@@ -1,6 +1,6 @@
 #include "BoundingBox.hpp"
 #include "formats/pbf/OsmPbfParser.hpp"
-#include "formats/OsmDataVisitor.hpp"
+#include "formats/TestOsmDataVisitor.hpp"
 #include "config.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -17,8 +17,8 @@ struct Formats_Pbf_OsmPbfParserFixture
 
     ~Formats_Pbf_OsmPbfParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
 
-    OsmPbfParser<OsmDataVisitor> parser;
-    OsmDataVisitor visitor;
+    OsmPbfParser<TestOsmDataVisitor> parser;
+    TestOsmDataVisitor visitor;
     std::ifstream istream;
 };
 

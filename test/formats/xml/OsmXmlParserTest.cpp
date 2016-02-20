@@ -1,6 +1,6 @@
 #include "BoundingBox.hpp"
 #include "formats/xml/OsmXmlParser.hpp"
-#include "formats/OsmDataVisitor.hpp"
+#include "formats/TestOsmDataVisitor.hpp"
 #include "config.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -17,8 +17,8 @@ struct Formats_Xml_OsmXmlParserFixture
 
     ~Formats_Xml_OsmXmlParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
 
-    OsmXmlParser<OsmDataVisitor> parser;
-    OsmDataVisitor visitor;
+    OsmXmlParser<TestOsmDataVisitor> parser;
+    TestOsmDataVisitor visitor;
     std::ifstream istream;
 };
 

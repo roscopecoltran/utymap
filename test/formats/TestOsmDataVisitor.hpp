@@ -9,14 +9,14 @@
 
 using namespace utymap::formats;
 
-struct OsmDataVisitor
+struct TestOsmDataVisitor
 {
     int bounds;
     int nodes;
     int ways;
     int relations;
 
-    OsmDataVisitor() : bounds(0), nodes(0), ways(0), relations(0) {}
+    TestOsmDataVisitor() : bounds(0), nodes(0), ways(0), relations(0) {}
 
     void visitBounds(utymap::BoundingBox bbox)
     {
