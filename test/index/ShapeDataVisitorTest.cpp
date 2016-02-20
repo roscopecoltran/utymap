@@ -6,6 +6,7 @@
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
+
 #include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap::index;

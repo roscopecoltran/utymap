@@ -83,7 +83,7 @@ public:
             }
             case FormatType::Xml:
             {
-                OsmDataVisitor osmVisitor;
+                OsmDataVisitor osmVisitor(*elementStorePtr, styleProvider, stringTable_, range);
                 OsmXmlParser<OsmDataVisitor> parser;
                 std::ifstream xmlFile(path);
                 parser.parse(xmlFile, osmVisitor);

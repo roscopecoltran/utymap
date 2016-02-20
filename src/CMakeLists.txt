@@ -45,6 +45,7 @@ set(HEADER_FILES
                 meshing/Polygon.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
+                utils/ElementUtils.hpp
                 utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp
                 utils/NoiseUtils.hpp

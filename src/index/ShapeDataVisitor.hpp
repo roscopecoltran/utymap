@@ -13,6 +13,7 @@
 #include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "utils/ElementUtils.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -47,7 +48,7 @@ struct ShapeDataVisitor
         utymap::entities::Node node;
         node.id = 0;
         node.coordinate = coordinate;
-        setTags(node, tags);
+        utymap::utils::setTags(stringTable_, node, tags);
         if (elementStore_.store(node, lodRange_, styleProvider_)) {
             nodes++;
         }
@@ -59,7 +60,7 @@ struct ShapeDataVisitor
             utymap::entities::Area area;
             area.id = 0;
             area.coordinates = std::move(coordinates);
-            setTags(area, tags);
+            utymap::utils::setTags(stringTable_, area, tags);
             if (elementStore_.store(area, lodRange_, styleProvider_))
                 areas++;
         }
@@ -67,7 +68,7 @@ struct ShapeDataVisitor
             utymap::entities::Way way;
             way.id = 0;
             way.coordinates = std::move(coordinates);
-            setTags(way, tags);
+            utymap::utils::setTags(stringTable_, way, tags);
             if (elementStore_.store(way, lodRange_, styleProvider_))
                 ways++;
         }
@@ -77,7 +78,7 @@ struct ShapeDataVisitor
     {
         utymap::entities::Relation relation;
         relation.id = 0;
-        setTags(relation, tags);
+        utymap::utils::setTags(stringTable_, relation, tags);
         for (const auto& member : members) {
             if (member.coordinates.size() == 1) {
                 std::shared_ptr<utymap::entities::Node> node(new utymap::entities::Node());
@@ -107,18 +108,6 @@ private:
     const utymap::mapcss::StyleProvider& styleProvider_;
     StringTable& stringTable_;
     const LodRange& lodRange_;
-
-    void setTags(utymap::entities::Element& element, const utymap::formats::Tags& tags)
-    {
-        for (const auto& tag : tags) {
-            uint32_t key = stringTable_.getId(tag.key);
-            uint32_t value = stringTable_.getId(tag.value);
-            element.tags.push_back(utymap::entities::Tag(key, value));
-        }
-        stringTable_.flush();
-        // NOTE: tags should be sorted to speed up mapcss styling
-        std::sort(element.tags.begin(), element.tags.end());
-    }
 };
 
 }}
