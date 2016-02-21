@@ -29,6 +29,7 @@ add_executable (TestLauncher
                         entities/ElementTest.cpp
                         formats/shape/ShapeParserTest.cpp
                         formats/shape/ShapeDataVisitorTest.cpp
+                        formats/osm/MultipolygonProcessorTest.cpp
                         formats/osm/pbf/OsmPbfParserTest.cpp
                         formats/osm/xml/OsmXmlParserTest.cpp
                         index/ElementStoreTest.cpp

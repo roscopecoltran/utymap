@@ -19,6 +19,8 @@ struct Tag
     // Returns value string id.
     uint32_t value;
 
+    Tag() : Tag(0, 0) { }
+
     Tag(uint32_t key, uint32_t value) : key(key), value(value) { }
 
     bool operator<(const Tag& a) const { return key < a.key; }

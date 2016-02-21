@@ -137,7 +137,9 @@ Relation MultipolygonProcessor::process()
             continue;
 
         // TODO what should be used as Id?
-        sequences.push_back(std::shared_ptr<CoordinateSequence>(new CoordinateSequence(id_, coordinates, tags)));
+        std::shared_ptr<CoordinateSequence> sequence(new CoordinateSequence(id_, coordinates, tags));
+        if (!sequence->isClosed()) allClosed = false;
+        sequences.push_back(sequence);
     }
 
     if (outerIndecies.size() == 1 && allClosed)
@@ -162,7 +164,7 @@ Tags MultipolygonProcessor::restoreTags(const std::vector<utymap::entities::Tag>
 
 std::vector<utymap::entities::Tag> MultipolygonProcessor::convertTags(const Tags& tags) const
 {
-    std::vector<utymap::entities::Tag> convertedTags;
+    std::vector<utymap::entities::Tag> convertedTags(tags.size());
     std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::formats::Tag& tag) {
         return utymap::entities::Tag{
             stringTable_.getId(tag.key),
@@ -178,7 +180,7 @@ void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSeque
     auto outer = sequences[outerIndecies[0]];
 
     // TODO investigate case of empty tags
-    auto tags = getTags(relation, *outer);
+    auto tags = getTags(*outer);
     if (tags.empty()) return;
 
     // outer
@@ -279,7 +281,7 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
             }
         }
 
-        auto tags = getTags(relation, *outer);
+        auto tags = getTags(*outer);
         // TODO investigate case of null/empty tags
         if (tags.empty()) return;
 
@@ -301,8 +303,8 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
     }
 }
 
-std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const Relation& relation, const CoordinateSequence& outer) const
+std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const
 {
     // TODO tag processing
-    return relation.tags.size() > 1 ? relation.tags : convertTags(outer.tags);
+    return tags_.size() > 1 ? convertTags(tags_) : convertTags(outer.tags);
 }

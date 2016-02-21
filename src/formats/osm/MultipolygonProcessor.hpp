@@ -47,7 +47,7 @@ private:
 
     void fillRelation(utymap::entities::Relation& relation, CoordinateSequences& rings);
 
-    std::vector<utymap::entities::Tag> getTags(const utymap::entities::Relation& relation, const CoordinateSequence& outer) const;
+    std::vector<utymap::entities::Tag> getTags(const CoordinateSequence& outer) const;
 
     std::uint64_t id_;
     utymap::formats::RelationMembers& members_;
