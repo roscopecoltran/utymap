@@ -186,13 +186,12 @@ void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSeque
     auto outer = sequences[outerIndecies[0]];
 
     // TODO investigate case of empty tags
-    auto tags = getTags(*outer);
-    if (tags.empty()) return;
+    relation.tags = getTags(*outer);
+    if (relation.tags.empty()) return;
 
     // outer
     std::shared_ptr<Area> outerArea(new Area());
     outerArea->id = outer->id;
-    outerArea->tags = tags;
     outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
     relation.elements.push_back(outerArea);
 
@@ -289,14 +288,13 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
             ++ring;
         }
 
-        auto tags = getTags(*outer);
+        relation.tags = getTags(*outer);
         // TODO investigate case of null/empty tags
-        if (tags.empty()) return;
+        if (relation.tags.empty()) return;
 
         // outer
         std::shared_ptr<Area> outerArea(new Area());
         outerArea->id = outer->id;
-        outerArea->tags = std::move(tags);
         outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
         relation.elements.push_back(outerArea);
 
