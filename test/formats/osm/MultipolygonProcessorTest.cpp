@@ -64,4 +64,47 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation.elements[1]).coordinates.size());
 }
 
+BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrectResult)
+{
+    RelationMembers relationMembers = createRelationMembers({
+        std::make_tuple(1, "way", "outer"),
+        std::make_tuple(2, "way", "inner"),
+        std::make_tuple(3, "way", "inner"),
+    });
+    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
+    areaMap[1] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*stringTablePtr, {},
+                    { { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
+    areaMap[2] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*stringTablePtr, {},
+                    { { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 }, { 2, 1 } })));
+    areaMap[3] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*stringTablePtr, {},
+                    { { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } })));
+    MultipolygonProcessor processor(0, relationMembers, tags, *stringTablePtr, areaMap, wayMap);
+
+    Relation relation = processor.process();
+
+    BOOST_CHECK_EQUAL(3, relation.elements.size());
+    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation.elements[0]).coordinates.size());
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation.elements[1]).coordinates.size());
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation.elements[2]).coordinates.size());
+}
+
+BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosed_WhenProcess_ThenReturnCorrectResult)
+{
+    RelationMembers relationMembers = createRelationMembers({
+        std::make_tuple(1, "way", "outer"),
+        std::make_tuple(2, "way", "outer")
+    });
+    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
+    wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*stringTablePtr, {},
+                    { { 0, 0 }, { 3, 5 }, { 7, 3 } })));
+    wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*stringTablePtr, {},
+                    { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
+    MultipolygonProcessor processor(0, relationMembers, tags, *stringTablePtr, areaMap, wayMap);
+
+    Relation relation = processor.process();
+
+    BOOST_CHECK_EQUAL(1, relation.elements.size());
+    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation.elements[0]).coordinates.size());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

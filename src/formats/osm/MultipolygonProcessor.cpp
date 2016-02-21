@@ -222,9 +222,9 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
         else {
             // try to continue the ring by appending a node sequence
             bool isFound = false;
-
             for (auto it = sequences.begin(); it != sequences.end(); ++it) {
                 if (!currentRing->tryAdd(**it)) continue;
+                isFound = true;
                 sequences.erase(it);
                 break;
             }
@@ -239,8 +239,6 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
             closedRings.push_back(std::shared_ptr<CoordinateSequence>(new CoordinateSequence(*currentRing)));
             currentRing = nullptr;
         }
-
-        return currentRing != nullptr ? CoordinateSequences() : std::move(closedRings);
     }
 
     return std::move(closedRings);
@@ -251,33 +249,36 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
     while (!rings.empty()) {
         // find an outer ring
         std::shared_ptr<CoordinateSequence> outer = nullptr;
-        for (const auto& candidate : rings) {
+        for (auto candidate = rings.begin(); candidate != rings.end(); ++candidate) {
             bool containedInOtherRings = false;
-            for (const auto& other : rings) {
-                if (&other != &candidate && other->containsRing(candidate->coordinates)) {
+            for (auto other = rings.begin(); other != rings.end(); ++other) {
+                if (other != candidate && (*other)->containsRing((*candidate)->coordinates)) {
                     containedInOtherRings = true;
                     break;
                 }
             }
             if (containedInOtherRings) continue;
-            outer = candidate;
+            outer = *candidate;
+            rings.erase(candidate);
             break;
         }
 
         // find inner rings of that ring
         CoordinateSequences inners;
-        for (const auto& ring : rings) {
-            if (&ring != &outer && outer->containsRing(ring->coordinates)) {
+        for (auto ring = rings.begin(); ring != rings.end(); ++ring) {
+            if (outer->containsRing((*ring)->coordinates)) {
                 bool containedInOthers = false;
-                for (const auto& other : rings) {
-                    if (&other != &ring && &other != &outer && other->containsRing(ring->coordinates))
+                for (auto other = rings.begin(); ring != rings.end(); ++other) {
+                    if (other != ring && (*other)->containsRing((*ring)->coordinates))
                     {
                         containedInOthers = true;
                         break;
                     }
                 }
-                if (!containedInOthers)
-                    inners.push_back(ring);
+                if (!containedInOthers) {
+                    inners.push_back(*ring);
+                    rings.erase(ring);
+                }
             }
         }
 
