@@ -18,11 +18,12 @@ private:
     // Helper class which provides the way to handle coordinate sequences.
     struct CoordinateSequence;
     typedef std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> CoordinateSequences;
+    typedef std::vector<utymap::entities::Tag> ElementTags;
 
 public:
     MultipolygonProcessor(std::uint64_t id,
         utymap::formats::RelationMembers& members,
-        utymap::formats::Tags& tags,
+        const utymap::formats::Tags& tags,
         utymap::index::StringTable& stringTable,
         std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap,
         std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap);
@@ -32,9 +33,9 @@ public:
 
 private:
 
-    utymap::formats::Tags restoreTags(const std::vector<utymap::entities::Tag>& tags) const;
+    ElementTags convertTags(const utymap::formats::Tags& tags) const;
 
-    std::vector<utymap::entities::Tag> convertTags(const Tags& tags) const;
+    ElementTags getTags(const CoordinateSequence& outer) const;
 
     void simpleCase(utymap::entities::Relation& relation,
                     const CoordinateSequences& sequences,
@@ -47,11 +48,9 @@ private:
 
     void fillRelation(utymap::entities::Relation& relation, CoordinateSequences& rings);
 
-    std::vector<utymap::entities::Tag> getTags(const CoordinateSequence& outer) const;
-
     std::uint64_t id_;
     utymap::formats::RelationMembers& members_;
-    utymap::formats::Tags& tags_;
+    const utymap::formats::Tags& tags_;
     utymap::index::StringTable& stringTable_;
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap_;
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap_;

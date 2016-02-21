@@ -16,13 +16,14 @@ using namespace utymap::index;
 typedef std::deque<GeoCoordinate> Coords;
 typedef std::vector<int> Ints;
 
+
 struct MultipolygonProcessor::CoordinateSequence
 {
     std::uint64_t id;
     Coords coordinates;
-    utymap::formats::Tags tags;
+    ElementTags tags;
 
-    CoordinateSequence(std::uint64_t id, const Coordinates& coordinates, utymap::formats::Tags& tags) :
+    CoordinateSequence(std::uint64_t id, const Coordinates& coordinates, const ElementTags& tags) :
         id(id), coordinates(coordinates.begin(), coordinates.end()), tags(tags)
     {
     }
@@ -88,11 +89,11 @@ private:
 
     inline void reverse() { std::reverse(coordinates.begin(), coordinates.end()); }
 
-    inline void mergeTags(const utymap::formats::Tags& other) { tags.insert(tags.end(), other.begin(), other.end()); }
+    inline void mergeTags(const ElementTags& other) { tags.insert(tags.end(), other.begin(), other.end()); }
 };
 
 
-MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members, Tags& tags, StringTable& stringTable,
+MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members, const Tags& tags, StringTable& stringTable,
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap,
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap) :
     id_(id), members_(members), tags_(tags), stringTable_(stringTable), areaMap_(areaMap), wayMap_(wayMap)
@@ -115,17 +116,17 @@ Relation MultipolygonProcessor::process()
         if (member.type != "way") continue;
 
         Coordinates coordinates;
-        Tags tags;
+        ElementTags tags;
         auto wayPair = wayMap_.find(member.refId);
         if (wayPair != wayMap_.end()) {
             coordinates = wayPair->second->coordinates;
-            tags = restoreTags(wayPair->second->tags);
+            tags = wayPair->second->tags;
         }
         else {
             auto areaPair = areaMap_.find(member.refId);
             if (areaPair != areaMap_.end()) {
                 coordinates = areaPair->second->coordinates;
-                tags = restoreTags(areaPair->second->tags);
+                tags = areaPair->second->tags;
             }
             else {
                 //  NOTE cannot fill relation: incomplete data
@@ -156,19 +157,7 @@ Relation MultipolygonProcessor::process()
     return std::move(relation);
 }
 
-Tags MultipolygonProcessor::restoreTags(const std::vector<utymap::entities::Tag>& tags) const
-{
-    Tags convertedTags(tags.size());
-    std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::entities::Tag& tag) {
-        return utymap::formats::Tag{
-            stringTable_.getString(tag.key),
-            stringTable_.getString(tag.value)
-        };
-    });
-    return std::move(convertedTags);
-}
-
-std::vector<utymap::entities::Tag> MultipolygonProcessor::convertTags(const Tags& tags) const
+std::vector<utymap::entities::Tag> MultipolygonProcessor::convertTags(const utymap::formats::Tags& tags) const
 {
     std::vector<utymap::entities::Tag> convertedTags(tags.size());
     std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::formats::Tag& tag) {
@@ -178,6 +167,14 @@ std::vector<utymap::entities::Tag> MultipolygonProcessor::convertTags(const Tags
         };
     });
     return std::move(convertedTags);
+}
+
+std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const
+{
+    // TODO investigate case of empty tags
+    auto tags = tags_.size() > 1 ? convertTags(tags_) : outer.tags;
+    std::sort(tags.begin(), tags.end());
+    return std::move(tags);
 }
 
 void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSequences& sequences, const Ints& outerIndecies, const Ints& innerIndecies)
@@ -289,7 +286,6 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
         }
 
         relation.tags = getTags(*outer);
-        // TODO investigate case of null/empty tags
         if (relation.tags.empty()) return;
 
         // outer
@@ -305,10 +301,4 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
             relation.elements.push_back(innerArea);
         }
     }
-}
-
-std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const
-{
-    // TODO tag processing
-    return tags_.size() > 1 ? convertTags(tags_) : convertTags(outer.tags);
 }
