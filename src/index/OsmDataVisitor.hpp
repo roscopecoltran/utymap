@@ -4,10 +4,6 @@
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
-#include "entities/Area.hpp"
-#include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
 #include "index/LodRange.hpp"
@@ -67,7 +63,8 @@ private:
     const LodRange& lodRange_;
 
     std::unordered_map<std::uint64_t, utymap::GeoCoordinate> nodeMap_;
-    std::unordered_map<std::uint64_t, std::vector<utymap::GeoCoordinate>> wayMap_;
+    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> wayMap_;
+    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>> areaMap_;
 };
 
 }}

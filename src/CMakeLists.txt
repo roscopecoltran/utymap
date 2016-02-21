@@ -17,6 +17,7 @@ set(HEADER_FILES
                 entities/Way.hpp
                 entities/Area.hpp
                 formats/FormatTypes.hpp
+                formats/osm/MultipolygonProcessor.hpp
                 formats/pbf/fileformat.pb.h
                 formats/pbf/osmformat.pb.h
                 formats/pbf/OsmPbfParser.hpp
@@ -62,6 +63,7 @@ add_library (UtyMap
                 ${LIB_SOURCE}/shapefile/shpopen.c
                 builders/TerraBuilder.cpp
                 builders/TileBuilder.cpp
+                formats/osm/MultipolygonProcessor.cpp
                 formats/pbf/fileformat.pb.cc
                 formats/pbf/osmformat.pb.cc
                 index/ElementStore.cpp
