@@ -28,7 +28,6 @@ set(HEADER_FILES
                 heightmap/ElevationProvider.hpp
                 heightmap/FlatElevationProvider.hpp
                 index/GeoStore.hpp
-                index/GeoUtils.hpp
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
                 index/LodRange.hpp
@@ -47,6 +46,7 @@ set(HEADER_FILES
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 utils/ElementUtils.hpp
+                utils/GeoUtils.hpp
                 utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp
                 utils/NoiseUtils.hpp

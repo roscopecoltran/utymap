@@ -1,17 +1,17 @@
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
-#include "index/GeoUtils.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap;
-using namespace utymap::index;
+using namespace utymap::utils;
 
 class TileRangeVisitor
 {
 public:
-    TileRangeVisitor() : 
+    TileRangeVisitor() :
         count(0),
         lastQuadKey(),
         lastBoundingBox(GeoCoordinate(0, 0), GeoCoordinate(0, 0))

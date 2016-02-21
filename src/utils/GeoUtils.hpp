@@ -14,7 +14,7 @@ static double pi = M_PI;
 static double pi = std::acos(-1);
 #endif
 
-namespace utymap { namespace index {
+namespace utymap { namespace utils {
 
 class GeoUtils
 {

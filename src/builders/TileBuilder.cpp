@@ -7,7 +7,6 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "index/GeoUtils.hpp"
 #include "utils/CompatibilityUtils.hpp"
 #include "utils/CoreUtils.hpp"
 

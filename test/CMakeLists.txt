@@ -33,7 +33,6 @@ add_executable (TestLauncher
                         formats/osm/pbf/OsmPbfParserTest.cpp
                         formats/osm/xml/OsmXmlParserTest.cpp
                         index/ElementStoreTest.cpp
-                        index/GeoUtilsTest.cpp
                         index/InMemoryElementStoreTest.cpp
                         index/StringTableTest.cpp
                         mapcss/MapCssParserTest.cpp
@@ -42,6 +41,7 @@ add_executable (TestLauncher
                         meshing/LineGridSplitterTest.cpp
                         test_utils/ElementUtils.hpp
                         test_utils/MapCssUtils.hpp
+                        utils/GeoUtilsTest.cpp
                         utils/GradientUtilsTest.cpp
                         utils/NoiseUtilsTest.cpp
                         ${HEADER_FILES}

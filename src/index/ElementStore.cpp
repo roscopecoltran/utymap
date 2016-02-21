@@ -9,9 +9,9 @@
 #include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
-#include "index/GeoUtils.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "utils/GeoUtils.hpp"
 #include "clipper/clipper.hpp"
 
 using namespace utymap;
@@ -359,7 +359,7 @@ void ElementStore::storeInTileRange(const Element& element, const BoundingBox& e
         else
             storeImpl(element, quadKey);
     };
-    GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
+    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }
 
 }}

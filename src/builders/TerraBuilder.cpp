@@ -6,8 +6,8 @@
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/LineGridSplitter.hpp"
-#include "index/GeoUtils.hpp"
 #include "utils/CompatibilityUtils.hpp"
+#include "utils/GeoUtils.hpp"
 #include "utils/MapCssUtils.hpp"
 #include "utils/NoiseUtils.hpp"
 
@@ -168,7 +168,7 @@ public:
          configureSplitter(quadKey_.levelOfDetail);
 
         Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
-        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey_);
         rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude, 
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
 
@@ -218,7 +218,7 @@ private:
     // process the rest area.
     void buildBackground(const Style& style)
     {
-        BoundingBox bbox = utymap::index::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey_);
         Path tileRect;
         tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
         tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));

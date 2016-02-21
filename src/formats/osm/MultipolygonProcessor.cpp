@@ -3,7 +3,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
-#include "index/GeoUtils.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <algorithm>
 #include <deque>
@@ -72,7 +72,7 @@ struct MultipolygonProcessor::CoordinateSequence
     inline bool containsRing(const Coords& other) const
     {
         return std::all_of(other.begin(), other.end(), [&](const GeoCoordinate& c) {
-            return utymap::index::GeoUtils::isPointInPolygon(c, coordinates.begin(), coordinates.end());
+            return utymap::utils::GeoUtils::isPointInPolygon(c, coordinates.begin(), coordinates.end());
         });
     }
 
@@ -301,7 +301,6 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
             std::shared_ptr<Area> innerArea(new Area());
-            innerArea->tags = convertTags(innerRing->tags);
             innerArea->coordinates.insert(innerArea->coordinates.end(), innerRing->coordinates.rbegin(), innerRing->coordinates.rend());
             relation.elements.push_back(innerArea);
         }
