@@ -103,6 +103,8 @@ MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& 
 Relation MultipolygonProcessor::process()
 {
     Relation relation;
+    relation.id = id_;
+
     bool allClosed = true;
 
     Ints outerIndecies;
@@ -124,6 +126,10 @@ Relation MultipolygonProcessor::process()
             if (areaPair != areaMap_.end()) {
                 coordinates = areaPair->second->coordinates;
                 tags = restoreTags(areaPair->second->tags);
+            }
+            else {
+                //  NOTE cannot fill relation: incomplete data
+                return relation;
             }
         }
 
