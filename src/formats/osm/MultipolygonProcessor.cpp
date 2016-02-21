@@ -152,7 +152,7 @@ Relation MultipolygonProcessor::process()
 
 Tags MultipolygonProcessor::restoreTags(const std::vector<utymap::entities::Tag>& tags) const
 {
-    Tags convertedTags;
+    Tags convertedTags(tags.size());
     std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::entities::Tag& tag) {
         return utymap::formats::Tag{
             stringTable_.getString(tag.key),
