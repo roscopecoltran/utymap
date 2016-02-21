@@ -1,6 +1,6 @@
 #include "config.hpp"
 #include "formats/shape/ShapeParser.hpp"
-#include "formats/TestShapeDataVisitor.hpp"
+#include "formats/shape/TestShapeDataVisitor.hpp"
 
 #include <boost/test/unit_test.hpp>
 

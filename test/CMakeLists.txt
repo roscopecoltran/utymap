@@ -17,8 +17,8 @@ add_definitions (-DBOOST_TEST_DYN_LINK)
 
 set (HEADER_FILES
                 config.hpp
-                formats/TestOsmDataVisitor.hpp
-                formats/TestShapeDataVisitor.hpp
+                formats/osm/TestOsmDataVisitor.hpp
+                formats/shape/TestShapeDataVisitor.hpp
                 )
 
 add_executable (TestLauncher
@@ -27,13 +27,13 @@ add_executable (TestLauncher
                         ExportLibTest.cpp
                         builders/TerraBuilderTest.cpp
                         entities/ElementTest.cpp
-                        formats/pbf/OsmPbfParserTest.cpp
                         formats/shape/ShapeParserTest.cpp
-                        formats/xml/OsmXmlParserTest.cpp
+                        formats/shape/ShapeDataVisitorTest.cpp
+                        formats/osm/pbf/OsmPbfParserTest.cpp
+                        formats/osm/xml/OsmXmlParserTest.cpp
                         index/ElementStoreTest.cpp
                         index/GeoUtilsTest.cpp
                         index/InMemoryElementStoreTest.cpp
-                        index/ShapeDataVisitorTest.cpp
                         index/StringTableTest.cpp
                         mapcss/MapCssParserTest.cpp
                         mapcss/StyleProviderTest.cpp

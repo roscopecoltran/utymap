@@ -1,12 +1,12 @@
 #include "entities/Element.hpp"
 #include "index/LodRange.hpp"
+#include "formats/shape/ShapeDataVisitor.hpp"
 #include "formats/shape/ShapeParser.hpp"
-#include "formats/xml/OsmXmlParser.hpp"
+#include "formats/osm/xml/OsmXmlParser.hpp"
+#include "formats/osm/OsmDataVisitor.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
-#include "index/ShapeDataVisitor.hpp"
-#include "index/OsmDataVisitor.hpp"
 #include "utils/CoreUtils.hpp"
 
 #include <cstdint>

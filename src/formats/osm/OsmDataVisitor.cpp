@@ -3,7 +3,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
-#include "index/OsmDataVisitor.hpp"
+#include "formats/osm/OsmDataVisitor.hpp"
 
 #include <vector>
 

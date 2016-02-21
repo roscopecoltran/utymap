@@ -18,11 +18,13 @@ set(HEADER_FILES
                 entities/Area.hpp
                 formats/FormatTypes.hpp
                 formats/osm/MultipolygonProcessor.hpp
-                formats/pbf/fileformat.pb.h
-                formats/pbf/osmformat.pb.h
-                formats/pbf/OsmPbfParser.hpp
+                formats/osm/OsmDataVisitor.hpp
+                formats/osm/pbf/fileformat.pb.h
+                formats/osm/pbf/osmformat.pb.h
+                formats/osm/pbf/OsmPbfParser.hpp
+                formats/osm/xml/OsmXmlParser.hpp
                 formats/shape/ShapeParser.hpp
-                formats/xml/OsmXmlParser.hpp
+                formats/shape/ShapeDataVisitor.hpp
                 heightmap/ElevationProvider.hpp
                 heightmap/FlatElevationProvider.hpp
                 index/GeoStore.hpp
@@ -30,9 +32,7 @@ set(HEADER_FILES
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
                 index/LodRange.hpp
-                index/OsmDataVisitor.hpp
                 index/PersistentElementStore.hpp
-                index/ShapeDataVisitor.hpp
                 index/StringTable.hpp
                 mapcss/Color.hpp
                 mapcss/ColorGradient.hpp
@@ -64,11 +64,11 @@ add_library (UtyMap
                 builders/TerraBuilder.cpp
                 builders/TileBuilder.cpp
                 formats/osm/MultipolygonProcessor.cpp
-                formats/pbf/fileformat.pb.cc
-                formats/pbf/osmformat.pb.cc
+                formats/osm/pbf/fileformat.pb.cc
+                formats/osm/pbf/osmformat.pb.cc
+                formats/osm/OsmDataVisitor.cpp
                 index/ElementStore.cpp
                 index/GeoStore.cpp
-                index/OsmDataVisitor.cpp
                 index/InMemoryElementStore.cpp
                 index/PersistentElementStore.cpp
                 index/StringTable.cpp

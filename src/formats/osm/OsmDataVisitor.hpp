@@ -17,15 +17,15 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace utymap { namespace index {
+namespace utymap { namespace formats {
 
 class OsmDataVisitor
 {
     static std::unordered_set<std::string> AreaKeys;
-    static std::unordered_set<std::string> FalseKeys; 
+    static std::unordered_set<std::string> FalseKeys;
 
 public:
- 
+
     struct Statistics
     {
         int bounds, nodes, areas, ways, relations;
@@ -39,10 +39,10 @@ public:
 
     Statistics statistics;
 
-    OsmDataVisitor(ElementStore& elementStore, 
+    OsmDataVisitor(utymap::index::ElementStore& elementStore,
                    const utymap::mapcss::StyleProvider& styleProvider,
-                   StringTable& stringTable, 
-                   const LodRange& lodRange);
+                   utymap::index::StringTable& stringTable,
+                   const utymap::index::LodRange& lodRange);
 
     void visitBounds(utymap::BoundingBox bbox);
 
@@ -57,10 +57,10 @@ private:
     bool isArea(const utymap::formats::Tags& tags);
     bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags);
 
-    ElementStore& elementStore_;
+    utymap::index::ElementStore& elementStore_;
     const utymap::mapcss::StyleProvider& styleProvider_;
-    StringTable& stringTable_;
-    const LodRange& lodRange_;
+    utymap::index::StringTable& stringTable_;
+    const utymap::index::LodRange& lodRange_;
 
     std::unordered_map<std::uint64_t, utymap::GeoCoordinate> nodeMap_;
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> wayMap_;

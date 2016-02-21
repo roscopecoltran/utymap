@@ -3,8 +3,8 @@
 
 #include "BoundingBox.hpp"
 #include "formats/FormatTypes.hpp"
-#include "formats/pbf/fileformat.pb.h"
-#include "formats/pbf/osmformat.pb.h"
+#include "formats/osm/pbf/fileformat.pb.h"
+#include "formats/osm/pbf/osmformat.pb.h"
 
 #include <zlib.h>
 

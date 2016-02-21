@@ -1,6 +1,6 @@
 #include "config.hpp"
 #include "formats/shape/ShapeParser.hpp"
-#include "index/ShapeDataVisitor.hpp"
+#include "formats/shape/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/LodRange.hpp"
 #include "mapcss/StyleProvider.hpp"

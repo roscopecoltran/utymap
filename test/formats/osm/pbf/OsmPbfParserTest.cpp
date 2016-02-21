@@ -1,6 +1,6 @@
 #include "BoundingBox.hpp"
-#include "formats/pbf/OsmPbfParser.hpp"
-#include "formats/TestOsmDataVisitor.hpp"
+#include "formats/osm/pbf/OsmPbfParser.hpp"
+#include "formats/osm/TestOsmDataVisitor.hpp"
 #include "config.hpp"
 
 #include <boost/test/unit_test.hpp>

@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace utymap { namespace index {
+namespace utymap { namespace formats {
 
 struct ShapeDataVisitor
 {
@@ -28,10 +28,10 @@ struct ShapeDataVisitor
     int areas;
     int relations;
 
-    ShapeDataVisitor(ElementStore& elementStore, 
-                    const utymap::mapcss::StyleProvider& styleProvider, 
-                    StringTable& stringTable, 
-                    const LodRange& lodRange) :
+    ShapeDataVisitor(utymap::index::ElementStore& elementStore,
+                    const utymap::mapcss::StyleProvider& styleProvider,
+                    utymap::index::StringTable& stringTable,
+                    const utymap::index::LodRange& lodRange) :
         elementStore_(elementStore),
         styleProvider_(styleProvider),
         stringTable_(stringTable),
@@ -104,10 +104,10 @@ struct ShapeDataVisitor
     }
 
 private:
-    ElementStore& elementStore_;
+    utymap::index::ElementStore& elementStore_;
     const utymap::mapcss::StyleProvider& styleProvider_;
-    StringTable& stringTable_;
-    const LodRange& lodRange_;
+    utymap::index::StringTable& stringTable_;
+    const utymap::index::LodRange& lodRange_;
 };
 
 }}
