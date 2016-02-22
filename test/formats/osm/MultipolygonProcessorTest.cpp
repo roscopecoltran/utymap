@@ -8,6 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
 #include <initializer_list>
 #include <tuple>
 
