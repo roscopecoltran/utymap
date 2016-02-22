@@ -43,6 +43,7 @@ set(HEADER_FILES
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
+                scene/buildings/facades/LowPolyWallBuilder.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 utils/ElementUtils.hpp
