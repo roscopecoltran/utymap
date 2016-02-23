@@ -115,8 +115,7 @@ public:
             relation.tags = way.tags;
             relation.elements.reserve(count);
             ClipperLib::PolyNode* polyNode = solution.GetFirst();
-            while (polyNode)
-            {
+            while (polyNode) {
                 std::shared_ptr<Way> clippedWay(new Way());
                 clippedWay->id = way.id;
                 setCoordinates(*clippedWay, polyNode->Contour);
@@ -249,8 +248,7 @@ public:
             newRelation.elements.reserve(count);
 
             ClipperLib::PolyNode* polyNode = solution.GetFirst();
-            while (polyNode)
-            {
+            while (polyNode) {
                 if (polyNode->IsOpen()) {
                     std::shared_ptr<Way> way(new Way());
                     setCoordinates(*way, polyNode->Contour);
