@@ -10,14 +10,6 @@ namespace utymap { namespace scene {
 // Responsible for building facade wall in low poly quality.
 class LowPolyWallBuilder
 {
-protected:
-    // Represents point in 3d where y points up.
-    struct Point3d
-    {
-        double x, y, z;
-        Point3d(double x, double y, double z) : x(x), y(y), z(z) {}
-    };
-
 public:
     LowPolyWallBuilder(const utymap::meshing::Mesh& mesh,
                        const utymap::mapcss::ColorGradient& gradient)
