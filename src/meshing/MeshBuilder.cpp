@@ -40,20 +40,27 @@ public:
 
         ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
 
-        mid.trianglearealist = (REAL *)malloc(mid.numberoftriangles * sizeof(REAL));
-        for (int i = 0; i < mid.numberoftriangles; ++i) {
-            mid.trianglearealist[i] = options.area;
-        }
-
-        out.pointlist = nullptr;
-        out.pointattributelist = nullptr;
-        out.trianglelist = nullptr;
-        out.triangleattributelist = nullptr;
-
-        ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
-
         Mesh mesh;
-        fillMesh(&out, options, mesh);
+        // do not refine mesh if area is not set.
+        if (std::abs(options.area) < std::numeric_limits<double>::epsilon()) {
+            fillMesh(&out, options, mesh);
+        }
+        else {
+
+            mid.trianglearealist = (REAL *)malloc(mid.numberoftriangles * sizeof(REAL));
+            for (int i = 0; i < mid.numberoftriangles; ++i) {
+                mid.trianglearealist[i] = options.area;
+            }
+
+            out.pointlist = nullptr;
+            out.pointattributelist = nullptr;
+            out.trianglelist = nullptr;
+            out.triangleattributelist = nullptr;
+
+            ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
+
+            fillMesh(&out, options, mesh);
+        }
 
         free(in.pointmarkerlist);
 
