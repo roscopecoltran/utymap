@@ -6,27 +6,23 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
+#include "scene/buildings/roofs/RoofBuilder.hpp"
 
 #include <vector>
 
 namespace utymap { namespace scene {
 
-// builds flat roof in low poly.
-class LowPolyFlatRoofBuilder
+// Builds flat roof in low poly.
+class LowPolyFlatRoofBuilder : public RoofBuilder
 {
 public:
     LowPolyFlatRoofBuilder(const utymap::meshing::Mesh& mesh,
                            const utymap::mapcss::ColorGradient& gradient,
-                           const utymap::meshing::MeshBuilder& meshBuilder)
-        : mesh_(mesh), gradient_(gradient), meshBuilder_(meshBuilder)
+                           const utymap::meshing::MeshBuilder& meshBuilder) 
+        : RoofBuilder(mesh, gradient), meshBuilder_(meshBuilder)
     {
     }
 
-    // Sets height.
-    inline LowPolyFlatRoofBuilder& setHeight(double height) { height_ = height; return *this; }
-
-    // Sets color freq.
-    inline LowPolyFlatRoofBuilder& setColorNoise(double freq) { colorNoiseFreq_ = freq; return *this; }
 
     void build(utymap::meshing::Polygon& polygon)
     {
@@ -42,10 +38,7 @@ public:
     }
 
 private:
-    const utymap::meshing::Mesh& mesh_;
-    const utymap::mapcss::ColorGradient& gradient_;
     const utymap::meshing::MeshBuilder& meshBuilder_;
-    double height_, colorNoiseFreq_;
 };
 
 }}

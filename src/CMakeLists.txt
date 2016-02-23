@@ -45,6 +45,7 @@ set(HEADER_FILES
                 meshing/Polygon.hpp
                 scene/buildings/facades/LowPolyWallBuilder.hpp
                 scene/buildings/roofs/LowPolyRoofBuilder.hpp
+                scene/buildings/roofs/RoofBuilder.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 utils/ElementUtils.hpp
