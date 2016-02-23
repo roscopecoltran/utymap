@@ -3,6 +3,7 @@
 
 #include "meshing/MeshBuilder.hpp"
 #include "triangle/triangle.h"
+#include "utils/GradientUtils.hpp"
 #include "utils/NoiseUtils.hpp"
 
 using namespace utymap::heightmap;
@@ -99,9 +100,8 @@ private:
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            double colorTime = (NoiseUtils::perlin3D(x, ele, y, options.colorNoiseFreq) + 1) / 2;
-            auto color = options.gradient.evaluate(colorTime);
-            mesh.colors.push_back(color);
+            mesh.colors.push_back(
+                GradientUtils::getColor(options.gradient, x, y, ele, options.colorNoiseFreq));
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {

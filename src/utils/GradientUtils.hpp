@@ -3,6 +3,7 @@
 
 #include "mapcss/Color.hpp"
 #include "mapcss/ColorGradient.hpp"
+#include "utils/NoiseUtils.hpp"
 
 #include <cstdint>
 #include <string>
@@ -21,6 +22,14 @@ public:
 
     // Parses color gradient from string.
     static utymap::mapcss::ColorGradient parseGradient(const std::string& gradientStr);
+
+    // Gets color for specific coordinate using coherent noise function
+    static inline utymap::mapcss::Color getColor(const utymap::mapcss::ColorGradient& gradient,
+                                                 double x, double y, double ele, double noise)
+    {
+        double colorTime = (NoiseUtils::perlin3D(x, ele, y, noise) + 1) / 2;
+        return gradient.evaluate(colorTime);
+    }
 
 private:
     static const std::regex gradientRegEx;
