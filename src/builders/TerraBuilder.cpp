@@ -345,7 +345,7 @@ private:
 
     void fillMesh(const Properties& properties, Polygon& polygon)
     {
-        Mesh polygonMesh = meshBuilder_.build(polygon, MeshBuilder::Options
+        auto options = MeshBuilder::Options
         {
             properties.maxArea,
             properties.eleNoiseFreq,
@@ -353,25 +353,15 @@ private:
             properties.heightOffset,
             styleProvider_.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
-        });
+        };
 
         if (properties.meshName != "") {
+            Mesh polygonMesh = meshBuilder_.build(polygon, options);
             polygonMesh.name = properties.meshName;
             callback_(polygonMesh);
         }
         else {
-            auto startVertIndex = mesh_.vertices.size() / 3;
-            mesh_.vertices.insert(mesh_.vertices.end(),
-                polygonMesh.vertices.begin(),
-                polygonMesh.vertices.end());
-
-            for (const auto& tri : polygonMesh.triangles) {
-                mesh_.triangles.push_back(startVertIndex + tri);
-            }
-
-            mesh_.colors.insert(mesh_.colors.end(),
-                polygonMesh.colors.begin(),
-                polygonMesh.colors.end());
+            meshBuilder_.build(polygon, options, mesh_);
         }
     }
 

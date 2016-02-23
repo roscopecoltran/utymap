@@ -47,6 +47,9 @@ public:
     // Builds mesh from given 2D polygon
     Mesh build(Polygon& polygon, const MeshBuilder::Options& options);
 
+    // Builds mesh from given 2D polygon and adds results to existing mesh.
+    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh);
+
 private:
     class MeshBuilderImpl;
     std::unique_ptr<MeshBuilderImpl> pimpl_;

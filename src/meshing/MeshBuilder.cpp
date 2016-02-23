@@ -19,6 +19,13 @@ public:
 
     Mesh build(Polygon& polygon, const MeshBuilder::Options& options)
     {
+        Mesh mesh;
+        build(polygon, options, mesh);
+        return std::move(mesh);
+    }
+
+    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh)
+    {
         triangulateio in, mid, out;
 
         in.numberofpoints = polygon.points.size() / 2;
@@ -41,7 +48,6 @@ public:
 
         ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
 
-        Mesh mesh;
         // do not refine mesh if area is not set.
         if (std::abs(options.area) < std::numeric_limits<double>::epsilon()) {
             fillMesh(&out, options, mesh);
@@ -76,8 +82,6 @@ public:
         free(out.pointattributelist);
         free(out.trianglelist);
         free(out.triangleattributelist);
-
-        return std::move(mesh);
     }
 
 private:
@@ -85,6 +89,8 @@ private:
 
     void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh& mesh)
     {
+        auto triStartIndex = mesh.vertices.size() / 3;
+
         mesh.vertices.reserve(io->numberofpoints * 3 / 2);
         mesh.triangles.reserve(io->numberoftriangles * 3);
         mesh.colors.reserve(io->numberofpoints);
@@ -105,9 +111,9 @@ private:
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {
-            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 1]);
-            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 0]);
-            mesh.triangles.push_back(io->trianglelist[i * io->numberofcorners + 2]);
+            mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + 1]);
+            mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + 0]);
+            mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + 2]);
           }
     }
 };
@@ -122,4 +128,9 @@ MeshBuilder::~MeshBuilder() { }
 Mesh utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options)
 {
     return pimpl_->build(polygon, options);
+}
+
+void utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh)
+{
+    return pimpl_->build(polygon, options, mesh);
 }
