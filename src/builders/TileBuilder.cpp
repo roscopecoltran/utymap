@@ -1,6 +1,6 @@
 #include "Exceptions.hpp"
 #include "builders/TileBuilder.hpp"
-#include "builders/TerraBuilder.hpp"
+#include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"

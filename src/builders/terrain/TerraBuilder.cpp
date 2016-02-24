@@ -1,7 +1,7 @@
 #include "BoundingBox.hpp"
 #include "Exceptions.hpp"
 #include "clipper/clipper.hpp"
-#include "builders/TerraBuilder.hpp"
+#include "builders/terrain/TerraBuilder.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
@@ -77,9 +77,9 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
 public:
 
-    TerraBuilderImpl(const QuadKey& quadKey, const StyleProvider& styleProvider, StringTable& stringTable, 
+    TerraBuilderImpl(const QuadKey& quadKey, const StyleProvider& styleProvider, StringTable& stringTable,
                      ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
-         quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable), 
+         quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable),
          eleProvider_(eleProvider), meshBuilder_(eleProvider), callback_(callback), splitter_()
     {
     }
@@ -109,7 +109,7 @@ public:
     {
         Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
-        std::string type = region.isLayer 
+        std::string type = region.isLayer
             ? utymap::utils::getString(TerrainLayerKey, stringTable_, style)
             : "";
         layers_[type].push_back(region);
@@ -131,7 +131,7 @@ public:
 
             void visitWay(const utymap::entities::Way& way) { way.accept(builder); }
 
-            void visitArea(const utymap::entities::Area& area) 
+            void visitArea(const utymap::entities::Area& area)
             {
                 Path path;
                 path.reserve(area.coordinates.size());
@@ -169,19 +169,19 @@ public:
 
         Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
         BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey_);
-        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude, 
+        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
 
         buildLayers(style);
         buildBackground(style);
-        
+
         mesh_.name = "terrain";
         callback_(mesh_);
     }
 private:
 
     void configureSplitter(int levelOfDetails)
-    {    
+    {
         // TODO
         switch (levelOfDetails)
         {
@@ -285,7 +285,7 @@ private:
         clipper_.AddPaths(paths, ptSubject, true);
         paths.clear();
         clipper_.Execute(ctDifference, paths, pftPositive, pftPositive);
-        // NOTE: this is performance optimization: we cannot make all 
+        // NOTE: this is performance optimization: we cannot make all
         // polygons to be clipping as it slows down clipper dramatically.
         if (moveSubjectToClip)
             clipper_.moveSubjectToClip();
@@ -295,7 +295,7 @@ private:
         }
         populateMesh(properties, paths);
     }
-   
+
     void populateMesh(const Properties& properties, Paths& paths)
     {
         ClipperLib::SimplifyPolygons(paths);
@@ -312,7 +312,7 @@ private:
         for (const Path& path : paths) {
             double area = ClipperLib::Area(path);
             bool isHole = area < 0;
-            if (std::abs(area) < AreaTolerance) 
+            if (std::abs(area) < AreaTolerance)
                 continue;
 
             Points points = restorePoints(path);

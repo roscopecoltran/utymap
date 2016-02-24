@@ -6,15 +6,15 @@
 #include "mapcss/ColorGradient.hpp"
 #include "utils/GradientUtils.hpp"
 
-namespace utymap { namespace scene {
+namespace utymap { namespace builders {
 
 // Responsible for building facade wall in low poly quality.
 class LowPolyWallBuilder
 {
 public:
-    LowPolyWallBuilder(const utymap::meshing::Mesh& mesh,
+    LowPolyWallBuilder(utymap::meshing::Mesh& mesh,
                        const utymap::mapcss::ColorGradient& gradient)
-        : mesh_(mesh), gradient_(gradient), height_(12), minHeight_(0)
+         : mesh_(mesh), gradient_(gradient), height_(12), minHeight_(0), colorNoiseFreq_(0)
     {
     }
 
@@ -61,7 +61,7 @@ private:
         mesh_.colors.push_back(color);
     }
 
-    const utymap::meshing::Mesh& mesh_;
+    utymap::meshing::Mesh& mesh_;
     const utymap::mapcss::ColorGradient& gradient_;
     double height_, minHeight_, colorNoiseFreq_;
 };

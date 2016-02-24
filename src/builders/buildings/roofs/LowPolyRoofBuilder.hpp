@@ -6,19 +6,19 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "scene/buildings/roofs/RoofBuilder.hpp"
+#include "builders/buildings/roofs/RoofBuilder.hpp"
 
 #include <vector>
 
-namespace utymap { namespace scene {
+namespace utymap { namespace builders {
 
 // Builds flat roof in low poly.
 class LowPolyFlatRoofBuilder : public RoofBuilder
 {
 public:
-    LowPolyFlatRoofBuilder(const utymap::meshing::Mesh& mesh,
+    LowPolyFlatRoofBuilder(utymap::meshing::Mesh& mesh,
                            const utymap::mapcss::ColorGradient& gradient,
-                           const utymap::meshing::MeshBuilder& meshBuilder) 
+                           utymap::meshing::MeshBuilder& meshBuilder)
         : RoofBuilder(mesh, gradient), meshBuilder_(meshBuilder)
     {
     }

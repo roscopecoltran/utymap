@@ -3,7 +3,6 @@
 
 #include "QuadKey.hpp"
 #include "builders/ExternalBuilder.hpp"
-#include "builders/TerraBuilder.hpp"
 #include "builders/TileBuilder.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "heightmap/FlatElevationProvider.hpp"

@@ -1,5 +1,5 @@
 #include "QuadKey.hpp"
-#include "builders/TerraBuilder.hpp"
+#include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"

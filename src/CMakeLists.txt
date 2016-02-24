@@ -8,8 +8,12 @@ set(HEADER_FILES
                 GeoCoordinate.hpp
                 QuadKey.hpp
                 builders/ExternalBuilder.hpp
-                builders/TerraBuilder.hpp
                 builders/TileBuilder.hpp
+                builders/terrain/TerraBuilder.hpp
+                builders/buildings/LowPolyBuildingBuilder.hpp
+                builders/buildings/facades/LowPolyWallBuilder.hpp
+                builders/buildings/roofs/LowPolyRoofBuilder.hpp
+                builders/buildings/roofs/RoofBuilder.hpp
                 entities/Element.hpp
                 entities/ElementVisitor.hpp
                 entities/Node.hpp
@@ -43,9 +47,6 @@ set(HEADER_FILES
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp
-                scene/buildings/facades/LowPolyWallBuilder.hpp
-                scene/buildings/roofs/LowPolyRoofBuilder.hpp
-                scene/buildings/roofs/RoofBuilder.hpp
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 utils/ElementUtils.hpp
@@ -64,8 +65,9 @@ add_library (UtyMap
                 ${LIB_SOURCE}/shapefile/dbfopen.c
                 ${LIB_SOURCE}/shapefile/safileio.c
                 ${LIB_SOURCE}/shapefile/shpopen.c
-                builders/TerraBuilder.cpp
+                builders/terrain/TerraBuilder.cpp
                 builders/TileBuilder.cpp
+                builders/buildings/LowPolyBuildingBuilder.cpp
                 formats/osm/MultipolygonProcessor.cpp
                 formats/osm/pbf/fileformat.pb.cc
                 formats/osm/pbf/osmformat.pb.cc

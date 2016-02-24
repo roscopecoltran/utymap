@@ -8,15 +8,15 @@
 
 #include <vector>
 
-namespace utymap { namespace scene {
+namespace utymap { namespace builders {
 
 // Specifies base roof builder functionality.
 class RoofBuilder
 {
 public:
-    RoofBuilder(const utymap::meshing::Mesh& mesh,
+    RoofBuilder(utymap::meshing::Mesh& mesh, 
                 const utymap::mapcss::ColorGradient& gradient)
-                : mesh_(mesh), gradient_(gradient)
+                : mesh_(mesh), gradient_(gradient), colorNoiseFreq_(0)
     {
     }
 
@@ -30,7 +30,7 @@ public:
     virtual void build(utymap::meshing::Polygon& polygon) = 0;
 
 protected:
-    const utymap::meshing::Mesh& mesh_;
+    utymap::meshing::Mesh& mesh_;
     const utymap::mapcss::ColorGradient& gradient_;
     double height_, colorNoiseFreq_;
 };

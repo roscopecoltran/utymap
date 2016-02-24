@@ -45,10 +45,10 @@ public:
     ~MeshBuilder();
 
     // Builds mesh from given 2D polygon
-    Mesh build(Polygon& polygon, const MeshBuilder::Options& options);
+    Mesh build(Polygon& polygon, const MeshBuilder::Options& options) const;
 
     // Builds mesh from given 2D polygon and adds results to existing mesh.
-    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh);
+    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const;
 
 private:
     class MeshBuilderImpl;

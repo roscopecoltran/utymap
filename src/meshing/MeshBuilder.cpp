@@ -16,15 +16,15 @@ public:
 
     MeshBuilderImpl(ElevationProvider& eleProvider)
     : eleProvider_(eleProvider) { }
-
-    Mesh build(Polygon& polygon, const MeshBuilder::Options& options)
+     
+    Mesh build(Polygon& polygon, const MeshBuilder::Options& options) const
     {
         Mesh mesh;
         build(polygon, options, mesh);
         return std::move(mesh);
     }
 
-    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh)
+    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const
     {
         triangulateio in, mid, out;
 
@@ -87,7 +87,7 @@ public:
 private:
     ElevationProvider& eleProvider_;
 
-    void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh& mesh)
+    void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh& mesh) const
     {
         auto triStartIndex = mesh.vertices.size() / 3;
 
@@ -125,12 +125,12 @@ MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
 
 MeshBuilder::~MeshBuilder() { }
 
-Mesh utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options)
+Mesh utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options) const
 {
     return pimpl_->build(polygon, options);
 }
 
-void utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh)
+void utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const
 {
     return pimpl_->build(polygon, options, mesh);
 }
