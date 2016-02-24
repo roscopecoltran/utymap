@@ -27,6 +27,7 @@ add_executable (TestLauncher
                         ExportLibTest.cpp
                         builders/TerraBuilderTest.cpp
                         builders/LineGridSplitterTest.cpp
+                        builders/buildings/LowPolyBuildingBuilderTest.cpp
                         entities/ElementTest.cpp
                         formats/shape/ShapeParserTest.cpp
                         formats/shape/ShapeDataVisitorTest.cpp

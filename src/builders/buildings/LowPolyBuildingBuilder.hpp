@@ -1,10 +1,6 @@
 #ifndef BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
 #define BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
 
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
-#include "entities/Area.hpp"
-#include "entities/Relation.hpp"
 #include "entities/ElementVisitor.hpp"
 
 namespace utymap { namespace builders {
