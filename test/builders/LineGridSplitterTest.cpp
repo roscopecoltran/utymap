@@ -1,4 +1,4 @@
-#include "meshing/LineGridSplitter.hpp"
+#include "builders/terrain/LineGridSplitter.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 BOOST_AUTO_TEST_CASE(GivenSpecificCase1_WhenSplit_CanSplit)
 {
     LineGridSplitter splitter;
-    splitter.setParams(1E8, 3); 
+    splitter.setParams(1E8, 3);
     IntPoint start(5286462881, -916628251);
     IntPoint end(5388136261, -968852454);
     DoublePoints result;

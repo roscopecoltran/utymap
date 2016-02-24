@@ -9,6 +9,7 @@ set(HEADER_FILES
                 QuadKey.hpp
                 builders/ExternalBuilder.hpp
                 builders/TileBuilder.hpp
+                builders/terrain/LineGridSplitter.hpp
                 builders/terrain/TerraBuilder.hpp
                 builders/buildings/LowPolyBuildingBuilder.hpp
                 builders/buildings/facades/LowPolyWallBuilder.hpp
@@ -43,7 +44,6 @@ set(HEADER_FILES
                 mapcss/StyleSheet.hpp
                 mapcss/Style.hpp
                 mapcss/StyleProvider.hpp
-                meshing/LineGridSplitter.hpp
                 meshing/MeshBuilder.hpp
                 meshing/MeshTypes.hpp
                 meshing/Polygon.hpp

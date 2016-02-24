@@ -16,7 +16,7 @@ class RoofBuilder
 public:
     RoofBuilder(utymap::meshing::Mesh& mesh, 
                 const utymap::mapcss::ColorGradient& gradient)
-                : mesh_(mesh), gradient_(gradient), colorNoiseFreq_(0)
+                : mesh_(mesh), gradient_(gradient), height_(0), colorNoiseFreq_(0)
     {
     }
 

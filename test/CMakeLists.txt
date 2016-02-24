@@ -26,6 +26,7 @@ add_executable (TestLauncher
                         BoundingBoxTest.cpp
                         ExportLibTest.cpp
                         builders/TerraBuilderTest.cpp
+                        builders/LineGridSplitterTest.cpp
                         entities/ElementTest.cpp
                         formats/shape/ShapeParserTest.cpp
                         formats/shape/ShapeDataVisitorTest.cpp
@@ -38,7 +39,6 @@ add_executable (TestLauncher
                         mapcss/MapCssParserTest.cpp
                         mapcss/StyleProviderTest.cpp
                         meshing/MeshBuilderTest.cpp
-                        meshing/LineGridSplitterTest.cpp
                         test_utils/ElementUtils.hpp
                         test_utils/MapCssUtils.hpp
                         utils/GeoUtilsTest.cpp
