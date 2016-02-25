@@ -26,7 +26,7 @@ public:
 
     void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const
     {
-        triangulateio in, mid, out;
+        triangulateio in, mid;
 
         in.numberofpoints = polygon.points.size() / 2;
         in.numberofholes = polygon.holes.size() / 2;
@@ -50,7 +50,8 @@ public:
 
         // do not refine mesh if area is not set.
         if (std::abs(options.area) < std::numeric_limits<double>::epsilon()) {
-            fillMesh(&out, options, mesh);
+            fillMesh(&mid, options, mesh);
+            mid.trianglearealist = nullptr;
         }
         else {
 
@@ -59,6 +60,7 @@ public:
                 mid.trianglearealist[i] = options.area;
             }
 
+            triangulateio out;
             out.pointlist = nullptr;
             out.pointattributelist = nullptr;
             out.trianglelist = nullptr;
@@ -67,6 +69,11 @@ public:
             ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
 
             fillMesh(&out, options, mesh);
+
+            free(out.pointlist);
+            free(out.pointattributelist);
+            free(out.trianglelist);
+            free(out.triangleattributelist);
         }
 
         free(in.pointmarkerlist);
@@ -77,11 +84,6 @@ public:
         free(mid.trianglearealist);
         free(mid.segmentlist);
         free(mid.segmentmarkerlist);
-
-        free(out.pointlist);
-        free(out.pointattributelist);
-        free(out.trianglelist);
-        free(out.triangleattributelist);
     }
 
 private:

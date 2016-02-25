@@ -9,12 +9,16 @@
 #include "builders/buildings/roofs/LowPolyRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/GradientUtils.hpp"
+#include "utils/MapCssUtils.hpp"
 
-using utymap::QuadKey;
-using utymap::heightmap::ElevationProvider;
-using utymap::mapcss::StyleProvider;
-using utymap::meshing::Mesh;
-using utymap::index::StringTable;
+#include <vector>
+
+using namespace utymap;
+using namespace utymap::builders;
+using namespace utymap::heightmap;
+using namespace utymap::mapcss;
+using namespace utymap::meshing;
+using namespace utymap::index;
 
 namespace utymap { namespace builders {
 
@@ -37,7 +41,25 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
-        // TODO
+        Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
+        std::string gradientKey = utymap::utils::getString("color", stringTable_, style);
+        ColorGradient gradient = styleProvider_.getGradient(gradientKey);
+
+        Mesh mesh;
+        mesh.name = "building";
+        MeshBuilder meshBuilder(eleProvider_);
+        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, meshBuilder);
+        Polygon polygon(area.coordinates.size(), 0);
+        polygon.addContour(toPoints(area.coordinates));
+        roofBuilder.build(polygon);
+        // TODO add floor
+
+        LowPolyWallBuilder wallBuilder(mesh, gradient);
+        int last = area.coordinates.size() - 1;
+        for (auto i = 0; i <= last; ++i) {
+            wallBuilder.build(area.coordinates[i], area.coordinates[i != last ? i + 1 : 0]);
+        }
+        callback_(mesh);
     }
 
     void visitRelation(const utymap::entities::Relation&)
@@ -46,11 +68,23 @@ public:
     }
 
 private:
-    const QuadKey& quadKey_;
-    const StyleProvider& styleProvider_;
-    ElevationProvider& eleProvider_;
-    StringTable& stringTable_;
-    std::function<void(const Mesh&)> callback_;
+
+    inline std::vector<Point> toPoints(const std::vector<GeoCoordinate>& coordinates) const
+    {
+        std::vector<Point> points;
+        points.reserve(coordinates.size());
+        for (const auto& coordinate : coordinates) {
+            points.push_back(Point(coordinate.longitude, coordinate.latitude));
+        }
+
+        return std::move(points);
+    }
+
+const QuadKey& quadKey_;
+const StyleProvider& styleProvider_;
+ElevationProvider& eleProvider_;
+StringTable& stringTable_;
+std::function<void(const Mesh&)> callback_;
 
 };
 

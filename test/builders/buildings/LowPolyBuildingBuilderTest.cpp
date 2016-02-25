@@ -36,7 +36,8 @@ struct Builders_Buildings_LowPolyBuildingsBuilderFixture
 {
     Builders_Buildings_LowPolyBuildingsBuilderFixture() :
         stringTable(new StringTable("")),
-        styleProvider(MapCssUtils::createStyleProviderFromString(*stringTable, "area|z-1[building=yes] { height:10;}")),
+        styleProvider(MapCssUtils::createStyleProviderFromString(*stringTable,
+            "area|z1[building=yes] { height:10; color:gradient(red);}")),
         eleProvider()
     {
     }
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
     QuadKey quadKey{ 1, 1, 0 };
     Area building = ElementUtils::createElement<Area>(*stringTable, { { "building", "yes" } }, 
-        { { 0, 0 }, {10, 0}, {10, 10}, {0, 10} });
+        { { 0, 0 }, {0, 10}, {10, 10}, {10, 0} });
     bool isCalled = false;
     LowPolyBuildingBuilder builder(quadKey, *styleProvider, *stringTable, eleProvider, [&](const Mesh& mesh) {
         isCalled = true;
