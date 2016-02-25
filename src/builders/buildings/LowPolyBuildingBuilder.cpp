@@ -10,31 +10,73 @@
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/GradientUtils.hpp"
 
+using utymap::QuadKey;
+using utymap::heightmap::ElevationProvider;
+using utymap::mapcss::StyleProvider;
+using utymap::meshing::Mesh;
+using utymap::index::StringTable;
+
 namespace utymap { namespace builders {
 
-LowPolyBuildingBuilder::LowPolyBuildingBuilder()
+class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public utymap::entities::ElementVisitor
 {
+public:
+    LowPolyBuildingBuilderImpl(const utymap::QuadKey& quadKey,
+                               const utymap::mapcss::StyleProvider& styleProvider,
+                               utymap::index::StringTable& stringTable,
+                               utymap::heightmap::ElevationProvider& eleProvider,
+                               std::function<void(const utymap::meshing::Mesh&)> callback):
+        quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable),
+        eleProvider_(eleProvider), callback_(callback)
+    {
+    }
 
+    void visitNode(const utymap::entities::Node&) { }
+
+    void visitWay(const utymap::entities::Way&) { }
+
+    void visitArea(const utymap::entities::Area& area)
+    {
+        // TODO
+    }
+
+    void visitRelation(const utymap::entities::Relation&)
+    {
+        // TODO
+    }
+
+private:
+    const QuadKey& quadKey_;
+    const StyleProvider& styleProvider_;
+    ElevationProvider& eleProvider_;
+    StringTable& stringTable_;
+    std::function<void(const Mesh&)> callback_;
+
+};
+
+LowPolyBuildingBuilder::LowPolyBuildingBuilder(const QuadKey& quadKey,
+                                               const StyleProvider& styleProvider,
+                                               StringTable& stringTable,
+                                               ElevationProvider& eleProvider,
+                                               std::function<void(const Mesh&)> callback) :
+    pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback))
+{
 }
 
-void LowPolyBuildingBuilder::visitNode(const utymap::entities::Node&)
-{
+LowPolyBuildingBuilder::~LowPolyBuildingBuilder() { }
 
-}
+void LowPolyBuildingBuilder::visitNode(const utymap::entities::Node&) { }
 
-void LowPolyBuildingBuilder::visitWay(const utymap::entities::Way&)
-{
-
-}
+void LowPolyBuildingBuilder::visitWay(const utymap::entities::Way&) { }
 
 void LowPolyBuildingBuilder::visitArea(const utymap::entities::Area& area)
 {
-    // TODO
+    area.accept(*pimpl_);
 }
 
-void LowPolyBuildingBuilder::visitRelation(const utymap::entities::Relation&)
+void LowPolyBuildingBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
-    // TODO
+    relation.accept(*pimpl_);
 }
 
 }}
