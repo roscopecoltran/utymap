@@ -35,31 +35,15 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 using namespace utymap::utils;
 
-const uint64_t Scale = 1E7; // max precision for Lat/Lon: seven decimal positions
-const double Tolerance = 10; // Tolerance for splitting algorithm
-const double AreaTolerance = 100; // Tolerance for meshing
-
-// Properties of terrain region union.
-struct Properties
-{
-    std::string gradientKey;
-    double eleNoiseFreq;
-    double colorNoiseFreq;
-    double heightOffset;
-    double maxArea;
-    std::string meshName;
-
-    Properties() : gradientKey(), eleNoiseFreq(0), colorNoiseFreq(0),
-        heightOffset(0), maxArea(0), meshName()
-    {
-    }
-};
+const uint64_t Scale = 1E7;         // max precision for Lat/Lon: seven decimal positions
+const double Tolerance = 10;        // Tolerance for splitting algorithm
+const double AreaTolerance = 100;   // Tolerance for meshing
 
 // Represents terrain region points.
 struct Region
 {
     bool isLayer;
-    Properties properties;
+    std::shared_ptr<MeshBuilder::Options> options; // optional: might be empty if polygon is layer
     Paths points;
 };
 
@@ -158,7 +142,7 @@ public:
             Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
             region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
             if (!region.isLayer) {
-                region.properties = createRegionProperties(style, "");
+                region.options = createMeshOptions(style, "");
             }
             std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) : "";
             layers_[type].push_back(region);
@@ -204,8 +188,7 @@ private:
             getline(ss, name, ',');
             auto layer = layers_.find(name);
             if (layer != layers_.end()) {
-                Properties properties = createRegionProperties(style, name + "-");
-                buildFromRegions(layer->second, properties);
+                buildFromRegions(layer->second, createMeshOptions(style, name + "-"));
                 layers_.erase(layer);
             }
         }
@@ -213,7 +196,7 @@ private:
         // 2. Process the rest: each region has aready its own properties.
         for (auto& layer : layers_) {
             for (auto& region : layer.second) {
-                buildFromPaths(region.points, region.properties, false);
+                buildFromPaths(region.points, region.options, false);
             }
         }
     }
@@ -234,8 +217,9 @@ private:
         clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
         clipper_.Clear();
 
-        if (!background.empty())
-            populateMesh(createRegionProperties(style, ""), background);
+        if (!background.empty()) {
+            populateMesh(createMeshOptions(style, ""), background);
+        }
     }
 
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -250,27 +234,24 @@ private:
 
         region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region.isLayer)
-            region.properties = createRegionProperties(style, "");
+            region.options = createMeshOptions(style, "");
 
         return std::move(region);
     }
 
-    Properties createRegionProperties(const Style& style, const std::string& prefix)
+    std::shared_ptr<MeshBuilder::Options> createMeshOptions(const Style& style, const std::string& prefix)
     {
-        Properties properties;
-        // required
-        properties.eleNoiseFreq = utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style);
-        properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style);
-        properties.gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
-        properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style);
-        // optional
-        properties.heightOffset = utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style, 0);
-        properties.meshName = utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "");
-
-        return std::move(properties);
+        std::string gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
+        return std::shared_ptr<MeshBuilder::Options>(new MeshBuilder::Options(
+               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style),
+               utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
+               utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
+               utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style, 0),
+               context_.styleProvider.getGradient(gradientKey),
+               utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "")));
     }
 
-    void buildFromRegions(const Regions& regions, const Properties& properties)
+    void buildFromRegions(const Regions& regions, const std::shared_ptr<MeshBuilder::Options>& options)
     {
         // merge all regions together
         Clipper clipper;
@@ -280,10 +261,10 @@ private:
         Paths result;
         clipper.Execute(ctUnion, result, pftPositive, pftPositive);
 
-        buildFromPaths(result, properties);
+        buildFromPaths(result, options);
     }
 
-    void buildFromPaths(Paths& paths, const Properties& properties, bool moveSubjectToClip = true)
+    void buildFromPaths(Paths& paths, const std::shared_ptr<MeshBuilder::Options>& options, bool moveSubjectToClip = true)
     {
         clipper_.AddPaths(paths, ptSubject, true);
         paths.clear();
@@ -296,15 +277,15 @@ private:
             backgroundClipArea_.insert(backgroundClipArea_.end(), paths.begin(), paths.end());
             clipper_.removeSubject();
         }
-        populateMesh(properties, paths);
+        populateMesh(options, paths);
     }
 
-    void populateMesh(const Properties& properties, Paths& paths)
+    void populateMesh(const std::shared_ptr<MeshBuilder::Options>& options, Paths& paths)
     {
         ClipperLib::SimplifyPolygons(paths);
         ClipperLib::CleanPolygons(paths);
 
-        bool hasHeightOffset = std::abs(properties.heightOffset) > 1E-8;
+        bool hasHeightOffset = std::abs(options->heightOffset) > 1E-8;
         // calculate approximate size of overall points
         auto size = 0;
         for (auto i = 0; i < paths.size(); ++i) {
@@ -325,11 +306,11 @@ private:
                 polygon.addContour(points);
 
             if (hasHeightOffset)
-                processHeightOffset(properties, points, isHole);
+                processHeightOffset(options, points, isHole);
         }
 
         if (!polygon.points.empty()) {
-            fillMesh(properties, polygon);
+            fillMesh(options, polygon);
         }
     }
 
@@ -346,33 +327,21 @@ private:
         return std::move(points);
     }
 
-    void fillMesh(const Properties& properties, Polygon& polygon)
+    void fillMesh(const std::shared_ptr<MeshBuilder::Options>& options, Polygon& polygon)
     {
-        auto options = MeshBuilder::Options
-        {
-            properties.maxArea,
-            properties.eleNoiseFreq,
-            properties.colorNoiseFreq,
-            properties.heightOffset,
-            context_.styleProvider.getGradient(properties.gradientKey),
-            /* segmentSplit=*/ 0
-        };
-
-        if (properties.meshName != "") {
-            Mesh polygonMesh(properties.meshName);
-            context_.meshBuilder.addPolygon(polygonMesh, polygon, options);
+        if (options->meshName != "") {
+            Mesh polygonMesh(options->meshName);
+            context_.meshBuilder.addPolygon(polygonMesh, polygon, *options);
             context_.meshCallback(polygonMesh);
         }
         else {
-            context_.meshBuilder.addPolygon(mesh_, polygon, options);
+            context_.meshBuilder.addPolygon(mesh_, polygon, *options);
         }
     }
 
-    void processHeightOffset(const Properties& properties, const Points& points, bool isHole)
+    void processHeightOffset(const std::shared_ptr<MeshBuilder::Options>& options, const Points& points, bool isHole)
     {
-        ColorGradient gradient = context_.styleProvider.getGradient(properties.gradientKey);
         auto index = mesh_.vertices.size() / 3;
-        MeshBuilder::Options options(0, properties.eleNoiseFreq, properties.colorNoiseFreq, properties.heightOffset, gradient);
         for (auto i = 0; i < points.size(); ++i) {
             Point p1 = points[i];
             Point p2 = points[i == (points.size() - 1) ? 0 : i + 1];
@@ -380,7 +349,7 @@ private:
             // check whether two points are on cell rect
             if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2)) continue;
 
-            context_.meshBuilder.addPlane(mesh_, p1, p2, options);
+            context_.meshBuilder.addPlane(mesh_, p1, p2, *options);
         }
     }
 

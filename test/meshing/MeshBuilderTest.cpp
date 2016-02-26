@@ -53,8 +53,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_RefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient,
-        /* segmentSplit=*/ 0
+        /* color gradient */ colorGradient
     });
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
@@ -86,8 +85,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_RefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient,
-        /* segmentSplit=*/ 0 
+        /* color gradient */ colorGradient
     });
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 84);
@@ -124,8 +122,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_RefinesC
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient,
-        /* segmentSplit=*/ 0
+        /* color gradient */ colorGradient
     });
 
     BOOST_CHECK(mesh.vertices.size() > 0);

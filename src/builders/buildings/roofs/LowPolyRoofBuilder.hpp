@@ -32,8 +32,7 @@ public:
             0, // ele noise
             colorNoiseFreq_,
             height_,
-            gradient_,
-            /* segmentSplit=*/ 0
+            gradient_
         });
     }
 

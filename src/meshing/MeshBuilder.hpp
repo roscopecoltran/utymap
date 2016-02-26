@@ -23,10 +23,12 @@ public:
         double eleNoiseFreq;
         // Color noise freq.
         double colorNoiseFreq;
-        //Height offset.
+        // Height offset.
         double heightOffset;
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;
+        // Mesh name
+        const std::string meshName;
 
         // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
@@ -39,12 +41,14 @@ public:
                 double colorNoiseFreq,
                 double heightOffset,
                 const utymap::mapcss::ColorGradient& gradient,
+                std::string meshName = "",
                 int segmentSplit = 0) :
             area(area), 
             eleNoiseFreq(eleNoiseFreq), 
             colorNoiseFreq(colorNoiseFreq),
             heightOffset(heightOffset),
             gradient(gradient),
+            meshName(meshName),
             segmentSplit(segmentSplit)
         {
         }
