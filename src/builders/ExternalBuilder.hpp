@@ -1,6 +1,7 @@
 #ifndef BUILDERS_EXTERNALBUILDER_HPP_DEFINED
 #define BUILDERS_EXTERNALBUILDER_HPP_DEFINED
 
+#include "builders/BuilderContext.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
@@ -20,21 +21,21 @@ class ExternalBuilder : public utymap::entities::ElementVisitor
 {
 public:
 
-    ExternalBuilder(std::function<void(const utymap::entities::Element&)> elementCallback) :
-        elementCallback_(elementCallback)
+    ExternalBuilder(const utymap::builders::BuilderContext& context) :
+        context_(context)
     {
     }
 
-    void visitNode(const utymap::entities::Node& node) { elementCallback_(node); }
+    void visitNode(const utymap::entities::Node& node) { context_.elementCallback(node); }
 
-    void visitWay(const utymap::entities::Way& way) { elementCallback_(way); }
+    void visitWay(const utymap::entities::Way& way) { context_.elementCallback(way); }
 
-    void visitArea(const utymap::entities::Area& area) { elementCallback_(area); }
+    void visitArea(const utymap::entities::Area& area) { context_.elementCallback(area); }
 
-    void visitRelation(const utymap::entities::Relation& relation) { elementCallback_(relation); }
+    void visitRelation(const utymap::entities::Relation& relation) { context_.elementCallback(relation); }
 
 private:
-    std::function<void(const utymap::entities::Element&)> elementCallback_;
+    const utymap::builders::BuilderContext& context_;
 };
 
 }}

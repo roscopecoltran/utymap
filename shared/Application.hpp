@@ -2,6 +2,7 @@
 #define APPLICATION_HPP_DEFINED
 
 #include "QuadKey.hpp"
+#include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/TileBuilder.hpp"
 #include "entities/ElementVisitor.hpp"
@@ -143,11 +144,8 @@ public:
     // Register element visitor.
     void registerElementVisitor(const char* name)
     {
-        tileBuilder_.registerElementVisitor(name, [&](const utymap::QuadKey& quadKey,
-                                                     const utymap::mapcss::StyleProvider& styleProvider,
-                                                     const utymap::builders::TileBuilder::MeshCallback& meshFunc,
-                                                     const utymap::builders::TileBuilder::ElementCallback& elementFunc) {
-            return std::shared_ptr<utymap::entities::ElementVisitor>(new utymap::builders::ExternalBuilder(elementFunc));
+        tileBuilder_.registerElementVisitor(name, [&](const utymap::builders::BuilderContext& context) {
+            return std::shared_ptr<utymap::entities::ElementVisitor>(new utymap::builders::ExternalBuilder(context));
         });
     }
 

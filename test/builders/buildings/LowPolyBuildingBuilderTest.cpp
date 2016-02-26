@@ -1,4 +1,5 @@
 #include "GeoCoordinate.hpp"
+#include "builders/BuilderContext.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
@@ -12,15 +13,13 @@
 #include <cstdio>
 #include <memory>
 
-using utymap::GeoCoordinate;
-using utymap::QuadKey;
-using utymap::builders::LowPolyBuildingBuilder;
-using utymap::entities::Area;
-using utymap::entities::Relation;
-using utymap::heightmap::ElevationProvider;
-using utymap::index::StringTable;
-using utymap::mapcss::StyleProvider;
-using utymap::meshing::Mesh;
+using namespace utymap;
+using namespace utymap::builders;
+using namespace utymap::entities;
+using namespace utymap::heightmap;
+using namespace utymap::index;
+using namespace utymap::mapcss;
+using namespace utymap::meshing;
 
 namespace {
 
@@ -59,14 +58,15 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Buildings_LowPolyBuildingsBuilder, Builders_Bu
 BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
     QuadKey quadKey{ 1, 1, 0 };
-    Area building = ElementUtils::createElement<Area>(*stringTable, { { "building", "yes" } }, 
-        { { 0, 0 }, {0, 10}, {10, 10}, {10, 0} });
     bool isCalled = false;
-    LowPolyBuildingBuilder builder(quadKey, *styleProvider, *stringTable, eleProvider, [&](const Mesh& mesh) {
+    BuilderContext context(quadKey, *styleProvider, *stringTable, eleProvider, [&](const Mesh& mesh) {
         isCalled = true;
         BOOST_CHECK_GT(mesh.vertices.size(), 0);
         BOOST_CHECK_GT(mesh.triangles.size(), 0);
-    });
+    }, nullptr);
+    Area building = ElementUtils::createElement<Area>(*stringTable, { { "building", "yes" } }, 
+        { { 0, 0 }, {0, 10}, {10, 10}, {10, 0} });
+    LowPolyBuildingBuilder builder(context);
 
     builder.visitArea(building);
 

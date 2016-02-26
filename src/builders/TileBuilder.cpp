@@ -1,4 +1,5 @@
 #include "Exceptions.hpp"
+#include "builders/BuilderContext.hpp"
 #include "builders/TileBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Element.hpp"
@@ -34,26 +35,15 @@ private:
 class AggregateElemenVisitor : public ElementVisitor
 {
 public:
-    AggregateElemenVisitor(StringTable& stringTable,
-                           const QuadKey& quadKey,
-                           const StyleProvider& styleProvider,
-                           ElevationProvider& eleProvider,
+    AggregateElemenVisitor(const BuilderContext context,
                            VisitorFactoryMap& visitorFactoryMap,
-                           std::uint32_t visitorKeyId,
-                           const MeshCallback& meshFunc,
-                           const ElementCallback& elementFunc) :
-        quadKey_(quadKey),
-        styleProvider_(styleProvider),
+                           std::uint32_t visitorKeyId) :
+        context_(context),
         visitorFactoryMap_(visitorFactoryMap),
-        visitorKeyId_(visitorKeyId),
-        meshFunc_(meshFunc),
-        elementFunc_(elementFunc)
+        visitorKeyId_(visitorKeyId)
     {
-        visitorFactoryMap_[TerrainBuilderName] = [&](const utymap::QuadKey& quadKey,
-                                                     const StyleProvider& styleProvider,
-                                                     const MeshCallback& meshFunc,
-                                                     const ElementCallback& elementFunc) {
-            return std::shared_ptr<ElementVisitor>(new TerraBuilder(quadKey, styleProvider, stringTable, eleProvider, meshFunc));
+        visitorFactoryMap_[TerrainBuilderName] = [&](const BuilderContext& context) {
+            return std::shared_ptr<ElementVisitor>(new TerraBuilder(context));
         };
     }
 
@@ -78,7 +68,7 @@ private:
     // Calls appropriate visitor for given element
     void visitElement(const Element& element)
     {
-        Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
+        Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
         std::stringstream ss(style.get(visitorKeyId_));
         while (ss.good())
         {
@@ -100,15 +90,12 @@ private:
             throw std::domain_error("Unknown element visitor");
         }
 
-        auto visitor = factory->second(quadKey_, styleProvider_, meshFunc_, elementFunc_);
+        auto visitor = factory->second(context_);
         visitors_[name] = visitor;
         return *visitor;
     }
 
-    utymap::QuadKey quadKey_;
-    const StyleProvider& styleProvider_;
-    const MeshCallback& meshFunc_;
-    const ElementCallback& elementFunc_;
+    const BuilderContext context_;
     VisitorFactoryMap& visitorFactoryMap_;
     std::uint32_t visitorKeyId_;
     std::unordered_map<std::string, std::shared_ptr<ElementVisitor>> visitors_;
@@ -132,7 +119,8 @@ public:
 
     void build(const QuadKey& quadKey, const StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
     {
-        AggregateElemenVisitor elementVisitor(stringTable_, quadKey, styleProvider, eleProvider_, visitorFactory_, visitorKeyId_, meshFunc, elementFunc);
+        BuilderContext context(quadKey, styleProvider, stringTable_, eleProvider_, meshFunc, elementFunc);
+        AggregateElemenVisitor elementVisitor(context, visitorFactory_, visitorKeyId_);
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
     }

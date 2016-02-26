@@ -1,4 +1,5 @@
 #include "QuadKey.hpp"
+#include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -42,17 +43,16 @@ struct Terrain_TerraBuilderFixture
         eleProvider(),
         builderPtr(nullptr)
     {
-        BOOST_TEST_MESSAGE("setup fixture");
     }
 
     void initializeBuilder(const QuadKey& quadKey, const MeshCallback& callback)
     {
-        builderPtr = new TerraBuilder(quadKey, *styleProviderPtr,*stringTablePtr, eleProvider, callback);
+        BuilderContext context(quadKey, *styleProviderPtr, *stringTablePtr, eleProvider, callback, nullptr);
+        builderPtr = new TerraBuilder(context);
     }
 
     ~Terrain_TerraBuilderFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         delete builderPtr;
         delete styleProviderPtr;
         delete stringTablePtr;

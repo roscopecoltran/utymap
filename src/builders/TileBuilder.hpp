@@ -2,6 +2,7 @@
 #define BUILDERS_TILEBUILDER_HPP_DEFINED
 
 #include "QuadKey.hpp"
+#include "builders/BuilderContext.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "heightmap/ElevationProvider.hpp"
@@ -22,10 +23,8 @@ public:
 
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
-    typedef std::function<std::shared_ptr<utymap::entities::ElementVisitor>(const QuadKey&,
-                                                                            const utymap::mapcss::StyleProvider&,
-                                                                            const MeshCallback&,
-                                                                            const ElementCallback&)> ElementVisitorFactory;
+    typedef std::function<std::shared_ptr<utymap::entities::ElementVisitor>(
+        const utymap::builders::BuilderContext&)> ElementVisitorFactory;
 
     TileBuilder(utymap::index::GeoStore& geoStore,
                 utymap::index::StringTable& stringTable,

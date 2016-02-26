@@ -1,19 +1,10 @@
 #ifndef BUILDERS_TERRAIN_TERRABUILDER_HPP_DEFINED
 #define BUILDERS_TERRAIN_TERRABUILDER_HPP_DEFINED
 
-#include "QuadKey.hpp"
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
-#include "entities/Area.hpp"
-#include "entities/Relation.hpp"
+#include "builders/BuilderContext.hpp"
+#include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "heightmap/ElevationProvider.hpp"
-#include "mapcss/StyleProvider.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "index/StringTable.hpp"
 
-#include <functional>
-#include <string>
 #include <memory>
 
 namespace utymap { namespace builders {
@@ -23,11 +14,7 @@ class TerraBuilder : public utymap::entities::ElementVisitor
 {
 public:
 
-    TerraBuilder(const utymap::QuadKey& quadKey,
-                 const utymap::mapcss::StyleProvider& styleProvider,
-                 utymap::index::StringTable& stringTable,
-                 utymap::heightmap::ElevationProvider& eleProvider,
-                 std::function<void(const utymap::meshing::Mesh&)> callback);
+    TerraBuilder(const utymap::builders::BuilderContext&);
 
     ~TerraBuilder();
 

@@ -25,13 +25,8 @@ namespace utymap { namespace builders {
 class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public utymap::entities::ElementVisitor
 {
 public:
-    LowPolyBuildingBuilderImpl(const utymap::QuadKey& quadKey,
-                               const utymap::mapcss::StyleProvider& styleProvider,
-                               utymap::index::StringTable& stringTable,
-                               utymap::heightmap::ElevationProvider& eleProvider,
-                               std::function<void(const utymap::meshing::Mesh&)> callback):
-        quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable),
-        eleProvider_(eleProvider), callback_(callback)
+    LowPolyBuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
+        context_(context)
     {
     }
 
@@ -41,13 +36,13 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
-        Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
-        std::string gradientKey = utymap::utils::getString("color", stringTable_, style);
-        ColorGradient gradient = styleProvider_.getGradient(gradientKey);
+        Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
+        std::string gradientKey = utymap::utils::getString("color", context_.stringTable, style);
+        ColorGradient gradient = context_.styleProvider.getGradient(gradientKey);
 
         Mesh mesh;
         mesh.name = "building";
-        MeshBuilder meshBuilder(eleProvider_);
+        MeshBuilder meshBuilder(context_.eleProvider);
         LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, meshBuilder);
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
@@ -59,7 +54,7 @@ public:
         for (auto i = 0; i <= last; ++i) {
             wallBuilder.build(area.coordinates[i], area.coordinates[i != last ? i + 1 : 0]);
         }
-        callback_(mesh);
+        context_.meshCallback(mesh);
     }
 
     void visitRelation(const utymap::entities::Relation&)
@@ -80,20 +75,12 @@ private:
         return std::move(points);
     }
 
-const QuadKey& quadKey_;
-const StyleProvider& styleProvider_;
-ElevationProvider& eleProvider_;
-StringTable& stringTable_;
-std::function<void(const Mesh&)> callback_;
+const utymap::builders::BuilderContext& context_;
 
 };
 
-LowPolyBuildingBuilder::LowPolyBuildingBuilder(const QuadKey& quadKey,
-                                               const StyleProvider& styleProvider,
-                                               StringTable& stringTable,
-                                               ElevationProvider& eleProvider,
-                                               std::function<void(const Mesh&)> callback) :
-    pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback))
+LowPolyBuildingBuilder::LowPolyBuildingBuilder(const utymap::builders::BuilderContext& context) :
+    pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(context))
 {
 }
 

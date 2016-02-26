@@ -1,12 +1,8 @@
 #ifndef BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
 #define BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
 
-#include "QuadKey.hpp"
+#include "builders/BuilderContext.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "heightmap/ElevationProvider.hpp"
-#include "mapcss/StyleProvider.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "index/StringTable.hpp"
 
 #include <functional>
 #include <memory>
@@ -17,11 +13,7 @@ namespace utymap { namespace builders {
 class LowPolyBuildingBuilder : public utymap::entities::ElementVisitor
 {
 public:
-    LowPolyBuildingBuilder(const utymap::QuadKey& quadKey,
-                           const utymap::mapcss::StyleProvider& styleProvider,
-                           utymap::index::StringTable& stringTable,
-                           utymap::heightmap::ElevationProvider& eleProvider,
-                           std::function<void(const utymap::meshing::Mesh&)> callback);
+    LowPolyBuildingBuilder(const utymap::builders::BuilderContext&);
 
     ~LowPolyBuildingBuilder();
 

@@ -1,8 +1,13 @@
 #include "BoundingBox.hpp"
 #include "Exceptions.hpp"
 #include "clipper/clipper.hpp"
+#include "builders/BuilderContext.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
+#include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Area.hpp"
+#include "entities/Relation.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
@@ -77,10 +82,8 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 {
 public:
 
-    TerraBuilderImpl(const QuadKey& quadKey, const StyleProvider& styleProvider, StringTable& stringTable,
-                     ElevationProvider& eleProvider, std::function<void(const Mesh&)> callback) :
-         quadKey_(quadKey), styleProvider_(styleProvider), stringTable_(stringTable),
-         eleProvider_(eleProvider), meshBuilder_(eleProvider), callback_(callback), splitter_()
+    TerraBuilderImpl(const BuilderContext& context) :
+            context_(context), meshBuilder_(context.eleProvider), splitter_()
     {
     }
 
@@ -90,27 +93,27 @@ public:
 
     void visitWay(const utymap::entities::Way& way)
     {
-        Style style = styleProvider_.forElement(way, quadKey_.levelOfDetail);
+        Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = utymap::utils::getDouble(WidthKey, stringTable_, style);
+        double width = utymap::utils::getDouble(WidthKey, context_.stringTable, style);
         Paths offsetSolution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
         offset_.Execute(offsetSolution, width * Scale);
         offset_.Clear();
         region.points = offsetSolution;
 
-        std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, stringTable_, style) : "";
+        std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) : "";
         layers_[type].push_back(region);
     }
 
     void visitArea(const utymap::entities::Area& area)
     {
-        Style style = styleProvider_.forElement(area, quadKey_.levelOfDetail);
+        Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
         std::string type = region.isLayer
-            ? utymap::utils::getString(TerrainLayerKey, stringTable_, style)
+            ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style)
             : "";
         layers_[type].push_back(region);
     }
@@ -152,12 +155,12 @@ public:
         }
 
         if (!region.points.empty()) {
-            Style style = styleProvider_.forElement(relation, quadKey_.levelOfDetail);
-            region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
+            Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
+            region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
             if (!region.isLayer) {
                 region.properties = createRegionProperties(style, "");
             }
-            std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, stringTable_, style) : "";
+            std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) : "";
             layers_[type].push_back(region);
         }
     }
@@ -165,10 +168,10 @@ public:
     // builds tile mesh using data provided.
     void build()
     {
-         configureSplitter(quadKey_.levelOfDetail);
+        configureSplitter(context_.quadKey.levelOfDetail);
 
-        Style style = styleProvider_.forCanvas(quadKey_.levelOfDetail);
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        Style style = context_.styleProvider.forCanvas(context_.quadKey.levelOfDetail);
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
         rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
 
@@ -176,8 +179,9 @@ public:
         buildBackground(style);
 
         mesh_.name = "terrain";
-        callback_(mesh_);
+        context_.meshCallback(mesh_);
     }
+
 private:
 
     void configureSplitter(int levelOfDetails)
@@ -194,7 +198,7 @@ private:
     void buildLayers(const Style& style)
     {
         // 1. process layers: regions with shared properties.
-        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, stringTable_, style));
+        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, context_.stringTable, style));
         while (ss.good())
         {
             std::string name;
@@ -218,7 +222,7 @@ private:
     // process the rest area.
     void buildBackground(const Style& style)
     {
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey_);
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
         Path tileRect;
         tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
         tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
@@ -245,7 +249,7 @@ private:
         }
         region.points.push_back(path);
 
-        region.isLayer = style.has(stringTable_.getId(TerrainLayerKey));
+        region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region.isLayer)
             region.properties = createRegionProperties(style, "");
 
@@ -256,13 +260,13 @@ private:
     {
         Properties properties;
         // required
-        properties.eleNoiseFreq = utymap::utils::getDouble(prefix + EleNoiseFreqKey, stringTable_, style);
-        properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, stringTable_, style);
-        properties.gradientKey = utymap::utils::getString(prefix + GradientKey, stringTable_, style);
-        properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, stringTable_, style);
+        properties.eleNoiseFreq = utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style);
+        properties.colorNoiseFreq = utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style);
+        properties.gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
+        properties.maxArea = utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style);
         // optional
-        properties.heightOffset = utymap::utils::getDouble(prefix + HeightKey, stringTable_, style, 0);
-        properties.meshName = utymap::utils::getString(prefix + MeshNameKey, stringTable_, style, "");
+        properties.heightOffset = utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style, 0);
+        properties.meshName = utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "");
 
         return std::move(properties);
     }
@@ -351,14 +355,14 @@ private:
             properties.eleNoiseFreq,
             properties.colorNoiseFreq,
             properties.heightOffset,
-            styleProvider_.getGradient(properties.gradientKey),
+            context_.styleProvider.getGradient(properties.gradientKey),
             /* segmentSplit=*/ 0
         };
 
         if (properties.meshName != "") {
             Mesh polygonMesh = meshBuilder_.build(polygon, options);
             polygonMesh.name = properties.meshName;
-            callback_(polygonMesh);
+            context_.meshCallback(polygonMesh);
         }
         else {
             meshBuilder_.build(polygon, options, mesh_);
@@ -367,7 +371,7 @@ private:
 
     void processHeightOffset(const Properties& properties, const Points& points, bool isHole)
     {
-        ColorGradient gradient = styleProvider_.getGradient(properties.gradientKey);
+        ColorGradient gradient = context_.styleProvider.getGradient(properties.gradientKey);
         auto index = mesh_.vertices.size() / 3;
         for (auto i = 0; i < points.size(); ++i) {
             Point p1 = points[i];
@@ -377,8 +381,8 @@ private:
             if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))
                 continue;
 
-            double ele1 = eleProvider_.getElevation(p1.x, p1.y);
-            double ele2 = eleProvider_.getElevation(p2.x, p2.y);
+            double ele1 = context_.eleProvider.getElevation(p1.x, p1.y);
+            double ele2 = context_.eleProvider.getElevation(p2.x, p2.y);
 
             ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, properties.eleNoiseFreq);
             ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, properties.eleNoiseFreq);
@@ -407,16 +411,12 @@ private:
         mesh_.triangles.push_back(index);
     }
 
-const StyleProvider& styleProvider_;
-ElevationProvider& eleProvider_;
-StringTable& stringTable_;
-std::function<void(const Mesh&)> callback_;
+const BuilderContext& context_;
 
 ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
 MeshBuilder meshBuilder_;
-QuadKey quadKey_;
 Rectangle rect_;
 Layers layers_;
 Paths backgroundClipArea_;
@@ -435,11 +435,7 @@ void TerraBuilder::complete() { pimpl_->build(); }
 
 TerraBuilder::~TerraBuilder() { }
 
-TerraBuilder::TerraBuilder(const utymap::QuadKey& quadKey,
-                           const utymap::mapcss::StyleProvider& styleProvider,
-                           utymap::index::StringTable& stringTable,
-                           utymap::heightmap::ElevationProvider& eleProvider,
-                           std::function<void(const utymap::meshing::Mesh&)> callback) :
-    pimpl_(new TerraBuilder::TerraBuilderImpl(quadKey, styleProvider, stringTable, eleProvider, callback))
+TerraBuilder::TerraBuilder(const BuilderContext& context) :
+    pimpl_(new TerraBuilder::TerraBuilderImpl(context))
 {
 }

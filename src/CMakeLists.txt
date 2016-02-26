@@ -7,6 +7,7 @@ set(HEADER_FILES
                 Exceptions.hpp
                 GeoCoordinate.hpp
                 QuadKey.hpp
+                builders/BuilderContext.hpp
                 builders/ExternalBuilder.hpp
                 builders/TileBuilder.hpp
                 builders/terrain/LineGridSplitter.hpp
