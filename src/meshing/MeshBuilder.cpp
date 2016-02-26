@@ -96,10 +96,11 @@ public:
         auto color1 = options.gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.colorNoiseFreq) + 1) / 2);
         auto color2 = options.gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.colorNoiseFreq) + 1) / 2);
 
-        int index = mesh.triangles.size();
+        int index = mesh.vertices.size() / 3;
         addVertex(mesh, p1, ele1, color1, index);
         addVertex(mesh, p2, ele2, color1, index + 2);
         addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
+        index += 3;
 
         addVertex(mesh, p1, ele1 + options.heightOffset, color1, index);
         addVertex(mesh, p1, ele1, color1, index + 2);
