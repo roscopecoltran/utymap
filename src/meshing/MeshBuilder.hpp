@@ -60,6 +60,9 @@ public:
     // Adds simple plane to existing mesh using options provided.
     void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const;
 
+    // Adds simple plane to existing mesh using elevation and options provided.
+    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const;
+
 private:
     class MeshBuilderImpl;
     std::unique_ptr<MeshBuilderImpl> pimpl_;

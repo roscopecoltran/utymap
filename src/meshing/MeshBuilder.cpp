@@ -80,7 +80,7 @@ public:
     }
 
 
-    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
+    inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
     {
         double ele1 = eleProvider_.getElevation(p1.x, p1.y);
         double ele2 = eleProvider_.getElevation(p2.x, p2.y);
@@ -88,6 +88,11 @@ public:
         ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.eleNoiseFreq);
         ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.eleNoiseFreq);
 
+        addPlane(mesh, p1, p2, ele1, ele2, options);
+    }
+
+    inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+    {
         auto color1 = options.gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.colorNoiseFreq) + 1) / 2);
         auto color2 = options.gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.colorNoiseFreq) + 1) / 2);
 
@@ -160,4 +165,9 @@ void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Op
 void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
 {
     pimpl_->addPlane(mesh, p1, p2, options);
+}
+
+void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+{
+    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, options);
 }

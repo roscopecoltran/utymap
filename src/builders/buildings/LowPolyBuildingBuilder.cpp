@@ -47,7 +47,7 @@ public:
         roofBuilder.build(polygon);
         // TODO add floor
 
-        LowPolyWallBuilder wallBuilder(mesh, gradient);
+        LowPolyWallBuilder wallBuilder(mesh, gradient, context_.meshBuilder);
         int last = area.coordinates.size() - 1;
         for (auto i = 0; i <= last; ++i) {
             wallBuilder.build(area.coordinates[i], area.coordinates[i != last ? i + 1 : 0]);
