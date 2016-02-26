@@ -22,7 +22,7 @@ struct Color
     {
     };
 
-    Color(std::uint32_t rgba)
+    Color(int rgba)
     {
         r = (rgba >> 24) & 0xff;
         g = (rgba >> 16) & 0xff;
@@ -30,7 +30,7 @@ struct Color
         a = (rgba >>  0) & 0xff;
     }
 
-    operator std::uint32_t() const
+    operator int() const
     {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }

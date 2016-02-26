@@ -25,12 +25,12 @@ public:
 
 private:
 
-    static inline float dot(const Vector3& g, float x, float y, float z)
+    static inline double dot(const Vector3& g, double x, double y, double z)
     {
         return g.x*x + g.y*y + g.z*z;
     }
 
-    static inline float smooth(float t)
+    static inline double smooth(double t)
     {
         return t*t*t*(t*(t * 6 - 15) + 10);
     }

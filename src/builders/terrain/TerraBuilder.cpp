@@ -83,7 +83,7 @@ class TerraBuilder::TerraBuilderImpl : public ElementVisitor
 public:
 
     TerraBuilderImpl(const BuilderContext& context) :
-            context_(context), meshBuilder_(context.eleProvider), splitter_()
+        context_(context), splitter_(), mesh_("terrain")
     {
     }
 
@@ -178,7 +178,6 @@ public:
         buildLayers(style);
         buildBackground(style);
 
-        mesh_.name = "terrain";
         context_.meshCallback(mesh_);
     }
 
@@ -360,12 +359,12 @@ private:
         };
 
         if (properties.meshName != "") {
-            Mesh polygonMesh = meshBuilder_.build(polygon, options);
-            polygonMesh.name = properties.meshName;
+            Mesh polygonMesh(properties.meshName);
+            context_.meshBuilder.addPolygon(polygonMesh, polygon, options);
             context_.meshCallback(polygonMesh);
         }
         else {
-            meshBuilder_.build(polygon, options, mesh_);
+            context_.meshBuilder.addPolygon(mesh_, polygon, options);
         }
     }
 
@@ -373,42 +372,16 @@ private:
     {
         ColorGradient gradient = context_.styleProvider.getGradient(properties.gradientKey);
         auto index = mesh_.vertices.size() / 3;
+        MeshBuilder::Options options(0, properties.eleNoiseFreq, properties.colorNoiseFreq, properties.heightOffset, gradient);
         for (auto i = 0; i < points.size(); ++i) {
             Point p1 = points[i];
             Point p2 = points[i == (points.size() - 1) ? 0 : i + 1];
 
             // check whether two points are on cell rect
-            if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))
-                continue;
+            if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2)) continue;
 
-            double ele1 = context_.eleProvider.getElevation(p1.x, p1.y);
-            double ele2 = context_.eleProvider.getElevation(p2.x, p2.y);
-
-            ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, properties.eleNoiseFreq);
-            ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, properties.eleNoiseFreq);
-
-            Color color1 = gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, properties.colorNoiseFreq) + 1) / 2);
-            Color color2 = gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, properties.colorNoiseFreq) + 1) / 2);
-
-            addVertex(p1, ele1, color1, index);
-            addVertex(p2, ele2, color1, index + 2);
-            addVertex(p2, ele2 + properties.heightOffset, color1, index + 1);
-            index += 3;
-
-            addVertex(p1, ele1 + properties.heightOffset, color1, index);
-            addVertex(p1, ele1, color1, index + 2);
-            addVertex(p2, ele2 + properties.heightOffset, color1, index + 1);
-            index += 3;
+            context_.meshBuilder.addPlane(mesh_, p1, p2, options);
         }
-    }
-
-    inline void addVertex(const Point& p, double ele, const Color& color, int index)
-    {
-        mesh_.vertices.push_back(p.x);
-        mesh_.vertices.push_back(p.y);
-        mesh_.vertices.push_back(ele);
-        mesh_.colors.push_back(color);
-        mesh_.triangles.push_back(index);
     }
 
 const BuilderContext& context_;
@@ -416,7 +389,6 @@ const BuilderContext& context_;
 ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
-MeshBuilder meshBuilder_;
 Rectangle rect_;
 Layers layers_;
 Paths backgroundClipArea_;

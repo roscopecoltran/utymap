@@ -52,7 +52,7 @@ private:
         addVertex(p1, top, index, color);
     }
 
-    inline void addVertex(const utymap::GeoCoordinate& coordinate, double height, int triIndex, int color)
+    inline void addVertex(const utymap::GeoCoordinate& coordinate, double height, std::size_t triIndex, int color)
     {
         mesh_.vertices.push_back(coordinate.longitude);
         mesh_.vertices.push_back(coordinate.latitude);

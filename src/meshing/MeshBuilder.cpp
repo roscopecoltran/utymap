@@ -17,14 +17,7 @@ public:
     MeshBuilderImpl(ElevationProvider& eleProvider)
     : eleProvider_(eleProvider) { }
      
-    Mesh build(Polygon& polygon, const MeshBuilder::Options& options) const
-    {
-        Mesh mesh;
-        build(polygon, options, mesh);
-        return std::move(mesh);
-    }
-
-    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const
+    void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
     {
         triangulateio in, mid;
 
@@ -86,8 +79,38 @@ public:
         free(mid.segmentmarkerlist);
     }
 
+
+    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
+    {
+        double ele1 = eleProvider_.getElevation(p1.x, p1.y);
+        double ele2 = eleProvider_.getElevation(p2.x, p2.y);
+
+        ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.eleNoiseFreq);
+        ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.eleNoiseFreq);
+
+        auto color1 = options.gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.colorNoiseFreq) + 1) / 2);
+        auto color2 = options.gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.colorNoiseFreq) + 1) / 2);
+
+        int index = mesh.triangles.size();
+        addVertex(mesh, p1, ele1, color1, index);
+        addVertex(mesh, p2, ele2, color1, index + 2);
+        addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
+
+        addVertex(mesh, p1, ele1 + options.heightOffset, color1, index);
+        addVertex(mesh, p1, ele1, color1, index + 2);
+        addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
+    }
+
 private:
-    ElevationProvider& eleProvider_;
+
+    inline void addVertex(Mesh& mesh, const Point& p, double ele, std::uint32_t color, std::uint32_t triIndex) const
+    {
+        mesh.vertices.push_back(p.x);
+        mesh.vertices.push_back(p.y);
+        mesh.vertices.push_back(ele);
+        mesh.colors.push_back(color);
+        mesh.triangles.push_back(triIndex);
+    }
 
     void fillMesh(triangulateio* io, const MeshBuilder::Options& options, Mesh& mesh) const
     {
@@ -118,6 +141,8 @@ private:
             mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + 2]);
           }
     }
+
+    ElevationProvider& eleProvider_;
 };
 
 MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
@@ -127,12 +152,12 @@ MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
 
 MeshBuilder::~MeshBuilder() { }
 
-Mesh utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options) const
+void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
 {
-    return pimpl_->build(polygon, options);
+    return pimpl_->addPolygon(mesh, polygon, options);
 }
 
-void utymap::meshing::MeshBuilder::build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const
+void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
 {
-    return pimpl_->build(polygon, options, mesh);
+    pimpl_->addPlane(mesh, p1, p2, options);
 }

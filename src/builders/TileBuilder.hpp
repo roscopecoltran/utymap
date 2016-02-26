@@ -23,6 +23,7 @@ public:
 
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
+    // Factory of element builders
     typedef std::function<std::shared_ptr<utymap::entities::ElementVisitor>(
         const utymap::builders::BuilderContext&)> ElementVisitorFactory;
 
@@ -40,7 +41,6 @@ public:
                const utymap::mapcss::StyleProvider& styleProvider,
                MeshCallback meshFunc,
                ElementCallback elementFunc);
-
 
 private:
     class TileBuilderImpl;

@@ -40,10 +40,8 @@ public:
         std::string gradientKey = utymap::utils::getString("color", context_.stringTable, style);
         ColorGradient gradient = context_.styleProvider.getGradient(gradientKey);
 
-        Mesh mesh;
-        mesh.name = "building";
-        MeshBuilder meshBuilder(context_.eleProvider);
-        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, meshBuilder);
+        Mesh mesh("building");
+        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_.meshBuilder);
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
         roofBuilder.build(polygon);

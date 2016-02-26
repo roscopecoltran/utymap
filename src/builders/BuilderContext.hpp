@@ -4,6 +4,7 @@
 #include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
 
 #include <functional>
@@ -21,12 +22,12 @@ struct BuilderContext
     const utymap::mapcss::StyleProvider& styleProvider;
     // String table.
     utymap::index::StringTable& stringTable;
-    // Elevation provider
-    utymap::heightmap::ElevationProvider& eleProvider;
     // Mesh callback should be called once mesh is constructed.
     std::function<void(const utymap::meshing::Mesh&)> meshCallback;
     // Element callback is called to process original element by external logic.
     std::function<void(const utymap::entities::Element&)> elementCallback;
+    // Mesh builder.
+    const utymap::meshing::MeshBuilder meshBuilder;
 
     BuilderContext(
         const utymap::QuadKey& quadKey,
@@ -39,7 +40,7 @@ struct BuilderContext
         quadKey(quadKey), 
         styleProvider(styleProvider), 
         stringTable(stringTable), 
-        eleProvider(eleProvider),
+        meshBuilder(eleProvider),
         meshCallback(meshCallback),
         elementCallback(elementCallback)
     {

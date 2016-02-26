@@ -35,10 +35,15 @@ private:
 class AggregateElemenVisitor : public ElementVisitor
 {
 public:
-    AggregateElemenVisitor(const BuilderContext context,
+    AggregateElemenVisitor(const QuadKey& quadKey, 
+                           const StyleProvider& styleProvider, 
+                           StringTable& stringTable,
+                           ElevationProvider& eleProvider,
+                           const MeshCallback& meshFunc, 
+                           const ElementCallback& elementFunc,
                            VisitorFactoryMap& visitorFactoryMap,
                            std::uint32_t visitorKeyId) :
-        context_(context),
+        context_(quadKey, styleProvider, stringTable, eleProvider, meshFunc, elementFunc),
         visitorFactoryMap_(visitorFactoryMap),
         visitorKeyId_(visitorKeyId)
     {
@@ -117,10 +122,14 @@ public:
         visitorFactory_[name] = factory;
     }
 
-    void build(const QuadKey& quadKey, const StyleProvider& styleProvider, const MeshCallback& meshFunc, const ElementCallback& elementFunc)
+    void build(const QuadKey& quadKey, 
+               const StyleProvider& styleProvider, 
+               const MeshCallback& meshFunc, 
+               const ElementCallback& elementFunc)
     {
-        BuilderContext context(quadKey, styleProvider, stringTable_, eleProvider_, meshFunc, elementFunc);
-        AggregateElemenVisitor elementVisitor(context, visitorFactory_, visitorKeyId_);
+        AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_, 
+            eleProvider_, meshFunc, elementFunc, visitorFactory_, visitorKeyId_);
+
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
     }

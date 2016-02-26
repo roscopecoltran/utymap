@@ -127,13 +127,19 @@ struct Rectangle
     }
 };
 
-// Represents mesh. It uses only primitive types due to interoperability.
+// Represents mesh which uses only primitive types to store data due to interoperability.
 struct Mesh
 {
     std::string name;
     std::vector<double> vertices;
     std::vector<int> triangles;
     std::vector<int> colors;
+
+    Mesh(const std::string& name) : name(name) { }
+
+    // disable copying
+    Mesh(const Mesh&) = delete;
+    Mesh& operator=(const Mesh&) = delete;
 };
 
 using Contour = std::vector<utymap::meshing::Point>;

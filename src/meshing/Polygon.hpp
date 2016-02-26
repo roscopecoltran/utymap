@@ -46,12 +46,12 @@ private:
             holes.push_back(pointInside.y);
         }
 
-        int count = contour.size();
+        auto count = contour.size();
         if (contour[0] == contour[count - 1])
             count--;
 
-        int offset = segments.size() / 2;
-        for (int i = 0; i < count; ++i) {
+        auto offset = segments.size() / 2;
+        for (auto i = 0; i < count; ++i) {
             Point point = contour[i];
             points.push_back(point.x);
             points.push_back(point.y);
@@ -66,7 +66,7 @@ private:
         Rectangle bounds;
         bounds.expand(contour);
 
-        int length = contour.size();
+        auto length = contour.size();
         int limit = 8;
 
         Point a, b; // Current edge.
@@ -118,7 +118,7 @@ private:
         double x = point.x;
         double y = point.y;
 
-        int count = poly.size();
+        auto count = poly.size();
 
         for (int i = 0, j = count - 1; i < count; i++) {
             if (((poly[i].y < y && poly[j].y >= y) || (poly[j].y < y && poly[i].y >= y))

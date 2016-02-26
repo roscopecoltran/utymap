@@ -35,8 +35,9 @@ struct Meshing_MeshingFixture
 
 BOOST_FIXTURE_TEST_SUITE(Meshing_MeshBuilder, Meshing_MeshingFixture)
 
-BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
+BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_RefinesCorrectly)
 {
+    Mesh mesh("");
     Polygon polygon(4, 0);
     polygon.addContour(std::vector<DPoint>
     {
@@ -46,7 +47,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
         DPoint(0, 10)
     });
 
-    Mesh mesh = builder.build(polygon, MeshBuilder::Options
+    builder.addPolygon(mesh, polygon, MeshBuilder::Options
     {
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
@@ -60,8 +61,9 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenBuild_RefinesCorrectly)
     BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 34);
 }
 
-BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
+BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_RefinesCorrectly)
 {
+    Mesh mesh("");
     Polygon polygon(8, 1);
     polygon.addContour(std::vector<DPoint>
     {
@@ -78,7 +80,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
         DPoint(3, 6)
     });
 
-    Mesh mesh = builder.build(polygon, MeshBuilder::Options
+    builder.addPolygon(mesh, polygon, MeshBuilder::Options
     { 
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
@@ -92,7 +94,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenBuild_RefinesCorrectly)
     BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 141);
 }
 
-BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrectly)
+BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_RefinesCorrectly)
 {
     std::vector<Point> contour;
     LineGridSplitter splitter;
@@ -115,7 +117,8 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenBuild_RefinesCorrec
     Polygon polygon(contour.size(), 0);
     polygon.addContour(contour);
 
-    Mesh mesh = builder.build(polygon, MeshBuilder::Options
+    Mesh mesh("");
+    builder.addPolygon(mesh, polygon, MeshBuilder::Options
     {
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,

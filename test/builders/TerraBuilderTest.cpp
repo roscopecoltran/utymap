@@ -45,12 +45,6 @@ struct Terrain_TerraBuilderFixture
     {
     }
 
-    void initializeBuilder(const QuadKey& quadKey, const MeshCallback& callback)
-    {
-        BuilderContext context(quadKey, *styleProviderPtr, *stringTablePtr, eleProvider, callback, nullptr);
-        builderPtr = new TerraBuilder(context);
-    }
-
     ~Terrain_TerraBuilderFixture()
     {
         delete builderPtr;
@@ -73,11 +67,13 @@ BOOST_FIXTURE_TEST_SUITE(Terrain_TerraBuilder, Terrain_TerraBuilderFixture)
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {
     bool isCalled = false;
-    initializeBuilder(QuadKey{ 1, 0, 0 }, [&](const Mesh& mesh) {
-        isCalled = true;
-        BOOST_CHECK_GT(mesh.vertices.size(), 0);
-        BOOST_CHECK_GT(mesh.triangles.size(), 0);
-    });
+    BuilderContext context(QuadKey{ 1, 0, 0 }, *styleProviderPtr, *stringTablePtr, eleProvider, 
+        [&](const Mesh& mesh) {
+            isCalled = true;
+            BOOST_CHECK_GT(mesh.vertices.size(), 0);
+            BOOST_CHECK_GT(mesh.triangles.size(), 0);
+    }, nullptr);
+    builderPtr = new TerraBuilder(context);
     ElementUtils::createElement<Area>(*stringTablePtr, 
         { { "natural", "water" } },
         { { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } }).accept(*builderPtr);

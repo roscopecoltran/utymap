@@ -12,7 +12,6 @@
 namespace utymap { namespace meshing {
 
 // Provides the way to build mesh in 3D space.
-// Stateless
 class MeshBuilder
 {
 public:
@@ -20,16 +19,12 @@ public:
     {
         // Max area of triangle in refined mesh.
         double area;
-
         // Elevation noise freq.
         double eleNoiseFreq;
-
         // Color noise freq.
         double colorNoiseFreq;
-
-        // height offset.
+        //Height offset.
         double heightOffset;
-
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;
 
@@ -38,17 +33,32 @@ public:
         //     1 = no new vertices on the boundary
         //     2 = prevent all segment splitting, including internal boundaries
         int segmentSplit;
+
+        Options(double area,
+                double eleNoiseFreq,
+                double colorNoiseFreq,
+                double heightOffset,
+                const utymap::mapcss::ColorGradient& gradient,
+                int segmentSplit = 0) :
+            area(area), 
+            eleNoiseFreq(eleNoiseFreq), 
+            colorNoiseFreq(colorNoiseFreq),
+            heightOffset(heightOffset),
+            gradient(gradient),
+            segmentSplit(segmentSplit)
+        {
+        }
     };
 
     // Creates builder with given elevation provider.
     MeshBuilder(utymap::heightmap::ElevationProvider& eleProvider);
     ~MeshBuilder();
 
-    // Builds mesh from given 2D polygon
-    Mesh build(Polygon& polygon, const MeshBuilder::Options& options) const;
+    // Adds polygon to existing mesh using options provided.
+    void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const;
 
-    // Builds mesh from given 2D polygon and adds results to existing mesh.
-    void build(Polygon& polygon, const MeshBuilder::Options& options, Mesh& mesh) const;
+    // Adds simple plane to existing mesh using options provided.
+    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const;
 
 private:
     class MeshBuilderImpl;
