@@ -22,11 +22,11 @@ using namespace utymap::index;
 
 namespace utymap { namespace builders {
 
-class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public utymap::entities::ElementVisitor
+class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public ElementBuilder
 {
 public:
     LowPolyBuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
-        context_(context)
+        ElementBuilder(context)
     {
     }
 
@@ -60,6 +60,10 @@ public:
         // TODO
     }
 
+    void complete()
+    {
+    }
+
 private:
 
     inline std::vector<Point> toPoints(const std::vector<GeoCoordinate>& coordinates) const
@@ -72,12 +76,10 @@ private:
 
         return std::move(points);
     }
-
-const utymap::builders::BuilderContext& context_;
-
 };
 
 LowPolyBuildingBuilder::LowPolyBuildingBuilder(const utymap::builders::BuilderContext& context) :
+    utymap::builders::ElementBuilder(context),
     pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(context))
 {
 }
@@ -91,6 +93,11 @@ void LowPolyBuildingBuilder::visitWay(const utymap::entities::Way&) { }
 void LowPolyBuildingBuilder::visitArea(const utymap::entities::Area& area)
 {
     area.accept(*pimpl_);
+}
+
+void LowPolyBuildingBuilder::complete()
+{
+    pimpl_->complete();
 }
 
 void LowPolyBuildingBuilder::visitRelation(const utymap::entities::Relation& relation)

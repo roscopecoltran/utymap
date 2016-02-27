@@ -3,8 +3,8 @@
 
 #include "QuadKey.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/ElementBuilder.hpp"
 #include "entities/Element.hpp"
-#include "entities/ElementVisitor.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "mapcss/StyleProvider.hpp"
@@ -24,8 +24,8 @@ public:
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
     // Factory of element builders
-    typedef std::function<std::shared_ptr<utymap::entities::ElementVisitor>(
-        const utymap::builders::BuilderContext&)> ElementVisitorFactory;
+    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(
+        const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
     TileBuilder(utymap::index::GeoStore& geoStore,
                 utymap::index::StringTable& stringTable,
@@ -34,7 +34,7 @@ public:
     ~TileBuilder();
 
     // Registers factory method for element builder.
-    void registerElementVisitor(const std::string& name, ElementVisitorFactory factory);
+    void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
 
     // Builds tile for given quadkey.
     void build(const utymap::QuadKey& quadKey,

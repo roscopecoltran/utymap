@@ -5,7 +5,8 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/TileBuilder.hpp"
-#include "entities/ElementVisitor.hpp"
+#include "builders/buildings/LowPolyBuildingBuilder.hpp"
+#include "builders/terrain/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -133,6 +134,7 @@ public:
     {
         geoStore_.registerStore(InMemoryStorageKey, inMemoryStore_);
         geoStore_.registerStore(PersistentStorageKey, persistentStore_);
+        registerDefaultBuilders();
     }
 
     // Register stylesheet.
@@ -141,11 +143,11 @@ public:
         getStyleProvider(path);
     }
 
-    // Register element visitor.
-    void registerElementVisitor(const char* name)
+    // Register element builder.
+    void registerElementBuilder(const char* name)
     {
-        tileBuilder_.registerElementVisitor(name, [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::entities::ElementVisitor>(new utymap::builders::ExternalBuilder(context));
+        tileBuilder_.registerElementBuilder(name, [&](const utymap::builders::BuilderContext& context) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(context));
         });
     }
 
@@ -191,6 +193,17 @@ private:
         styleProviders_[path] = std::shared_ptr<utymap::mapcss::StyleProvider>(
             new utymap::mapcss::StyleProvider(stylesheet, stringTable_));
         return styleProviders_[path];
+    }
+
+    void registerDefaultBuilders()
+    {
+        tileBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::TerraBuilder(context));
+        });
+
+        tileBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::LowPolyBuildingBuilder(context));
+        });
     }
 
     utymap::index::StringTable stringTable_;

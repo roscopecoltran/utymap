@@ -31,9 +31,9 @@ extern "C"
     }
 
     // Register element visitor.
-    void EXPORT_API registerElementVisitor(const char* name)
+    void EXPORT_API registerElementBuilder(const char* name)
     {
-        applicationPtr->registerElementVisitor(name);
+        applicationPtr->registerElementBuilder(name);
     }
 
     // Adds data to persistent store.

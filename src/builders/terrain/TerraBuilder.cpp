@@ -62,12 +62,12 @@ const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
 const static std::string MeshNameKey = "mesh-name";
 
-class TerraBuilder::TerraBuilderImpl : public ElementVisitor
+class TerraBuilder::TerraBuilderImpl : public ElementBuilder
 {
 public:
 
     TerraBuilderImpl(const BuilderContext& context) :
-        context_(context), splitter_(), mesh_("terrain")
+        ElementBuilder(context), splitter_(), mesh_("terrain")
     {
     }
 
@@ -150,7 +150,7 @@ public:
     }
 
     // builds tile mesh using data provided.
-    void build()
+    void complete()
     {
         configureSplitter(context_.quadKey.levelOfDetail);
 
@@ -353,8 +353,6 @@ private:
         }
     }
 
-const BuilderContext& context_;
-
 ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
@@ -372,11 +370,12 @@ void TerraBuilder::visitArea(const utymap::entities::Area& area) { pimpl_->visit
 
 void TerraBuilder::visitRelation(const utymap::entities::Relation& relation) { pimpl_->visitRelation(relation); }
 
-void TerraBuilder::complete() { pimpl_->build(); }
+void TerraBuilder::complete() { pimpl_->complete(); }
 
 TerraBuilder::~TerraBuilder() { }
 
 TerraBuilder::TerraBuilder(const BuilderContext& context) :
+    utymap::builders::ElementBuilder(context),
     pimpl_(new TerraBuilder::TerraBuilderImpl(context))
 {
 }

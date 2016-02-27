@@ -2,15 +2,15 @@
 #define BUILDERS_TERRAIN_TERRABUILDER_HPP_DEFINED
 
 #include "builders/BuilderContext.hpp"
+#include "builders/ElementBuilder.hpp"
 #include "entities/Element.hpp"
-#include "entities/ElementVisitor.hpp"
 
 #include <memory>
 
 namespace utymap { namespace builders {
 
 // Provides the way build terrain mesh.
-class TerraBuilder : public utymap::entities::ElementVisitor
+class TerraBuilder : public utymap::builders::ElementBuilder
 {
 public:
 

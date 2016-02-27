@@ -11,15 +11,14 @@ struct ExportLibFixture {
         ::configure(TEST_ASSETS_PATH, TEST_ASSETS_PATH, [](const char* message) {
             BOOST_TEST_FAIL(message);
         });
-        BOOST_TEST_MESSAGE("setup fixture");
-        ::registerElementVisitor("place");
+        ::registerElementBuilder("place");
     }
 
-    void loadTiles(int startX, int endX, int startY, int endY)
+    void loadTiles(int levelOfDetails, int startX, int endX, int startY, int endY)
     {
         for (int i = startX; i <= endX; ++i) {
             for (int j = startY; j <= endY; j++) {
-                ::loadTile(TEST_MAPCSS_DEFAULT, i, j, 1,
+                ::loadTile(TEST_MAPCSS_DEFAULT, i, j, levelOfDetails,
                     [](const char* name, const double* vertices, int vertexCount,
                        const int* triangles, int triCount, const int* colors, int colorCount) {
                     BOOST_CHECK_GT(vertexCount, 0);
@@ -59,14 +58,15 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacks
     ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
     ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
 
-    loadTiles(0, 1, 0, 1);
+    loadTiles(1, 0, 1, 0, 1);
 }
 
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomNineteen_ThenCallbacksAreCalled)
 {
-    // TODO
-    //auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    //::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_PBF_FILE, 19, 19, callback);
+    auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
+    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 19, 19, callback);
+
+    loadTiles(19, 281640, 171904, 281640, 171904);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -24,13 +24,12 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 const std::string BuilderKeyName = "builders";
-const std::string TerrainBuilderName = "terrain";
 
 class TileBuilder::TileBuilderImpl
 {
 private:
 
-    typedef std::unordered_map<std::string, ElementVisitorFactory> VisitorFactoryMap;
+    typedef std::unordered_map<std::string, ElementBuilderFactory> BuilderFactoryMap;
 
 class AggregateElemenVisitor : public ElementVisitor
 {
@@ -41,15 +40,12 @@ public:
                            ElevationProvider& eleProvider,
                            const MeshCallback& meshFunc, 
                            const ElementCallback& elementFunc,
-                           VisitorFactoryMap& visitorFactoryMap,
-                           std::uint32_t visitorKeyId) :
+                           BuilderFactoryMap& builderFactoryMap,
+                           std::uint32_t builderKeyId) :
         context_(quadKey, styleProvider, stringTable, eleProvider, meshFunc, elementFunc),
-        visitorFactoryMap_(visitorFactoryMap),
-        visitorKeyId_(visitorKeyId)
+        builderFactoryMap_(builderFactoryMap),
+        builderKeyId_(builderKeyId)
     {
-        visitorFactoryMap_[TerrainBuilderName] = [&](const BuilderContext& context) {
-            return std::shared_ptr<ElementVisitor>(new TerraBuilder(context));
-        };
     }
 
     void visitNode(const Node& node) { visitElement(node); }
@@ -62,10 +58,8 @@ public:
 
     void complete()
     {
-        auto terraBuilderPair = visitors_.find(TerrainBuilderName);
-        if (terraBuilderPair != visitors_.end()) {
-            dynamic_cast<TerraBuilder*>(terraBuilderPair->second.get())->complete();
-        }
+        for (const auto& builder : builders_)
+            builder.second->complete();
     }
 
 private:
@@ -74,7 +68,7 @@ private:
     void visitElement(const Element& element)
     {
         Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
-        std::stringstream ss(style.get(visitorKeyId_));
+        std::stringstream ss(style.get(builderKeyId_));
         while (ss.good())
         {
             std::string name;
@@ -85,25 +79,25 @@ private:
 
     ElementVisitor& getVisitor(const std::string& name)
     {
-        auto visitorPair = visitors_.find(name);
-        if (visitorPair != visitors_.end()) {
+        auto visitorPair = builders_.find(name);
+        if (visitorPair != builders_.end()) {
             return *visitorPair->second;
         }
 
-        auto factory = visitorFactoryMap_.find(name);
-        if (factory == visitorFactoryMap_.end()) {
+        auto factory = builderFactoryMap_.find(name);
+        if (factory == builderFactoryMap_.end()) {
             throw std::domain_error("Unknown element visitor");
         }
 
         auto visitor = factory->second(context_);
-        visitors_[name] = visitor;
+        builders_[name] = visitor;
         return *visitor;
     }
 
     const BuilderContext context_;
-    VisitorFactoryMap& visitorFactoryMap_;
-    std::uint32_t visitorKeyId_;
-    std::unordered_map<std::string, std::shared_ptr<ElementVisitor>> visitors_;
+    BuilderFactoryMap& builderFactoryMap_;
+    std::uint32_t builderKeyId_;
+    std::unordered_map<std::string, std::shared_ptr<ElementBuilder>> builders_;
 };
 
 public:
@@ -112,14 +106,14 @@ public:
         geoStore_(geoStore),
         stringTable_(stringTable),
         eleProvider_(eleProvider),
-        visitorKeyId_(stringTable.getId(BuilderKeyName)),
-        visitorFactory_()
+        builderKeyId_(stringTable.getId(BuilderKeyName)),
+        builderFactory_()
     {
     }
 
-    void registerElementVisitor(const std::string& name, ElementVisitorFactory factory)
+    void registerElementVisitor(const std::string& name, ElementBuilderFactory factory)
     {
-        visitorFactory_[name] = factory;
+        builderFactory_[name] = factory;
     }
 
     void build(const QuadKey& quadKey, 
@@ -128,7 +122,7 @@ public:
                const ElementCallback& elementFunc)
     {
         AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_, 
-            eleProvider_, meshFunc, elementFunc, visitorFactory_, visitorKeyId_);
+            eleProvider_, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
@@ -138,11 +132,11 @@ private:
     GeoStore& geoStore_;
     StringTable& stringTable_;
     ElevationProvider& eleProvider_;
-    std::uint32_t visitorKeyId_;
-    VisitorFactoryMap visitorFactory_;
+    std::uint32_t builderKeyId_;
+    BuilderFactoryMap builderFactory_;
 };
 
-void TileBuilder::registerElementVisitor(const std::string& name, ElementVisitorFactory factory)
+void TileBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
 {
     pimpl_->registerElementVisitor(name, factory);
 }
