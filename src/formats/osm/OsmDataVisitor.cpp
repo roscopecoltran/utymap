@@ -74,6 +74,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
     }
 
     if (coordinates.size() > 2 && isArea(tags)) {
+        coordinates.pop_back();
         std::shared_ptr<Area> area(new Area());
         area->id = id;
         area->coordinates = coordinates;

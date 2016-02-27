@@ -39,19 +39,23 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         std::string gradientKey = utymap::utils::getString("color", context_.stringTable, style);
         ColorGradient gradient = context_.styleProvider.getGradient(gradientKey);
+        double height = utymap::utils::getDouble("height", context_.stringTable, style);
 
         Mesh mesh("building");
         LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_.meshBuilder);
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
-        roofBuilder.build(polygon);
+        roofBuilder
+            .setHeight(height)
+            .build(polygon);
         // TODO add floor
 
         LowPolyWallBuilder wallBuilder(mesh, gradient, context_.meshBuilder);
+        wallBuilder.setHeight(height);
         int last = area.coordinates.size() - 1;
-        for (auto i = 0; i <= last; ++i) {
-            wallBuilder.build(area.coordinates[i], area.coordinates[i != last ? i + 1 : 0]);
-        }
+        for (auto i = last; i >= 0; --i) 
+            wallBuilder.build(area.coordinates[i], area.coordinates[i != 0 ? i - 1 : last]);
+
         context_.meshCallback(mesh);
     }
 

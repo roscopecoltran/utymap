@@ -29,6 +29,7 @@ public:
     // Sets color freq.
     inline LowPolyWallBuilder& setColorNoise(double freq) { options_.colorNoiseFreq = freq; return *this; }
 
+    // Adds vertical plane which has right side orientation.
     void build(const utymap::GeoCoordinate& start, const utymap::GeoCoordinate& end)
     {
         addPlane(start, end);
