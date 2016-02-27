@@ -29,13 +29,12 @@ struct BuilderContext
     // Mesh builder.
     const utymap::meshing::MeshBuilder meshBuilder;
 
-    BuilderContext(
-        const utymap::QuadKey& quadKey,
-        const utymap::mapcss::StyleProvider& styleProvider,
-        utymap::index::StringTable& stringTable,
-        utymap::heightmap::ElevationProvider& eleProvider,
-        std::function<void(const utymap::meshing::Mesh&)> meshCallback,
-        std::function<void(const utymap::entities::Element&)> elementCallback) :
+    BuilderContext(const utymap::QuadKey& quadKey,
+                   const utymap::mapcss::StyleProvider& styleProvider,
+                   utymap::index::StringTable& stringTable,
+                   utymap::heightmap::ElevationProvider& eleProvider,
+                   std::function<void(const utymap::meshing::Mesh&)> meshCallback,
+                   std::function<void(const utymap::entities::Element&)> elementCallback) :
 
         quadKey(quadKey), 
         styleProvider(styleProvider), 

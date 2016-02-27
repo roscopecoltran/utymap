@@ -9,6 +9,7 @@
 #include "formats/FormatTypes.hpp"
 #include "mapcss/StyleProvider.hpp"
 
+#include <cstdint>
 #include <memory>
 
 namespace utymap { namespace index {
@@ -42,7 +43,7 @@ private:
                           int levelOfDetails,
                           bool shouldClip);
 
-    utymap::index::StringTable& stringTable_;
+    std::uint32_t clipKeyId_;
 };
 
 }}

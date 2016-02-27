@@ -316,7 +316,8 @@ private:
     ClipperLib::Clipper clipper_;
 };
 
-ElementStore::ElementStore(StringTable& stringTable) : stringTable_(stringTable)
+ElementStore::ElementStore(StringTable& stringTable) : 
+    clipKeyId_(stringTable.getId(ClipKey))
 {
 }
 
@@ -328,7 +329,6 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
-    uint32_t clipKeyId = stringTable_.getId(ClipKey);
     for (int lod = range.start; lod <= range.end; ++lod) {
         // skip element for this lod
         if (!styleProvider.hasStyle(element, lod)) 
@@ -340,7 +340,7 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
         }
 
         Style style = styleProvider.forElement(element, lod);
-        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId));
+        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId_));
         wasStored = true;
     }
 
