@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomNineteen_ThenCall
     auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
     ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 19, 19, callback);
 
-    loadTiles(19, 281640, 171904, 281640, 171904);
+    loadTiles(19, 281640, 281640, 171904, 171904); 
 }
 
 BOOST_AUTO_TEST_SUITE_END()
