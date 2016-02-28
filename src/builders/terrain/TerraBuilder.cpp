@@ -122,13 +122,14 @@ public:
             {
                 Path path;
                 path.reserve(area.coordinates.size());
-                for (const GeoCoordinate& c : area.coordinates) {
+                for (const GeoCoordinate& c : area.coordinates)
                     path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
-                }
+                
                 region.points.push_back(path);
             }
 
             void visitRelation(const utymap::entities::Relation& relation)  { relation.accept(builder); }
+
         } visitor(*this, relation, region);
 
         for (const auto& element : relation.elements) {
@@ -141,10 +142,12 @@ public:
         if (!region.points.empty()) {
             Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
             region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
-            if (!region.isLayer) {
+            if (!region.isLayer)
                 region.options = createMeshOptions(style, "");
-            }
-            std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) : "";
+
+            std::string type = region.isLayer 
+                ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+                : "";
             layers_[type].push_back(region);
         }
     }
@@ -170,8 +173,7 @@ private:
     void configureSplitter(int levelOfDetails)
     {
         // TODO
-        switch (levelOfDetails)
-        {
+        switch (levelOfDetails) {
             case 1: splitter_.setParams(Scale, 3, Tolerance); break;
             default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
         };
@@ -182,8 +184,7 @@ private:
     {
         // 1. process layers: regions with shared properties.
         std::stringstream ss(utymap::utils::getString(LayerPriorityKey, context_.stringTable, style));
-        while (ss.good())
-        {
+        while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
             auto layer = layers_.find(name);
@@ -194,11 +195,10 @@ private:
         }
 
         // 2. Process the rest: each region has aready its own properties.
-        for (auto& layer : layers_) {
+        for (auto& layer : layers_)
             for (auto& region : layer.second) {
                 buildFromPaths(region.points, region.options, false);
             }
-        }
     }
 
     // process the rest area.
@@ -217,9 +217,8 @@ private:
         clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
         clipper_.Clear();
 
-        if (!background.empty()) {
+        if (!background.empty())
             populateMesh(createMeshOptions(style, ""), background);
-        }
     }
 
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -227,9 +226,9 @@ private:
         Region region;
         Path path;
         path.reserve(coordinates.size());
-        for (const GeoCoordinate& c : coordinates) {
+        for (const GeoCoordinate& c : coordinates) 
             path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
-        }
+
         region.points.push_back(path);
 
         region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
@@ -255,9 +254,9 @@ private:
     {
         // merge all regions together
         Clipper clipper;
-        for (const Region& region : regions) {
+        for (const Region& region : regions)
             clipper.AddPaths(region.points, ptSubject, true);
-        }
+
         Paths result;
         clipper.Execute(ctUnion, result, pftPositive, pftPositive);
 
@@ -271,8 +270,9 @@ private:
         clipper_.Execute(ctDifference, paths, pftPositive, pftPositive);
         // NOTE: this is performance optimization: we cannot make all
         // polygons to be clipping as it slows down clipper dramatically.
-        if (moveSubjectToClip)
+        if (moveSubjectToClip) {
             clipper_.moveSubjectToClip();
+        } 
         else {
             backgroundClipArea_.insert(backgroundClipArea_.end(), paths.begin(), paths.end());
             clipper_.removeSubject();
@@ -288,9 +288,8 @@ private:
         bool hasHeightOffset = std::abs(options->heightOffset) > 1E-8;
         // calculate approximate size of overall points
         auto size = 0;
-        for (auto i = 0; i < paths.size(); ++i) {
+        for (auto i = 0; i < paths.size(); ++i) 
             size += paths[i].size() * 1.5;
-        }
 
         Polygon polygon(size);
         for (const Path& path : paths) {
@@ -309,9 +308,8 @@ private:
                 processHeightOffset(options, points, isHole);
         }
 
-        if (!polygon.points.empty()) {
+        if (!polygon.points.empty())
             fillMesh(options, polygon);
-        }
     }
 
     // restores mesh points from clipper points and injects new ones according to grid.
@@ -320,9 +318,8 @@ private:
         int lastItemIndex = path.size() - 1;
         Points points;
         points.reserve(path.size());
-        for (int i = 0; i <= lastItemIndex; i++) {
+        for (int i = 0; i <= lastItemIndex; i++)
             splitter_.split(path[i], path[i == lastItemIndex ? 0 : i + 1], points);
-        }
 
         return std::move(points);
     }
@@ -333,7 +330,7 @@ private:
             Mesh polygonMesh(options->meshName);
             context_.meshBuilder.addPolygon(polygonMesh, polygon, *options);
             context_.meshCallback(polygonMesh);
-        }
+        } 
         else {
             context_.meshBuilder.addPolygon(mesh_, polygon, *options);
         }
