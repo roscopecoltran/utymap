@@ -155,9 +155,10 @@ public:
     // builds tile mesh using data provided.
     void complete()
     {
-        configureSplitter(context_.quadKey.levelOfDetail);
-
         Style style = context_.styleProvider.forCanvas(context_.quadKey.levelOfDetail);
+        double step = utymap::utils::getDouble(MaxAreaKey, context_.stringTable, style);
+        splitter_.setParams(Scale, step, Tolerance);
+
         BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
         rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
@@ -169,15 +170,6 @@ public:
     }
 
 private:
-
-    void configureSplitter(int levelOfDetails)
-    {
-        // TODO
-        switch (levelOfDetails) {
-            case 1: splitter_.setParams(Scale, 3, Tolerance); break;
-            default: throw std::domain_error("Unknown Level of details:" + std::to_string(levelOfDetails));
-        };
-    }
 
     // process all found layers.
     void buildLayers(const Style& style)
