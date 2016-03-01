@@ -1,0 +1,15 @@
+canvas|z19 {
+    water-max-area: 5;
+    water-color-noise-freq: 0.1;
+    water-ele-noise-freq: 0.05;
+    water-color: gradient(#72e4de);
+    water-height:-1;
+}
+
+area|z19[natural=water],
+area|z19[landuse=basin],
+area|z19[waterway=riverbank],
+area|z19[waterway=dock] {
+    builders: terrain;
+    terrain-layer: water;
+}

@@ -1,10 +1,8 @@
 canvas|z19 {
-    layer-priority: water,walk,car;
+    layer-priority: water,drive,pedestrian;
 }
 
-area|z19[building=yes],
-area|z19[building=residential] {
-    builders:building;
-    color: gradient(blue);
-    height: 12;
-}
+@import url("default.z19-buildings.mapcss");
+@import url("default.z19-terrain.mapcss");
+@import url("default.z19-roads.mapcss");
+@import url("default.z19-water.mapcss");

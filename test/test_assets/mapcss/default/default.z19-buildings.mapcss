@@ -1,0 +1,6 @@
+area|z19[building=yes],
+area|z19[building=residential] {
+    builders: building;
+    color: gradient(blue);
+    height: 12;
+}
