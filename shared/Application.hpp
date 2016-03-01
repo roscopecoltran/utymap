@@ -181,18 +181,20 @@ public:
     }
 
 private:
-    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& path)
+    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& filePath)
     {
-        auto pair = styleProviders_.find(path);
+        auto pair = styleProviders_.find(filePath);
         if (pair != styleProviders_.end())
             return pair->second;
 
-        std::ifstream styleFile(path);
-        utymap::mapcss::MapCssParser parser;
+        std::ifstream styleFile(filePath);
+        // NOTE not safe, but don't want to use boost filesystem only for this task.
+        std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
+        utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        styleProviders_[path] = std::shared_ptr<utymap::mapcss::StyleProvider>(
+        styleProviders_[filePath] = std::shared_ptr<utymap::mapcss::StyleProvider>(
             new utymap::mapcss::StyleProvider(stylesheet, stringTable_));
-        return styleProviders_[path];
+        return styleProviders_[filePath];
     }
 
     void registerDefaultBuilders()
