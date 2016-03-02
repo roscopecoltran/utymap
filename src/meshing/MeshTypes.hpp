@@ -78,7 +78,7 @@ struct LineLinear
     }
 
     /// <summary> Check whether point belongs to line. </summary>
-    inline bool contains(const Point& point)
+    inline bool contains(const Point& point) const
     {
         return std::abs((point.x * A + point.y * B + C)) < 1E-8;
     }
