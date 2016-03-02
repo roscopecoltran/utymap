@@ -54,8 +54,8 @@ public:
 
 private:
 
-    bool isArea(const utymap::formats::Tags& tags);
-    bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags);
+    bool isArea(const utymap::formats::Tags& tags) const;
+    bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags) const;
 
     utymap::index::ElementStore& elementStore_;
     const utymap::mapcss::StyleProvider& styleProvider_;

@@ -18,7 +18,7 @@ class ShapeParser
 {
 public:
 
-    void parse(const std::string& path, Visitor& visitor)
+    void parse(const std::string& path, Visitor& visitor) const
     {
         SHPHandle shpFile = SHPOpen(path.c_str(), "rb");
         if (shpFile == NULL)
@@ -57,14 +57,14 @@ public:
 private:
     // NOTE: Workaround due to MinGW g++ compiler
     template <typename T>
-    inline std::string to_string(T const& value)
+    inline std::string to_string(T const& value) const
     {
         std::stringstream sstr;
         sstr << value;
         return sstr.str();
     }
 
-    inline Tags parseTags(DBFHandle dbfFile, int k)
+    inline Tags parseTags(DBFHandle dbfFile, int k) const
     {
         char title[12];
         int fieldCount = DBFGetFieldCount(dbfFile);
@@ -100,7 +100,7 @@ private:
         return std::move(tags);
     }
 
-    inline void visitShape(const SHPObject& shape, Tags& tags, Visitor& visitor)
+    inline void visitShape(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         switch (shape.nSHPType)
         {
@@ -131,13 +131,13 @@ private:
         }
     }
 
-    inline void visitPoint(const SHPObject& shape, Tags& tags, Visitor& visitor)
+    inline void visitPoint(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         utymap::GeoCoordinate coordinate(shape.padfY[0], shape.padfX[0]);
         visitor.visitNode(coordinate, tags);
     }
 
-    inline void visitArc(const SHPObject& shape, Tags& tags, Visitor& visitor)
+    inline void visitArc(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         if (shape.nParts > 1) {
             std::cerr << "Arc type has more than one part.";
@@ -153,7 +153,7 @@ private:
         visitor.visitWay(coordinates, tags,coordinates[0] == coordinates[coordinates.size() - 1]);
     }
 
-    inline void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor)
+    inline void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         PolygonMembers members;
         members.reserve(shape.nParts);
@@ -175,7 +175,6 @@ private:
         }
         visitor.visitRelation(members, tags);
     }
-
 };
 
 }}

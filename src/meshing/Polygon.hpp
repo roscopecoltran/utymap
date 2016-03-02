@@ -61,7 +61,7 @@ private:
     }
 
     // tries to find point in polygon.
-    bool findPointInPolygon(const std::vector<Point>& contour, Point& point)
+    bool findPointInPolygon(const std::vector<Point>& contour, Point& point) const
     {
         Rectangle bounds;
         bounds.expand(contour);
@@ -111,7 +111,7 @@ private:
     }
 
     // checks whether point in polygon using ray casting algorithm
-    bool isPointInPolygon(Point& point, const std::vector<Point>& poly)
+    bool isPointInPolygon(Point& point, const std::vector<Point>& poly) const
     {
         bool inside = false;
 

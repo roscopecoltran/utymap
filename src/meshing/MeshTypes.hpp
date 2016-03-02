@@ -120,10 +120,10 @@ struct Rectangle
     }
 
     // Checks whether point is on border of rectangle.
-    inline bool isOnBorder(const Point& point)
+    inline bool isOnBorder(const Point& point) const
     {
         return _left.contains(point) || _right.contains(point) ||
-            _bottom.contains(point) || _top.contains(point);
+               _bottom.contains(point) || _top.contains(point);
     }
 };
 

@@ -16,7 +16,7 @@ public:
     LowPolyWallBuilder(utymap::meshing::Mesh& mesh,
                        const utymap::mapcss::ColorGradient& gradient,
                        const utymap::meshing::MeshBuilder& meshBuilder) : 
-        mesh_(mesh), meshBuilder_(meshBuilder), options_(0,0,0,12, gradient), minHeight_(0)
+        mesh_(mesh), meshBuilder_(meshBuilder), options_(0, 0, 0, 12, gradient), minHeight_(0)
     {
     }
 

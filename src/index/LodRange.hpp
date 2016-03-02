@@ -14,9 +14,7 @@ struct LodRange
     int start;
     int end;
 
-    LodRange(int s, int e) :
-        start(s),
-        end(e)
+    LodRange(int s, int e) : start(s), end(e)
     {
         int min = utymap::utils::GeoUtils::MinLevelOfDetails;
         int max = utymap::utils::GeoUtils::MaxLevelOfDetails;

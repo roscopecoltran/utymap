@@ -136,7 +136,7 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
     statistics.relations++;
 }
 
-bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags)
+bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
 {
     for (const auto& tag : tags) {
         if (AreaKeys.find(tag.key) != AreaKeys.end() &&
@@ -147,7 +147,7 @@ bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags)
     return false;
 }
 
-bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags)
+bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags) const
 {
     for (const auto& tag : tags) {
         if (tag.key == key && tag.value == value)

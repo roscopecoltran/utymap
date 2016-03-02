@@ -268,7 +268,7 @@ void parse(const std::string& directory, Iterator begin, Iterator end, StyleShee
         throw utymap::MapCssException(grammar.error.str());
 }
 
-StyleSheet MapCssParser::parse(const std::string& str)
+StyleSheet MapCssParser::parse(const std::string& str) const
 {
     StyleSheet stylesheet;
     ::parse(directory_, str.begin(), str.end(), stylesheet);
@@ -283,7 +283,7 @@ StyleSheet MapCssParser::parse(const std::string& str)
     return std::move(stylesheet);
 }
 
-StyleSheet MapCssParser::parse(std::istream& istream)
+StyleSheet MapCssParser::parse(std::istream& istream) const
 {
     // TODO from some reason, this approach will skip some spaces in declaration (e.g. gradient)
     //boost::spirit::istream_iterator begin(istream);

@@ -27,9 +27,8 @@ public:
     inline std::uint32_t evaluate(double time) const
     {
         GradientData::size_type index = 0;
-        while (index < colors_.size() - 1 && colors_[index].first < time) {
+        while (index < colors_.size() - 1 && colors_[index].first < time)
             index++;
-        }
 
         auto pairA = colors_[index != 0 ? index - 1 : 0];
         auto pairB = colors_[index];

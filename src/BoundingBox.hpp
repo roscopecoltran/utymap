@@ -29,7 +29,8 @@ struct BoundingBox
         return *this;
     }
 
-    inline bool isValid() const {
+    inline bool isValid() const 
+    {
         // TODO possible that minLon > maxLon at some locations
         return minPoint.latitude <= maxPoint.latitude &&
                minPoint.longitude <= maxPoint.longitude;
@@ -61,9 +62,8 @@ struct BoundingBox
     template<typename ForwardIterator>
     inline void expand(ForwardIterator begin, ForwardIterator end)
     {
-        for (; begin != end; ++begin) {
+        for (; begin != end; ++begin)
             expand(*begin);
-        }
     }
 
     // Checks whether given bounding box inside the current one.

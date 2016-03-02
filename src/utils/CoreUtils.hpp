@@ -8,7 +8,8 @@
 namespace utymap { namespace utils {
 
 template <typename T>
-inline std::string toString(T t) {
+inline std::string toString(T t) 
+{
     std::stringstream stream;
     stream << t;
     return stream.str();

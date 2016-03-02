@@ -46,10 +46,8 @@ public:
         std::ostringstream stm;
 
         stm << '[' << id << ']' << "{";
-        for (const Tag& tag : tags) {
-            stm << (st.getString(tag.key) + ':' +
-                    st.getString(tag.value) + ',');
-        }
+        for (const Tag& tag : tags)
+            stm << (st.getString(tag.key) + ':' + st.getString(tag.value) + ',');
         stm << "}";
 
         return stm.str();

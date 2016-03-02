@@ -43,10 +43,8 @@ class LineGridSplitter
     };
 
 public:
-    LineGridSplitter() :
-        step_(1),
-        scale_(1),
-        tolerance_(0.00001)
+    LineGridSplitter() : 
+        step_(1), scale_(1), tolerance_(0.00001)
     {
     }
 
@@ -58,7 +56,7 @@ public:
     }
 
     // Splits line to segments.
-    void split(const IPoint& start, const IPoint& end, Points& result)
+    void split(const IPoint& start, const IPoint& end, Points& result) const
     {
         std::vector<IPoint> points;
         points.reserve(2);
@@ -77,12 +75,12 @@ public:
 
 private:
 
-    inline Int ceil(Int value)
+    inline Int ceil(Int value) const
     {
         return std::ceil(value / step_) * step_;
     }
 
-    void zeroSlope(IPoint start, IPoint end, IPoints& points)
+    void zeroSlope(IPoint start, IPoint end, IPoints& points) const
     {
         if ((start.X - end.X) == 0)
         {
@@ -126,7 +124,7 @@ private:
         }
     }
 
-    void normalCase(IPoint start, IPoint end, double slope, IPoints& points)
+    void normalCase(IPoint start, IPoint end, double slope, IPoints& points) const
     {
         double inverseSlope = 1 / slope;
         double b = start.Y - slope * start.X;
@@ -163,7 +161,7 @@ private:
             std::sort(points.begin(), points.end(), sort_reverse_x());
     }
 
-    void filterResults(const IPoints& points, Points& result)
+    void filterResults(const IPoints& points, Points& result) const
     {
         for (int i = 0; i < points.size(); ++i)
         {
@@ -181,10 +179,6 @@ private:
 
             result.push_back(TPoint(candidate.X / scale_, candidate.Y / scale_));
         }
-
-        // NOTE do not allow first vertex to be equal the last one
-        //if (result[previousLast] == result[result.size() - 1])
-        //    result.pop_back();
     }
 
     double scale_;

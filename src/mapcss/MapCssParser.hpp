@@ -17,10 +17,10 @@ public:
     MapCssParser(const std::string& directory = "");
 
     // Parses stylesheet from string.
-    StyleSheet parse(const std::string& content);
+    StyleSheet parse(const std::string& content) const;
 
     // Parses stylsheet from input stream (e.g. file). 
-    StyleSheet parse(std::istream& istream);
+    StyleSheet parse(std::istream& istream) const;
 
 private:
     std::string directory_;
