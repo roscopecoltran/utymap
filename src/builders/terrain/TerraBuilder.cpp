@@ -37,7 +37,7 @@ using namespace utymap::utils;
 
 const uint64_t Scale = 1E7;         // max precision for Lat/Lon: seven decimal positions
 const double Tolerance = 10;        // Tolerance for splitting algorithm
-const double AreaTolerance = 100;   // Tolerance for meshing
+const double AreaTolerance = 10000; // Tolerance for meshing
 
 // Represents terrain region points.
 struct Region
@@ -61,6 +61,7 @@ const static std::string WidthKey = "width";
 const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
 const static std::string MeshNameKey = "mesh-name";
+const static std::string GridCellSize = "grid-cell-size";
 
 class TerraBuilder::TerraBuilderImpl : public ElementBuilder
 {
@@ -178,7 +179,7 @@ private:
         rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
             bbox.maxPoint.longitude, bbox.maxPoint.latitude);
 
-        double step = utymap::utils::getDouble(MaxAreaKey, context_.stringTable, style) * getLodRatio();
+        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style) * getLodRatio();
         splitter_.setParams(Scale, step, Tolerance);
     }
 

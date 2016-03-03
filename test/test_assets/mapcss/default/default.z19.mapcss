@@ -1,8 +1,0 @@
-canvas|z19 {
-    layer-priority: water,drive,pedestrian;
-}
-
-@import url("default.z19-buildings.mapcss");
-@import url("default.z19-terrain.mapcss");
-@import url("default.z19-roads.mapcss");
-@import url("default.z19-water.mapcss");

@@ -23,7 +23,7 @@ namespace utymap { namespace index {
 
 const static double Scale = 1E8; // max precision for Lat/Lon
 const static std::string ClipKey = "clip";
-const static std::string SkipKey = "clip";
+const static std::string SkipKey = "skip";
 
 // Creates bounding box of given element.
 struct BoundingBoxVisitor : public ElementVisitor

@@ -1,15 +1,16 @@
-canvas|z19 {
+canvas|z17 {
+    grid-cell-size: 5;
     max-area: 5;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(#72e4de);
 }
 
-area|z19[amenity],
-area|z19[natural],
-area|z19[leisure],
-area|z19[historic=memorial],
-area|z19[landuse] {
+area|z17[amenity],
+area|z17[natural],
+area|z17[leisure],
+area|z17[historic=memorial],
+area|z17[landuse] {
     clip:true;
     builders: terrain;
     max-area: 5;
@@ -18,67 +19,67 @@ area|z19[landuse] {
     color: gradient(#10ff00, #0ff000 50%, #098a00);
 }
 
-area|z19[landuse=residential] {
+area|z17[landuse=residential] {
     color: gradient(#a9a9a9, #a9a9a9 30%, #707070 70%, #556b2f);
     texture: ground;
 }
-area|z19[landuse=cemetery],
-area|z19[landuse=grave_yard],
-area|z19[amenity=grave_yard] {
+area|z17[landuse=cemetery],
+area|z17[landuse=grave_yard],
+area|z17[amenity=grave_yard] {
     color: gradient(#98fb98, #064807 10%, #035804 50%, #808080);
     texture: ground;
 }
-area|z19[landuse=farm],
-area|z19[landuse=farmland] {
+area|z17[landuse=farm],
+area|z17[landuse=farmland] {
     color: gradient(#15ffcd, #0ead8b 50%, #064739);
     texture: ground;
 }
-area|z19[landuse=commercial] {
+area|z17[landuse=commercial] {
     color: gradient(#999999, #606060);
     texture: ground;
 }
-area|z19[landuse=retail] {
+area|z17[landuse=retail] {
     color: gradient(#162bff, #0f1dad 50%, #060c47);
     texture: ground;
 }
-area|z19[landuse=brownfield],
-area|z19[landuse=landfill],
-area|z19[landuse=greenfield] {
+area|z17[landuse=brownfield],
+area|z17[landuse=landfill],
+area|z17[landuse=greenfield] {
     color: gradient(#fcdd76, #f4a460 20%, #406126);
     texture: grass;
 }
-area|z19[landuse=construction] {
+area|z17[landuse=construction] {
     color: gradient(#fcdd76, #f4a460 40%, #707070);
     texture: ground;
 }
-area|z19[amenity=parking][parking=surface] {
+area|z17[amenity=parking][parking=surface] {
     color: gradient(#c0c0c0, #999999 40%, #707070);
     texture: asphalt;
 }
-area|z19[natural=beach] {
+area|z17[natural=beach] {
     color: gradient(#fcdd76, #f4a460);
     texture: sand;
 }
-area|z19[amenity=university],
-area|z19[amenity=college],
-area|z19[amenity=school],
-area|z19[amenity=hospital],
-area|z19[amenity=kindergarten] {
+area|z17[amenity=university],
+area|z17[amenity=college],
+area|z17[amenity=school],
+area|z17[amenity=hospital],
+area|z17[amenity=kindergarten] {
     color: gradient(#fcdd76, #a9a9a9 20%, #909090 70%, #556b2f);
     texture: ground;
 }
 
-area|z19[landuse=industrial],
-area|z19[landuse=railway] {
+area|z17[landuse=industrial],
+area|z17[landuse=railway] {
     color: gradient(#7d7d7d, #707070);
     texture: ground;
 }
-area|z19[leisure=park] {
+area|z17[leisure=park] {
     color: gradient(#98fb98, #adff2f 5%, #006400 10%, #556b2f 80%, #b8860b);
     texture: grass;
 }
-area|z19[natural=wood],
-area|z19[landuse=forest] {
+area|z17[natural=wood],
+area|z17[landuse=forest] {
     forest: true;
     color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
@@ -88,18 +89,18 @@ area|z19[landuse=forest] {
     tree-freq: 0.05;
     texture: grass;
 }
-area|z19[landuse=farmland],
-area|z19[landuse=scrub] {
+area|z17[landuse=farmland],
+area|z17[landuse=scrub] {
     color: gradient(#adff2f, #006400 30%, #556b2f 90%, #b8860b);
     texture: grass;
 }
-area|z19[landuse=village_green],
-area|z19[landuse=grass],
-area|z19[landuse=meadow] {
+area|z17[landuse=village_green],
+area|z17[landuse=grass],
+area|z17[landuse=meadow] {
     color: gradient(#adff2f, #006400 30%, #556b2f 90%, #b8860b);
     texture: grass;
 }
-area|z19[leisure=recreation_ground] {
+area|z17[leisure=recreation_ground] {
     color: gradient(#0d81ff, #0b6fdb 50%, #063b75);
     texture: grass;
 }
