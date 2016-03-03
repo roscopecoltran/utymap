@@ -43,7 +43,7 @@ private:
                           int levelOfDetails,
                           bool shouldClip);
 
-    std::uint32_t clipKeyId_;
+    std::uint32_t clipKeyId_, skipKeyId_;
 };
 
 }}

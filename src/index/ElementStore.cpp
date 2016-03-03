@@ -23,6 +23,7 @@ namespace utymap { namespace index {
 
 const static double Scale = 1E8; // max precision for Lat/Lon
 const static std::string ClipKey = "clip";
+const static std::string SkipKey = "clip";
 
 // Creates bounding box of given element.
 struct BoundingBoxVisitor : public ElementVisitor
@@ -317,7 +318,7 @@ private:
 };
 
 ElementStore::ElementStore(StringTable& stringTable) : 
-    clipKeyId_(stringTable.getId(ClipKey))
+    clipKeyId_(stringTable.getId(ClipKey)), skipKeyId_(stringTable.getId(SkipKey))
 {
 }
 
@@ -330,16 +331,16 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
     for (int lod = range.start; lod <= range.end; ++lod) {
-        // skip element for this lod
         if (!styleProvider.hasStyle(element, lod)) 
+            continue;
+        Style style = styleProvider.forElement(element, lod);
+        if (style.has(skipKeyId_))
             continue;
 
         // initialize bounding box only once
         if (!bboxVisitor.boundingBox.isValid()) {
             element.accept(bboxVisitor);
-        }
-
-        Style style = styleProvider.forElement(element, lod);
+        }       
         storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId_));
         wasStored = true;
     }
