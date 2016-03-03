@@ -84,11 +84,13 @@ public:
         double width = utymap::utils::getDouble(WidthKey, context_.stringTable, style);
         Paths offsetSolution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
-        offset_.Execute(offsetSolution, width * Scale);
+        offset_.Execute(offsetSolution, width * getLodRatio() * Scale);
         offset_.Clear();
         region.points = offsetSolution;
 
-        std::string type = region.isLayer ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) : "";
+        std::string type = region.isLayer 
+            ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+            : "";
         layers_[type].push_back(region);
     }
 
@@ -156,13 +158,8 @@ public:
     void complete()
     {
         Style style = context_.styleProvider.forCanvas(context_.quadKey.levelOfDetail);
-        double step = utymap::utils::getDouble(MaxAreaKey, context_.stringTable, style);
-        splitter_.setParams(Scale, step, Tolerance);
 
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
-        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
-            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
-
+        configure(style);     
         buildLayers(style);
         buildBackground(style);
 
@@ -170,6 +167,20 @@ public:
     }
 
 private:
+
+    inline double getLodRatio() {
+        return std::pow(2, -(context_.quadKey.levelOfDetail - 1));
+    }
+
+    void configure(const Style& style)
+    {
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
+        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
+            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
+
+        double step = utymap::utils::getDouble(MaxAreaKey, context_.stringTable, style) * getLodRatio();
+        splitter_.setParams(Scale, step, Tolerance);
+    }
 
     // process all found layers.
     void buildLayers(const Style& style)
