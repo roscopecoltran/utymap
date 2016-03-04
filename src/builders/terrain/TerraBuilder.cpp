@@ -68,8 +68,24 @@ class TerraBuilder::TerraBuilderImpl : public ElementBuilder
 public:
 
     TerraBuilderImpl(const BuilderContext& context) :
-        ElementBuilder(context), splitter_(), mesh_("terrain")
+        ElementBuilder(context), 
+        style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)), 
+        splitter_(), 
+        mesh_("terrain")
     {
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
+        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
+            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
+
+        tileRect_.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
+        tileRect_.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
+        tileRect_.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
+        tileRect_.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
+
+        clipper_.AddPath(tileRect_, ptClip, true);
+
+        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style_) * getLodRatio();
+        splitter_.setParams(Scale, step, Tolerance);
     }
 
     void visitNode(const utymap::entities::Node& node)
@@ -83,12 +99,16 @@ public:
 
         // make polygon from line by offsetting it using width specified
         double width = utymap::utils::getDouble(WidthKey, context_.stringTable, style);
-        Paths offsetSolution;
+        Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
-        offset_.Execute(offsetSolution, width * getLodRatio() * Scale);
+        offset_.Execute(solution, width * getLodRatio() * Scale);
         offset_.Clear();
-        region.points = offsetSolution;
+       
+        clipper_.AddPaths(solution, ptSubject, true);
+        clipper_.Execute(ctIntersection, solution);
+        clipper_.removeSubject();
 
+        region.points = solution;
         std::string type = region.isLayer 
             ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
             : "";
@@ -158,11 +178,10 @@ public:
     // builds tile mesh using data provided.
     void complete()
     {
-        Style style = context_.styleProvider.forCanvas(context_.quadKey.levelOfDetail);
+        clipper_.Clear();
 
-        configure(style);     
-        buildLayers(style);
-        buildBackground(style);
+        buildLayers();
+        buildBackground();
 
         context_.meshCallback(mesh_);
     }
@@ -173,27 +192,17 @@ private:
         return std::pow(2, -(context_.quadKey.levelOfDetail - 1));
     }
 
-    void configure(const Style& style)
-    {
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
-        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
-            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
-
-        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style) * getLodRatio();
-        splitter_.setParams(Scale, step, Tolerance);
-    }
-
     // process all found layers.
-    void buildLayers(const Style& style)
+    void buildLayers()
     {
         // 1. process layers: regions with shared properties.
-        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, context_.stringTable, style));
+        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, context_.stringTable, style_));
         while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
             auto layer = layers_.find(name);
             if (layer != layers_.end()) {
-                buildFromRegions(layer->second, createMeshOptions(style, name + "-"));
+                buildFromRegions(layer->second, createMeshOptions(style_, name + "-"));
                 layers_.erase(layer);
             }
         }
@@ -206,23 +215,16 @@ private:
     }
 
     // process the rest area.
-    void buildBackground(const Style& style)
+    void buildBackground()
     {
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
-        Path tileRect;
-        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
-        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
-        tileRect.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
-        tileRect.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
-
-        clipper_.AddPath(tileRect, ptSubject, true);
+        clipper_.AddPath(tileRect_, ptSubject, true);
         clipper_.AddPaths(backgroundClipArea_, ptClip, true);
         Paths background;
         clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
         clipper_.Clear();
 
         if (!background.empty())
-            populateMesh(createMeshOptions(style, ""), background);
+            populateMesh(createMeshOptions(style_, ""), background);
     }
 
     Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
@@ -354,10 +356,12 @@ private:
         }
     }
 
+const Style style_;
 ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
 Rectangle rect_;
+Path tileRect_;
 Layers layers_;
 Paths backgroundClipArea_;
 Mesh mesh_;
