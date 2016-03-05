@@ -35,9 +35,9 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 using namespace utymap::utils;
 
-const uint64_t Scale = 1E7;         // max precision for Lat/Lon: seven decimal positions
-const double Tolerance = 10;        // Tolerance for splitting algorithm
-const double AreaTolerance = 10000; // Tolerance for meshing
+const double Scale = 1E7;          // max precision for Lat/Lon: seven decimal positions
+const double Tolerance = 10;       // Tolerance for splitting algorithm
+const double AreaTolerance = 1000; // Tolerance for meshing
 
 // Represents terrain region points.
 struct Region
@@ -248,7 +248,7 @@ private:
     {
         std::string gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
         return std::shared_ptr<MeshBuilder::Options>(new MeshBuilder::Options(
-               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style),
+               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style) * getLodRatio(),
                utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style, 0),

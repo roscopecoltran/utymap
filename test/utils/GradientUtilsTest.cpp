@@ -13,10 +13,11 @@ BOOST_AUTO_TEST_SUITE(Utils_GradientUtils)
 BOOST_AUTO_TEST_CASE(GivenSimpleGradientString_WhenEvaluate_ThenReturnCorrectColor)
 {
      std::string gradientKey = "gradient(#0fffff, #099999 50%, #033333 70%, #000000)";
-
      ColorGradient gradient = GradientUtils::parseGradient(gradientKey);
 
-     BOOST_CHECK_EQUAL(gradient.evaluate(0.5), 0x099999FF);
+     auto color = gradient.evaluate(0.5);
+
+     BOOST_CHECK_EQUAL(color, 0x099999FF);
 }
 
 BOOST_AUTO_TEST_CASE(GivenHexColorString_WhenParse_ThenReturnColor)

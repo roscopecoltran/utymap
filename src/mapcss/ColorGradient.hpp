@@ -24,7 +24,7 @@ public:
     {
     }
 
-    inline std::uint32_t evaluate(double time) const
+    inline utymap::mapcss::Color evaluate(double time) const
     {
         GradientData::size_type index = 0;
         while (index < colors_.size() - 1 && colors_[index].first < time)
@@ -43,11 +43,11 @@ public:
 private:
 
     // So far, use linear interpolation algorithm as the fastest.
-    inline std::uint32_t interpolate(const utymap::mapcss::Color& a,
-                                     const utymap::mapcss::Color& b,
-                                     double r) const
+    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a,
+                                             const utymap::mapcss::Color& b,
+                                             double r) const
     {
-        return (std::uint32_t) ((1.0 - r) * a + r * b);
+        return a * (1.0 - r) + b * r;
     }
 
     GradientData colors_;
