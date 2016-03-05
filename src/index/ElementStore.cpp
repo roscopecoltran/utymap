@@ -334,14 +334,15 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
         if (!styleProvider.hasStyle(element, lod)) 
             continue;
         Style style = styleProvider.forElement(element, lod);
-        if (style.has(skipKeyId_))
+        if (style.has(skipKeyId_, "true"))
             continue;
 
         // initialize bounding box only once
         if (!bboxVisitor.boundingBox.isValid()) {
             element.accept(bboxVisitor);
         }       
-        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId_));
+
+        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId_, "true"));
         wasStored = true;
     }
 

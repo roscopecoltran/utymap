@@ -21,6 +21,12 @@ struct Style
         return declarations.find(key) != declarations.end();
     }
 
+    inline bool has(uint32_t key, const std::string& value) const
+    {
+        auto it = declarations.find(key);
+        return it != declarations.end() && *it->second == value;
+    }
+
     inline void put(const uint32_t key, const std::shared_ptr<std::string>& value)
     {
         declarations[key] = value;
