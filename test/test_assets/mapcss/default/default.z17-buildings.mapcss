@@ -1,5 +1,8 @@
 area|z17[building=yes],
+area|z17[building=apartments],
+area|z17[building=office],
 area|z17[building=residential] {
+    clip: false;
     builders: building;
     color: gradient(blue);
     height: 12;
