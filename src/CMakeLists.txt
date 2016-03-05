@@ -52,6 +52,7 @@ set(HEADER_FILES
                 utils/CompatibilityUtils.hpp
                 utils/CoreUtils.hpp
                 utils/ElementUtils.hpp
+                utils/GeometryUtils.hpp
                 utils/GeoUtils.hpp
                 utils/GradientUtils.hpp
                 utils/MapCssUtils.hpp

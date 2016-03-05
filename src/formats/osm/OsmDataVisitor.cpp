@@ -4,7 +4,9 @@
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
 #include "formats/osm/OsmDataVisitor.hpp"
+#include "utils/GeometryUtils.hpp"
 
+#include <algorithm>
 #include <vector>
 
 using namespace utymap;
@@ -77,7 +79,10 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
         coordinates.pop_back();
         std::shared_ptr<Area> area(new Area());
         area->id = id;
-        area->coordinates = coordinates;
+        if (!utymap::utils::isClockwise(coordinates)) {
+            std::reverse(coordinates.begin(), coordinates.end());
+        }
+        area->coordinates = std::move(coordinates);
         utymap::utils::setTags(stringTable_, *area, tags);
         areaMap_[id] = area;
         if (elementStore_.store(*area, lodRange_, styleProvider_))
@@ -87,7 +92,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
     std::shared_ptr<Way> way(new Way());
     way->id = id;
-    way->coordinates = coordinates;
+    way->coordinates = std::move(coordinates);
     utymap::utils::setTags(stringTable_, *way, tags);
     wayMap_[id] = way;
     if (elementStore_.store(*way, lodRange_, styleProvider_))
