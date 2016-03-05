@@ -30,7 +30,7 @@ struct Color
         a = (rgba >>  0) & 0xff;
     }
 
-    operator int() const
+    operator std::uint32_t() const
     {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
@@ -48,4 +48,4 @@ struct Color
 
 }}
 
-#endif  // MAPCSS_COLORGRADIENT_HPP_INCLUDED
+#endif  // MAPCSS_COLOR_HPP_INCLUDED
