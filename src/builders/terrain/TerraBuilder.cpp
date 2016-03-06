@@ -137,21 +137,21 @@ public:
             RelationVisitor(TerraBuilder::TerraBuilderImpl& builder, const Relation& relation, Region& region) :
                 builder(builder), relation(relation), region(region) {}
 
-            void visitNode(const utymap::entities::Node& node) { node.accept(builder); }
+            void visitNode(const utymap::entities::Node& n) { n.accept(builder); }
 
-            void visitWay(const utymap::entities::Way& way) { way.accept(builder); }
+            void visitWay(const utymap::entities::Way& w) { w.accept(builder); }
 
-            void visitArea(const utymap::entities::Area& area)
+            void visitArea(const utymap::entities::Area& a)
             {
                 Path path;
-                path.reserve(area.coordinates.size());
-                for (const GeoCoordinate& c : area.coordinates)
+                path.reserve(a.coordinates.size());
+                for (const GeoCoordinate& c : a.coordinates)
                     path.push_back(IntPoint(c.longitude * Scale, c.latitude * Scale));
                 
                 region.points.push_back(path);
             }
 
-            void visitRelation(const utymap::entities::Relation& relation)  { relation.accept(builder); }
+            void visitRelation(const utymap::entities::Relation& r)  { r.accept(builder); }
 
         } visitor(*this, relation, region);
 

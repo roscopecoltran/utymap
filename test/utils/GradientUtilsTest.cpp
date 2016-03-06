@@ -4,7 +4,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <string>
-#include <unordered_map>
 
 using namespace utymap::mapcss;
 using namespace utymap::utils;
