@@ -2,6 +2,7 @@
 #define MAPCSS_STYLE_HPP_INCLUDED
 
 #include "Exceptions.hpp"
+#include "mapcss/StyleDeclaration.hpp"
 #include "utils/CompatibilityUtils.hpp"
 
 #include <cstdint>
@@ -14,7 +15,9 @@ namespace utymap { namespace mapcss {
 // Represents style for element.
 struct Style
 {
-    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations;
+    typedef std::shared_ptr<utymap::mapcss::StyleDeclaration> value_type;
+
+    std::unordered_map<uint32_t, value_type> declarations;
 
     inline bool has(uint32_t key) const 
     {
@@ -24,21 +27,21 @@ struct Style
     inline bool has(uint32_t key, const std::string& value) const
     {
         auto it = declarations.find(key);
-        return it != declarations.end() && *it->second == value;
+        return it != declarations.end() && *it->second->value() == value;
     }
 
-    inline void put(const uint32_t key, const std::shared_ptr<std::string>& value)
+    inline void put(const value_type& declaration)
     {
-        declarations[key] = value;
+        declarations[declaration->key()] = declaration;
     }
 
-    inline std::string& get(const uint32_t key) const
+    inline value_type get(const uint32_t key) const
     {
         auto it = declarations.find(key);
         if (it == declarations.end())
             throw MapCssException(std::string("Cannot find declaration with the key:") + std::to_string(key));
 
-        return *it->second;
+        return it->second;
     }
 };
 

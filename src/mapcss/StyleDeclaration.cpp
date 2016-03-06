@@ -178,7 +178,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 struct StyleDeclaration::StyleDeclarationImpl
 {
-    StyleDeclarationImpl(std::uint64_t key, const std::string& value) :
+    StyleDeclarationImpl(std::uint32_t key, const std::string& value) :
         key_(key), value_(new std::string(value)), tree_(new Tree())
     {
         EvalGrammar<std::string::const_iterator> grammar;
@@ -190,9 +190,11 @@ struct StyleDeclaration::StyleDeclarationImpl
 
         if (!r || iter != end)
             tree_.reset();
+        else 
+            value_.reset();
     }
 
-    inline std::uint64_t key() const { return key_; }
+    inline std::uint32_t key() const { return key_; }
 
     inline std::shared_ptr<std::string> value() const { return value_; }
 
@@ -205,12 +207,12 @@ struct StyleDeclaration::StyleDeclarationImpl
     }
 
 private:
-    const std::uint64_t key_;
-    const std::shared_ptr<std::string> value_;
+    const std::uint32_t key_;
+    std::shared_ptr<std::string> value_;
     std::shared_ptr<Tree> tree_;
 };
 
-StyleDeclaration::StyleDeclaration(std::uint64_t key, const std::string& value) :
+StyleDeclaration::StyleDeclaration(std::uint32_t key, const std::string& value) :
     pimpl_(new StyleDeclarationImpl(key, value))
 {
 }
@@ -219,7 +221,7 @@ StyleDeclaration::~StyleDeclaration()
 {
 }
 
-std::uint64_t StyleDeclaration::key() const 
+std::uint32_t StyleDeclaration::key() const
 { 
     return pimpl_->key();
 }

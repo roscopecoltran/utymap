@@ -31,7 +31,7 @@ struct Condition
 struct Filter
 {
     std::vector<::Condition> conditions;
-    std::unordered_map<uint32_t, std::shared_ptr<std::string>> declarations;
+    std::unordered_map<uint32_t, Style::value_type> declarations;
 };
 
 // key: level of detais, value: filters for specific element type.
@@ -131,7 +131,7 @@ private:
                     if (isMatched) {
                         canBuild_ = true;
                         for (const auto& d : filter.declarations) {
-                            style_.put(d.first, d.second);
+                            style_.put(d.second);
                         }
                     }
                 }
@@ -215,7 +215,8 @@ public:
                 for (auto i = 0; i < rule.declarations.size(); ++i) {
                     Declaration declaration = rule.declarations[i];
                     uint32_t key = stringTable.getId(declaration.key);
-                    filter.declarations[key] = std::shared_ptr<std::string>(new std::string(declaration.value));
+                    filter.declarations[key] = Style::value_type(
+                        new utymap::mapcss::StyleDeclaration(key, declaration.value));
                 }
 
                 std::sort(filter.conditions.begin(), filter.conditions.end(),
@@ -270,7 +271,7 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
     for (const auto& rule : pimpl_->filters.canvases[levelOfDetails]) {
         for (const auto& filter : pimpl_->filters.canvases[levelOfDetails]) {
             for (const auto& declaration : filter.declarations) {
-                style.put(declaration.first, declaration.second);
+                style.put(declaration.second);
             }
         }
     }

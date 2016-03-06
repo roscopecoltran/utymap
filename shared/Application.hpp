@@ -108,7 +108,7 @@ class Application
             cstyles.reserve(style.declarations.size());
             for (const auto pair : style.declarations) {
                 styleStrings_.push_back(stringTable_.getString(pair.first));
-                styleStrings_.push_back(*pair.second);
+                styleStrings_.push_back(*pair.second->value());
                 cstyles.push_back(styleStrings_[styleStrings_.size() - 2].c_str());
                 cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
             }

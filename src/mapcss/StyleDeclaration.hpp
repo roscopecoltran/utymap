@@ -14,12 +14,12 @@ namespace utymap { namespace mapcss {
 // Represents style declaration which support evaluation.
 struct StyleDeclaration
 {
-    StyleDeclaration(std::uint64_t key, const std::string& value);
+    StyleDeclaration(std::uint32_t key, const std::string& value);
 
     ~StyleDeclaration();
 
     // Gets declaration key.
-    std::uint64_t key() const;
+    std::uint32_t key() const;
 
     // Gets declaration value.
     std::shared_ptr<std::string> value() const;

@@ -1,6 +1,7 @@
 #ifndef UTILS_MAPCSSUTILS_HPP_DEFINED
 #define UTILS_MAPCSSUTILS_HPP_DEFINED
 
+#include "entities/Element.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/Style.hpp"
 
@@ -8,6 +9,7 @@
 
 namespace utymap { namespace utils {
 
+    // Checks whether key exists.
     inline bool hasKey(const std::string& key,
                        utymap::index::StringTable& stringTable,
                        const utymap::mapcss::Style& style)
@@ -15,38 +17,38 @@ namespace utymap { namespace utils {
         return style.has(stringTable.getId(key));
     }
 
-    // Gets declaration value as string.
-    inline std::string& getString(const std::string& key,
-                                  utymap::index::StringTable& stringTable, 
-                                  const utymap::mapcss::Style& style)
+    // Gets raw declaration value as string.
+    inline std::shared_ptr<std::string> getString(const std::string& key,
+                                                  utymap::index::StringTable& stringTable,
+                                                  const utymap::mapcss::Style& style,
+                                                  const std::string& defaultValue = "")
     {
         uint32_t keyId = stringTable.getId(key);
-        return style.get(keyId);
+        return style.has(keyId)
+            ? style.get(keyId)->value()
+            : std::shared_ptr<std::string>(new std::string(defaultValue));
     }
 
-    inline std::string getString(const std::string& key,
-                                 utymap::index::StringTable& stringTable,
-                                 const utymap::mapcss::Style& style,
-                                 const std::string& defaultValue)
-    {
-        return utymap::utils::hasKey(key, stringTable, style) ? getString(key, stringTable, style) : defaultValue;
-    }
-
-    // Gets declaration value as float.
-    inline float getDouble(const std::string& key,
-                          utymap::index::StringTable& stringTable,
-                          const utymap::mapcss::Style& style)
+    // Gets declaration value as double. Evaluates if necessary.
+    inline double getDouble(const std::string& key,
+                            const std::vector<utymap::entities::Tag>& tags,
+                            utymap::index::StringTable& stringTable,
+                            const utymap::mapcss::Style& style)
     {
         uint32_t keyId = stringTable.getId(key);
-        return std::stod(style.get(keyId));
+        return style.get(keyId)->evaluate(tags, stringTable);
     }
 
-    inline float getDouble(const std::string& key,
-                           utymap::index::StringTable& stringTable,
-                           const utymap::mapcss::Style& style,
-                           double defaultValue)
+    // Gets declaration value as double without evaluation.
+    inline double getDouble(const std::string& key,
+                            utymap::index::StringTable& stringTable,
+                            const utymap::mapcss::Style& style,
+                            double defaultValue = 0)
     {
-        return utymap::utils::hasKey(key, stringTable, style) ? getDouble(key, stringTable, style) : defaultValue;
+        uint32_t keyId = stringTable.getId(key);
+        return style.has(keyId)
+            ? std::stod(*style.get(keyId)->value())
+            : defaultValue;
     }
 }}
 

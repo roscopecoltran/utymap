@@ -98,7 +98,7 @@ public:
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = utymap::utils::getDouble(WidthKey, context_.stringTable, style);
+        double width = utymap::utils::getDouble(WidthKey, way.tags, context_.stringTable, style);
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
         offset_.Execute(solution, width * getLodRatio() * Scale);
@@ -110,7 +110,7 @@ public:
 
         region.points = solution;
         std::string type = region.isLayer 
-            ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+            ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
             : "";
         layers_[type].push_back(region);
     }
@@ -120,7 +120,7 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         Region region = createRegion(style, area.coordinates);
         std::string type = region.isLayer
-            ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style)
+            ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style)
             : "";
         layers_[type].push_back(region);
     }
@@ -169,7 +169,7 @@ public:
                 region.options = createMeshOptions(style, "");
 
             std::string type = region.isLayer 
-                ? utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+                ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
                 : "";
             layers_[type].push_back(region);
         }
@@ -196,7 +196,7 @@ private:
     void buildLayers()
     {
         // 1. process layers: regions with shared properties.
-        std::stringstream ss(utymap::utils::getString(LayerPriorityKey, context_.stringTable, style_));
+        std::stringstream ss(*utymap::utils::getString(LayerPriorityKey, context_.stringTable, style_));
         while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
@@ -246,14 +246,14 @@ private:
 
     std::shared_ptr<MeshBuilder::Options> createMeshOptions(const Style& style, const std::string& prefix)
     {
-        std::string gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
+        auto gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
         return std::shared_ptr<MeshBuilder::Options>(new MeshBuilder::Options(
                utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style) * getLodRatio(),
                utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
-               utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style, 0),
-               context_.styleProvider.getGradient(gradientKey),
-               utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "")));
+               utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),
+               context_.styleProvider.getGradient(*gradientKey),
+               *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "")));
     }
 
     void buildFromRegions(const Regions& regions, const std::shared_ptr<MeshBuilder::Options>& options)

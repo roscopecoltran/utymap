@@ -37,8 +37,8 @@ public:
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-        std::string gradientKey = utymap::utils::getString("color", context_.stringTable, style);
-        ColorGradient gradient = context_.styleProvider.getGradient(gradientKey);
+        auto gradientKey = utymap::utils::getString("color", context_.stringTable, style);
+        ColorGradient gradient = context_.styleProvider.getGradient(*gradientKey);
         double height = utymap::utils::getDouble("height", context_.stringTable, style);
 
         Mesh mesh("building");
