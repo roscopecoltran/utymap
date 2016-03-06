@@ -37,7 +37,8 @@ BOOST_AUTO_TEST_CASE(GivenOnlySingleTag_WhenEvaluate_ReturnValue)
     StyleDeclaration styleDeclaration(0, "eval(tag(\"height\"))");
 
     double result = styleDeclaration.evaluate(
-        ElementUtils::createElement<Node>(*stringTable, { { "height", "2.5" } }).tags);
+        ElementUtils::createElement<Node>(*stringTable, { { "height", "2.5" } }).tags, 
+        *stringTable);
 
     BOOST_CHECK_EQUAL(result, 2.5);
 }

@@ -2,6 +2,7 @@
 #define MAPCSS_STYLEDECLARATION_HPP_INCLUDED
 
 #include "entities/Element.hpp"
+#include "index/StringTable.hpp"
 
 #include <cstdint>
 #include <string>
@@ -14,9 +15,18 @@ namespace utymap { namespace mapcss {
 struct StyleDeclaration
 {
     StyleDeclaration(std::uint64_t key, const std::string& value);
+
     ~StyleDeclaration();
 
-    double evaluate(const std::vector<utymap::entities::Tag>& tags);
+    // Gets declaration key.
+    std::uint64_t key() const;
+
+    // Gets declaration value.
+    std::shared_ptr<std::string> value() const;
+
+    // Evaluates double value from tags.
+    double evaluate(const std::vector<utymap::entities::Tag>& tags, 
+                    utymap::index::StringTable& stringTable) const;
 
 private:
     struct StyleDeclarationImpl;
