@@ -131,7 +131,7 @@ namespace {
             qi::char_type char_;
 
             expression =
-                "eval(" >> term >> *((char_("+") >> term) | (char_("-") >> term)) >> ")"
+                "eval(\"" >> term >> *((char_("+") >> term) | (char_("-") >> term)) >> "\")"
                 ;
 
             term =
@@ -139,7 +139,7 @@ namespace {
                 ;
 
             tag =
-                "tag(\"" >> qi::lexeme[+(ascii::char_ - '"')] >> "\")"
+                "tag('" >> qi::lexeme[+(ascii::char_ - '\'')] >> "')"
                 ;
 
             factor =
