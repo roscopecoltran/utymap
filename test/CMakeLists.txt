@@ -38,6 +38,7 @@ add_executable (TestLauncher
                         index/InMemoryElementStoreTest.cpp
                         index/StringTableTest.cpp
                         mapcss/MapCssParserTest.cpp
+                        mapcss/StyleDeclarationTest.cpp
                         mapcss/StyleProviderTest.cpp
                         meshing/MeshBuilderTest.cpp
                         test_utils/ElementUtils.hpp
