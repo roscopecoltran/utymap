@@ -51,7 +51,7 @@ private:
             count--;
 
         auto offset = segments.size() / 2;
-        for (auto i = 0; i < count; ++i) {
+        for (size_t i = 0; i < count; ++i) {
             Point point = contour[i];
             points.push_back(point.x);
             points.push_back(point.y);
@@ -79,7 +79,7 @@ private:
             return true;
         }
 
-        for (int i = 0; i < length; i++) {
+        for (size_t i = 0; i < length; i++) {
             a = contour[i];
             b = contour[(i + 1) % length];
 
@@ -89,8 +89,7 @@ private:
             dx = (b.y - a.y) / 1.374;
             dy = (a.x - b.x) / 1.374;
 
-            for (int j = 1; j <= limit; j++)
-            {
+            for (int j = 1; j <= limit; j++) {
                 // Search to the right of the segment.
                 point.x = cx + dx / j;
                 point.y = cy + dy / j;
@@ -114,10 +113,8 @@ private:
     bool isPointInPolygon(Point& point, const std::vector<Point>& poly) const
     {
         bool inside = false;
-
         double x = point.x;
         double y = point.y;
-
         auto count = poly.size();
 
         for (int i = 0, j = count - 1; i < count; i++) {
@@ -125,13 +122,11 @@ private:
                 && (poly[i].x <= x || poly[j].x <= x)) {
                 inside ^= (poly[i].x + (y - poly[i].y) / (poly[j].y - poly[i].y) * (poly[j].x - poly[i].x) < x);
             }
-
             j = i;
         }
 
         return inside;
     }
-
 };
 
 

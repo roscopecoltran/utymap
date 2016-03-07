@@ -65,4 +65,15 @@ BOOST_AUTO_TEST_CASE(GiveOneTagOneNumber_WhenEvaluate_ReturnValue)
     BOOST_CHECK_EQUAL(result, 15);
 }
 
+BOOST_AUTO_TEST_CASE(GiveRawValue_WhenEvaluate_ReturnValue)
+{
+    StyleDeclaration styleDeclaration(0, "13");
+
+    double result = styleDeclaration.evaluate(ElementUtils::createElement<Node>(*stringTable,
+         { { "building:levels", "5" } }).tags,
+    *stringTable);
+
+    BOOST_CHECK_EQUAL(result, 13);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
