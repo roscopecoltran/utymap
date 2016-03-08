@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include "test_utils/ElementUtils.hpp"
 
+#include <cstdio>
 #include <memory>
 
 using namespace utymap::entities;

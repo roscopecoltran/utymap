@@ -183,8 +183,8 @@ struct StyleDeclaration::StyleDeclarationImpl
     {
         EvalGrammar<std::string::const_iterator> grammar;
 
-        auto iter = value_->begin();
-        auto end = value_->end();
+        std::string::const_iterator iter = value_->begin();
+        std::string::const_iterator end = value_->end();
         boost::spirit::ascii::space_type space;
         bool r = phrase_parse(iter, end, grammar, space, *tree_);
 
