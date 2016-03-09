@@ -109,7 +109,7 @@ private:
 
     inline static int lonToTileX(double lon, int levelOfDetail)
     {
-        return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, levelOfDetail)));
+        return (int)(std::floor((lon + 180.0) / 360.0 * pow(2.0, levelOfDetail)));
     }
 
     inline static int latToTileY(double lat, int levelOfDetail)
