@@ -19,6 +19,7 @@
 #include "meshing/MeshTypes.hpp"
 
 #include <cstdint>
+#include <exception>
 #include <fstream>
 #include <string>
 #include <memory>
@@ -154,30 +155,45 @@ public:
     // Adds data to persistent store.
     void addToPersistentStore(const char* styleFile, const char* path, const utymap::index::LodRange& range, OnError* errorCallback)
     {
-        geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
+        try {
+            geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
+        }
+        catch (std::exception ex) {
+            errorCallback(ex.what());
+        }
     }
 
     // Adds data to in-memory store.
     void addToInMemoryStore(const char* styleFile, const char* path, const utymap::index::LodRange& range, OnError* errorCallback)
     {
-        geoStore_.add(InMemoryStorageKey, path, range, *getStyleProvider(styleFile).get());
+        try {
+            geoStore_.add(InMemoryStorageKey, path, range, *getStyleProvider(styleFile).get());
+        }
+        catch (std::exception ex) {
+            errorCallback(ex.what());
+        }
     }
 
     // Loads tile.
     void loadTile(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
                   OnElementLoaded* elementCallback, OnError* errorCallback)
     {
-        utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
-        TileElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-        tileBuilder_.build(quadKey, styleProvider,
-            [&meshCallback](const utymap::meshing::Mesh& mesh) {
+        try {
+            utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
+            TileElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
+            tileBuilder_.build(quadKey, styleProvider,
+                [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 meshCallback(mesh.name.data(),
                     mesh.vertices.data(), mesh.vertices.size(),
                     mesh.triangles.data(), mesh.triangles.size(),
                     mesh.colors.data(), mesh.colors.size());
-        }, [&elementVisitor](const utymap::entities::Element& element) {
-            element.accept(elementVisitor);
-        });
+            }, [&elementVisitor](const utymap::entities::Element& element) {
+                element.accept(elementVisitor);
+            });
+        }
+        catch (std::exception ex) {
+            errorCallback(ex.what());
+        }
     }
 
 private:
