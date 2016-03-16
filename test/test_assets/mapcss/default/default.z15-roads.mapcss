@@ -1,4 +1,4 @@
-canvas|z17 {
+canvas|z15 {
     drive-max-area: 0.0005;
     drive-color-noise-freq: 0.1;
     drive-ele-noise-freq: 0;
@@ -11,53 +11,53 @@ canvas|z17 {
     pedestrian-color: gradient(#636363);
 }
 
-way|z17[highway] {
+way|z15[highway] {
     clip:true;
     builders: terrain;
     terrain-layer: pedestrian;
     width: 1;
 }
 
-way|z17[highway=path][foot=designated] {
+way|z15[highway=path][foot=designated] {
     terrain-layer: pedestrian;
     width: 1;
 }
-way|z17[highway=service] {
+way|z15[highway=service] {
     terrain-layer: pedestrian;
     width: 0.7;
 }
-way|z17[highway=footway] {
+way|z15[highway=footway] {
     terrain-layer: pedestrian;
     width: 1;
 }
 
-way|z17[highway=tertiary],
-way|z17[highway=residential],
-way|z17[highway=service],
-way|z17[highway=unclassified],
-way|z17[highway=road] {
+way|z15[highway=tertiary],
+way|z15[highway=residential],
+way|z15[highway=service],
+way|z15[highway=unclassified],
+way|z15[highway=road] {
     terrain-layer: drive;
     width: 4.5;
 }
-way|z17[highway=living_street] {
+way|z15[highway=living_street] {
     width: 4;
 }
-way|z17[highway=trunk],
-way|z17[highway=trunk_link],
-way|z17[highway=primary],
-way|z17[highway=primary_link],
-way|z17[highway=motorway],
-way|z17[highway=motorway_link] {
+way|z15[highway=trunk],
+way|z15[highway=trunk_link],
+way|z15[highway=primary],
+way|z15[highway=primary_link],
+way|z15[highway=motorway],
+way|z15[highway=motorway_link] {
     terrain-layer: drive;
     width: 4;
 }
-way|z17[highway=secondary],
-way|z17[highway=secondary_link] {
+way|z15[highway=secondary],
+way|z15[highway=secondary_link] {
     terrain-layer: drive;
     width: 3.5;
 }
-way|z17[highway=tertiary],
-way|z17[highway=tertiary_link] {
+way|z15[highway=tertiary],
+way|z15[highway=tertiary_link] {
     terrain-layer: drive;
     width: 4;
 }

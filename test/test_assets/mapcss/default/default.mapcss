@@ -1,5 +1,5 @@
 @import url("default.z1.mapcss");
-@import url("default.z17.mapcss");
+@import url("default.z15.mapcss");
 
 /* always ignore some elements. */
 way|z1-19[level<0],
