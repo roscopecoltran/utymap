@@ -1,0 +1,10 @@
+@import url("default.z1.mapcss");
+@import url("default.z15.mapcss");
+
+/* always ignore some elements. */
+way|z1-19[level<0],
+way|z1-19[layer<0],
+area|z1-19[level<0],
+area|z1-19[man_made!=bridge][layer<0]  {
+    skip:true;
+}

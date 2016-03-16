@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{43E0F03A-EB95-42F0-A7B2-65A45518AFF0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Utymap.UnityLib</RootNamespace>
+    <AssemblyName>Utymap.UnityLib</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CONSOLE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\packages\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\packages\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CompositionRoot.cs" />
+    <Compile Include="Core\BoundingBox.cs" />
+    <Compile Include="Core\Commands\Arguments.cs" />
+    <Compile Include="Core\Commands\CommandController.cs" />
+    <Compile Include="Core\Commands\GeocodeCommand.cs" />
+    <Compile Include="Core\Commands\ICommand.cs" />
+    <Compile Include="Core\Commands\SysCommand.cs" />
+    <Compile Include="Core\GeoCoordinate.cs" />
+    <Compile Include="Core\IProjection.cs" />
+    <Compile Include="Core\Models\ModelBuilder.cs" />
+    <Compile Include="Core\Models\Mesh.cs" />
+    <Compile Include="Core\QuadKey.cs" />
+    <Compile Include="Core\Stylesheet.cs" />
+    <Compile Include="Core\Utils\ColorUtils.cs" />
+    <Compile Include="Infrastructure\Config\ConfigBuilder.cs" />
+    <Compile Include="Core\Tiling\Tile.cs" />
+    <Compile Include="Core\Tiling\TileActivator.cs" />
+    <Compile Include="Core\Tiling\TileController.cs" />
+    <Compile Include="Core\Tiling\TileMessages.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Infrastructure\Dependencies\ProxyGen.cs" />
+    <Compile Include="Infrastructure\IO\FileSystemService.cs" />
+    <Compile Include="Infrastructure\IO\PathResolver.cs" />
+    <Compile Include="Infrastructure\MessageBus.cs" />
+    <Compile Include="Core\Positioning\GeoPosition.cs" />
+    <Compile Include="Core\Positioning\Nmea\ActualNmeaValueType.cs" />
+    <Compile Include="Core\Positioning\Nmea\Error.cs" />
+    <Compile Include="Core\Positioning\Nmea\GGA.cs" />
+    <Compile Include="Core\Positioning\Nmea\GLL.cs" />
+    <Compile Include="Core\Positioning\Nmea\GSA.cs" />
+    <Compile Include="Core\Positioning\Nmea\GSV.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaField.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaMessage.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaMessageType.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaParser.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaPositionMocker.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaUtils.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaValueType.cs" />
+    <Compile Include="Core\Positioning\Nmea\RMC.cs" />
+    <Compile Include="Core\Utils\GeoUtils.cs" />
+    <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Infrastructure\IO\Compression\CompressionUtils.cs" />
+    <Compile Include="Infrastructure\IO\Compression\InflateZipStream.cs" />
+    <Compile Include="Infrastructure\IO\IFileSystemService.cs" />
+    <Compile Include="Infrastructure\IO\IPathResolver.cs" />
+    <Compile Include="Infrastructure\Primitives\Range.cs" />
+    <Compile Include="Infrastructure\Primitives\Union.cs" />
+    <Compile Include="Infrastructure\Utils\ParallelExtensions.cs" />
+    <Compile Include="Core\Models\Element.cs" />
+    <Compile Include="Maps\Elevation\SrtmDownloader.cs" />
+    <Compile Include="Maps\Geocoding\IGeocoder.cs" />
+    <Compile Include="Maps\Geocoding\NominatimGeocoder.cs" />
+    <Compile Include="Maps\Loader\MapDataLoader.cs" />
+    <Compile Include="Maps\Loader\UtymapLib.cs" />
+    <Compile Include="Infrastructure\Config\CodeConfigSection.cs" />
+    <Compile Include="Infrastructure\Config\IConfigSection.cs" />
+    <Compile Include="Infrastructure\Config\IConfigurable.cs" />
+    <Compile Include="Infrastructure\Config\JsonConfigSection.cs" />
+    <Compile Include="Infrastructure\Dependencies\Component.cs" />
+    <Compile Include="Infrastructure\Dependencies\ComponentExtensions.cs" />
+    <Compile Include="Infrastructure\Dependencies\Container.cs" />
+    <Compile Include="Infrastructure\Dependencies\DependencyAttribute.cs" />
+    <Compile Include="Infrastructure\Dependencies\DependencyException.cs" />
+    <Compile Include="Infrastructure\Dependencies\IContainer.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\Behaviors\ExecuteBehavior.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\Behaviors\IBehavior.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\Behaviors\ProfileBehavior.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\Behaviors\TraceBehavior.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\IInterceptor.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\IMethodReturn.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\InterceptionContext.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\InterfaceInterceptor.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\IProxy.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\MethodInvocation.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\MethodReturn.cs" />
+    <Compile Include="Infrastructure\Dependencies\Interception\ProxyBase.cs" />
+    <Compile Include="Infrastructure\Dependencies\Lifetime\ContainerLifetimeManager.cs" />
+    <Compile Include="Infrastructure\Dependencies\Lifetime\ExternalLifetimeManager.cs" />
+    <Compile Include="Infrastructure\Dependencies\Lifetime\ILifetimeManager.cs" />
+    <Compile Include="Infrastructure\Dependencies\Lifetime\SingletonLifetimeManager.cs" />
+    <Compile Include="Infrastructure\Dependencies\Lifetime\TransientLifetimeManager.cs" />
+    <Compile Include="Infrastructure\Dependencies\TypeHelper.cs" />
+    <Compile Include="Infrastructure\Diagnostic\DefaultTrace.cs" />
+    <Compile Include="Infrastructure\Diagnostic\ITrace.cs" />
+    <Compile Include="Infrastructure\Formats\SimpleJSON.cs" />
+    <Compile Include="Infrastructure\Reactive\AsyncOperationExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Bridge\AotSafeExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Bridge\CancellationToken.cs" />
+    <Compile Include="Infrastructure\Reactive\Bridge\MainThreadScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\Bridge\Observable.Bridge.cs" />
+    <Compile Include="Infrastructure\Reactive\Bridge\Observable.Extensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Diagnostics\LogEntry.cs" />
+    <Compile Include="Infrastructure\Reactive\Diagnostics\LogEntryExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Diagnostics\Logger.cs" />
+    <Compile Include="Infrastructure\Reactive\Diagnostics\ObservableLogger.cs" />
+    <Compile Include="Infrastructure\Reactive\Diagnostics\UnityDebugSink.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\BooleanDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\CompositeDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\Disposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\DisposableExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\ICancelable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\MultipleAssignmentDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\RefCountDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\ScheduledDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\SerialDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\Disposables\SingleAssignmentDisposable.cs" />
+    <Compile Include="Infrastructure\Reactive\EventPattern.cs" />
+    <Compile Include="Infrastructure\Reactive\InspectableReactiveProperty.cs" />
+    <Compile Include="Infrastructure\Reactive\InspectorDisplayAttribute.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\ImmutableList.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\ListObserver.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\PriorityQueue.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\ReflectionAccessor.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\ScheduledItem.cs" />
+    <Compile Include="Infrastructure\Reactive\InternalUtil\ThreadSafeQueueWorker.cs" />
+    <Compile Include="Infrastructure\Reactive\LazyTask.cs" />
+    <Compile Include="Infrastructure\Reactive\LifetimeDisposableExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Notification.cs" />
+    <Compile Include="Infrastructure\Reactive\Notifiers\BooleanNotifier.cs" />
+    <Compile Include="Infrastructure\Reactive\Notifiers\CountNotifier.cs" />
+    <Compile Include="Infrastructure\Reactive\Notifiers\ScheduledNotifier.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Aggregate.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Binding.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Blocking.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Concatenate.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Concurrency.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Conversions.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Creation.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.ErrorHandling.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Events.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Joins.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Paging.cs" />
+    <Compile Include="Infrastructure\Reactive\Observable.Time.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableMonoBehaviour.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableStateMachineBehaviour.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableUnity.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableWWW.cs" />
+    <Compile Include="Infrastructure\Reactive\ObserveExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\Observer.cs" />
+    <Compile Include="Infrastructure\Reactive\ReactiveCollection.cs" />
+    <Compile Include="Infrastructure\Reactive\ReactiveDictionary.cs" />
+    <Compile Include="Infrastructure\Reactive\ReactiveProperty.cs" />
+    <Compile Include="Infrastructure\Reactive\ScenePlaybackDetector.cs" />
+    <Compile Include="Infrastructure\Reactive\Schedulers\CurrentThreadScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\Schedulers\ImmediateScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\Schedulers\Scheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\Schedulers\ThreadPoolScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\AsyncSubject.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\BehaviorSubject.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\ConnectableObservable.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\ISubject.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\ReplaySubject.cs" />
+    <Compile Include="Infrastructure\Reactive\Subjects\Subject.cs" />
+    <Compile Include="Infrastructure\Reactive\System\IObservable.cs" />
+    <Compile Include="Infrastructure\Reactive\System\IObserver.cs" />
+    <Compile Include="Infrastructure\Reactive\System\IProgress.cs" />
+    <Compile Include="Infrastructure\Reactive\System\Tuple.cs" />
+    <Compile Include="Infrastructure\Reactive\System\Unit.cs" />
+    <Compile Include="Infrastructure\Reactive\TimeInterval.cs" />
+    <Compile Include="Infrastructure\Reactive\Timestamped.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableAnimatorTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableCollision2DTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableCollisionTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableDestroyTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableFixedUpdateTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableLateUpdateTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableMouseTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableTrigger2DTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableTriggerBase.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableTriggerTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableUpdateTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\Triggers\ObservableVisibleTrigger.cs" />
+    <Compile Include="Infrastructure\Reactive\TypedMonoBehaviour.cs" />
+    <Compile Include="Infrastructure\Reactive\UnityEventExtensions.cs" />
+    <Compile Include="Infrastructure\Reactive\UnityMainThreadDispatcher.cs" />
+    <Compile Include="Infrastructure\Reactive\UnityMainThreadScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\UnityWinRTBridge\Thread.cs" />
+    <Compile Include="Infrastructure\Reactive\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
+    <Compile Include="Infrastructure\Utils\Guard.cs" />
+    <Compile Include="Platform\IGameObject.cs" />
+    <Compile Include="Platform\IGameObjectFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strings.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
