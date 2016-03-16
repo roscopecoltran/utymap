@@ -204,6 +204,9 @@ private:
             return pair->second;
 
         std::ifstream styleFile(filePath);
+        if (!styleFile.good())
+            throw std::invalid_argument(std::string("Cannot read mapcss file:") + filePath);
+
         // NOTE not safe, but don't want to use boost filesystem only for this task.
         std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
         utymap::mapcss::MapCssParser parser(dir);
