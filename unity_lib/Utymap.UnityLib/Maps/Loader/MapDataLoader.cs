@@ -53,7 +53,7 @@ namespace Utymap.UnityLib.Maps.Loader
             var dataPathResolved = _pathResolver.Resolve(dataPath);
             var stylesheetPathResolved = _pathResolver.Resolve(stylesheet.Path);
 
-            Trace.Info(TraceCategory, "Add to in-memory storage: {0}, stylerrore: {1}", 
+            Trace.Info(TraceCategory, "Add to in-memory storage: data:{0} style: {1}", 
                 dataPathResolved, stylesheetPathResolved);
 
             string errorMsg = null;
@@ -70,7 +70,7 @@ namespace Utymap.UnityLib.Maps.Loader
             return _elevationProvider.HasElevation(tile.BoundingBox)
                 ? CreateLoadSequence(tile)
                 : _elevationProvider.Download(tile.BoundingBox)
-                                    .ContinueWith(() => CreateLoadSequence(tile), Scheduler.ThreadPool);
+                                    .ContinueWith(() => CreateLoadSequence(tile), Scheduler.CurrentThread);
         }
 
         /// <inheritdoc />

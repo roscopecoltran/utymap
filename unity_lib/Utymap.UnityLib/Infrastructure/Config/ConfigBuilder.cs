@@ -45,6 +45,20 @@
             return this;
         }
 
+        /// <summary> Sets string index. </summary>
+        public ConfigBuilder SetStringIndex(string path)
+        {
+            Add<string>("data/index/strings", path);
+            return this;
+        }
+
+        /// <summary> Sets string index. </summary>
+        public ConfigBuilder SetSpatialIndex(string path)
+        {
+            Add<string>("data/index/spatial", path);
+            return this;
+        }
+
         #endregion
 
         #region Default instance
