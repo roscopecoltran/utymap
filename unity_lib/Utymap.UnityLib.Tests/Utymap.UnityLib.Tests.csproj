@@ -52,6 +52,7 @@
     <Compile Include="Helpers\PerformanceLogger.cs" />
     <Compile Include="Helpers\Projections.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
+    <Compile Include="Helpers\TestPathResolver.cs" />
     <Compile Include="Infrastructure\Config\CodeConfigTests.cs" />
     <Compile Include="Infrastructure\Dependencies\ContainerTests.cs" />
     <Compile Include="Infrastructure\Dependencies\Stubs\ClassA.cs" />

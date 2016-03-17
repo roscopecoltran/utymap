@@ -10,7 +10,7 @@ namespace Utymap.UnityLib.Maps.Elevation
     /// <summary> Downloads SRTM data from NASA server. </summary>
     internal class SrtmDownloader
     {
-        private const string LogTag = "mapdata.srtm";
+        private const string TraceCategory = "mapdata.srtm";
         private readonly IFileSystemService _fileSystemService;
         private readonly ITrace _trace;
         private readonly string _server;
@@ -49,6 +49,7 @@ namespace Utymap.UnityLib.Maps.Elevation
         public IObservable<byte[]> Download(GeoCoordinate coordinate)
         {
             var prefix = GetFileNamePrefix(coordinate);
+            // TODO do not read file every time
             foreach (var line in _fileSystemService.ReadText(_schemaPath).Split('\n'))
             {
                 if (line.StartsWith(prefix))
@@ -57,7 +58,7 @@ namespace Utymap.UnityLib.Maps.Elevation
                     // NOTE some of files miss extension point between name and .hgt.zip
                     var url = String.Format("{0}/{1}/{2}", _server, ContinentMap[int.Parse(parameters[1])],
                         parameters[1].EndsWith("zip") ? "" : parameters[0] + ".hgt.zip");
-                    _trace.Warn(LogTag, String.Format("Downloading SRTM data from {0}", url));
+                    _trace.Warn(TraceCategory, String.Format("Downloading SRTM data from {0}", url));
                     return ObservableWWW.GetAndGetBytes(url).Take(1);
                 }
             }

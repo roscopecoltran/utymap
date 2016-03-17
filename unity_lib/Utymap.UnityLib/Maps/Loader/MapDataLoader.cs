@@ -11,6 +11,7 @@ using Utymap.UnityLib.Infrastructure.Dependencies;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.IO;
 using Utymap.UnityLib.Infrastructure.Primitives;
+using Utymap.UnityLib.Maps.Elevation;
 using Mesh = Utymap.UnityLib.Core.Models.Mesh;
 
 namespace Utymap.UnityLib.Maps.Loader
@@ -32,15 +33,17 @@ namespace Utymap.UnityLib.Maps.Loader
     /// <summary> Default implementation of tile loader. </summary>
     internal class MapDataLoader : IMapDataLoader, IConfigurable, IDisposable
     {
+        private readonly IElevationProvider _elevationProvider;
         private readonly IPathResolver _pathResolver;
-        private const string TraceCategory = "tile.loader";
+        private const string TraceCategory = "mapdata.loader";
 
         [Dependency]
         public ITrace Trace { get; set; }
 
         [Dependency]
-        public MapDataLoader(IPathResolver pathResolver)
+        public MapDataLoader(IElevationProvider elevationProvider, IPathResolver pathResolver)
         {
+            _elevationProvider = elevationProvider;
             _pathResolver = pathResolver;
         }
 
@@ -50,7 +53,7 @@ namespace Utymap.UnityLib.Maps.Loader
             var dataPathResolved = _pathResolver.Resolve(dataPath);
             var stylesheetPathResolved = _pathResolver.Resolve(stylesheet.Path);
 
-            Trace.Info(TraceCategory, "Add to in-memory storage: {0}, style: {1}", 
+            Trace.Info(TraceCategory, "Add to in-memory storage: {0}, stylerrore: {1}", 
                 dataPathResolved, stylesheetPathResolved);
 
             string errorMsg = null;
@@ -64,62 +67,17 @@ namespace Utymap.UnityLib.Maps.Loader
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            return Observable.Create<Union<Element, Mesh>>(observer =>
-            {
-                Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
-
-                bool noException = true;
-                UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey.TileX, 
-                    tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail,
-                // mesh callback
-                (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
-                {
-                    Trace.Debug(TraceCategory, "receive mesh: {0}", name);
-
-                    Vector3[] worldPoints = new Vector3[count];
-                    for (int i = 0; i < vertices.Length; i += 3)
-                        worldPoints[i / 3 ] = tile.Projection
-                            .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
-
-                    Color32[] unityColors = new Color32[colorCount];
-                    for (int i = 0; i < colorCount; ++i)
-                        unityColors[i] = ColorUtils.FromInt(colors[i]);
-
-                    Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
-                    observer.OnNext(new Union<Element, Mesh>(mesh));
-                },
-                // element callback
-                (id, tags, count, vertices, vertexCount, styles, styleCount) =>
-                {
-                    Trace.Debug(TraceCategory, "receive element: {0}", id.ToString());
-
-                    var geometry = new GeoCoordinate[vertexCount / 2];
-                    for (int i = 0; i < vertexCount/2; i += 2)
-                        geometry[i/2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
-
-                    Element element = new Element(id, geometry, ReadDict(tags), ReadDict(styles));
-                    observer.OnNext(new Union<Element, Mesh>(element));
-                },
-                // error callback
-                message =>
-                {
-                    noException = false;
-                    var exception = new MapDataException(message);
-                    Trace.Error(TraceCategory, exception, "Cannot load tile: {0}", tile.QuadKey.ToString());
-                    observer.OnError(exception);
-                });
-                if (noException)
-                    observer.OnCompleted();
-
-                return Disposable.Empty;
-            });
+            return _elevationProvider.HasElevation(tile.BoundingBox)
+                ? CreateLoadSequence(tile)
+                : _elevationProvider.Download(tile.BoundingBox)
+                                    .ContinueWith(() => CreateLoadSequence(tile), Scheduler.ThreadPool);
         }
 
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            var stringPath = _pathResolver.Resolve(configSection.GetString("strings"));
-            var dataPath = _pathResolver.Resolve(configSection.GetString("data"));
+            var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
+            var dataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial", @"/"));
 
             string errorMsg = null;
             UtymapLib.Configure(stringPath, dataPath, error => errorMsg = error);
@@ -134,6 +92,60 @@ namespace Utymap.UnityLib.Maps.Loader
         }
 
         #region Private methods
+
+        /// <summary> Creates <see cref="IObservable{T}"/> for loading element of given tile. </summary>
+        private IObservable<Union<Element, Mesh>> CreateLoadSequence(Tile tile)
+        {
+            return Observable.Create<Union<Element, Mesh>>(observer =>
+            {
+                Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
+
+                bool noException = true;
+                UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey.TileX,
+                    tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail,
+                    // mesh callback
+                    (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
+                    {
+                        Trace.Debug(TraceCategory, "receive mesh: {0}", name);
+
+                        Vector3[] worldPoints = new Vector3[count];
+                        for (int i = 0; i < vertices.Length; i += 3)
+                            worldPoints[i / 3] = tile.Projection
+                                .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
+
+                        Color32[] unityColors = new Color32[colorCount];
+                        for (int i = 0; i < colorCount; ++i)
+                            unityColors[i] = ColorUtils.FromInt(colors[i]);
+
+                        Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
+                        observer.OnNext(new Union<Element, Mesh>(mesh));
+                    },
+                    // element callback
+                    (id, tags, count, vertices, vertexCount, styles, styleCount) =>
+                    {
+                        Trace.Debug(TraceCategory, "receive element: {0}", id.ToString());
+
+                        var geometry = new GeoCoordinate[vertexCount / 2];
+                        for (int i = 0; i < vertexCount / 2; i += 2)
+                            geometry[i / 2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+
+                        Element element = new Element(id, geometry, ReadDict(tags), ReadDict(styles));
+                        observer.OnNext(new Union<Element, Mesh>(element));
+                    },
+                    // error callback
+                    message =>
+                    {
+                        noException = false;
+                        var exception = new MapDataException(message);
+                        Trace.Error(TraceCategory, exception, "Cannot load tile: {0}", tile.QuadKey.ToString());
+                        observer.OnError(exception);
+                    });
+                if (noException)
+                    observer.OnCompleted();
+
+                return Disposable.Empty;
+            });
+        }
 
         private static Dictionary<string, string> ReadDict(string[] data)
         {

@@ -9,6 +9,7 @@ using Utymap.UnityLib.Infrastructure;
 using Utymap.UnityLib.Infrastructure.Config;
 using Utymap.UnityLib.Infrastructure.Dependencies;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
+using Utymap.UnityLib.Infrastructure.IO;
 using Utymap.UnityLib.Infrastructure.Primitives;
 using Utymap.UnityLib.Infrastructure.Reactive;
 using Utymap.UnityLib.Maps.Loader;
@@ -51,6 +52,7 @@ namespace Utymap.UnityLib.Tests
             // initialize services
             _compositionRoot = new CompositionRoot(container, config)
                 .RegisterAction((c, _) => c.Register(Component.For<ITrace>().Use<ConsoleTrace>()))
+                .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<TestPathResolver>()))
                 .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(TestHelper.DefaultMapCss)))
                 .RegisterAction((c, _) => c.Register(Component.For<IProjection>().Use<CartesianProjection>(_worldZeroPoint)))
                 .Setup();

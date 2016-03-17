@@ -38,6 +38,13 @@
             return this;
         }
 
+        /// <summary> Sets local path to elevation data. </summary>
+        public ConfigBuilder SetLocalElevationData(string path)
+        {
+            Add<string>("data/elevation/local", path);
+            return this;
+        }
+
         #endregion
 
         #region Default instance
@@ -47,6 +54,7 @@
         public static ConfigBuilder GetDefault()
         {
             return new ConfigBuilder()
+                .SetLocalElevationData("Elevation")
                 .SetRemoteElevationData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
                 .SetGeocodingServer("http://nominatim.openstreetmap.org/search");
         }

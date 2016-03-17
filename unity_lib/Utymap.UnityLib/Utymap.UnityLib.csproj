@@ -89,7 +89,9 @@
     <Compile Include="Infrastructure\Primitives\Union.cs" />
     <Compile Include="Infrastructure\Utils\ParallelExtensions.cs" />
     <Compile Include="Core\Models\Element.cs" />
+    <Compile Include="Maps\Elevation\IElevationProvider.cs" />
     <Compile Include="Maps\Elevation\SrtmDownloader.cs" />
+    <Compile Include="Maps\Elevation\SrtmElevationProvider.cs" />
     <Compile Include="Maps\Geocoding\IGeocoder.cs" />
     <Compile Include="Maps\Geocoding\NominatimGeocoder.cs" />
     <Compile Include="Maps\Loader\MapDataLoader.cs" />
