@@ -58,7 +58,6 @@
     <Compile Include="Core\Tiling\Tile.cs" />
     <Compile Include="Core\Tiling\TileActivator.cs" />
     <Compile Include="Core\Tiling\TileController.cs" />
-    <Compile Include="Core\Tiling\TileMessages.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Infrastructure\Dependencies\ProxyGen.cs" />
     <Compile Include="Infrastructure\IO\FileSystemService.cs" />
@@ -222,8 +221,6 @@
     <Compile Include="Infrastructure\Reactive\UnityWinRTBridge\Thread.cs" />
     <Compile Include="Infrastructure\Reactive\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
     <Compile Include="Infrastructure\Utils\Guard.cs" />
-    <Compile Include="Platform\IGameObject.cs" />
-    <Compile Include="Platform\IGameObjectFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>

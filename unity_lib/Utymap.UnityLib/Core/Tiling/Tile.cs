@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using Utymap.UnityLib.Core.Utils;
-using Utymap.UnityLib.Platform;
 
 namespace Utymap.UnityLib.Core.Tiling
 {
@@ -21,9 +20,6 @@ namespace Utymap.UnityLib.Core.Tiling
 
         /// <summary> Used projection. </summary>
         public IProjection Projection { get; private set; }
-
-        /// <summary> Gets or sets game object which is used to represent this tile. </summary>
-        public IGameObject GameObject { get; set; }
 
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>

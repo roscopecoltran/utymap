@@ -16,7 +16,7 @@ namespace Utymap.UnityLib
     /// <summary> Represents application's compistion root. </summary>
     public class CompositionRoot : IDisposable
     {
-        private bool _isStarted;
+        private bool _isInitialized;
         private readonly IContainer _container;
         private readonly IConfigSection _configSection;
         private readonly List<Action<IContainer, IConfigSection>> _bootstrapperActions;
@@ -34,7 +34,7 @@ namespace Utymap.UnityLib
         /// <summary> Registers action for setup which can extend/replace default service implementations. </summary>
         public CompositionRoot RegisterAction(Action<IContainer, IConfigSection> action)
         {
-            if (_isStarted)
+            if (_isInitialized)
                 throw new InvalidOperationException(Strings.CannotRegisteActionIfSetupIsComplete);
 
             _bootstrapperActions.Add(action);
@@ -44,7 +44,7 @@ namespace Utymap.UnityLib
         /// <summary> Performs setup </summary>
         public CompositionRoot Setup()
         {
-            if (_isStarted)
+            if (_isInitialized)
                 throw new InvalidOperationException(Strings.SetupIsCalledMoreThanOnce);
 
             // infrastructure services
@@ -57,10 +57,12 @@ namespace Utymap.UnityLib
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
             _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
+            _container.Register(Component.For<ITileActivator>().Use<TileAcivator>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 
             _bootstrapperActions.ForEach(a => a(_container, _configSection));
+            _isInitialized = true;
             return this;
         }
 
