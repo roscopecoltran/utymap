@@ -13,7 +13,7 @@ namespace Utymap.UnityLib.Maps.Geocoding
     internal class NominatimGeocoder: IGeocoder, IConfigurable
     {
         private const string DefaultServer = @"http://nominatim.openstreetmap.org/search?";
-        private string _searchPath = DefaultServer;
+        private string _searchPath;
 
         /// <inheritdoc />
         public IObservable<GeocoderResult> Search(string name)

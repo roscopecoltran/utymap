@@ -8,6 +8,7 @@ using Utymap.UnityLib.Infrastructure.Dependencies;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.IO;
 using Utymap.UnityLib.Maps.Elevation;
+using Utymap.UnityLib.Maps.Geocoding;
 using Utymap.UnityLib.Maps.Loader;
 
 namespace Utymap.UnityLib
@@ -57,6 +58,7 @@ namespace Utymap.UnityLib
             _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
+            _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 
             _bootstrapperActions.ForEach(a => a(_container, _configSection));
             return this;
