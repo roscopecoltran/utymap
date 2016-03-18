@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using Assets.Scripts.Console;
 using UnityEngine;
 using Utymap.UnityLib;
 using Utymap.UnityLib.Core;
 using Utymap.UnityLib.Core.Tiling;
-using Utymap.UnityLib.Infrastructure;
 using Utymap.UnityLib.Infrastructure.Config;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.IO;
@@ -24,12 +20,11 @@ namespace Assets.Scripts
         private const string FatalCategoryName = "Fatal";
 
         private IContainer _container;
-        private IMessageBus _messageBus;
         private DebugConsoleTrace _trace;
         private CompositionRoot _compositionRoot;
         private ITileController _tileController;
 
-        private int _zoomLevel;
+        private int _zoomLevel = 15;
 
         #region Singleton implementation
 
@@ -52,8 +47,7 @@ namespace Assets.Scripts
 
         #region Initialization logic
 
-        public void InitializeFramework(ConfigBuilder configBuilder,
-            Action<IContainer, IMessageBus, ITrace, CompositionRoot> initAction)
+        public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction)
         {
             // setup main thread scheduler
             Scheduler.MainThread = UnityMainThreadScheduler.MainThread;
@@ -61,9 +55,6 @@ namespace Assets.Scripts
             // create default container which should not be exposed outside
             // to avoid Service Locator pattern. 
             _container = new Container();
-
-            // create message bus class which is way to listen for utymap events
-            _messageBus = new MessageBus();
 
             // create trace to log important messages
             _trace = new DebugConsoleTrace();
@@ -81,11 +72,12 @@ namespace Assets.Scripts
                 // create entry point for utymap functionallity
                 _compositionRoot = new CompositionRoot(_container, configBuilder.Build())
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
-                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<PathResolver>()));
+                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<PathResolver>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"\MapCss\default\default.mapcss")));
 
                 // this is the way to insert custom extensions from outside. You may need to do it for
                 // some scenes.
-                initAction(_container, _messageBus, _trace, _compositionRoot);
+                initAction(_compositionRoot);
 
                 // setup object graph
                 _compositionRoot.Setup();
@@ -145,12 +137,20 @@ namespace Assets.Scripts
             }
         }
 
-        public void Move(Vector2 point)
+        /// <summary> Notifies utymap about position change. </summary>
+        public void SetPosition(Vector2 point)
         {
             Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(point, _zoomLevel));
         }
 
-        public void ChangeZoomLevel(int zoomLevel)
+        /// <summary> Notifies utymap about coordinate change. </summary>
+        public void SetPosition(GeoCoordinate coordinate)
+        {
+            Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(coordinate, _zoomLevel));
+        }
+
+        /// <summary> Sets zoom level. </summary>
+        public void SetZoomLevel(int zoomLevel)
         {
             _zoomLevel = zoomLevel;
         }

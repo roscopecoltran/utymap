@@ -1,0 +1,8 @@
+canvas|z15 {
+    layer-priority: water,drive,pedestrian;
+}
+
+@import url("default.z15-terrain.mapcss");
+@import url("default.z15-roads.mapcss");
+@import url("default.z15-water.mapcss");
+@import url("default.z15-buildings.mapcss");

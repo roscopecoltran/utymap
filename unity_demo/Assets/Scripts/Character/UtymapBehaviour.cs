@@ -2,12 +2,12 @@
 using UnityEngine;
 using Utymap.UnityLib;
 using Utymap.UnityLib.Core;
-using Utymap.UnityLib.Infrastructure;
 using Utymap.UnityLib.Infrastructure.Config;
-using Utymap.UnityLib.Infrastructure.Dependencies;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.Reactive;
 using Utymap.UnityLib.Maps.Geocoding;
+
+using Component = Utymap.UnityLib.Infrastructure.Dependencies.Component;
 
 namespace Assets.Scripts.Character
 {
@@ -33,29 +33,6 @@ namespace Assets.Scripts.Character
 
         #region Protected methods
 
-        /// <summary>
-        ///     Gets start geocoordinate using desired method: direct latitude/longitude or
-        ///     via reverse geocoding request for given place name.
-        /// </summary>
-        protected GeoCoordinate GetWorldZeroPoint()
-        {
-            var coordinate = new GeoCoordinate(StartLatitude, StartLongitude);
-            if (!String.IsNullOrEmpty(PlaceName))
-            {
-                // NOTE this will freeze UI thread as we're making web request and should wait for its result
-                // TODO improve it
-                var place = AppManager.GetService<IGeocoder>().Search(PlaceName)
-                    .Wait();
-
-                if (place != null)
-                    return place.Coordinate;
-
-                AppManager.GetService<ITrace>()
-                    .Warn("init", "Cannot resolve '{0}', will use default latitude/longitude", PlaceName);
-            }
-            return coordinate;
-        }
-
         /// <summary> Returns config builder initialized with user defined settings. </summary>
         protected virtual ConfigBuilder GetConfigBuilder()
         {
@@ -63,9 +40,13 @@ namespace Assets.Scripts.Character
         }
 
         /// <summary> Returns bootstrapper plugin. </summary>
-        protected virtual Action<IContainer, IMessageBus, ITrace, CompositionRoot> GetBootInitAction()
+        protected virtual Action<CompositionRoot> GetBootInitAction()
         {
-            return (container, messageBus, trace, compositionRoot) => {};
+            return compositionRoot =>
+            {
+                compositionRoot.RegisterAction((c, _) => 
+                    c.Register(Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
+            };
         }
 
         #endregion
@@ -92,8 +73,41 @@ namespace Assets.Scripts.Character
             if (AppManager.IsInitialized && _position != transform.position)
             {
                 _position = transform.position;
-                AppManager.Move(new Vector2(_position.x, _position.z));
+                AppManager.SetPosition(new Vector2(_position.x, _position.z));
             }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        ///     Gets start geocoordinate using desired method: direct latitude/longitude or
+        ///     via reverse geocoding request for given place name.
+        /// </summary>
+        private GeoCoordinate GetWorldZeroPoint()
+        {
+            var coordinate = new GeoCoordinate(StartLatitude, StartLongitude);
+            if (!String.IsNullOrEmpty(PlaceName))
+            {
+                // NOTE this will freeze UI thread as we're making web request and should wait for its result
+                // TODO improve it
+                var place = AppManager.GetService<IGeocoder>().Search(PlaceName)
+                    .Wait();
+
+                if (place != null)
+                {
+                    StartLatitude = place.Coordinate.Latitude;
+                    StartLongitude = place.Coordinate.Longitude;
+                    // NOTE this prevents name resolution to be done more than once
+                    PlaceName = null;
+                    return place.Coordinate;
+                }
+
+                AppManager.GetService<ITrace>()
+                    .Warn("init", "Cannot resolve '{0}', will use default latitude/longitude", PlaceName);
+            }
+            return coordinate;
         }
 
         #endregion

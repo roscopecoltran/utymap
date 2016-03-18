@@ -7,7 +7,13 @@ namespace Assets.Scripts
     {
         public string Resolve(string path)
         {
-            return path;
+#if UNITY_ANDROID
+            if (path.StartsWith(PathPrefix))
+                return path;
+            return String.Format("{0}/{1}", PathPrefix, path.Replace(@"\", "/"));
+#else
+            return "Assets//Resources//" + path;
+#endif
         }
     }
 }
