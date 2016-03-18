@@ -9,6 +9,9 @@ namespace Utymap.UnityLib.Core
     {
         /// <summary> Converts GeoCoordinate to world coordinates. </summary>
         Vector3 Project(GeoCoordinate coordinate, double height);
+
+        /// <summary> Projects world coordinate to geocoordinate. </summary>
+        GeoCoordinate Project(Vector3 worldCoordinate);
     }
 
     /// <summary> Projects GeoCoordinate to 2D plane. </summary>
@@ -28,6 +31,12 @@ namespace Utymap.UnityLib.Core
         {
             var point = GeoUtils.ToMapCoordinate(_worldZeroPoint, coordinate);
             return new Vector3(point.x, (float)height, point.y);
+        }
+
+        /// <inheritdoc />
+        public GeoCoordinate Project(Vector3 worldCoordinate)
+        {
+            return GeoUtils.ToGeoCoordinate(_worldZeroPoint, worldCoordinate);
         }
     }
 
@@ -61,6 +70,12 @@ namespace Utymap.UnityLib.Core
             float z = (float)(radius * Math.Sin(latRad));
 
             return new Vector3(x, z, y);
+        }
+
+        /// <inheritdoc />
+        public GeoCoordinate Project(Vector3 worldCoordinate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

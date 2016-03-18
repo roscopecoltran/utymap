@@ -44,6 +44,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _tileLoader.Setup(t => t.Load(It.IsAny<Tile>())).Returns(_loaderResult.Object);
 
             _tileController = new TileController(new ModelBuilder(), _tileLoader.Object, _messageBus.Object);
+            _tileController.Projection = new CartesianProjection(_worldZeroPoint);
             _tileController.Configure(_configSection.Object);
         }
 

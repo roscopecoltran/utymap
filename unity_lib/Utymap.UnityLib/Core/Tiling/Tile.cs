@@ -7,8 +7,6 @@ namespace Utymap.UnityLib.Core.Tiling
     /// <summary> Represents map tile. </summary>
     public class Tile
     {
-        public GeoCoordinate WorldZeroPoint { get; private set; }
-
         /// <summary> Tile rectamgle in world coordinates. </summary>
         public Rect Rectangle { get; private set; }
 
@@ -29,18 +27,16 @@ namespace Utymap.UnityLib.Core.Tiling
 
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
-        /// <param name="worldZeroPoint"></param>
         /// <param name="stylesheet"></param>
         /// <param name="projection"> Projection. </param>
-        internal Tile(QuadKey quadKey, GeoCoordinate worldZeroPoint, Stylesheet stylesheet, IProjection projection)
+        internal Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection)
         {
             QuadKey = quadKey;
-            WorldZeroPoint = worldZeroPoint;
             Stylesheet = stylesheet;
             Projection = projection;
 
             BoundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);
-            Rectangle = GeoUtils.QuadKeyToRect(worldZeroPoint, quadKey);
+            Rectangle = GeoUtils.QuadKeyToRect(projection, quadKey);
         }
 
         /// <summary> Checks whether absolute position locates in tile with bound offset. </summary>

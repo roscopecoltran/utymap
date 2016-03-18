@@ -12,11 +12,9 @@ using Utymap.UnityLib.Maps.Loader;
 namespace Utymap.UnityLib.Core.Tiling
 {
     /// <summary> Controls flow of loading/unloading tiles. </summary>
+    /// <summary> Tested for cartesian projection only. </summary>
     public interface ITileController
     {
-        /// <summary> Geo coordinate where world coordinates are (0, 0). </summary>
-        GeoCoordinate WorldZeroPoint { get; }
-
         /// <summary> Current position on map in world coordinates. </summary>
         Vector2 CurrentMapPoint { get; }
 
@@ -71,9 +69,6 @@ namespace Utymap.UnityLib.Core.Tiling
         }
 
         /// <inheritdoc />
-        public GeoCoordinate WorldZeroPoint { get; private set; }
-
-        /// <inheritdoc />
         public Vector2 CurrentMapPoint { get; private set; }
 
         /// <inheritdoc />
@@ -93,13 +88,23 @@ namespace Utymap.UnityLib.Core.Tiling
         /// <inheritdoc />
         public void OnPosition(Vector2 position, int levelOfDetails)
         {
-            var geoPosition = GeoUtils.ToGeoCoordinate(WorldZeroPoint, position);
+            OnPosition(Projection.Project(position), position, levelOfDetails);
+        }
 
+        /// <inheritdoc />
+        public void OnPosition(GeoCoordinate coordinate, int levelOfDetails)
+        {
+            var vector3D = Projection.Project(coordinate, 0);
+            OnPosition(coordinate, new Vector2(vector3D.x, vector3D.z), levelOfDetails);
+        }
+
+        private void OnPosition(GeoCoordinate geoPosition, Vector2 position, int levelOfDetails)
+        {
             CurrentMapPoint = position;
             CurrentPosition = geoPosition;
 
             // call update logic only if threshold is reached
-            if (Math.Abs(position.x - _lastUpdatePosition.x) > _moveSensitivity || 
+            if (Math.Abs(position.x - _lastUpdatePosition.x) > _moveSensitivity ||
                 Math.Abs(position.y - _lastUpdatePosition.y) > _moveSensitivity)
             {
                 lock (_lockObj)
@@ -124,16 +129,6 @@ namespace Utymap.UnityLib.Core.Tiling
         }
 
         /// <inheritdoc />
-        public void OnPosition(GeoCoordinate coordinate, int levelOfDetails)
-        {
-            if (WorldZeroPoint == default(GeoCoordinate))
-                WorldZeroPoint = coordinate;
-            CurrentPosition = coordinate;
-
-            OnPosition(GeoUtils.ToMapCoordinate(WorldZeroPoint, coordinate), levelOfDetails);
-        }
-
-        /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
             _moveSensitivity = configSection.GetFloat("sensitivity", 50);
@@ -147,7 +142,7 @@ namespace Utymap.UnityLib.Core.Tiling
         /// <summary> Loads tile for given quadKey. </summary>
         private void Load(QuadKey quadKey)
         {
-            Tile tile = new Tile(quadKey, WorldZeroPoint, Stylesheet, Projection);
+            Tile tile = new Tile(quadKey, Stylesheet, Projection);
             _messageBus.Send(new TileLoadStartMessage(quadKey));
             _loadedTiles.Add(quadKey, tile); // TODO remove tile from hashmap if exception is raised
             _tileLoader
