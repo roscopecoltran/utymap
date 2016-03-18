@@ -144,6 +144,7 @@ namespace Utymap.UnityLib.Core.Tiling
         {
             Tile tile = new Tile(quadKey, Stylesheet, Projection);
             _loadedTiles.Add(quadKey, tile); // TODO remove tile from hashmap if exception is raised
+            _tileActivator.PreLoad(tile);
             _tileLoader
                 .Load(tile)
                 .SubscribeOn(Scheduler.ThreadPool)

@@ -56,6 +56,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
 
             _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, quadKey))));
+            _tileActivator.Verify(mb => mb.PreLoad(It.Is<Tile>(t => CheckQuadKey(t.QuadKey, quadKey))));
         }
 
         [Test(Description = "Tests whether next tile can be loaded when position is changed.")]
@@ -69,6 +70,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(0, 1), 400), LevelOfDetails);
 
             _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, newQuadKey))));
+            _tileActivator.Verify(mb => mb.PreLoad(It.Is<Tile>(t => CheckQuadKey(t.QuadKey, newQuadKey))));
         }
 
         #region Helpers

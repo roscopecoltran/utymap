@@ -3,6 +3,9 @@
     /// <summary> Defines logic for tile activation, deactivation and destroy. </summary>
     public interface ITileActivator
     {
+        /// <summary> Called before load is called. </summary>
+        void PreLoad(Tile tile);
+
         /// <summary> Activate given tile. It means show tile if it is hidden (deactivated) before. </summary>
         /// <param name="tile">Tile.</param>
         void Activate(Tile tile);
@@ -21,6 +24,11 @@
     /// <summary> Default implementation does nothing. </summary>
     internal class TileAcivator : ITileActivator
     {
+        /// <inheritdoc />
+        public void PreLoad(Tile tile)
+        {
+        }
+
         /// <inheritdoc />
         public void Activate(Tile tile)
         {
