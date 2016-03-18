@@ -50,7 +50,6 @@
     <Compile Include="Core\Tiling\TileControllerTests.cs" />
     <Compile Include="Helpers\ConsoleTrace.cs" />
     <Compile Include="Helpers\PerformanceLogger.cs" />
-    <Compile Include="Helpers\Projections.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Helpers\TestPathResolver.cs" />
     <Compile Include="Infrastructure\Config\CodeConfigTests.cs" />
