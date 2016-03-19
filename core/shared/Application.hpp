@@ -158,7 +158,7 @@ public:
         try {
             geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
         }
-        catch (std::exception ex) {
+        catch (std::exception& ex) {
             errorCallback(ex.what());
         }
     }
@@ -169,7 +169,7 @@ public:
         try {
             geoStore_.add(InMemoryStorageKey, path, range, *getStyleProvider(styleFile).get());
         }
-        catch (std::exception ex) {
+        catch (std::exception& ex) {
             errorCallback(ex.what());
         }
     }
@@ -191,7 +191,7 @@ public:
                 element.accept(elementVisitor);
             });
         }
-        catch (std::exception ex) {
+        catch (std::exception& ex) {
             errorCallback(ex.what());
         }
     }
