@@ -47,7 +47,7 @@ namespace Utymap.UnityLib.Core.Tiling
         private readonly object _lockObj = new object();
 
         private readonly IMapDataLoader _tileLoader;
-        private readonly ITileActivator _tileActivator;
+        private readonly IMessageBus _messageBus;
 
         private double _offsetRatio;
         private double _moveSensitivity;
@@ -61,11 +61,11 @@ namespace Utymap.UnityLib.Core.Tiling
 
         /// <summary> Creates instance of <see cref="TileController"/>. </summary>
         [Dependency]
-        public TileController(IModelBuilder modelBuilder, IMapDataLoader tileLoader, ITileActivator tileActivator)
+        public TileController(IModelBuilder modelBuilder, IMapDataLoader tileLoader, IMessageBus messageBus)
         {
             _modelBuilder = modelBuilder;
             _tileLoader = tileLoader;
-            _tileActivator = tileActivator;
+            _messageBus = messageBus;
         }
 
         /// <inheritdoc />
@@ -144,14 +144,14 @@ namespace Utymap.UnityLib.Core.Tiling
         {
             Tile tile = new Tile(quadKey, Stylesheet, Projection);
             _loadedTiles.Add(quadKey, tile); // TODO remove tile from hashmap if exception is raised
-            _tileActivator.PreLoad(tile);
+            _messageBus.Send(new TileLoadStartMessage(tile));
             _tileLoader
                 .Load(tile)
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOnMainThread()
                 .Subscribe(
                     u => u.Match(_modelBuilder.BuildElement, _modelBuilder.BuildMesh),
-                    () => _tileActivator.Activate(tile));
+                    () => _messageBus.Send(new TileLoadFinishMessage(tile)));
         }
 
         #endregion

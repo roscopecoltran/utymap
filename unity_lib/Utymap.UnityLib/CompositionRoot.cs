@@ -57,7 +57,6 @@ namespace Utymap.UnityLib
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
             _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
-            _container.Register(Component.For<ITileActivator>().Use<TileAcivator>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 

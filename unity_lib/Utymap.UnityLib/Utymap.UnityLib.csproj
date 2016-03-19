@@ -53,10 +53,10 @@
     <Compile Include="Core\Models\Mesh.cs" />
     <Compile Include="Core\QuadKey.cs" />
     <Compile Include="Core\Stylesheet.cs" />
+    <Compile Include="Core\Tiling\TileMessages.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Infrastructure\Config\ConfigBuilder.cs" />
     <Compile Include="Core\Tiling\Tile.cs" />
-    <Compile Include="Core\Tiling\TileActivator.cs" />
     <Compile Include="Core\Tiling\TileController.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Infrastructure\Dependencies\ProxyGen.cs" />

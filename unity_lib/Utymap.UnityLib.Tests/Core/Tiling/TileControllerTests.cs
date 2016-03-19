@@ -23,7 +23,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
 
         private TileController _tileController;
         private Mock<IMapDataLoader> _tileLoader;
-        private Mock<ITileActivator> _tileActivator;
+        private Mock<IMessageBus> _messageBus;
         private Mock<IConfigSection> _configSection;
         private Mock<IObservable<Union<Element, Mesh>>> _loaderResult;
 
@@ -35,7 +35,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _tileSize = GetTileRect(_worldZeroPoint).width; // ~743.9
 
             _tileLoader = new Mock<IMapDataLoader>();
-            _tileActivator = new Mock<ITileActivator>();
+            _messageBus = new Mock<IMessageBus>();
             _configSection = new Mock<IConfigSection>();
             _loaderResult = new Mock<IObservable<Union<Element, Mesh>>>();
 
@@ -43,7 +43,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _configSection.Setup(c => c.GetFloat("offset", It.IsAny<float>())).Returns(100);
             _tileLoader.Setup(t => t.Load(It.IsAny<Tile>())).Returns(_loaderResult.Object);
 
-            _tileController = new TileController(new ModelBuilder(), _tileLoader.Object, _tileActivator.Object);
+            _tileController = new TileController(new ModelBuilder(), _tileLoader.Object, _messageBus.Object);
             _tileController.Projection = new CartesianProjection(_worldZeroPoint);
             _tileController.Configure(_configSection.Object);
         }
@@ -56,7 +56,7 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
 
             _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, quadKey))));
-            _tileActivator.Verify(mb => mb.PreLoad(It.Is<Tile>(t => CheckQuadKey(t.QuadKey, quadKey))));
+            _messageBus.Verify(mb => mb.Send(It.Is<TileLoadStartMessage>(m => CheckQuadKey(m.Tile.QuadKey, quadKey))));
         }
 
         [Test(Description = "Tests whether next tile can be loaded when position is changed.")]
@@ -65,12 +65,12 @@ namespace Utymap.UnityLib.Tests.Core.Tiling
             var newQuadKey = new QuadKey(17602, 10743, LevelOfDetails);
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
             _tileLoader.ResetCalls();
-            _tileActivator.ResetCalls();
+            _messageBus.ResetCalls();
 
             _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(0, 1), 400), LevelOfDetails);
 
             _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, newQuadKey))));
-            _tileActivator.Verify(mb => mb.PreLoad(It.Is<Tile>(t => CheckQuadKey(t.QuadKey, newQuadKey))));
+            _messageBus.Verify(mb => mb.Send(It.Is<TileLoadStartMessage>(m => CheckQuadKey(m.Tile.QuadKey, newQuadKey))));
         }
 
         #region Helpers
