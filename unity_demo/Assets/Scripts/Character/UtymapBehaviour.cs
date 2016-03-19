@@ -2,9 +2,12 @@
 using UnityEngine;
 using Utymap.UnityLib;
 using Utymap.UnityLib.Core;
+using Utymap.UnityLib.Core.Tiling;
+using Utymap.UnityLib.Infrastructure;
 using Utymap.UnityLib.Infrastructure.Config;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.Reactive;
+using Utymap.UnityLib.Maps.Elevation;
 using Utymap.UnityLib.Maps.Geocoding;
 
 using Component = Utymap.UnityLib.Infrastructure.Dependencies.Component;
@@ -14,6 +17,7 @@ namespace Assets.Scripts.Character
     /// <summary> Performs some initialization and listens for position changes of character.  </summary>
     class UtymapBehaviour : MonoBehaviour
     {
+        private float _initialGravity;
         protected ApplicationManager AppManager;
 
         // Current character position.
@@ -39,8 +43,8 @@ namespace Assets.Scripts.Character
             return ConfigBuilder.GetDefault();
         }
 
-        /// <summary> Returns bootstrapper plugin. </summary>
-        protected virtual Action<CompositionRoot> GetBootInitAction()
+        /// <summary> Returns init action. </summary>
+        protected virtual Action<CompositionRoot> GetInitAction()
         {
             return compositionRoot =>
             {
@@ -57,7 +61,33 @@ namespace Assets.Scripts.Character
         void Awake()
         {
             AppManager = ApplicationManager.Instance;
-            AppManager.InitializeFramework(GetConfigBuilder(), GetBootInitAction());
+            AppManager.InitializeFramework(GetConfigBuilder(), GetInitAction());
+            AppManager.SetZoomLevel(15);
+        }
+
+        void Start()
+        {
+            // set gravity to zero on start to prevent free fall as terrain loading takes some time.
+            // restore it afterwards.
+            var thirdPersonController = gameObject.GetComponent<ThirdPersonController>();
+            _initialGravity = thirdPersonController.gravity;
+            thirdPersonController.gravity = 0;
+
+            // restore gravity and adjust character y-position once first tile is loaded
+            AppManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
+                .Take(1)
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    // TODO expose elevation logic from native or use old managed implementation?
+                    // NOTE in second case, we will consume additional memory
+
+                    //var position = transform.position;
+                    //var elevation = AppManager.GetService<IElevationProvider>()
+                    //    .GetElevation(new Vector2(position.x, position.z));
+                    //transform.position = new Vector3(position.x, elevation + 90, position.z);
+                    thirdPersonController.gravity = _initialGravity;
+                });
         }
 
         /// <summary> Runs game after all Start() methods are called. </summary>

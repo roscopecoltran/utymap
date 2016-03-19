@@ -4,11 +4,15 @@ using Assets.Scripts.Console;
 using UnityEngine;
 using Utymap.UnityLib;
 using Utymap.UnityLib.Core;
+using Utymap.UnityLib.Core.Models;
 using Utymap.UnityLib.Core.Tiling;
+using Utymap.UnityLib.Infrastructure;
 using Utymap.UnityLib.Infrastructure.Config;
 using Utymap.UnityLib.Infrastructure.Diagnostic;
 using Utymap.UnityLib.Infrastructure.IO;
+using Utymap.UnityLib.Infrastructure.Primitives;
 using Utymap.UnityLib.Infrastructure.Reactive;
+using Utymap.UnityLib.Maps.Loader;
 using IContainer = Utymap.UnityLib.Infrastructure.Dependencies.IContainer;
 using Container = Utymap.UnityLib.Infrastructure.Dependencies.Container;
 using Component = Utymap.UnityLib.Infrastructure.Dependencies.Component;
@@ -73,6 +77,7 @@ namespace Assets.Scripts
                 _compositionRoot = new CompositionRoot(_container, configBuilder.Build())
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
                     .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<PathResolver>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<ModelBuilder>()))
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"\MapCss\default\default.mapcss")));
 
                 // this is the way to insert custom extensions from outside. You may need to do it for
@@ -127,7 +132,20 @@ namespace Assets.Scripts
         {
             try
             {
+                if (IsInitialized)
+                    throw new InvalidOperationException("Should not call RunGame more than once.");
+
                 _tileController = GetService<ITileController>();
+
+                GetService<IMessageBus>()
+                    .AsObservable<TileLoadStartMessage>()
+                    .ObserveOnMainThread()
+                    .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
+
+                // TODO replace this with autoloading
+                GetService<IMapDataLoader>()
+                    .AddToInMemoryStore(@"Osm\berlin.osm.xml", GetService<Stylesheet>(), new Range<int>(_zoomLevel, _zoomLevel));
+
                 IsInitialized = true;
             }
             catch (Exception ex)

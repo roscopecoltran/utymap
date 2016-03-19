@@ -46,7 +46,9 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\MouseLook.cs" />
+     <None Include="Assets\Resources\Osm\berlin.osm.xml" />
      <None Include="Assets\Resources\Config\srtm.schema.txt" />
+     <None Include="Assets\Resources\Shaders\VertexColorGeneric.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>F:/Soft/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -57,8 +57,11 @@
      <Compile Include="Assets\Scripts\Console\Watchers\VarWatcher.cs" />
      <Compile Include="Assets\Scripts\Console\Watchers\WatchVar.cs" />
      <Compile Include="Assets\Scripts\Console\Watchers\WatchVarBase.cs" />
+     <Compile Include="Assets\Scripts\ModelBuilder.cs" />
      <Compile Include="Assets\Scripts\PathResolver.cs" />
+     <None Include="Assets\Resources\Osm\berlin.osm.xml" />
      <None Include="Assets\Resources\Config\srtm.schema.txt" />
+     <None Include="Assets\Resources\Shaders\VertexColorGeneric.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>G:/__ASM/utymap/unity_demo/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>
