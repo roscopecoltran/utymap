@@ -8,9 +8,9 @@ namespace Utymap.UnityLib.Core.Models
         public readonly string Name;
         public readonly Vector3[] Vertices;
         public readonly int[] Triangles;
-        public readonly Color32[] Colors;
+        public readonly Color[] Colors;
 
-        public Mesh(string name, Vector3[] vertices, int[] triangles, Color32[] colors)
+        public Mesh(string name, Vector3[] vertices, int[] triangles, Color[] colors)
         {
             Name = name;
             Vertices = vertices;

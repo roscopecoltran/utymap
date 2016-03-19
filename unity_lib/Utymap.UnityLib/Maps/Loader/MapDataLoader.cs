@@ -113,7 +113,7 @@ namespace Utymap.UnityLib.Maps.Loader
                             worldPoints[i / 3] = tile.Projection
                                 .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
 
-                        Color32[] unityColors = new Color32[colorCount];
+                        Color[] unityColors = new Color[colorCount];
                         for (int i = 0; i < colorCount; ++i)
                             unityColors[i] = ColorUtils.FromInt(colors[i]);
 

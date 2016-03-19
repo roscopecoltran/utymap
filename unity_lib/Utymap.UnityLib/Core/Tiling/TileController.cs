@@ -154,7 +154,6 @@ namespace Utymap.UnityLib.Core.Tiling
                     () => _messageBus.Send(new TileLoadFinishMessage(tile)));
         }
 
-
         #endregion
 
         #region Preloading
