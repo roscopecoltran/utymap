@@ -85,6 +85,7 @@
     <Compile Include="Infrastructure\IO\IFileSystemService.cs" />
     <Compile Include="Infrastructure\IO\IPathResolver.cs" />
     <Compile Include="Infrastructure\Primitives\Range.cs" />
+    <Compile Include="Infrastructure\Primitives\Rectangle.cs" />
     <Compile Include="Infrastructure\Primitives\Union.cs" />
     <Compile Include="Infrastructure\Utils\ParallelExtensions.cs" />
     <Compile Include="Core\Models\Element.cs" />

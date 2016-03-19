@@ -167,7 +167,7 @@ namespace Utymap.UnityLib.Core.Tiling
 
         private bool ShouldPreload(Tile tile, Vector2 position)
         {
-            return !tile.Contains(position, tile.Rectangle.width * _offsetRatio);
+            return !tile.Contains(position, tile.Rectangle.Width * _offsetRatio);
         }
 
         /// <summary> Gets next quadkey. </summary>
@@ -175,27 +175,28 @@ namespace Utymap.UnityLib.Core.Tiling
         {
             var quadKey = tile.QuadKey;
 
-            Vector2 topLeft = new Vector2(tile.Rectangle.xMin, tile.Rectangle.yMax);
-            Vector2 topRight = new Vector2(tile.Rectangle.xMax, tile.Rectangle.yMax);
+            // NOTE left-right and top-bottom orientation
+            Vector2 topLeft = new Vector2(tile.Rectangle.Left, tile.Rectangle.Top);
+            Vector2 topRight = new Vector2(tile.Rectangle.Right, tile.Rectangle.Top);
 
             // top
-            if (IsPointInTriangle(position, tile.Rectangle.center, topLeft, topRight))
-                return new QuadKey(quadKey.TileX, quadKey.TileY + 1, quadKey.LevelOfDetail);
+            if (IsPointInTriangle(position, tile.Rectangle.Center, topLeft, topRight))
+                return new QuadKey(quadKey.TileX, quadKey.TileY - 1, quadKey.LevelOfDetail);
 
-            Vector2 bottomLeft = new Vector2(tile.Rectangle.xMin, tile.Rectangle.yMin);
+            Vector2 bottomLeft = new Vector2(tile.Rectangle.Left, tile.Rectangle.Bottom);
 
             // left
-            if (IsPointInTriangle(position, tile.Rectangle.center, topLeft, bottomLeft))
+            if (IsPointInTriangle(position, tile.Rectangle.Center, topLeft, bottomLeft))
                 return new QuadKey(quadKey.TileX - 1, quadKey.TileY, quadKey.LevelOfDetail);
 
-            Vector2 bottomRight = new Vector2(tile.Rectangle.xMax, tile.Rectangle.yMin);
+            Vector2 bottomRight = new Vector2(tile.Rectangle.Right, tile.Rectangle.Bottom);
 
             // right
-            if (IsPointInTriangle(position, tile.Rectangle.center, topRight, bottomRight))
+            if (IsPointInTriangle(position, tile.Rectangle.Center, topRight, bottomRight))
                 return new QuadKey(quadKey.TileX + 1, quadKey.TileY, quadKey.LevelOfDetail);
 
             // bottom
-            return new QuadKey(quadKey.TileX, quadKey.TileY - 1, quadKey.LevelOfDetail);
+            return new QuadKey(quadKey.TileX, quadKey.TileY + 1, quadKey.LevelOfDetail);
         }
 
         #endregion

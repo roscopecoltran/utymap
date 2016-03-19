@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Utymap.UnityLib.Infrastructure.Primitives;
 
 namespace Utymap.UnityLib.Core.Utils
 {
@@ -117,13 +118,13 @@ namespace Utymap.UnityLib.Core.Utils
             return new BoundingBox(minPoint, maxPoint);
         }
 
-        public static Rect QuadKeyToRect(IProjection projection, QuadKey quadKey)
+        public static Rectangle QuadKeyToRect(IProjection projection, QuadKey quadKey)
         {
             var boundingBox = QuadKeyToBoundingBox(quadKey);
             var minPoint = projection.Project(boundingBox.MinPoint, 0);
             var maxPoint = projection.Project(boundingBox.MaxPoint, 0);
 
-            return new Rect(minPoint.x, maxPoint.y, maxPoint.x - minPoint.x, maxPoint.y - minPoint.y);
+            return new Rectangle(minPoint.x, minPoint.z, maxPoint.x - minPoint.x, maxPoint.z - minPoint.z);
         }
 
         private static int LonToTileX(double longitude, int levelOfDetail)

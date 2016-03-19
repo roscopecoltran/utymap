@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Utymap.UnityLib.Core.Utils;
+using Utymap.UnityLib.Infrastructure.Primitives;
 
 namespace Utymap.UnityLib.Core.Tiling
 {
@@ -7,7 +8,7 @@ namespace Utymap.UnityLib.Core.Tiling
     public class Tile
     {
         /// <summary> Tile rectamgle in world coordinates. </summary>
-        public Rect Rectangle { get; private set; }
+        public Rectangle Rectangle { get; private set; }
 
         /// <summary> Tile geo bounding box. </summary>
         public BoundingBox BoundingBox { get; private set; }
@@ -44,8 +45,8 @@ namespace Utymap.UnityLib.Core.Tiling
         /// <returns>Tres if position in tile</returns>
         public bool Contains(Vector2 position, double offset)
         {
-            return (position.x > Rectangle.xMin + offset) && (position.y < Rectangle.yMax - offset) &&
-                   (position.x < Rectangle.xMax - offset) && (position.y > Rectangle.yMin + offset);
+            return (position.x > Rectangle.Left + offset) && (position.y < Rectangle.Top - offset) &&
+                   (position.x < Rectangle.Right - offset) && (position.y > Rectangle.Bottom + offset);
         }
     }
 }
