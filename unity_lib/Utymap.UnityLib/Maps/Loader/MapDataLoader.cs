@@ -108,7 +108,7 @@ namespace Utymap.UnityLib.Maps.Loader
                     {
                         Trace.Debug(TraceCategory, "receive mesh: {0}", name);
 
-                        Vector3[] worldPoints = new Vector3[count];
+                        Vector3[] worldPoints = new Vector3[count / 3];
                         for (int i = 0; i < vertices.Length; i += 3)
                             worldPoints[i / 3] = tile.Projection
                                 .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
