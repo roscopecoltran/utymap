@@ -27,6 +27,7 @@ namespace Assets.Scripts
 
             gameObject.AddComponent<MeshFilter>().mesh = uMesh;
             gameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>(@"Materials/Default");
+            gameObject.AddComponent<MeshCollider>();
             gameObject.transform.parent = tile.GameObject.transform;
         }
     }
