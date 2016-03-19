@@ -21,6 +21,9 @@ namespace Utymap.UnityLib.Core.Tiling
         /// <summary> Used projection. </summary>
         public IProjection Projection { get; private set; }
 
+        /// <summary> Sets game object which holds all children objects. </summary>
+        public GameObject GameObject { get; set; }
+
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>

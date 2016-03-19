@@ -150,9 +150,10 @@ namespace Utymap.UnityLib.Core.Tiling
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOnMainThread()
                 .Subscribe(
-                    u => u.Match(_modelBuilder.BuildElement, _modelBuilder.BuildMesh),
+                    u => u.Match(e => _modelBuilder.BuildElement(tile, e), m => _modelBuilder.BuildMesh(tile, m)),
                     () => _messageBus.Send(new TileLoadFinishMessage(tile)));
         }
+
 
         #endregion
 
