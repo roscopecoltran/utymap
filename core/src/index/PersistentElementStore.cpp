@@ -62,3 +62,9 @@ void PersistentElementStore::search(const utymap::QuadKey& quadKey, const StyleP
 {
     // TODO
 }
+
+bool PersistentElementStore::hasData(const utymap::QuadKey& quadKey) const
+{
+    // TODO
+    return false;
+}

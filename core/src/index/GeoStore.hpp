@@ -19,7 +19,7 @@
 
 namespace utymap { namespace index {
 
-// Provides API to store and access geo data.
+// Provides API to store and access geo data using different underlying data stores.
 class GeoStore
 {
 public:
@@ -52,6 +52,9 @@ public:
                 double radius,
                 const utymap::mapcss::StyleProvider& styleProvider,
                 utymap::entities::ElementVisitor& visitor);
+
+    // Checks whether there is data for given quadkey.
+    bool hasData(const QuadKey& quadKey);
 
 private:
     class GeoStoreImpl;

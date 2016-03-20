@@ -27,6 +27,9 @@ public:
                         const utymap::mapcss::StyleProvider& styleProvider,
                         utymap::entities::ElementVisitor& visitor) = 0;
 
+    // Checks whether there is data for given quadkey.
+    virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;
+
     // Stores element in storage for given level of details range.
     bool store(const utymap::entities::Element& element, 
                const utymap::index::LodRange& range,

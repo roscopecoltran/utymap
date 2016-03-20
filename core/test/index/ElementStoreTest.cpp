@@ -38,6 +38,11 @@ public:
     {
     }
 
+    bool hasData(const utymap::QuadKey& quadKey) const
+    {
+        return true;
+    }
+
 protected:
 
     void storeImpl(const Element& element, const utymap::QuadKey& quadKey)

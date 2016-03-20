@@ -23,6 +23,8 @@ public:
                 const utymap::mapcss::StyleProvider& styleProvider, 
                 utymap::entities::ElementVisitor& visitor);
 
+    bool hasData(const utymap::QuadKey& quadKey) const;
+
 protected:
     void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
 

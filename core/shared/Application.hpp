@@ -174,6 +174,11 @@ public:
         }
     }
 
+    bool hasData(utymap::QuadKey& quadKey)
+    {
+        return geoStore_.hasData(quadKey);
+    }
+
     // Loads tile.
     void loadTile(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
                   OnElementLoaded* elementCallback, OnError* errorCallback)

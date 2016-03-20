@@ -107,6 +107,15 @@ public:
         throw std::domain_error("Not implemented");
     }
 
+    bool hasData(const QuadKey& quadKey)
+    {
+        for (const auto& pair : storeMap_) {
+            if (pair.second->hasData(quadKey))
+                return true;
+        }
+        return false;
+    }
+
 private:
     StringTable& stringTable_;
     std::unordered_map<std::string, ElementStore*> storeMap_;
@@ -153,4 +162,9 @@ void utymap::index::GeoStore::search(const QuadKey& quadKey, const utymap::mapcs
 void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor)
 {
     pimpl_->search(coordinate, radius, styleProvider, visitor);
+}
+
+bool utymap::index::GeoStore::hasData(const QuadKey& quadKey)
+{
+    return pimpl_->hasData(quadKey);
 }

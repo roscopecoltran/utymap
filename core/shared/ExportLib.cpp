@@ -63,10 +63,13 @@ extern "C"
                              OnElementLoaded* elementCallback,        // element callback
                              OnError* errorCallback)                  // completion callback
     {
-        utymap::QuadKey quadKey;
-        quadKey.tileX = tileX;
-        quadKey.tileY = tileY;
-        quadKey.levelOfDetail = levelOfDetail;
+        utymap::QuadKey quadKey = { levelOfDetail, tileX, tileY };
         applicationPtr->loadTile(styleFile, quadKey, meshCallback, elementCallback, errorCallback);
+    }
+
+    // Checks whether there is data for given quadkey
+    bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail) // quadkey info
+    {
+        return applicationPtr->hasData(utymap::QuadKey{ levelOfDetail, tileX, tileY });
     }
 }

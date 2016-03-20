@@ -68,6 +68,11 @@ public:
         return elementsMap_.cend();
     }
 
+    bool hasData(const utymap::QuadKey& quadKey) const
+    {
+        return elementsMap_.find(currentQuadKey) != elementsMap_.end();
+    }
+
 private:
     ElementMap elementsMap_;
 };
@@ -85,6 +90,11 @@ void InMemoryElementStore::storeImpl(const utymap::entities::Element& element, c
 {
     pimpl_->currentQuadKey = quadKey;
     element.accept(*pimpl_);
+}
+
+bool InMemoryElementStore::hasData(const utymap::QuadKey& quadKey) const
+{
+    return pimpl_->hasData(quadKey);
 }
 
 void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
