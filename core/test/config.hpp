@@ -1,4 +1,4 @@
-#define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
+#define TEST_ASSETS_PATH "G:/__ASM/utymap/core/test/test_assets/"
 
 #define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
 #define TEST_MAPCSS_DEFAULT TEST_MAPCSS_PATH "default/default.mapcss"
