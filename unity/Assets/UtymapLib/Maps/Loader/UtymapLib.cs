@@ -35,6 +35,16 @@ namespace Assets.UtymapLib.Maps.Loader
             registerElementBuilder(name);
         }
 
+        /// <summary> Checks whether there is data for given quadkey. </summary>
+        /// <param name="tileX"> Tile X. </param>
+        /// <param name="tileY"> Tile Y. </param>
+        /// <param name="levelOfDetails"> Level of details. </param>
+        /// <returns> True if there is data for given quadkey. </returns>
+        public static bool HasData(int tileX, int tileY, int levelOfDetails)
+        {
+            return hasData(tileX, tileY, levelOfDetails);
+        }
+
         /// <summary> Loads tile. </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="tileX"> Tile X. </param>
@@ -81,6 +91,9 @@ namespace Assets.UtymapLib.Maps.Loader
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern void registerElementBuilder(string name);
+
+        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern int loadTile(string stylePath, int tileX, int tileY, int levelOfDetails,

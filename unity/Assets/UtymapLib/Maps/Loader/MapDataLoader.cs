@@ -25,6 +25,9 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <param name="levelOfDetails"> Which level of details to use. </param>
         void AddToInMemoryStore(string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails);
 
+        /// <summary> Checks whether tile exists. </summary>
+        bool HasTile(Tile tile);
+
         /// <summary> Loads given tile. This method triggers real loading and processing osm data. </summary>
         /// <param name="tile">Tile to load.</param>
         IObservable<Union<Element, Mesh>> Load(Tile tile);
@@ -62,6 +65,13 @@ namespace Assets.UtymapLib.Maps.Loader
 
             if (errorMsg != null)
                 throw new MapDataException(errorMsg);
+        }
+
+        /// <inheritdoc />
+        public bool HasTile(Tile tile)
+        {
+            var quadKey = tile.QuadKey;
+            return UtymapLib.HasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
         }
 
         /// <inheritdoc />
