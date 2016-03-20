@@ -59,6 +59,22 @@
             return this;
         }
 
+        /// <summary> Sets remote server parameters. </summary>
+        public ConfigBuilder SetRemoteMapData(string url, string schema, string format)
+        {
+            Add<string>("data/remote/server", url);
+            Add<string>("data/remote/query", schema);
+            Add<string>("data/remote/format", format);
+            return this;
+        }
+
+        /// <summary> Sets cache data path. </summary>
+        public ConfigBuilder SetCache(string cache)
+        {
+            Add<string>("data/cache", cache);
+            return this;
+        }
+
         #endregion
 
         #region Default instance
@@ -70,6 +86,8 @@
             return new ConfigBuilder()
                 .SetLocalElevationData("Elevation")
                 .SetRemoteElevationData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
+                .SetRemoteMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
+                .SetCache("Cache")
                 .SetGeocodingServer("http://nominatim.openstreetmap.org/search");
         }
 

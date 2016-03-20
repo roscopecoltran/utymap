@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
 using Assets.UtymapLib.Core;
@@ -36,17 +37,26 @@ namespace Assets.UtymapLib.Maps.Loader
     /// <summary> Default implementation of tile loader. </summary>
     internal class MapDataLoader : IMapDataLoader, IConfigurable, IDisposable
     {
+        private const string CacheFileNameExtension = ".osm.xml";
+        private const string TraceCategory = "mapdata.loader";
+        private readonly object _lockObj = new object();
+
         private readonly IElevationProvider _elevationProvider;
         private readonly IPathResolver _pathResolver;
-        private const string TraceCategory = "mapdata.loader";
+        private string _mapDataServerUri;
+        private string _mapDataServerQuery;
+        private string _mapDataFormat;
+        private string _cachePath;
+        private IFileSystemService _fileSystemService;
 
         [Dependency]
         public ITrace Trace { get; set; }
 
         [Dependency]
-        public MapDataLoader(IElevationProvider elevationProvider, IPathResolver pathResolver)
+        public MapDataLoader(IElevationProvider elevationProvider, IFileSystemService fileSystemService, IPathResolver pathResolver)
         {
             _elevationProvider = elevationProvider;
+            _fileSystemService = fileSystemService;
             _pathResolver = pathResolver;
         }
 
@@ -86,6 +96,11 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
+            _mapDataServerUri = configSection.GetString(@"data/remote/server", null);
+            _mapDataServerQuery = configSection.GetString(@"data/remote/query", null);
+            _mapDataFormat = configSection.GetString(@"data/remote/format", "xml");
+            _cachePath = configSection.GetString(@"data/cache", null);
+
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
             var dataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial", @"/"));
 
@@ -106,6 +121,8 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <summary> Creates <see cref="IObservable{T}"/> for loading element of given tile. </summary>
         private IObservable<Union<Element, Mesh>> CreateLoadSequence(Tile tile)
         {
+            //UtymapLib.HasData(tile.QuadKey.TileX, tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail);
+
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
                 Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
@@ -155,6 +172,40 @@ namespace Assets.UtymapLib.Maps.Loader
 
                 return Disposable.Empty;
             });
+        }
+
+        /// <summary> Downloads data for given tile. </summary>
+        private IObservable<Unit> CreateDownloadingSequence(Tile tile, string filePath)
+        {
+            BoundingBox query = tile.BoundingBox;
+            var queryString = String.Format(_mapDataServerQuery,
+               query.MinPoint.Latitude, query.MinPoint.Longitude,
+               query.MaxPoint.Latitude, query.MaxPoint.Longitude);
+            var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
+
+            Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
+            return ObservableWWW.GetAndGetBytes(uri)
+                   .Take(1)
+                   .SelectMany(bytes =>
+                   {
+                       // save downloaded bytes as file
+                       lock (_lockObj)
+                       {
+                            if (!_fileSystemService.Exists(filePath))
+                               using (var stream = _fileSystemService.WriteStream(filePath))
+                                   stream.Write(bytes, 0, bytes.Length);
+                       }
+
+                       // add to in memory 
+                       string errorMsg = null;
+                       UtymapLib.AddToInMemoryStore(tile.Stylesheet.Path, filePath,
+                           tile.QuadKey.LevelOfDetail, tile.QuadKey.LevelOfDetail, error => errorMsg = error);
+
+                       if (errorMsg != null)
+                           Observable.Throw<Unit>(new MapDataException(errorMsg));
+
+                       return Observable.Return(Unit.Default);
+                   });
         }
 
         private static Dictionary<string, string> ReadDict(string[] data)

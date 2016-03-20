@@ -9,5 +9,6 @@
 
         // information
         public static string LoadElevationFrom = "Load elevation from {0}..";
+        public static string NoPresistentElementSourceFound = "No offline map data found for {0}, will query default server: {1}";
     }
 }
