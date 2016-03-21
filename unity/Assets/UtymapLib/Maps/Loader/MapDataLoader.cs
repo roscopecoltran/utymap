@@ -26,9 +26,6 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <param name="levelOfDetails"> Which level of details to use. </param>
         void AddToInMemoryStore(string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails);
 
-        /// <summary> Checks whether tile exists. </summary>
-        bool HasTile(Tile tile);
-
         /// <summary> Loads given tile. This method triggers real loading and processing osm data. </summary>
         /// <param name="tile">Tile to load.</param>
         IObservable<Union<Element, Mesh>> Load(Tile tile);
@@ -87,10 +84,15 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            return _elevationProvider.HasElevation(tile.BoundingBox)
-                ? CreateLoadSequence(tile)
-                : _elevationProvider.Download(tile.BoundingBox)
-                                    .ContinueWith(() => CreateLoadSequence(tile), Scheduler.CurrentThread);
+            return Observable.Create<Tile>(o =>
+                {
+                    o.OnNext(tile);
+                    o.OnCompleted();
+                    return Disposable.Empty;
+                })
+                .SelectMany(t => CreateElevationSequence(t))
+                .SelectMany(t => CreateDownloadSequence(t))
+                .SelectMany(t => CreateLoadSequence(t));
         }
 
         /// <inheritdoc />
@@ -118,15 +120,55 @@ namespace Assets.UtymapLib.Maps.Loader
 
         #region Private methods
 
+        /// <summary> Downloads elevation data for given tile. </summary>
+        private IObservable<Tile> CreateElevationSequence(Tile tile)
+        {
+            return _elevationProvider.HasElevation(tile.BoundingBox)
+                ? Observable.Return(tile)
+                : _elevationProvider.Download(tile.BoundingBox).Select(_ => tile);
+        }
+
+        /// <summary> Downloads map data for given tile. </summary>
+        private IObservable<Tile> CreateDownloadSequence(Tile tile)
+        {
+            // Data exists in store
+            if (UtymapLib.HasData(tile.QuadKey.TileX, tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail))
+                return Observable.Return(tile);
+
+            // Data exists in cache
+            var filePath = GetCacheFilePath(tile);
+            if (_fileSystemService.Exists(filePath))
+                return AddToInMemoryStore(tile, filePath);
+
+            // Data should be downloaded first
+            BoundingBox query = tile.BoundingBox;
+            var queryString = String.Format(_mapDataServerQuery,
+               query.MinPoint.Latitude, query.MinPoint.Longitude,
+               query.MaxPoint.Latitude, query.MaxPoint.Longitude);
+            var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
+            Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
+            return ObservableWWW.GetAndGetBytes(uri)
+                   .Take(1)
+                   .SelectMany(bytes =>
+                   {
+                       lock (_lockObj)
+                       {
+                           // save downloaded bytes as file
+                           if (!_fileSystemService.Exists(filePath))
+                               using (var stream = _fileSystemService.WriteStream(filePath))
+                                   stream.Write(bytes, 0, bytes.Length);
+                       }
+
+                       return AddToInMemoryStore(tile, filePath);
+                   });
+        }
+
         /// <summary> Creates <see cref="IObservable{T}"/> for loading element of given tile. </summary>
         private IObservable<Union<Element, Mesh>> CreateLoadSequence(Tile tile)
         {
-            //UtymapLib.HasData(tile.QuadKey.TileX, tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail);
-
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
                 Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
-
                 bool noException = true;
                 UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey.TileX,
                     tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail,
@@ -174,38 +216,25 @@ namespace Assets.UtymapLib.Maps.Loader
             });
         }
 
-        /// <summary> Downloads data for given tile. </summary>
-        private IObservable<Unit> CreateDownloadingSequence(Tile tile, string filePath)
+        /// <summary> Adds tile data into in memory storage. </summary>
+        private IObservable<Tile> AddToInMemoryStore(Tile tile, string filePath)
         {
-            BoundingBox query = tile.BoundingBox;
-            var queryString = String.Format(_mapDataServerQuery,
-               query.MinPoint.Latitude, query.MinPoint.Longitude,
-               query.MaxPoint.Latitude, query.MaxPoint.Longitude);
-            var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
+            // add to in memory 
+            Trace.Info(TraceCategory, "Adding into memory: {0}", tile.QuadKey.ToString());
+            string errorMsg = null;
+            UtymapLib.AddToInMemoryStore(tile.Stylesheet.Path, filePath,
+                tile.QuadKey.LevelOfDetail, tile.QuadKey.LevelOfDetail, error => errorMsg = error);
 
-            Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
-            return ObservableWWW.GetAndGetBytes(uri)
-                   .Take(1)
-                   .SelectMany(bytes =>
-                   {
-                       // save downloaded bytes as file
-                       lock (_lockObj)
-                       {
-                            if (!_fileSystemService.Exists(filePath))
-                               using (var stream = _fileSystemService.WriteStream(filePath))
-                                   stream.Write(bytes, 0, bytes.Length);
-                       }
+            return errorMsg != null 
+                ? Observable.Throw<Tile>(new MapDataException(errorMsg)) 
+                : Observable.Return(tile);
+        }
 
-                       // add to in memory 
-                       string errorMsg = null;
-                       UtymapLib.AddToInMemoryStore(tile.Stylesheet.Path, filePath,
-                           tile.QuadKey.LevelOfDetail, tile.QuadKey.LevelOfDetail, error => errorMsg = error);
-
-                       if (errorMsg != null)
-                           Observable.Throw<Unit>(new MapDataException(errorMsg));
-
-                       return Observable.Return(Unit.Default);
-                   });
+        /// <summary> Returns cache file name for given tile. </summary>
+        private string GetCacheFilePath(Tile tile)
+        {
+            var cacheFileName = tile.QuadKey + CacheFileNameExtension;
+            return _pathResolver.Resolve(Path.Combine(_cachePath, cacheFileName));
         }
 
         private static Dictionary<string, string> ReadDict(string[] data)
