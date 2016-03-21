@@ -2,6 +2,6 @@
 {
     public static partial class Scheduler
     {
-        public static IScheduler MainThread = new CurrentThreadScheduler();
+        public static IScheduler MainThread = new UnityMainThreadScheduler();
     }
 }

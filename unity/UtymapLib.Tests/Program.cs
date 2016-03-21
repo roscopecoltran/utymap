@@ -35,6 +35,8 @@ namespace UtymapLib.Tests
 
         private static void Main(string[] args)
         {
+            Scheduler.MainThread = Scheduler.CurrentThread;
+
             var program = new Program();
             program.Initialize();
             program.RunMocker();
