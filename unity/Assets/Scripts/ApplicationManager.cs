@@ -76,8 +76,8 @@ namespace Assets.Scripts
                 // create entry point for utymap functionallity
                 _compositionRoot = new CompositionRoot(_container, configBuilder.Build())
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
-                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<PathResolver>()))
-                    .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<ModelBuilder>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<DemoPathResolver>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<DemoModelBuilder>()))
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"\MapCss\default\default.mapcss")));
 
                 // this is the way to insert custom extensions from outside. You may need to do it for
@@ -143,8 +143,8 @@ namespace Assets.Scripts
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
 
                 // TODO replace this with autoloading
-                GetService<IMapDataLoader>()
-                    .AddToInMemoryStore(@"Osm\berlin.osm.xml", GetService<Stylesheet>(), new Range<int>(_zoomLevel, _zoomLevel));
+                GetService<IMapDataLoader>().AddToInMemoryStore(@"Osm\berlin.osm.xml", 
+                    GetService<Stylesheet>(), new Range<int>(_zoomLevel, _zoomLevel));
 
                 IsInitialized = true;
             }

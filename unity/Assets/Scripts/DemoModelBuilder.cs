@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace Assets.Scripts
 {
-    public class ModelBuilder : IModelBuilder
+    public class DemoModelBuilder : IModelBuilder
     {
         public void BuildElement(Tile tile, Element element)
         {

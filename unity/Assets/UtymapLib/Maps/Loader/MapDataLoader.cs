@@ -222,8 +222,11 @@ namespace Assets.UtymapLib.Maps.Loader
             // add to in memory 
             Trace.Info(TraceCategory, "Adding into memory: {0}", tile.QuadKey.ToString());
             string errorMsg = null;
-            UtymapLib.AddToInMemoryStore(tile.Stylesheet.Path, filePath,
-                tile.QuadKey.LevelOfDetail, tile.QuadKey.LevelOfDetail, error => errorMsg = error);
+            UtymapLib.AddToInMemoryStore(
+                _pathResolver.Resolve(tile.Stylesheet.Path), 
+                _pathResolver.Resolve(filePath),
+                tile.QuadKey.LevelOfDetail,
+                tile.QuadKey.LevelOfDetail, error => errorMsg = error);
 
             return errorMsg != null 
                 ? Observable.Throw<Tile>(new MapDataException(errorMsg)) 
@@ -234,7 +237,7 @@ namespace Assets.UtymapLib.Maps.Loader
         private string GetCacheFilePath(Tile tile)
         {
             var cacheFileName = tile.QuadKey + CacheFileNameExtension;
-            return _pathResolver.Resolve(Path.Combine(_cachePath, cacheFileName));
+            return Path.Combine(_cachePath, cacheFileName);
         }
 
         private static Dictionary<string, string> ReadDict(string[] data)

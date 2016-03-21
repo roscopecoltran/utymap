@@ -57,8 +57,8 @@
      <Compile Include="Assets\Scripts\Console\Watchers\VarWatcher.cs" />
      <Compile Include="Assets\Scripts\Console\Watchers\WatchVar.cs" />
      <Compile Include="Assets\Scripts\Console\Watchers\WatchVarBase.cs" />
-     <Compile Include="Assets\Scripts\ModelBuilder.cs" />
-     <Compile Include="Assets\Scripts\PathResolver.cs" />
+     <Compile Include="Assets\Scripts\DemoModelBuilder.cs" />
+     <Compile Include="Assets\Scripts\DemoPathResolver.cs" />
      <Compile Include="Assets\UtymapLib\CompositionRoot.cs" />
      <Compile Include="Assets\UtymapLib\Core\BoundingBox.cs" />
      <Compile Include="Assets\UtymapLib\Core\Commands\Arguments.cs" />

@@ -3,7 +3,7 @@ using Assets.UtymapLib.Infrastructure.IO;
 
 namespace Assets.Scripts
 {
-    class PathResolver : IPathResolver
+    class DemoPathResolver : IPathResolver
     {
         public string Resolve(string path)
         {
