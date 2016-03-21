@@ -34,7 +34,6 @@ namespace Assets.UtymapLib.Maps.Loader
     /// <summary> Default implementation of tile loader. </summary>
     internal class MapDataLoader : IMapDataLoader, IConfigurable, IDisposable
     {
-        private const string CacheFileNameExtension = ".osm.xml";
         private const string TraceCategory = "mapdata.loader";
         private readonly object _lockObj = new object();
 
@@ -75,13 +74,6 @@ namespace Assets.UtymapLib.Maps.Loader
         }
 
         /// <inheritdoc />
-        public bool HasTile(Tile tile)
-        {
-            var quadKey = tile.QuadKey;
-            return UtymapLib.HasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
-        }
-
-        /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
             return Observable.Create<Tile>(o =>
@@ -100,7 +92,7 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             _mapDataServerUri = configSection.GetString(@"data/remote/server", null);
             _mapDataServerQuery = configSection.GetString(@"data/remote/query", null);
-            _mapDataFormat = configSection.GetString(@"data/remote/format", "xml");
+            _mapDataFormat = configSection.GetString(@"data/remote/format", ".xml");
             _cachePath = configSection.GetString(@"data/cache", null);
 
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
@@ -132,7 +124,7 @@ namespace Assets.UtymapLib.Maps.Loader
         private IObservable<Tile> CreateDownloadSequence(Tile tile)
         {
             // Data exists in store
-            if (UtymapLib.HasData(tile.QuadKey.TileX, tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail))
+            if (UtymapLib.HasData(tile.QuadKey))
                 return Observable.Return(tile);
 
             // Data exists in cache
@@ -149,6 +141,7 @@ namespace Assets.UtymapLib.Maps.Loader
             Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
             return ObservableWWW.GetAndGetBytes(uri)
                    .Take(1)
+                   .ObserveOn(Scheduler.ThreadPool)
                    .SelectMany(bytes =>
                    {
                        lock (_lockObj)
@@ -170,8 +163,7 @@ namespace Assets.UtymapLib.Maps.Loader
             {
                 Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
                 bool noException = true;
-                UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey.TileX,
-                    tile.QuadKey.TileY, tile.QuadKey.LevelOfDetail,
+                UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey,
                     // mesh callback
                     (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
                     {
@@ -236,7 +228,7 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <summary> Returns cache file name for given tile. </summary>
         private string GetCacheFilePath(Tile tile)
         {
-            var cacheFileName = tile.QuadKey + CacheFileNameExtension;
+            var cacheFileName = tile.QuadKey + _mapDataFormat;
             return Path.Combine(_cachePath, cacheFileName);
         }
 

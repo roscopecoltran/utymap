@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Assets.UtymapLib.Core;
 
 namespace Assets.UtymapLib.Maps.Loader
 {
@@ -36,27 +37,23 @@ namespace Assets.UtymapLib.Maps.Loader
         }
 
         /// <summary> Checks whether there is data for given quadkey. </summary>
-        /// <param name="tileX"> Tile X. </param>
-        /// <param name="tileY"> Tile Y. </param>
-        /// <param name="levelOfDetails"> Level of details. </param>
         /// <returns> True if there is data for given quadkey. </returns>
-        public static bool HasData(int tileX, int tileY, int levelOfDetails)
+        public static bool HasData(QuadKey quadKey)
         {
-            return hasData(tileX, tileY, levelOfDetails);
+            return hasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
         }
 
         /// <summary> Loads tile. </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
-        /// <param name="tileX"> Tile X. </param>
-        /// <param name="tileY"> Tile Y. </param>
-        /// <param name="levelOfDetails"> Level of details. </param>
+        /// <param name="quadKey"> QuadKey</param>
         /// <param name="onMeshBuilt"></param>
         /// <param name="onElementLoaded"></param>
         /// <param name="onError"></param>
-        public static void LoadTile(string stylePath, int tileX, int tileY, int levelOfDetails,
+        public static void LoadTile(string stylePath, QuadKey quadKey,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError)
         {
-            loadTile(stylePath, tileX, tileY, levelOfDetails, onMeshBuilt, onElementLoaded, onError);
+            loadTile(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, 
+                onMeshBuilt, onElementLoaded, onError);
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
