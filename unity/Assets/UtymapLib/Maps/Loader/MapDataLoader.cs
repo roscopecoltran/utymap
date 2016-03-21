@@ -41,7 +41,7 @@ namespace Assets.UtymapLib.Maps.Loader
         private readonly IPathResolver _pathResolver;
         private string _mapDataServerUri;
         private string _mapDataServerQuery;
-        private string _mapDataFormat;
+        private string _mapDataFormatExtension;
         private string _cachePath;
         private IFileSystemService _fileSystemService;
 
@@ -92,7 +92,7 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             _mapDataServerUri = configSection.GetString(@"data/remote/server", null);
             _mapDataServerQuery = configSection.GetString(@"data/remote/query", null);
-            _mapDataFormat = configSection.GetString(@"data/remote/format", ".xml");
+            _mapDataFormatExtension = "." + configSection.GetString(@"data/remote/format", "xml");
             _cachePath = configSection.GetString(@"data/cache", null);
 
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
@@ -141,7 +141,6 @@ namespace Assets.UtymapLib.Maps.Loader
             Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
             return ObservableWWW.GetAndGetBytes(uri)
                    .Take(1)
-                   .ObserveOn(Scheduler.ThreadPool)
                    .SelectMany(bytes =>
                    {
                        lock (_lockObj)
@@ -151,7 +150,6 @@ namespace Assets.UtymapLib.Maps.Loader
                                using (var stream = _fileSystemService.WriteStream(filePath))
                                    stream.Write(bytes, 0, bytes.Length);
                        }
-
                        return AddToInMemoryStore(tile, filePath);
                    });
         }
@@ -228,7 +226,7 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <summary> Returns cache file name for given tile. </summary>
         private string GetCacheFilePath(Tile tile)
         {
-            var cacheFileName = tile.QuadKey + _mapDataFormat;
+            var cacheFileName = tile.QuadKey + _mapDataFormatExtension;
             return Path.Combine(_cachePath, cacheFileName);
         }
 
