@@ -13,5 +13,14 @@ namespace Assets.UtymapLib
             : base(message)
         {
         }
+
+        /// <summary> Creates <see cref="MapDataException" />. </summary>
+        /// <param name="formatStr">Formatting string.</param>
+        /// <param name="message">Exception message.</param>
+        public MapDataException(string formatStr, string message)
+            : base(String.Format(formatStr, message))
+        {
+            
+        }
     }
 }

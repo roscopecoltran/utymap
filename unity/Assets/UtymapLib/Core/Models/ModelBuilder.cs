@@ -6,9 +6,11 @@ namespace Assets.UtymapLib.Core.Models
     public interface IModelBuilder
     {
         /// <summary> Builds element. </summary>
+        /// <remarks> Called on UI thread. </remarks>
         void BuildElement(Tile tile, Element element);
 
         /// <summary> Builds mesh. </summary>
+        /// <remarks> Called on UI thread. </remarks>
         void BuildMesh(Tile tile, Mesh mesh);
     }
 

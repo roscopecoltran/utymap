@@ -62,11 +62,11 @@ namespace Assets.UtymapLib.Maps.Loader
             var dataPathResolved = _pathResolver.Resolve(dataPath);
             var stylesheetPathResolved = _pathResolver.Resolve(stylesheet.Path);
 
-            Trace.Info(TraceCategory, "Add to in-memory storage: data:{0} style: {1}", 
+            Trace.Info(TraceCategory, "add to in-memory storage: data:{0} style: {1}",
                 dataPathResolved, stylesheetPathResolved);
 
             string errorMsg = null;
-            UtymapLib.AddToInMemoryStore(stylesheetPathResolved, dataPathResolved, 
+            UtymapLib.AddToInMemoryStore(stylesheetPathResolved, dataPathResolved,
                 levelOfDetails.Minimum, levelOfDetails.Maximum, error => errorMsg = error);
 
             if (errorMsg != null)
@@ -76,13 +76,7 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            return Observable.Create<Tile>(o =>
-                {
-                    o.OnNext(tile);
-                    o.OnCompleted();
-                    return Disposable.Empty;
-                })
-                .SelectMany(t => CreateElevationSequence(t))
+            return CreateElevationSequence(tile)
                 .SelectMany(t => CreateDownloadSequence(t))
                 .SelectMany(t => CreateLoadSequence(t));
         }
@@ -123,35 +117,54 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <summary> Downloads map data for given tile. </summary>
         private IObservable<Tile> CreateDownloadSequence(Tile tile)
         {
-            // Data exists in store
+            // data exists in store
             if (UtymapLib.HasData(tile.QuadKey))
                 return Observable.Return(tile);
 
-            // Data exists in cache
+            // data exists in cache
             var filePath = GetCacheFilePath(tile);
             if (_fileSystemService.Exists(filePath))
-                return AddToInMemoryStore(tile, filePath);
+            {
+                var errorMsg = SaveTileDataInMemory(tile, filePath);
+                return errorMsg == null
+                    ? Observable.Return(tile)
+                    : Observable.Throw<Tile>(new MapDataException(Strings.CannotAddDataToInMemoryStore, errorMsg));
+            }
+            
+            // need to download from remote server
+            return Observable.Create<Tile>(observer =>
+            {
+                BoundingBox query = tile.BoundingBox;
+                var queryString = String.Format(_mapDataServerQuery,
+                    query.MinPoint.Latitude, query.MinPoint.Longitude,
+                    query.MaxPoint.Latitude, query.MaxPoint.Longitude);
+                var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
+                Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
+                ObservableWWW.GetAndGetBytes(uri)
+                    .ObserveOn(Scheduler.ThreadPool)
+                    .Subscribe(bytes =>
+                    {
+                        Trace.Debug(TraceCategory, "saving bytes: {0}", bytes.Length.ToString());
+                        lock (_lockObj)
+                        {
+                            if (!_fileSystemService.Exists(filePath))
+                                using (var stream = _fileSystemService.WriteStream(filePath))
+                                    stream.Write(bytes, 0, bytes.Length);
+                        }
 
-            // Data should be downloaded first
-            BoundingBox query = tile.BoundingBox;
-            var queryString = String.Format(_mapDataServerQuery,
-               query.MinPoint.Latitude, query.MinPoint.Longitude,
-               query.MaxPoint.Latitude, query.MaxPoint.Longitude);
-            var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
-            Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
-            return ObservableWWW.GetAndGetBytes(uri)
-                   .Take(1)
-                   .SelectMany(bytes =>
-                   {
-                       lock (_lockObj)
-                       {
-                           // save downloaded bytes as file
-                           if (!_fileSystemService.Exists(filePath))
-                               using (var stream = _fileSystemService.WriteStream(filePath))
-                                   stream.Write(bytes, 0, bytes.Length);
-                       }
-                       return AddToInMemoryStore(tile, filePath);
-                   });
+                        // try to add in memory store
+                        var errorMsg = SaveTileDataInMemory(tile, filePath);
+                        if (errorMsg != null)
+                            observer.OnError(new MapDataException(String.Format(Strings.CannotAddDataToInMemoryStore, errorMsg)));
+                        else
+                        {
+                            observer.OnNext(tile);
+                            observer.OnCompleted();
+                        }
+                    });
+
+                return Disposable.Empty;
+            });
         }
 
         /// <summary> Creates <see cref="IObservable{T}"/> for loading element of given tile. </summary>
@@ -159,7 +172,7 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
-                Trace.Info(TraceCategory, "Loading tile: {0}", tile.QuadKey.ToString());
+                Trace.Info(TraceCategory, "loading tile: {0}", tile.QuadKey.ToString());
                 bool noException = true;
                 UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey,
                     // mesh callback
@@ -167,9 +180,9 @@ namespace Assets.UtymapLib.Maps.Loader
                     {
                         Trace.Debug(TraceCategory, "receive mesh: {0}", name);
 
-                        Vector3[] worldPoints = new Vector3[count / 3];
+                        Vector3[] worldPoints = new Vector3[count/3];
                         for (int i = 0; i < vertices.Length; i += 3)
-                            worldPoints[i / 3] = tile.Projection
+                            worldPoints[i/3] = tile.Projection
                                 .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
 
                         Color[] unityColors = new Color[colorCount];
@@ -184,9 +197,9 @@ namespace Assets.UtymapLib.Maps.Loader
                     {
                         Trace.Debug(TraceCategory, "receive element: {0}", id.ToString());
 
-                        var geometry = new GeoCoordinate[vertexCount / 2];
-                        for (int i = 0; i < vertexCount / 2; i += 2)
-                            geometry[i / 2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+                        var geometry = new GeoCoordinate[vertexCount/2];
+                        for (int i = 0; i < vertexCount/2; i += 2)
+                            geometry[i/2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
 
                         Element element = new Element(id, geometry, ReadDict(tags), ReadDict(styles));
                         observer.OnNext(new Union<Element, Mesh>(element));
@@ -196,7 +209,7 @@ namespace Assets.UtymapLib.Maps.Loader
                     {
                         noException = false;
                         var exception = new MapDataException(message);
-                        Trace.Error(TraceCategory, exception, "Cannot load tile: {0}", tile.QuadKey.ToString());
+                        Trace.Error(TraceCategory, exception, "cannot load tile: {0}", tile.QuadKey.ToString());
                         observer.OnError(exception);
                     });
                 if (noException)
@@ -207,20 +220,17 @@ namespace Assets.UtymapLib.Maps.Loader
         }
 
         /// <summary> Adds tile data into in memory storage. </summary>
-        private IObservable<Tile> AddToInMemoryStore(Tile tile, string filePath)
+        private string SaveTileDataInMemory(Tile tile, string filePath)
         {
-            // add to in memory 
-            Trace.Info(TraceCategory, "Adding into memory: {0}", tile.QuadKey.ToString());
+            Trace.Info(TraceCategory, "try to save: {0} from {1}", tile.QuadKey.ToString(), filePath);
             string errorMsg = null;
             UtymapLib.AddToInMemoryStore(
-                _pathResolver.Resolve(tile.Stylesheet.Path), 
+                _pathResolver.Resolve(tile.Stylesheet.Path),
                 _pathResolver.Resolve(filePath),
                 tile.QuadKey.LevelOfDetail,
                 tile.QuadKey.LevelOfDetail, error => errorMsg = error);
-
-            return errorMsg != null 
-                ? Observable.Throw<Tile>(new MapDataException(errorMsg)) 
-                : Observable.Return(tile);
+            
+            return errorMsg;
         }
 
         /// <summary> Returns cache file name for given tile. </summary>
@@ -232,7 +242,7 @@ namespace Assets.UtymapLib.Maps.Loader
 
         private static Dictionary<string, string> ReadDict(string[] data)
         {
-            var map = new Dictionary<string, string>(data.Length/2);
+            var map = new Dictionary<string, string>(data.Length / 2);
             for (int i = 0; i < data.Length; i += 2)
                 map.Add(data[i], data[i + 1]);
             return map;
