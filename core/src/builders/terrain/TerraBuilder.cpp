@@ -210,7 +210,7 @@ private:
         // 2. Process the rest: each region has aready its own properties.
         for (auto& layer : layers_)
             for (auto& region : layer.second) {
-                buildFromPaths(region.points, region.options, false);
+                buildFromPaths(region.points, region.options);
             }
     }
 
@@ -218,7 +218,6 @@ private:
     void buildBackground()
     {
         clipper_.AddPath(tileRect_, ptSubject, true);
-        clipper_.AddPaths(backgroundClipArea_, ptClip, true);
         Paths background;
         clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
         clipper_.Clear();
@@ -269,20 +268,13 @@ private:
         buildFromPaths(result, options);
     }
 
-    void buildFromPaths(Paths& paths, const std::shared_ptr<MeshBuilder::Options>& options, bool moveSubjectToClip = true)
+    void buildFromPaths(Paths& paths, const std::shared_ptr<MeshBuilder::Options>& options)
     {
         clipper_.AddPaths(paths, ptSubject, true);
         paths.clear();
         clipper_.Execute(ctDifference, paths, pftPositive, pftPositive);
-        // NOTE: this is performance optimization: we cannot make all
-        // polygons to be clipping as it slows down clipper dramatically.
-        if (moveSubjectToClip) {
-            clipper_.moveSubjectToClip();
-        } 
-        else {
-            backgroundClipArea_.insert(backgroundClipArea_.end(), paths.begin(), paths.end());
-            clipper_.removeSubject();
-        }
+        clipper_.moveSubjectToClip();
+
         populateMesh(options, paths);
     }
 
@@ -363,7 +355,6 @@ LineGridSplitter splitter_;
 Rectangle rect_;
 Path tileRect_;
 Layers layers_;
-Paths backgroundClipArea_;
 Mesh mesh_;
 };
 
