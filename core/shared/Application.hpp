@@ -152,11 +152,27 @@ public:
         });
     }
 
+    // Adds data to in-memory store.
+    void addToPersistentStore(const char* styleFile, const char* path, const utymap::QuadKey& quadKey, OnError* errorCallback)
+    {
+    }
+
     // Adds data to persistent store.
     void addToPersistentStore(const char* styleFile, const char* path, const utymap::index::LodRange& range, OnError* errorCallback)
     {
         try {
             geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
+        }
+        catch (std::exception& ex) {
+            errorCallback(ex.what());
+        }
+    }
+
+    // Adds data to in-memory store.
+    void addToInMemoryStore(const char* styleFile, const char* path, const utymap::QuadKey& quadKey, OnError* errorCallback)
+    {
+        try {
+            geoStore_.add(InMemoryStorageKey, path, quadKey, *getStyleProvider(styleFile).get());
         }
         catch (std::exception& ex) {
             errorCallback(ex.what());

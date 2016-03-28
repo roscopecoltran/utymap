@@ -5,12 +5,10 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
-#include "index/ElementStore.hpp"
-#include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
-#include "mapcss/StyleProvider.hpp"
 #include "utils/ElementUtils.hpp"
 
+#include <functional>
 #include <string>
 #include <memory>
 #include <vector>
@@ -39,10 +37,7 @@ public:
 
     Statistics statistics;
 
-    OsmDataVisitor(utymap::index::ElementStore& elementStore,
-                   const utymap::mapcss::StyleProvider& styleProvider,
-                   utymap::index::StringTable& stringTable,
-                   const utymap::index::LodRange& lodRange);
+    OsmDataVisitor(utymap::index::StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor);
 
     void visitBounds(utymap::BoundingBox bbox);
 
@@ -57,10 +52,9 @@ private:
     bool isArea(const utymap::formats::Tags& tags) const;
     bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags) const;
 
-    utymap::index::ElementStore& elementStore_;
-    const utymap::mapcss::StyleProvider& styleProvider_;
+    std::function<bool(utymap::entities::Element&)> functor_;
     utymap::index::StringTable& stringTable_;
-    const utymap::index::LodRange& lodRange_;
+    
 
     std::unordered_map<std::uint64_t, utymap::GeoCoordinate> nodeMap_;
     std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> wayMap_;

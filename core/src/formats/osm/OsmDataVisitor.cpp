@@ -13,7 +13,6 @@ using namespace utymap;
 using namespace utymap::formats;
 using namespace utymap::entities;
 using namespace utymap::index;
-using namespace utymap::mapcss;
 
 std::unordered_set<std::string> OsmDataVisitor::AreaKeys
 {
@@ -61,7 +60,7 @@ void OsmDataVisitor::visitNode(std::uint64_t id, GeoCoordinate& coordinate, utym
     node->coordinate = coordinate;
     utymap::utils::setTags(stringTable_, *node, tags);
 
-    if (elementStore_.store(*node, lodRange_, styleProvider_))
+    if (functor_(*node))
         statistics.nodes++;
     else
         statistics.skipNodes++;
@@ -85,7 +84,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
         area->coordinates = std::move(coordinates);
         utymap::utils::setTags(stringTable_, *area, tags);
         areaMap_[id] = area;
-        if (elementStore_.store(*area, lodRange_, styleProvider_))
+        if (functor_(*area))
             statistics.areas++;
         return;
     } 
@@ -95,7 +94,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
     way->coordinates = std::move(coordinates);
     utymap::utils::setTags(stringTable_, *way, tags);
     wayMap_[id] = way;
-    if (elementStore_.store(*way, lodRange_, styleProvider_))
+    if (functor_(*way))
         statistics.ways++;
     else
         statistics.skipWays++;
@@ -106,7 +105,7 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
     if (hasTag("type", "multipolygon", tags)) {
         MultipolygonProcessor processor(id, members, tags, stringTable_, areaMap_, wayMap_);
         Relation relation = processor.process();
-        if (!elementStore_.store(relation, lodRange_, styleProvider_)) {
+        if (!functor_(relation)) {
             statistics.skipRelations++;
             return;
         }
@@ -161,9 +160,7 @@ bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, co
     return false;
 }
 
-OsmDataVisitor::OsmDataVisitor(ElementStore& elementStore, const StyleProvider& styleProvider,
-                               StringTable& stringTable, const LodRange& lodRange) :
-    elementStore_(elementStore), styleProvider_(styleProvider), 
-    stringTable_(stringTable), lodRange_(lodRange), statistics()
+OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
+    stringTable_(stringTable), functor_(functor)
 {
 }

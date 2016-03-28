@@ -5,6 +5,7 @@
 #include "formats/FormatTypes.hpp"
 #include "index/StringTable.hpp"
 
+#include <algorithm>
 #include <cstdint>
 
 namespace utymap { namespace utils {

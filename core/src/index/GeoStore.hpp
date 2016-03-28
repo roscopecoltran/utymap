@@ -42,6 +42,12 @@ public:
              const utymap::index::LodRange& range, 
              const utymap::mapcss::StyleProvider& styleProvider);
 
+    // Adds elements from given path to selected store.
+    void add(const std::string& storeKey,
+             const std::string& path,
+             const utymap::QuadKey& quadKey,
+             const utymap::mapcss::StyleProvider& styleProvider);
+
     // Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
                 const utymap::mapcss::StyleProvider& styleProvider,

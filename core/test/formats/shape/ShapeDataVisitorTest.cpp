@@ -9,6 +9,7 @@
 
 #include "test_utils/MapCssUtils.hpp"
 
+using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::formats;
 using namespace utymap::mapcss;
@@ -44,7 +45,9 @@ BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixtu
 
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {
-    ShapeDataVisitor visitor(*storePtr, *styleProviderPtr, *stringTablePtr, LodRange(1, 1));
+    ShapeDataVisitor visitor(*stringTablePtr, [&](Element& element) {
+        return storePtr->store(element, LodRange(1, 1), *styleProviderPtr);
+    });
     ShapeParser<ShapeDataVisitor> parser;
 
     parser.parse(shapeFile, visitor);

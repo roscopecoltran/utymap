@@ -9,13 +9,11 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
-#include "index/ElementStore.hpp"
-#include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
-#include "mapcss/StyleProvider.hpp"
 #include "utils/ElementUtils.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <cstdint>
 #include <memory>
 
@@ -28,14 +26,9 @@ struct ShapeDataVisitor
     int areas;
     int relations;
 
-    ShapeDataVisitor(utymap::index::ElementStore& elementStore,
-                    const utymap::mapcss::StyleProvider& styleProvider,
-                    utymap::index::StringTable& stringTable,
-                    const utymap::index::LodRange& lodRange) :
-        elementStore_(elementStore),
-        styleProvider_(styleProvider),
+    ShapeDataVisitor(utymap::index::StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
         stringTable_(stringTable),
-        lodRange_(lodRange),
+        functor_(functor),
         nodes(0),
         ways(0),
         areas(0),
@@ -49,9 +42,8 @@ struct ShapeDataVisitor
         node.id = 0;
         node.coordinate = coordinate;
         utymap::utils::setTags(stringTable_, node, tags);
-        if (elementStore_.store(node, lodRange_, styleProvider_)) {
+        if (functor_(node))
             nodes++;
-        }
     }
 
     void visitWay(utymap::formats::Coordinates& coordinates, utymap::formats::Tags& tags, bool isRing)
@@ -61,7 +53,7 @@ struct ShapeDataVisitor
             area.id = 0;
             area.coordinates = std::move(coordinates);
             utymap::utils::setTags(stringTable_, area, tags);
-            if (elementStore_.store(area, lodRange_, styleProvider_))
+            if (functor_(area))
                 areas++;
         }
         else {
@@ -69,7 +61,7 @@ struct ShapeDataVisitor
             way.id = 0;
             way.coordinates = std::move(coordinates);
             utymap::utils::setTags(stringTable_, way, tags);
-            if (elementStore_.store(way, lodRange_, styleProvider_))
+            if (functor_(way))
                 ways++;
         }
     }
@@ -99,15 +91,13 @@ struct ShapeDataVisitor
                 relation.elements.push_back(way);
             }
         }
-        if (elementStore_.store(relation, lodRange_, styleProvider_))
+        if (functor_(relation))
             relations++;
     }
 
 private:
-    utymap::index::ElementStore& elementStore_;
-    const utymap::mapcss::StyleProvider& styleProvider_;
     utymap::index::StringTable& stringTable_;
-    const utymap::index::LodRange& lodRange_;
+    std::function<bool(utymap::entities::Element&)> functor_;
 };
 
 }}

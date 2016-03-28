@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include "ExportLib.cpp"
+#include "utils/GeoUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -51,12 +52,12 @@ BOOST_FIXTURE_TEST_SUITE(ExportLib, ExportLibFixture)
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacksAreCalled)
 {
     auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
-    //::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
+    //::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
 
     loadTiles(1, 0, 1, 0, 1);
 }
@@ -64,9 +65,11 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacks
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtDetailedZoom_ThenCallbacksAreCalled)
 {
     auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    ::addToInMemoryStore(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
+    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
 
-    loadTiles(15, 17602, 17602, 10744, 10744);
+    //52.5196206, 13.3746658
+
+    loadTiles(15, 17600, 17600, 10746, 10746);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

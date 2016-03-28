@@ -69,24 +69,37 @@ public:
     {
     }
 
+    void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
+    {
+        ElementStore* elementStorePtr = storeMap_[storeKey];
+        add(path, styleProvider, [&](Element& element) {
+            return elementStorePtr->store(element, quadKey, styleProvider);
+        });
+    }
+
     void add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
     {
         ElementStore* elementStorePtr = storeMap_[storeKey];
+        add(path, styleProvider, [&](Element& element) {
+            return elementStorePtr->store(element, range, styleProvider);
+        });
+    }
+
+    void add(const std::string& path, const StyleProvider& styleProvider, std::function<bool(Element&)> functor)
+    {
         switch (getFormatTypeFromPath(path))
         {
             case FormatType::Shape:
             {
-                ShapeDataVisitor shpVisitor(*elementStorePtr, styleProvider, stringTable_, range);
                 ShapeParser<ShapeDataVisitor> parser;
-                parser.parse(path, shpVisitor);
+                parser.parse(path, ShapeDataVisitor(stringTable_, functor));
                 break;
             }
             case FormatType::Xml:
             {
-                OsmDataVisitor osmVisitor(*elementStorePtr, styleProvider, stringTable_, range);
                 OsmXmlParser<OsmDataVisitor> parser;
                 std::ifstream xmlFile(path);
-                parser.parse(xmlFile, osmVisitor);
+                parser.parse(xmlFile, OsmDataVisitor(stringTable_, functor));
                 break;
             }
             default:
@@ -152,6 +165,11 @@ void utymap::index::GeoStore::add(const std::string& storeKey, const Element& el
 void utymap::index::GeoStore::add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
 {
     pimpl_->add(storeKey, path, range, styleProvider);
+}
+
+void utymap::index::GeoStore::add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
+{
+    pimpl_->add(storeKey, path, quadKey, styleProvider);
 }
 
 void utymap::index::GeoStore::search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)

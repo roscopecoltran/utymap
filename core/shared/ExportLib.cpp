@@ -46,15 +46,26 @@ extern "C"
         applicationPtr->addToPersistentStore(styleFile, path, utymap::index::LodRange(startLod, endLod), errorCallback);
     }
 
-    // Adds data to in-memory store.
-    void EXPORT_API addToInMemoryStore(const char* styleFile,     // style file
-                                       const char* path,          // path to data
-                                       int startLod,              // start zoom level
-                                       int endLod,                // end zoom level
-                                       OnError* errorCallback)    // Completion callback
+    // Adds data to in-memory store to specific level of details range.
+    void EXPORT_API addToInMemoryStoreRange(const char* styleFile,     // style file
+                                            const char* path,          // path to data
+                                            int startLod,              // start zoom level
+                                            int endLod,                // end zoom level
+                                            OnError* errorCallback)    // completion callback
    {
         applicationPtr->addToInMemoryStore(styleFile, path, utymap::index::LodRange(startLod, endLod), errorCallback);
    }
+
+    // Adds data to in-memory store to specific quadkey only.
+    void EXPORT_API addToInMemoryStoreQuadKey(const char* styleFile,     // style file
+                                              const char* path,          // path to data
+                                              int levelOfDetail,         // level of detail
+                                              int tileX,                 // tile x
+                                              int tileY,                 // tile y,
+                                              OnError* errorCallback)    // completion callback
+    {
+        applicationPtr->addToInMemoryStore(styleFile, path, utymap::QuadKey{ levelOfDetail, tileX, tileY }, errorCallback);
+    }
 
     // Loads tile.
     void EXPORT_API loadTile(const char* styleFile,                   // style file
