@@ -16,7 +16,7 @@ namespace Assets.UtymapLib.Maps.Loader
         }
 
         /// <summary>
-        ///     Adds map data to in-memory storage.
+        ///     Adds map data to in-memory storage to specific level of detail range.
         ///     Supported formats: shapefile, osm xml, osm pbf.
         /// </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
@@ -26,7 +26,22 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <param name="onError"> OnError callback. </param>
         public static void AddToInMemoryStore(string stylePath, string path, int startLod, int endLod, OnError onError)
         {
-            addToInMemoryStore(stylePath, path, startLod, endLod, onError);
+            addToInMemoryStoreInRange(stylePath, path, startLod, endLod, onError);
+        }
+
+        /// <summary>
+        ///     Adds map data to in-memory storage to specific quadkey.
+        ///     Supported formats: shapefile, osm xml, osm pbf.
+        /// </summary>
+        /// <param name="stylePath"> Stylesheet path. </param>
+        /// <param name="path"> Path to file. </param>
+        /// <param name="levelOfDetail"> Level of details. </param>
+        /// <param name="tileX"> TileX. </param>
+        /// <param name="tileY"> TileY. </param>
+        /// <param name="onError"> OnError callback. </param>
+        public static void AddToInMemoryStore(string stylePath, string path, int levelOfDetail, int tileX, int tileY, OnError onError)
+        {
+            addToInMemoryStoreInQuadKey(stylePath, path, levelOfDetail, tileX, tileY, onError);
         }
 
         /// <summary> Registers element builder for processing. </summary>
@@ -83,7 +98,11 @@ namespace Assets.UtymapLib.Maps.Loader
         private static extern void configure(string stringPath, string dataPath, OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
-        private static extern void addToInMemoryStore(string stylePath, string path, int startLod, int endLod,
+        private static extern void addToInMemoryStoreInRange(string stylePath, string path, int startLod, int endLod,
+            OnError errorHandler);
+
+        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        private static extern void addToInMemoryStoreInQuadKey(string stylePath, string path, int lod, int tileX, int tileY,
             OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
