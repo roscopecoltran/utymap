@@ -52,12 +52,12 @@ BOOST_FIXTURE_TEST_SUITE(ExportLib, ExportLibFixture)
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacksAreCalled)
 {
     auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
-    //::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
+    //::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_ADMIN, 1, 1, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_BORDERS, 1, 1, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_POPULATED_PLACES, 1, 1, callback);
 
     loadTiles(1, 0, 1, 0, 1);
 }
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtZoomOne_ThenCallbacks
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllTilesAreLoadingAtDetailedZoom_ThenCallbacksAreCalled)
 {
     auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    ::addToInMemoryStoreRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
 
     //52.5196206, 13.3746658
 

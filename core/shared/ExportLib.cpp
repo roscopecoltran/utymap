@@ -47,7 +47,7 @@ extern "C"
     }
 
     // Adds data to in-memory store to specific level of details range.
-    void EXPORT_API addToInMemoryStoreRange(const char* styleFile,     // style file
+    void EXPORT_API addToInMemoryStoreInRange(const char* styleFile,     // style file
                                             const char* path,          // path to data
                                             int startLod,              // start zoom level
                                             int endLod,                // end zoom level
@@ -57,7 +57,7 @@ extern "C"
    }
 
     // Adds data to in-memory store to specific quadkey only.
-    void EXPORT_API addToInMemoryStoreQuadKey(const char* styleFile,     // style file
+    void EXPORT_API addToInMemoryStoreInQuadKey(const char* styleFile,     // style file
                                               const char* path,          // path to data
                                               int levelOfDetail,         // level of detail
                                               int tileX,                 // tile x
