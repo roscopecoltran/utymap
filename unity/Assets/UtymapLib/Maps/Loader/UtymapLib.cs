@@ -35,13 +35,11 @@ namespace Assets.UtymapLib.Maps.Loader
         /// </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
-        /// <param name="levelOfDetail"> Level of details. </param>
-        /// <param name="tileX"> TileX. </param>
-        /// <param name="tileY"> TileY. </param>
+        /// <param name="quadKey"> QuadKey. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void AddToInMemoryStore(string stylePath, string path, int levelOfDetail, int tileX, int tileY, OnError onError)
+        public static void AddToInMemoryStore(string stylePath, string path, QuadKey quadKey, OnError onError)
         {
-            addToInMemoryStoreInQuadKey(stylePath, path, levelOfDetail, tileX, tileY, onError);
+            addToInMemoryStoreInQuadKey(stylePath, path, quadKey.LevelOfDetail, quadKey.TileX, quadKey.TileY, onError);
         }
 
         /// <summary> Registers element builder for processing. </summary>

@@ -227,8 +227,8 @@ namespace Assets.UtymapLib.Maps.Loader
             UtymapLib.AddToInMemoryStore(
                 _pathResolver.Resolve(tile.Stylesheet.Path),
                 _pathResolver.Resolve(filePath),
-                tile.QuadKey.LevelOfDetail,
-                tile.QuadKey.LevelOfDetail, error => errorMsg = error);
+                tile.QuadKey, 
+                error => errorMsg = error);
             
             return errorMsg;
         }
