@@ -311,4 +311,22 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
     BOOST_CHECK_EQUAL(elementStorePtr->times, 2);
 }
 
+BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
+{
+    Way way = ElementUtils::createElement<Way>(*stringTablePtr,
+    { { "test", "Foo" } }, { { 5, 5 }, { 10, 10 } });
+    createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
+        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 0)) {
+            BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
+        } else {
+            BOOST_TEST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStorePtr->store(way, LodRange(1, 1), *styleProviderPtr);
+
+    BOOST_CHECK_EQUAL(elementStorePtr->times, 1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

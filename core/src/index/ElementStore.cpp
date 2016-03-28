@@ -26,8 +26,9 @@ const static std::string ClipKey = "clip";
 const static std::string SkipKey = "skip";
 
 // Creates bounding box of given element.
-struct BoundingBoxVisitor : public ElementVisitor
+class ElementStore::BoundingBoxVisitor : public ElementVisitor
 {
+public:
     BoundingBox boundingBox;
 
     void visitNode(const Node& node)
@@ -53,8 +54,8 @@ struct BoundingBoxVisitor : public ElementVisitor
     }
 };
 
-// Modifies geometry of element by bounding box clipping
-class ElementGeometryVisitor : private ElementVisitor
+// Modifies geometry of element by bounding box clipping.
+class ElementStore::ElementGeometryVisitor : private ElementVisitor
 {
 public:
 
@@ -350,16 +351,41 @@ bool ElementStore::store(const Element& element, const utymap::index::LodRange& 
     return wasStored;
 }
 
+bool ElementStore::store(const Element& element, const QuadKey& quadKey, const StyleProvider& styleProvider)
+{
+    if (!styleProvider.hasStyle(element, quadKey.levelOfDetail))
+        return false;
+
+    Style style = styleProvider.forElement(element, quadKey.levelOfDetail);
+    if (style.has(skipKeyId_, "true"))
+        return false;
+
+    const BoundingBox quadKeyBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
+    BoundingBoxVisitor bboxVisitor;
+    element.accept(bboxVisitor);
+
+    if (!bboxVisitor.boundingBox.intersects(quadKeyBbox))
+        return false;
+
+    ElementGeometryVisitor geometryClipper(*this);
+    if (style.has(clipKeyId_, "true"))
+        geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
+    else
+        storeImpl(element, quadKey);
+
+    return true;
+}
+
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
     ElementGeometryVisitor geometryClipper(*this);
-    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails,
+        [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
         else
             storeImpl(element, quadKey);
-    };
-    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
+    });
 }
 
 }}

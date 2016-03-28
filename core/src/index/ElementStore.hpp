@@ -30,9 +30,14 @@ public:
     // Checks whether there is data for given quadkey.
     virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;
 
-    // Stores element in storage for given level of details range.
+    // Stores element in storage in all affected tiles at given level of details range.
     bool store(const utymap::entities::Element& element, 
                const utymap::index::LodRange& range,
+               const utymap::mapcss::StyleProvider& styleProvider);
+
+    // Stores element in storage only in given quadkey.
+    bool store(const utymap::entities::Element& element,
+               const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider);
 
 protected:
@@ -40,7 +45,9 @@ protected:
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;
 
 private:
-    friend class ElementGeometryVisitor;
+    class ElementGeometryVisitor;
+    class BoundingBoxVisitor;
+
     void storeInTileRange(const utymap::entities::Element& element,
                           const utymap::BoundingBox& elementBbox,
                           int levelOfDetails,
