@@ -3,16 +3,11 @@
 
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
+#include "utils/MathUtils.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <string>
-
-#ifdef M_PI
-static double pi = M_PI;
-#else
-static double pi = std::acos(-1);
-#endif
 
 namespace utymap { namespace utils {
 
@@ -26,8 +21,8 @@ public:
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
         QuadKey quadKey;
-        quadKey.tileX = lonToTileX(clip(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail);
-        quadKey.tileY = latToTileY(clip(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail);
+        quadKey.tileX = lonToTileX(clamp(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail);
+        quadKey.tileY = latToTileY(clamp(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail);
         quadKey.levelOfDetail = levelOfDetail;
         return quadKey;
     }
@@ -65,6 +60,10 @@ public:
         return std::move(code);
     }
 
+    static double getLodRatio(int levelOfDetail) {
+        return std::pow(2, -(levelOfDetail - 1));
+    }
+
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
     static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, Visitor& visitor)
@@ -100,12 +99,6 @@ public:
     }
 
 private:
-
-    // clips value in range
-    inline static double clip(double n, double minValue, double maxValue)
-    {
-        return std::max(minValue, std::min(n, maxValue));
-    }
 
     inline static int lonToTileX(double lon, int levelOfDetail)
     {
