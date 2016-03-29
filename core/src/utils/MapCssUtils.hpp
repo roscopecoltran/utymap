@@ -4,6 +4,7 @@
 #include "entities/Element.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/Style.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <string>
 
@@ -49,6 +50,29 @@ namespace utymap { namespace utils {
         return style.has(keyId)
             ? std::stod(*style.get(keyId)->value())
             : defaultValue;
+    }
+
+    // Gets width. Evaluation is not supported.
+    inline double getWidth(const std::string& key,
+                           const std::vector<utymap::entities::Tag>& tags,
+                           utymap::index::StringTable& stringTable,
+                           const utymap::mapcss::Style& style,
+                           const utymap::GeoCoordinate& coordinate,
+                           int levelOfDetail)
+    {
+        
+        uint32_t keyId = stringTable.getId(key);
+        auto declaration = style.get(keyId);
+        auto rawValue = declaration->value();
+
+        // defined in meters: use raw value
+        if ((*rawValue)[rawValue->size() - 1] == 'm') {
+            double meters = std::stod(rawValue->substr(0, rawValue->size() - 1));
+            return GeoUtils::getOffset(coordinate, meters);
+        }
+
+        // defined in grad: use lod ratio
+        return std::stod(*style.get(keyId)->value()) * GeoUtils::getLodRatio(levelOfDetail);
     }
 }}
 

@@ -84,7 +84,8 @@ public:
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style_) * getLodRatio();
+        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style_) *
+            GeoUtils::getLodRatio(context_.quadKey.levelOfDetail);
         splitter_.setParams(Scale, step, Tolerance);
     }
 
@@ -98,10 +99,12 @@ public:
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = utymap::utils::getDouble(WidthKey, way.tags, context_.stringTable, style);
+        double width = utymap::utils::getWidth(WidthKey, way.tags, context_.stringTable,
+            style, way.coordinates[0], context_.quadKey.levelOfDetail);
+
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
-        offset_.Execute(solution, width * getLodRatio() * Scale);
+        offset_.Execute(solution, width * Scale);
         offset_.Clear();
        
         clipper_.AddPaths(solution, ptSubject, true);
@@ -188,10 +191,6 @@ public:
 
 private:
 
-    inline double getLodRatio() {
-        return std::pow(2, -(context_.quadKey.levelOfDetail - 1));
-    }
-
     // process all found layers.
     void buildLayers()
     {
@@ -247,7 +246,7 @@ private:
     {
         auto gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
         return std::shared_ptr<MeshBuilder::Options>(new MeshBuilder::Options(
-               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style) * getLodRatio(),
+               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style) * GeoUtils::getLodRatio(context_.quadKey.levelOfDetail),
                utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),

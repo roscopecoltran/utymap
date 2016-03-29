@@ -98,6 +98,16 @@ public:
         return c;
     }
 
+    // gets offset in degrees
+    static double getOffset(const GeoCoordinate& point, double offsetInMeters)
+    {
+        double lat = deg2Rad(point.latitude);
+        // Radius of Earth at given latitude
+        double radius = wgs84EarthRadius(lat);
+        double dWidth = offsetInMeters / (2 * radius);
+        return rad2Deg(dWidth);
+    }
+
 private:
 
     inline static int lonToTileX(double lon, int levelOfDetail)
@@ -120,6 +130,21 @@ private:
     {
         double n = pi - 2.0 * pi * y / pow(2.0, levelOfDetail);
         return 180.0 / pi * atan(0.5 * (exp(n) - exp(-n)));
+    }
+
+    /// Earth radius at a given latitude, according to the WGS-84 ellipsoid [m].
+    inline static double wgs84EarthRadius(double lat)
+    {
+        // Semi-axes of WGS-84 geoidal reference
+        const double WGS84_a = 6378137.0; // Major semiaxis [m]
+        const double WGS84_b = 6356752.3; // Minor semiaxis [m]
+
+        // http://en.wikipedia.org/wiki/Earth_radius
+        auto an = WGS84_a * WGS84_a * std::cos(lat);
+        auto bn = WGS84_b * WGS84_b * std::sin(lat);
+        auto ad = WGS84_a * std::cos(lat);
+        auto bd = WGS84_b * std::sin(lat);
+        return std::sqrt((an * an + bn * bn) / (ad * ad + bd * bd));
     }
 };
 

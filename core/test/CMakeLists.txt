@@ -45,6 +45,7 @@ add_executable (TestLauncher
                         test_utils/MapCssUtils.hpp
                         utils/GeoUtilsTest.cpp
                         utils/GradientUtilsTest.cpp
+                        utils/MapCssUtilsTest.cpp
                         utils/NoiseUtilsTest.cpp
                         ${HEADER_FILES}
                       )
