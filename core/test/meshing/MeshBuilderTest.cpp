@@ -129,4 +129,23 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_RefinesC
     BOOST_CHECK(mesh.triangles.size() > 0);
 }
 
+BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_RefinesCorrectly)
+{
+    Polygon polygon(8, 0);
+    polygon.addContour({ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } });
+    polygon.addContour({ { 10, 10 }, { 15, 10 }, { 15, 15 }, { 10, 15 } });
+    Mesh mesh("");
+
+    builder.addPolygon(mesh, polygon, MeshBuilder::Options
+    {
+        /* area=*/ 1. / 1.,
+        /* elevation noise frequency*/ 0,
+        /* color noise frequency */ 0,
+        /* height offset */ 0,
+        /* color gradient */ colorGradient
+    });
+
+    BOOST_CHECK(mesh.vertices.size() > 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
