@@ -6,6 +6,7 @@ using namespace ClipperLib;
 using namespace utymap::meshing;
 
 typedef std::vector<Point> DoublePoints;
+typedef std::vector<IntPoint> IntPoints;
 const double Precision = 0.1e-9;
 
 BOOST_AUTO_TEST_SUITE(Terrain_LineGridSplitter)
@@ -100,6 +101,25 @@ BOOST_AUTO_TEST_CASE(GivenSpecificCase2_WhenSplit_CanSplit)
 
     splitter.split(start, end, result);
 
+    BOOST_CHECK_EQUAL(result.size(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(GivenSpecificCase3_WhenSplit_DoNotInflateDuplicates)
+{
+    LineGridSplitter splitter;
+    splitter.setParams(10000000, 0.0006103515625);
+    IntPoints points = {
+            { 133691881, 525218163 },
+            { 133693424, 525219786 },
+            { 133692010, 525218310 }
+    };
+    DoublePoints result;
+
+    auto lastItemIndex = points.size() - 1;
+    for (int i = 0; i <= lastItemIndex; i++)
+        splitter.split(points[i], points[i == lastItemIndex ? 0 : i + 1], result);
+
+    // TODO better to check duplicates directly
     BOOST_CHECK_EQUAL(result.size(), 4);
 }
 

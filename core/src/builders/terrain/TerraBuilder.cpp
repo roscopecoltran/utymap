@@ -36,7 +36,6 @@ using namespace utymap::meshing;
 using namespace utymap::utils;
 
 const double Scale = 1E7;          // max precision for Lat/Lon: seven decimal positions
-const double Tolerance = 10;       // Tolerance for splitting algorithm
 const double AreaTolerance = 1000; // Tolerance for meshing
 
 // Represents terrain region points.
@@ -86,7 +85,7 @@ public:
 
         double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style_) *
             GeoUtils::getLodRatio(context_.quadKey.levelOfDetail);
-        splitter_.setParams(Scale, step, Tolerance);
+        splitter_.setParams(Scale, step);
     }
 
     void visitNode(const utymap::entities::Node& node)

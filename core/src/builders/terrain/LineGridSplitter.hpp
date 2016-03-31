@@ -15,87 +15,84 @@ namespace utymap { namespace meshing {
 // Splits line to segments according to axis aligned grid.
 class LineGridSplitter
 {
-    typedef utymap::meshing::Point TPoint;
-    typedef std::vector<TPoint> Points;
-
-    typedef ClipperLib::cInt Int;
-    typedef ClipperLib::IntPoint IPoint;
-    typedef std::vector<IPoint> IPoints;
+    typedef utymap::meshing::Point Point;
+    typedef std::vector<Point> Points;
 
     struct sort_x
     {
-        inline bool operator() (const IPoint& a, const IPoint& b) { return a.X < b.X; }
+        inline bool operator() (const Point& a, const Point& b) { return a.x < b.x; }
     };
 
     struct sort_reverse_x
     {
-        inline bool operator() (const IPoint& a, const IPoint& b) { return a.X > b.X; }
+        inline bool operator() (const Point& a, const Point& b) { return a.x > b.x; }
     };
 
     struct sort_y
     {
-        inline bool operator() (const IPoint& a, const IPoint& b) { return a.Y < b.Y; }
+        inline bool operator() (const Point& a, const Point& b) { return a.y < b.y; }
     };
 
     struct sort_reverse_y
     {
-        inline bool operator() (const IPoint& a, const IPoint& b) { return a.Y > b.Y; }
+        inline bool operator() (const Point& a, const Point& b) { return a.y > b.y; }
     };
 
 public:
-    LineGridSplitter() : 
-        step_(1), scale_(1), tolerance_(0.00001)
+    LineGridSplitter() : step_(1), scale_(1)
     {
     }
 
-    void setParams(uint64_t scale, double step, double tolerance = 10)
+    void setParams(uint64_t scale, double step)
     {
         scale_ = scale;
         step_ = step * scale;
-        tolerance_ = tolerance;
     }
 
     // Splits line to segments.
-    void split(const IPoint& start, const IPoint& end, Points& result) const
+    void split(const ClipperLib::IntPoint& start, const ClipperLib::IntPoint& end, Points& result) const
     {
-        std::vector<IPoint> points;
+        Point s(start.X / scale_, start.Y / scale_);
+        Point e(end.X / scale_, end.Y / scale_);
+
+        Points points;
         points.reserve(2);
-        points.push_back(start);
+        points.push_back(s);
 
-        double slope = (end.Y - start.Y) / ((double)end.X - start.X);
+        double slope = (e.y - s.y) / (e.x - s.x);
         if (std::isinf(slope) || std::abs(slope) < std::numeric_limits<double>::epsilon())
-            zeroSlope(start, end, points);
+            zeroSlope(s, e, points);
         else
-            normalCase(start, end, slope, points);
+            normalCase(s, e, slope, points);
 
-        points.push_back(end);
+        points.push_back(e);
 
-        filterResults(points, result);
+        mergeResults(points, result);
     }
 
 private:
 
-    inline Int ceil(Int value) const
+    inline double ceil(double value) const
     {
         return std::ceil(value / step_) * step_;
     }
 
-    void zeroSlope(IPoint start, IPoint end, IPoints& points) const
+    void zeroSlope(Point start, Point end, Points& points) const
     {
-        if ((start.X - end.X) == 0)
+        if ((start.x - end.x) == 0)
         {
-            bool isBottomTop = start.Y < end.Y;
+            bool isBottomTop = start.y < end.y;
             if (!isBottomTop)
             {
-                IPoint tmp = start;
+                Point tmp = start;
                 start = end;
                 end = tmp;
             }
 
-            Int yStart = ceil(start.Y);
-            Int yEnd = end.Y;
+            double yStart = ceil(start.y);
+            double yEnd = end.y;
             for (double y = yStart; y < yEnd; y += step_)
-                points.push_back(IPoint(start.X, y));
+                points.push_back(Point(start.x, y));
 
             if (isBottomTop)
                 std::sort(points.begin(), points.end(), sort_y());
@@ -104,18 +101,18 @@ private:
         }
         else
         {
-            bool isLeftRight = start.X < end.X;
+            bool isLeftRight = start.x < end.x;
             if (!isLeftRight)
             {
-                IPoint tmp = start;
+                Point tmp = start;
                 start = end;
                 end = tmp;
             }
 
-            Int xStart = ceil(start.X);
-            Int xEnd = end.X;
+            double xStart = ceil(start.x);
+            double xEnd = end.x;
             for (double x = xStart; x < xEnd; x += step_)
-                points.push_back(IPoint(x, start.Y));
+                points.push_back(Point(x, start.y));
 
             if (isLeftRight)
                 std::sort(points.begin(), points.end(), sort_x());
@@ -124,36 +121,36 @@ private:
         }
     }
 
-    void normalCase(IPoint start, IPoint end, double slope, IPoints& points) const
+    void normalCase(Point start, Point end, double slope, Points& points) const
     {
         double inverseSlope = 1 / slope;
-        double b = start.Y - slope * start.X;
+        double b = start.y - slope * start.x;
 
-        bool isLeftRight = start.X < end.X;
+        bool isLeftRight = start.x < end.x;
         if (!isLeftRight)
         {
-            IPoint tmp = start;
+            Point tmp = start;
             start = end;
             end = tmp;
         }
 
-        Int xStart = ceil(start.X);
-        Int xEnd = end.X;
+        double xStart = ceil(start.x);
+        double xEnd = end.x;
         for (double x = xStart; x < xEnd; x += step_)
-            points.push_back(IPoint(x, slope * x + b));
+            points.push_back(Point(x, slope * x + b));
 
-        bool isBottomTop = start.Y < end.Y;
+        bool isBottomTop = start.y < end.y;
         if (!isBottomTop)
         {
-            IPoint tmp = start;
+            Point tmp = start;
             start = end;
             end = tmp;
         }
 
-        Int yStart = ceil(start.Y);
-        Int yEnd = end.Y;
+        double yStart = ceil(start.y);
+        double yEnd = end.y;
         for (double y = yStart; y < yEnd; y += step_)
-            points.push_back(IPoint((y - b) * inverseSlope, y));
+            points.push_back(Point((y - b) * inverseSlope, y));
 
         if (isLeftRight)
             std::sort(points.begin(), points.end(), sort_x());
@@ -161,31 +158,26 @@ private:
             std::sort(points.begin(), points.end(), sort_reverse_x());
     }
 
-    void filterResults(const IPoints& points, Points& result) const
+    void mergeResults(const Points& points, Points& result) const
     {
-        for (int i = 0; i < points.size(); ++i)
-        {
-            IPoint candidate = points[i];
-            if (result.size() > 0)
-            {
-                TPoint last = result[result.size() - 1];
-                Int lastX = last.x * scale_;
-                Int lastY = last.y * scale_;
-                double distance = std::sqrt((lastX - candidate.X) * (lastX - candidate.X) +
-                    (lastY - candidate.Y) * (lastY - candidate.Y));
-                if (std::abs(distance) < tolerance_)
+        for (int i = 0; i < points.size(); ++i) {
+            Point candidate = points[i];
+            if (result.size() > 0)  {
+                Point last = result[result.size() - 1];
+                if (std::abs(last.x - candidate.x) < std::numeric_limits<double>::epsilon() &&
+                    std::abs(last.y - candidate.y) < std::numeric_limits<double>::epsilon())
                     continue;
             }
 
-            result.push_back(TPoint(candidate.X / scale_, candidate.Y / scale_));
+            result.push_back(candidate);
         }
     }
 
     double scale_;
     double step_;
-    double tolerance_;
 };
 
-}}
+}
+}
 
 #endif // BUILDERS_TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
