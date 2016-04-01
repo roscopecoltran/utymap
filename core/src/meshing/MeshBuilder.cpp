@@ -39,7 +39,7 @@ public:
         mid.segmentlist = nullptr;
         mid.segmentmarkerlist = nullptr;
 
-        ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
+        ::triangulate(const_cast<char*>("zBQ"), &in, &mid, nullptr);
 
         // do not refine mesh if area is not set.
         if (std::abs(options.area) < std::numeric_limits<double>::epsilon()) {
@@ -59,7 +59,7 @@ public:
             out.trianglelist = nullptr;
             out.triangleattributelist = nullptr;
 
-            ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
+            ::triangulate(const_cast<char*>("razBPQ"), &mid, &out, nullptr);
 
             fillMesh(&out, options, mesh);
 
