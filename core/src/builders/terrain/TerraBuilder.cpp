@@ -250,7 +250,8 @@ private:
                utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
                utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),
                context_.styleProvider.getGradient(*gradientKey),
-               *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, "")));
+               *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, ""),
+               /* no new vertices on boundaries */ 1));
     }
 
     void buildFromRegions(const Regions& regions, const std::shared_ptr<MeshBuilder::Options>& options)

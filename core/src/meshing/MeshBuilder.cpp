@@ -59,7 +59,11 @@ public:
             out.trianglelist = nullptr;
             out.triangleattributelist = nullptr;
 
-            ::triangulate(const_cast<char*>("prazBPQ"), &mid, &out, nullptr);
+            std::string triOptions = "prazBPQ";
+            for (int i = 0; i < options.segmentSplit; i++) {
+                triOptions += "Y";
+            }
+            ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
 
             fillMesh(&out, options, mesh);
 
