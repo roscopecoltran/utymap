@@ -19,9 +19,11 @@ using namespace utymap::index;
 
 struct Formats_Osm_MultipolygonProcessorFixture
 {
-    Formats_Osm_MultipolygonProcessorFixture() : stringTablePtr(new StringTable("")), areaMap(), wayMap()
+    Formats_Osm_MultipolygonProcessorFixture() : 
+        stringTablePtr(new StringTable("")), areaMap(), wayMap()
     {
     }
+
     ~Formats_Osm_MultipolygonProcessorFixture()
     {
         delete stringTablePtr;

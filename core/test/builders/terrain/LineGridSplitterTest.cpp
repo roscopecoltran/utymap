@@ -10,7 +10,7 @@ typedef std::vector<Point> DoublePoints;
 typedef std::vector<IntPoint> IntPoints;
 const double Precision = 0.1e-9;
 
-BOOST_AUTO_TEST_SUITE(Terrain_LineGridSplitter)
+BOOST_AUTO_TEST_SUITE(Builders_Terrain_LineGridSplitter)
 
 BOOST_AUTO_TEST_CASE(GivenHorizontal_WhenSplitWithIntStep_CanSplit)
 {

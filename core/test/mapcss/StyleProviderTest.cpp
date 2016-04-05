@@ -22,13 +22,11 @@ struct Index_StyleProviderFixture
         stylesheetPtr(new StyleSheet()),
         styleProviderPtr(nullptr)
     {
-        BOOST_TEST_MESSAGE("setup fixture");
         stylesheetPtr->rules.push_back(Rule());
     }
 
     ~Index_StyleProviderFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         delete stylesheetPtr;
         delete tablePtr;
         delete styleProviderPtr;

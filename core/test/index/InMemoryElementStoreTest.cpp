@@ -24,7 +24,6 @@ struct Index_InMemoryElementStoreFixture
         styleProviderPtr(nullptr),
         elementStorePtr()
     {
-        BOOST_TEST_MESSAGE("setup fixture");
         LodRange range(1, 2);
         std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: true; }";
         styleProviderPtr = MapCssUtils::createStyleProviderFromString(*stringTablePtr, stylesheet);
@@ -41,7 +40,6 @@ struct Index_InMemoryElementStoreFixture
 
     ~Index_InMemoryElementStoreFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         delete elementStorePtr;
         delete styleProviderPtr;
         delete stringTablePtr;

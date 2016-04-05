@@ -11,9 +11,6 @@ const double Precision = 0.1e-7;
 
 struct Formats_Shape_ShapeParserFixture
 {
-    Formats_Shape_ShapeParserFixture() { BOOST_TEST_MESSAGE("setup fixture"); }
-    ~Formats_Shape_ShapeParserFixture() { BOOST_TEST_MESSAGE("teardown fixture"); }
-
     ShapeParser<TestShapeDataVisitor> parser;
     TestShapeDataVisitor visitor;
 };

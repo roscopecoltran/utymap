@@ -35,9 +35,9 @@ public:
     double getElevation(double x, double y) { return 0; }
 };
 
-struct Terrain_TerraBuilderFixture
+struct Builders_Terrain_TerraBuilderFixture
 {
-    Terrain_TerraBuilderFixture() :
+    Builders_Terrain_TerraBuilderFixture() :
         stringTablePtr(new StringTable("")),
         styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, StyleSheetString)),
         eleProvider(),
@@ -45,7 +45,7 @@ struct Terrain_TerraBuilderFixture
     {
     }
 
-    ~Terrain_TerraBuilderFixture()
+    ~Builders_Terrain_TerraBuilderFixture()
     {
         delete builderPtr;
         delete styleProviderPtr;
@@ -59,10 +59,9 @@ struct Terrain_TerraBuilderFixture
     StringTable* stringTablePtr;
     StyleProvider* styleProviderPtr;
     TerraBuilder* builderPtr;
-
 };
 
-BOOST_FIXTURE_TEST_SUITE(Terrain_TerraBuilder, Terrain_TerraBuilderFixture)
+BOOST_FIXTURE_TEST_SUITE(Builders_Terrain_TerraBuilder, Builders_Terrain_TerraBuilderFixture)
 
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {

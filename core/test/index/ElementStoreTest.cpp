@@ -20,12 +20,11 @@ using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
-typedef std::function<void(const Element&, const utymap::QuadKey&)> StoreCallback;
+typedef std::function<void(const Element&, const QuadKey&)> StoreCallback;
 
 class TestElementStore : public ElementStore
 {
 public:
-
     int times;
 
     TestElementStore(StringTable& stringTable, StoreCallback function) :
@@ -35,18 +34,13 @@ public:
     {
     }
 
-    void search(const utymap::QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
-    {
-    }
+    void search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor) { }
 
-    bool hasData(const utymap::QuadKey& quadKey) const
-    {
-        return true;
-    }
+    bool hasData(const QuadKey& quadKey) const { return true; }
 
 protected:
 
-    void storeImpl(const Element& element, const utymap::QuadKey& quadKey)
+    void storeImpl(const Element& element, const QuadKey& quadKey)
     {
         times++;
         function_(element, quadKey);
@@ -62,12 +56,10 @@ struct Index_ElementStoreFixture
         styleProviderPtr(nullptr),
         elementStorePtr()
     {
-        BOOST_TEST_MESSAGE("setup fixture");
     }
 
     ~Index_ElementStoreFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         BOOST_TEST_CHECK(elementStorePtr->times > 0);
         delete elementStorePtr;
         delete styleProviderPtr;
@@ -114,7 +106,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
         { { "test", "Foo" } },
         { { 10, 10 }, { 10, -10 }});
     createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
             checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, -10 }, { 10, 0 } });
         }
@@ -137,7 +129,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
     { { "test", "Foo" } },
     { { 10, 10 }, { 10, -10 }, { 20, -10 }, {20, 10} });
     createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
             checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 20, 0 }, { 20, -10 }, { 10, -10 }, {10, 0} });
         }
@@ -163,7 +155,7 @@ BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStor
     { { "test", "Foo" } },
     { { -10, 20 }, { -5, -10 }, { 10, -10 } });
     createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 1) || 
             checkQuadKey(quadKey, 1, 0, 0) || 
             checkQuadKey(quadKey, 1, 0, 1)) {
@@ -188,7 +180,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
     { { "test", "Foo" } },
     { { 10, 10 }, { 20, 10 }, { 20, -10 }, { 10, -10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
             checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, {10, -10}, {10, 0} });
         }
@@ -211,7 +203,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
     { { "test", "Foo" } },
     { { 20, 10 }, { 20, -10 }, { 5, -10 }, { 5, 10 }, { 10, 10 }, { 10, -5 }, { 15, -5 }, { 15, 10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
             checkGeometry<Area>(reinterpret_cast<const Area&>(element), 
             { { 10, 0 }, { 10, -5 }, { 15, -5 }, { 15, 0 }, { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
@@ -238,7 +230,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
     { { "test", "Foo" } },
     { { -10, -10 }, { -10, 181 }, { 91, 181 }, { 91, -10 } });
     createElementStore("area|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             BOOST_CHECK_EQUAL(reinterpret_cast<const Area&>(element).coordinates.size(), 0);
         }
@@ -260,7 +252,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_AreaIsReturnedWith
     relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
     relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
     createElementStore("relation|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             checkGeometry<Area>(reinterpret_cast<const Area&>(element),
             { 
@@ -292,7 +284,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
     relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
     relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
     createElementStore("relation|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             const Relation& relation = reinterpret_cast<const Relation&>(element);
             BOOST_CHECK_EQUAL(relation.elements.size(), 2);
@@ -317,7 +309,7 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
     Way way = ElementUtils::createElement<Way>(*stringTablePtr,
     { { "test", "Foo" } }, { { 5, 5 }, { 10, 10 } });
     createElementStore("way|z1[test=Foo] { key:val; clip: true;}",
-        [&](const Element& element, const utymap::QuadKey& quadKey) {
+        [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
         } else {

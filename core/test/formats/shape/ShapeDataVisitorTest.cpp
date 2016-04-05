@@ -14,20 +14,18 @@ using namespace utymap::index;
 using namespace utymap::formats;
 using namespace utymap::mapcss;
 
-struct Formats_ShapeDataVisitorFixture
+struct Formats_Shape_ShapeDataVisitorFixture
 {
-    Formats_ShapeDataVisitorFixture() :
+    Formats_Shape_ShapeDataVisitorFixture() :
         shapeFile(TEST_SHAPE_LINE_FILE),
         stringTablePtr(new StringTable("")),
         styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, "way|z1-16[test=Foo] { key:val; }"))
     {
-        BOOST_TEST_MESSAGE("setup fixture");
         storePtr = new InMemoryElementStore(*stringTablePtr);
     }
 
-    ~Formats_ShapeDataVisitorFixture()
+    ~Formats_Shape_ShapeDataVisitorFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         delete stringTablePtr;
         delete styleProviderPtr;
         delete storePtr;
@@ -41,7 +39,7 @@ struct Formats_ShapeDataVisitorFixture
     InMemoryElementStore* storePtr;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixture)
+BOOST_FIXTURE_TEST_SUITE(Formats_Shape_ShapeDataVisitor, Formats_Shape_ShapeDataVisitorFixture)
 
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {

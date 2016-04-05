@@ -11,12 +11,10 @@ struct Index_StringTableFixture
     Index_StringTableFixture() :
         tablePtr(new StringTable(""))
     {
-        BOOST_TEST_MESSAGE("setup fixture");
     }
 
     ~Index_StringTableFixture()
     {
-        BOOST_TEST_MESSAGE("teardown fixture");
         delete tablePtr;
         std::remove("string.idx");
         std::remove("string.dat");
