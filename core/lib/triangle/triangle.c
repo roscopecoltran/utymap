@@ -10012,6 +10012,7 @@ struct behavior *b;
                sortarray[j][0], sortarray[j][1]);
       }
       setvertextype(sortarray[j], UNDEADVERTEX);
+      if (b->poly) setvertex2tri(sortarray[j], NULL);
       m->undeads++;
     } else {
       i++;
@@ -12280,7 +12281,7 @@ int newmark;
   /* Find a triangle whose origin is the segment's first endpoint. */
   checkvertex = (vertex) NULL;
   encodedtri = vertex2tri(endpoint1);
-  if (encodedtri != (triangle) NULL && vertextype(endpoint1) != UNDEADVERTEX) {
+  if (encodedtri != (triangle) NULL) {
     decode(encodedtri, searchtri1);
     org(searchtri1, checkvertex);
   }
@@ -12313,7 +12314,7 @@ int newmark;
   /* Find a triangle whose origin is the segment's second endpoint. */
   checkvertex = (vertex) NULL;
   encodedtri = vertex2tri(endpoint2);
-  if (encodedtri != (triangle) NULL && vertextype(endpoint2) != UNDEADVERTEX) {
+  if (encodedtri != (triangle) NULL) {
     decode(encodedtri, searchtri2);
     org(searchtri2, checkvertex);
   }
