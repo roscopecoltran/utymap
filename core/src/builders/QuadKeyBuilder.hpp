@@ -1,5 +1,5 @@
-#ifndef BUILDERS_TILEBUILDER_HPP_DEFINED
-#define BUILDERS_TILEBUILDER_HPP_DEFINED
+#ifndef BUILDERS_QUADKEYBUILDER_HPP_DEFINED
+#define BUILDERS_QUADKEYBUILDER_HPP_DEFINED
 
 #include "QuadKey.hpp"
 #include "builders/BuilderContext.hpp"
@@ -16,22 +16,21 @@
 
 namespace utymap { namespace builders {
 
-// Responsible for building single tile.
-class TileBuilder
+// Responsible for building single quadkey.
+class QuadKeyBuilder
 {
 public:
 
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
     // Factory of element builders
-    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(
-        const utymap::builders::BuilderContext&)> ElementBuilderFactory;
+    typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
-    TileBuilder(utymap::index::GeoStore& geoStore,
-                utymap::index::StringTable& stringTable,
-                utymap::heightmap::ElevationProvider& eleProvider);
+    QuadKeyBuilder(utymap::index::GeoStore& geoStore,
+                   utymap::index::StringTable& stringTable,
+                   utymap::heightmap::ElevationProvider& eleProvider);
 
-    ~TileBuilder();
+    ~QuadKeyBuilder();
 
     // Registers factory method for element builder.
     void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
@@ -43,9 +42,9 @@ public:
                ElementCallback elementFunc);
 
 private:
-    class TileBuilderImpl;
-    std::unique_ptr<TileBuilderImpl> pimpl_;
+    class QuadKeyBuilderImpl;
+    std::unique_ptr<QuadKeyBuilderImpl> pimpl_;
 };
 
 }}
-#endif // BUILDERS_TILEBUILDER_HPP_DEFINED
+#endif // BUILDERS_QUADKEYBUILDER_HPP_DEFINED

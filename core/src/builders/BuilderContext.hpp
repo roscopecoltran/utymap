@@ -35,10 +35,9 @@ struct BuilderContext
                    utymap::heightmap::ElevationProvider& eleProvider,
                    std::function<void(const utymap::meshing::Mesh&)> meshCallback,
                    std::function<void(const utymap::entities::Element&)> elementCallback) :
-
         quadKey(quadKey), 
-        styleProvider(styleProvider), 
-        stringTable(stringTable), 
+        styleProvider(styleProvider),
+        stringTable(stringTable),
         meshBuilder(eleProvider),
         meshCallback(meshCallback),
         elementCallback(elementCallback)

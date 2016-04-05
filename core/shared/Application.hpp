@@ -5,7 +5,7 @@
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
-#include "builders/TileBuilder.hpp"
+#include "builders/QuadKeyBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
@@ -131,7 +131,7 @@ public:
     // Composes object graph.
     Application(const char* stringPath, const char* dataPath, OnError* errorCallback) :
         stringTable_(stringPath), inMemoryStore_(stringTable_), persistentStore_(dataPath, stringTable_),
-        geoStore_(stringTable_), eleProvider_(), tileBuilder_(geoStore_, stringTable_, eleProvider_)
+        geoStore_(stringTable_), eleProvider_(), quadKeyBuilder_(geoStore_, stringTable_, eleProvider_)
     {
         geoStore_.registerStore(InMemoryStorageKey, inMemoryStore_);
         geoStore_.registerStore(PersistentStorageKey, persistentStore_);
@@ -147,7 +147,7 @@ public:
     // Register element builder.
     void registerElementBuilder(const char* name)
     {
-        tileBuilder_.registerElementBuilder(name, [&](const utymap::builders::BuilderContext& context) {
+        quadKeyBuilder_.registerElementBuilder(name, [&](const utymap::builders::BuilderContext& context) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(context));
         });
     }
@@ -202,7 +202,7 @@ public:
         try {
             utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
             TileElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-            tileBuilder_.build(quadKey, styleProvider,
+            quadKeyBuilder_.build(quadKey, styleProvider,
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 meshCallback(mesh.name.data(),
                     mesh.vertices.data(), mesh.vertices.size(),
@@ -239,11 +239,11 @@ private:
 
     void registerDefaultBuilders()
     {
-        tileBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
+        quadKeyBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::TerraBuilder(context));
         });
 
-        tileBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
+        quadKeyBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::LowPolyBuildingBuilder(context));
         });
     }
@@ -253,9 +253,9 @@ private:
     utymap::index::PersistentElementStore persistentStore_;
     utymap::index::GeoStore geoStore_;
     utymap::heightmap::FlatElevationProvider eleProvider_;
-    utymap::builders::TileBuilder tileBuilder_;
+    utymap::builders::QuadKeyBuilder quadKeyBuilder_;
 
-   
+
     std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders_;
 };
 

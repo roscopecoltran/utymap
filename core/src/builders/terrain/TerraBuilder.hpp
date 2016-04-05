@@ -9,7 +9,7 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way build terrain mesh.
+// Provides the way to build terrain mesh.
 class TerraBuilder : public utymap::builders::ElementBuilder
 {
 public:

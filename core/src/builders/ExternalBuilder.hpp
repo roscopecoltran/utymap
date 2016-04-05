@@ -10,11 +10,10 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way delegate building logic to external code.
+// Provides the way to delegate building logic to external code.
 class ExternalBuilder : public utymap::builders::ElementBuilder
 {
 public:
-
     ExternalBuilder(const utymap::builders::BuilderContext& context) :
          utymap::builders::ElementBuilder(context)
     {

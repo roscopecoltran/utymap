@@ -1,6 +1,6 @@
 #include "Exceptions.hpp"
 #include "builders/BuilderContext.hpp"
-#include "builders/TileBuilder.hpp"
+#include "builders/QuadKeyBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
@@ -25,7 +25,7 @@ using namespace utymap::meshing;
 
 const std::string BuilderKeyName = "builders";
 
-class TileBuilder::TileBuilderImpl
+class QuadKeyBuilder::QuadKeyBuilderImpl
 {
 private:
 
@@ -34,11 +34,11 @@ private:
 class AggregateElemenVisitor : public ElementVisitor
 {
 public:
-    AggregateElemenVisitor(const QuadKey& quadKey, 
-                           const StyleProvider& styleProvider, 
+    AggregateElemenVisitor(const QuadKey& quadKey,
+                           const StyleProvider& styleProvider,
                            StringTable& stringTable,
                            ElevationProvider& eleProvider,
-                           const MeshCallback& meshFunc, 
+                           const MeshCallback& meshFunc,
                            const ElementCallback& elementFunc,
                            BuilderFactoryMap& builderFactoryMap,
                            std::uint32_t builderKeyId) :
@@ -102,7 +102,7 @@ private:
 
 public:
 
-    TileBuilderImpl(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
+    QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
         geoStore_(geoStore),
         stringTable_(stringTable),
         eleProvider_(eleProvider),
@@ -116,12 +116,12 @@ public:
         builderFactory_[name] = factory;
     }
 
-    void build(const QuadKey& quadKey, 
-               const StyleProvider& styleProvider, 
-               const MeshCallback& meshFunc, 
+    void build(const QuadKey& quadKey,
+               const StyleProvider& styleProvider,
+               const MeshCallback& meshFunc,
                const ElementCallback& elementFunc)
     {
-        AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_, 
+        AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_,
             eleProvider_, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
         geoStore_.search(quadKey, styleProvider, elementVisitor);
@@ -136,21 +136,21 @@ private:
     BuilderFactoryMap builderFactory_;
 };
 
-void TileBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
+void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
 {
     pimpl_->registerElementVisitor(name, factory);
 }
 
-void TileBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
+void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
 {
     pimpl_->build(quadKey, styleProvider, meshFunc, elementFunc);
 }
 
-TileBuilder::TileBuilder(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
-    pimpl_(new TileBuilder::TileBuilderImpl(geoStore, stringTable, eleProvider))
+QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
+    pimpl_(new QuadKeyBuilder::QuadKeyBuilderImpl(geoStore, stringTable, eleProvider))
 {
 }
 
-TileBuilder::~TileBuilder()
+QuadKeyBuilder::~QuadKeyBuilder()
 {
 }

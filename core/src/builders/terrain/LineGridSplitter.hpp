@@ -12,7 +12,7 @@
 
 namespace utymap { namespace builders {
 
-// Splits line to segments according to axis aligned grid.
+// Splits line to segments on axis aligned grid intersections.
 class LineGridSplitter
 {
     typedef utymap::meshing::Point Point;
