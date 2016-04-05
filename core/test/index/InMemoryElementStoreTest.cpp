@@ -4,7 +4,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "index/LodRange.hpp"
+#include "LodRange.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>

@@ -15,6 +15,7 @@
 #include <initializer_list>
 #include <utility>
 
+using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;

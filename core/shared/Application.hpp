@@ -2,6 +2,7 @@
 #define APPLICATION_HPP_DEFINED
 
 #include "QuadKey.hpp"
+#include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/TileBuilder.hpp"
@@ -11,7 +12,6 @@
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
-#include "index/LodRange.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleProvider.hpp"
@@ -158,7 +158,7 @@ public:
     }
 
     // Adds data to persistent store.
-    void addToPersistentStore(const char* styleFile, const char* path, const utymap::index::LodRange& range, OnError* errorCallback)
+    void addToPersistentStore(const char* styleFile, const char* path, const utymap::LodRange& range, OnError* errorCallback)
     {
         try {
             geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
@@ -180,7 +180,7 @@ public:
     }
 
     // Adds data to in-memory store.
-    void addToInMemoryStore(const char* styleFile, const char* path, const utymap::index::LodRange& range, OnError* errorCallback)
+    void addToInMemoryStore(const char* styleFile, const char* path, const utymap::LodRange& range, OnError* errorCallback)
     {
         try {
             geoStore_.add(InMemoryStorageKey, path, range, *getStyleProvider(styleFile).get());

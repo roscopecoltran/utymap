@@ -1,5 +1,5 @@
 #include "entities/Element.hpp"
-#include "index/LodRange.hpp"
+#include "LodRange.hpp"
 #include "formats/shape/ShapeDataVisitor.hpp"
 #include "formats/shape/ShapeParser.hpp"
 #include "formats/osm/xml/OsmXmlParser.hpp"

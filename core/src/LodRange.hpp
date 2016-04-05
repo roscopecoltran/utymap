@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace utymap { namespace index {
+namespace utymap {
 
 // Represents level of details range.
 struct LodRange
@@ -24,6 +24,6 @@ struct LodRange
     }
 };
 
-}}
+}
 
 #endif // INDEX_LODRANGE_HPP_DEFINED

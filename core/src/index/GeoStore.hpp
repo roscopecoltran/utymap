@@ -9,7 +9,7 @@
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
-#include "index/LodRange.hpp"
+#include "LodRange.hpp"
 
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
@@ -33,13 +33,13 @@ public:
     // Adds element to selected store.
     void add(const std::string& storeKey, 
              const utymap::entities::Element& element,
-             const utymap::index::LodRange& range, 
+             const utymap::LodRange& range, 
              const utymap::mapcss::StyleProvider& styleProvider);
 
     // Adds elements from given path to selected store.
     void add(const std::string& storeKey, 
              const std::string& path,
-             const utymap::index::LodRange& range, 
+             const utymap::LodRange& range, 
              const utymap::mapcss::StyleProvider& styleProvider);
 
     // Adds elements from given path to selected store.

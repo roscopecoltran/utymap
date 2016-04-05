@@ -5,7 +5,7 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "index/LodRange.hpp"
+#include "LodRange.hpp"
 #include "formats/FormatTypes.hpp"
 #include "mapcss/StyleProvider.hpp"
 
@@ -32,7 +32,7 @@ public:
 
     // Stores element in storage in all affected tiles at given level of details range.
     bool store(const utymap::entities::Element& element, 
-               const utymap::index::LodRange& range,
+               const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
 
     // Stores element in storage only in given quadkey.

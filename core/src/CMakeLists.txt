@@ -6,6 +6,7 @@ set(HEADER_FILES
                 BoundingBox.hpp
                 Exceptions.hpp
                 GeoCoordinate.hpp
+                LodRange.hpp
                 QuadKey.hpp
                 builders/BuilderContext.hpp
                 builders/ElementBuilder.hpp
@@ -37,7 +38,6 @@ set(HEADER_FILES
                 index/GeoStore.hpp
                 index/ElementStore.hpp
                 index/InMemoryElementStore.hpp
-                index/LodRange.hpp
                 index/PersistentElementStore.hpp
                 index/StringTable.hpp
                 mapcss/Color.hpp

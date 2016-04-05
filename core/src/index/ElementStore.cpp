@@ -327,7 +327,7 @@ ElementStore::~ElementStore()
 {
 }
 
-bool ElementStore::store(const Element& element, const utymap::index::LodRange& range, const StyleProvider& styleProvider)
+bool ElementStore::store(const Element& element, const utymap::LodRange& range, const StyleProvider& styleProvider)
 {
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;

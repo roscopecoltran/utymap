@@ -2,7 +2,7 @@
 #include "formats/shape/ShapeParser.hpp"
 #include "formats/shape/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "index/LodRange.hpp"
+#include "LodRange.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_SUITE(Formats_ShapeDataVisitor, Formats_ShapeDataVisitorFixtu
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
 {
     ShapeDataVisitor visitor(*stringTablePtr, [&](Element& element) {
-        return storePtr->store(element, LodRange(1, 1), *styleProviderPtr);
+        return storePtr->store(element, utymap::LodRange(1, 1), *styleProviderPtr);
     });
     ShapeParser<ShapeDataVisitor> parser;
 

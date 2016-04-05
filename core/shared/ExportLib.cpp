@@ -43,7 +43,7 @@ extern "C"
                                          int endLod,              // end zoom level
                                          OnError* errorCallback)  // completion callback
     {
-        applicationPtr->addToPersistentStore(styleFile, path, utymap::index::LodRange(startLod, endLod), errorCallback);
+        applicationPtr->addToPersistentStore(styleFile, path, utymap::LodRange(startLod, endLod), errorCallback);
     }
 
     // Adds data to in-memory store to specific level of details range.
@@ -53,7 +53,7 @@ extern "C"
                                             int endLod,                // end zoom level
                                             OnError* errorCallback)    // completion callback
    {
-        applicationPtr->addToInMemoryStore(styleFile, path, utymap::index::LodRange(startLod, endLod), errorCallback);
+        applicationPtr->addToInMemoryStore(styleFile, path, utymap::LodRange(startLod, endLod), errorCallback);
    }
 
     // Adds data to in-memory store to specific quadkey only.
