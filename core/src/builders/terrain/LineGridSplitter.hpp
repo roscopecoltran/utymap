@@ -10,7 +10,7 @@
 #include <limits>
 #include <vector>
 
-namespace utymap { namespace meshing {
+namespace utymap { namespace builders {
 
 // Splits line to segments according to axis aligned grid.
 class LineGridSplitter

@@ -9,6 +9,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace ClipperLib;
+using namespace utymap::builders;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
