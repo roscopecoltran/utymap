@@ -12280,7 +12280,7 @@ int newmark;
   /* Find a triangle whose origin is the segment's first endpoint. */
   checkvertex = (vertex) NULL;
   encodedtri = vertex2tri(endpoint1);
-  if (encodedtri != (triangle) NULL) {
+  if (encodedtri != (triangle) NULL && vertextype(endpoint1) != UNDEADVERTEX) {
     decode(encodedtri, searchtri1);
     org(searchtri1, checkvertex);
   }
@@ -12313,7 +12313,7 @@ int newmark;
   /* Find a triangle whose origin is the segment's second endpoint. */
   checkvertex = (vertex) NULL;
   encodedtri = vertex2tri(endpoint2);
-  if (encodedtri != (triangle) NULL) {
+  if (encodedtri != (triangle) NULL && vertextype(endpoint2) != UNDEADVERTEX) {
     decode(encodedtri, searchtri2);
     org(searchtri2, checkvertex);
   }
