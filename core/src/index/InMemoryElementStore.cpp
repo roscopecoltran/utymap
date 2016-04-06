@@ -70,7 +70,7 @@ public:
 
     bool hasData(const utymap::QuadKey& quadKey) const
     {
-        return elementsMap_.find(currentQuadKey) != elementsMap_.end();
+        return elementsMap_.find(quadKey) != elementsMap_.end();
     }
 
 private:

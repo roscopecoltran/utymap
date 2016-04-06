@@ -7,7 +7,7 @@
 #include <string>
 
 // Use global variable as it is used inside lambda which is passed as function.
-bool isCalled = false;
+bool isCalled;
 
 struct ExportLibFixture {
     ExportLibFixture()
@@ -44,6 +44,8 @@ struct ExportLibFixture {
         BOOST_CHECK(isCalled);
     }
 
+    static void callback(const char* msg) { BOOST_CHECK(msg == nullptr); }
+
     ~ExportLibFixture()
     {
         ::cleanup();
@@ -56,7 +58,6 @@ BOOST_FIXTURE_TEST_SUITE(ExportLib, ExportLibFixture)
 
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllQuadKeysAreLoadedAtZoomOne_ThenCallbacksAreCalled)
 {
-    auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
     ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAND, 1, 1, callback);
     ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_RIVERS, 1, 1, callback);
     ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_SHAPE_NE_110M_LAKES, 1, 1, callback);
@@ -70,7 +71,6 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllQuadKeysAreLoadedAtZoomOne_ThenCallbac
 // This case tests storing lod range.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_ThenCallbacksAreCalled)
 {
-    auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
     ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
 
     loadQuadKeys(15, 17602, 17602, 10744, 10744);
@@ -79,13 +79,25 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_Then
 // This case tests dynamic addtion incremental addtion/search to store.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeysAreLoadedInSequenceAtDetailedZoom_ThenCallbacksAreCalled)
 {
-    auto callback = [](const char* msg) { BOOST_CHECK(msg == nullptr); };
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 17602, 10744, callback);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
     loadQuadKeys(15, 17602, 17602, 10744, 10744);
 
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 17601, 10745, callback);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17601, 10745, 15, callback);
     loadQuadKeys(15, 17601, 17601, 10745, 10745);
 }
 
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenHasDataReturnsTrue)
+{
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
+
+    BOOST_CHECK(::hasData(17602, 10744, 15));
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturnsFalseForAnother)
+{
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
+
+    BOOST_CHECK(::hasData(17601, 10745, 15) == false);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
