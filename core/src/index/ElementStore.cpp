@@ -379,13 +379,13 @@ bool ElementStore::store(const Element& element, const QuadKey& quadKey, const S
 void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
 {
     ElementGeometryVisitor geometryClipper(*this);
-    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails,
-        [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
         if (shouldClip)
             geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
         else
             storeImpl(element, quadKey);
-    });
+    };
+    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }
 
 }}

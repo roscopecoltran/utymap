@@ -190,7 +190,7 @@ public:
         }
     }
 
-    bool hasData(utymap::QuadKey& quadKey)
+    bool hasData(const utymap::QuadKey& quadKey)
     {
         return geoStore_.hasData(quadKey);
     }

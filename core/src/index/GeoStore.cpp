@@ -92,14 +92,16 @@ public:
             case FormatType::Shape:
             {
                 ShapeParser<ShapeDataVisitor> parser;
-                parser.parse(path, ShapeDataVisitor(stringTable_, functor));
+                ShapeDataVisitor visitor(stringTable_, functor);
+                parser.parse(path, visitor);
                 break;
             }
             case FormatType::Xml:
             {
                 OsmXmlParser<OsmDataVisitor> parser;
                 std::ifstream xmlFile(path);
-                parser.parse(xmlFile, OsmDataVisitor(stringTable_, functor));
+                OsmDataVisitor visitor(stringTable_, functor);
+                parser.parse(xmlFile, visitor);
                 break;
             }
             default:
