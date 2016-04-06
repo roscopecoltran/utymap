@@ -46,16 +46,18 @@ class Application
     const std::string InMemoryStorageKey = "InMemory";
     const std::string PersistentStorageKey = "OnDisk";
 
-    // Visits element in tile.
-    struct TileElementVisitor : public utymap::entities::ElementVisitor
+    // Visits element in quadkey.
+    struct QuadKeyElementVisitor : public utymap::entities::ElementVisitor
     {
         using Tags = std::vector<utymap::formats::Tag>;
         using Coordinates = std::vector<utymap::GeoCoordinate>;
 
-        TileElementVisitor(utymap::index::StringTable& stringTable, utymap::mapcss::StyleProvider& styleProvider,
-                           int levelOfDetail, OnElementLoaded* elementCallback) :
-            stringTable_(stringTable), styleProvider_(styleProvider), levelOfDetail_(levelOfDetail),
-                elementCallback_(elementCallback)
+        QuadKeyElementVisitor(utymap::index::StringTable& stringTable, 
+                              utymap::mapcss::StyleProvider& styleProvider,
+                              int levelOfDetail, 
+                              OnElementLoaded* elementCallback) :
+            stringTable_(stringTable), styleProvider_(styleProvider), 
+            levelOfDetail_(levelOfDetail), elementCallback_(elementCallback)
         {
         }
 
@@ -195,13 +197,13 @@ public:
         return geoStore_.hasData(quadKey);
     }
 
-    // Loads tile.
-    void loadTile(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
+    // Loads quadKey.
+    void loadQuadKey(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
                   OnElementLoaded* elementCallback, OnError* errorCallback)
     {
         try {
             utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
-            TileElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
+            QuadKeyElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
             quadKeyBuilder_.build(quadKey, styleProvider,
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 meshCallback(mesh.name.data(),
