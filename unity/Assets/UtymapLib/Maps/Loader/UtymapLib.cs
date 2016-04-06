@@ -39,7 +39,7 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <param name="onError"> OnError callback. </param>
         public static void AddToInMemoryStore(string stylePath, string path, QuadKey quadKey, OnError onError)
         {
-            addToInMemoryStoreInQuadKey(stylePath, path, quadKey.LevelOfDetail, quadKey.TileX, quadKey.TileY, onError);
+            addToInMemoryStoreInQuadKey(stylePath, path, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, onError);
         }
 
         /// <summary> Registers element builder for processing. </summary>
@@ -56,16 +56,16 @@ namespace Assets.UtymapLib.Maps.Loader
             return hasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
         }
 
-        /// <summary> Loads tile. </summary>
+        /// <summary> Loads quadkey. </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey</param>
         /// <param name="onMeshBuilt"></param>
         /// <param name="onElementLoaded"></param>
         /// <param name="onError"></param>
-        public static void LoadTile(string stylePath, QuadKey quadKey,
+        public static void LoadQuadKey(string stylePath, QuadKey quadKey,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError)
         {
-            loadTile(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, 
+            loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, 
                 onMeshBuilt, onElementLoaded, onError);
         }
 
@@ -100,7 +100,7 @@ namespace Assets.UtymapLib.Maps.Loader
             OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
-        private static extern void addToInMemoryStoreInQuadKey(string stylePath, string path, int lod, int tileX, int tileY,
+        private static extern void addToInMemoryStoreInQuadKey(string stylePath, string path, int tileX, int tileY, int lod, 
             OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
@@ -110,9 +110,8 @@ namespace Assets.UtymapLib.Maps.Loader
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
-        private static extern int loadTile(string stylePath, int tileX, int tileY, int levelOfDetails,
-            OnMeshBuilt meshBuiltHandler,
-            OnElementLoaded elementLoadedHandler, OnError errorHandler);
+        private static extern int loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails,
+            OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern void cleanup();
