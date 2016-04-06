@@ -59,9 +59,9 @@ extern "C"
     // Adds data to in-memory store to specific quadkey only.
     void EXPORT_API addToInMemoryStoreInQuadKey(const char* styleFile,     // style file
                                                 const char* path,          // path to data
-                                                int levelOfDetail,         // level of detail
                                                 int tileX,                 // tile x
                                                 int tileY,                 // tile y,
+                                                int levelOfDetail,         // level of detail
                                                 OnError* errorCallback)    // completion callback
     {
         applicationPtr->addToInMemoryStore(styleFile, path, utymap::QuadKey{ levelOfDetail, tileX, tileY }, errorCallback);
