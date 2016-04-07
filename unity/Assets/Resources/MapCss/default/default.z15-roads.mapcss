@@ -15,20 +15,20 @@ way|z15[highway] {
     clip:true;
     builders: terrain;
     terrain-layer: pedestrian;
-    width: 1;
+    width: 1m;
 }
 
 way|z15[highway=path][foot=designated] {
     terrain-layer: pedestrian;
-    width: 1;
+    width: 1m;
 }
 way|z15[highway=service] {
     terrain-layer: pedestrian;
-    width: 0.7;
+    width: 0.7m;
 }
 way|z15[highway=footway] {
     terrain-layer: pedestrian;
-    width: 1;
+    width: 1m;
 }
 
 way|z15[highway=tertiary],
@@ -37,10 +37,10 @@ way|z15[highway=service],
 way|z15[highway=unclassified],
 way|z15[highway=road] {
     terrain-layer: drive;
-    width: 4.5;
+    width: 4.5m;
 }
 way|z15[highway=living_street] {
-    width: 4;
+    width: 4m;
 }
 way|z15[highway=trunk],
 way|z15[highway=trunk_link],
@@ -49,15 +49,15 @@ way|z15[highway=primary_link],
 way|z15[highway=motorway],
 way|z15[highway=motorway_link] {
     terrain-layer: drive;
-    width: 4;
+    width: 4m;
 }
 way|z15[highway=secondary],
 way|z15[highway=secondary_link] {
     terrain-layer: drive;
-    width: 3.5;
+    width: 3.5m;
 }
 way|z15[highway=tertiary],
 way|z15[highway=tertiary_link] {
     terrain-layer: drive;
-    width: 4;
+    width: 4m;
 }

@@ -1,5 +1,5 @@
 canvas|z15 {
-    grid-cell-size: 10;
+    grid-cells: 10;
     max-area: 0.0005;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;

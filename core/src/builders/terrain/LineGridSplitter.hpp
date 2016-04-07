@@ -46,7 +46,7 @@ public:
     void setParams(uint64_t scale, double step)
     {
         scale_ = scale;
-        step_ = step * scale;
+        step_ = step;
     }
 
     // Splits line to segments.

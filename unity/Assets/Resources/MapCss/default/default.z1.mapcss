@@ -1,6 +1,6 @@
 canvas|z1 {
     layer-priority: water,border;
-    grid-cell-size: 5;
+    grid-cells: 10;
     max-area: 5;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;

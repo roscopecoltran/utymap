@@ -60,7 +60,7 @@ const static std::string WidthKey = "width";
 const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
 const static std::string MeshNameKey = "mesh-name";
-const static std::string GridCellSize = "grid-cell-size";
+const static std::string GridCells = "grid-cells";
 
 class TerraBuilder::TerraBuilderImpl : public ElementBuilder
 {
@@ -83,9 +83,8 @@ public:
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        double step = utymap::utils::getDouble(GridCellSize, context_.stringTable, style_) *
-            GeoUtils::getLodRatio(context_.quadKey.levelOfDetail);
-        splitter_.setParams(Scale, step);
+        int cellCount = (int) utymap::utils::getDouble(GridCells, context_.stringTable, style_);
+        splitter_.setParams(Scale, (bbox.maxPoint.latitude - bbox.minPoint.latitude) / cellCount);
     }
 
     void visitNode(const utymap::entities::Node& node)
