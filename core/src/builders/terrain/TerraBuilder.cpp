@@ -60,7 +60,7 @@ const static std::string WidthKey = "width";
 const static std::string HeightKey = "height";
 const static std::string LayerPriorityKey = "layer-priority";
 const static std::string MeshNameKey = "mesh-name";
-const static std::string GridCells = "grid-cells";
+const static std::string GridCellSize = "grid-cell-size";
 
 class TerraBuilder::TerraBuilderImpl : public ElementBuilder
 {
@@ -70,21 +70,20 @@ public:
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)), 
         splitter_(), 
+        bbox_(GeoUtils::quadKeyToBoundingBox(context_.quadKey)),
+        rect_(bbox_.minPoint.longitude, bbox_.minPoint.latitude, bbox_.maxPoint.longitude, bbox_.maxPoint.latitude),
         mesh_("terrain")
     {
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(context_.quadKey);
-        rect_ = Rectangle(bbox.minPoint.longitude, bbox.minPoint.latitude,
-            bbox.maxPoint.longitude, bbox.maxPoint.latitude);
-
-        tileRect_.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.minPoint.latitude *Scale));
-        tileRect_.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.minPoint.latitude *Scale));
-        tileRect_.push_back(IntPoint(bbox.maxPoint.longitude *Scale, bbox.maxPoint.latitude*Scale));
-        tileRect_.push_back(IntPoint(bbox.minPoint.longitude*Scale, bbox.maxPoint.latitude*Scale));
+        tileRect_.push_back(IntPoint(bbox_.minPoint.longitude*Scale, bbox_.minPoint.latitude *Scale));
+        tileRect_.push_back(IntPoint(bbox_.maxPoint.longitude *Scale, bbox_.minPoint.latitude *Scale));
+        tileRect_.push_back(IntPoint(bbox_.maxPoint.longitude *Scale, bbox_.maxPoint.latitude*Scale));
+        tileRect_.push_back(IntPoint(bbox_.minPoint.longitude*Scale, bbox_.maxPoint.latitude*Scale));
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        int cellCount = (int) utymap::utils::getDouble(GridCells, context_.stringTable, style_);
-        splitter_.setParams(Scale, (bbox.maxPoint.latitude - bbox.minPoint.latitude) / cellCount);
+        double size = utymap::utils::getDimension(GridCellSize, context_.stringTable, style_,
+            bbox_.maxPoint.latitude - bbox_.minPoint.latitude);
+        splitter_.setParams(Scale, size);
     }
 
     void visitNode(const utymap::entities::Node& node)
@@ -97,8 +96,8 @@ public:
         Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = utymap::utils::getWidth(WidthKey, way.tags, context_.stringTable,
-            style, way.coordinates[0], context_.quadKey.levelOfDetail);
+        double width = utymap::utils::getDimension(WidthKey, context_.stringTable, style,
+            bbox_.maxPoint.latitude - bbox_.minPoint.latitude, way.coordinates[0]);
 
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
@@ -242,15 +241,16 @@ private:
 
     std::shared_ptr<MeshBuilder::Options> createMeshOptions(const Style& style, const std::string& prefix)
     {
+        double quadKeyWidth = bbox_.maxPoint.latitude - bbox_.minPoint.latitude;
         auto gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
         return std::shared_ptr<MeshBuilder::Options>(new MeshBuilder::Options(
-               utymap::utils::getDouble(prefix + MaxAreaKey, context_.stringTable, style) * GeoUtils::getLodRatio(context_.quadKey.levelOfDetail),
-               utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
-               utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
-               utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),
-               context_.styleProvider.getGradient(*gradientKey),
-               *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, ""),
-               /* no new vertices on boundaries */ 1));
+            utymap::utils::getDimension(prefix + MaxAreaKey, context_.stringTable, style, quadKeyWidth * quadKeyWidth),
+            utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
+            utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
+            utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),
+            context_.styleProvider.getGradient(*gradientKey),
+            *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, ""),
+             /* no new vertices on boundaries */ 1));
     }
 
     void buildFromRegions(const Regions& regions, const std::shared_ptr<MeshBuilder::Options>& options)
@@ -351,6 +351,7 @@ ClipperEx clipper_;
 ClipperOffset offset_;
 LineGridSplitter splitter_;
 Rectangle rect_;
+BoundingBox bbox_;
 Path tileRect_;
 Layers layers_;
 Mesh mesh_;

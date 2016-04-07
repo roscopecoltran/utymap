@@ -1,6 +1,7 @@
 #ifndef UTILS_MAPCSSUTILS_HPP_DEFINED
 #define UTILS_MAPCSSUTILS_HPP_DEFINED
 
+#include "Exceptions.hpp"
 #include "entities/Element.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/Style.hpp"
@@ -52,27 +53,29 @@ namespace utymap { namespace utils {
             : defaultValue;
     }
 
-    // Gets width. Evaluation is not supported.
-    inline double getWidth(const std::string& key,
-                           const std::vector<utymap::entities::Tag>& tags,
-                           utymap::index::StringTable& stringTable,
-                           const utymap::mapcss::Style& style,
-                           const utymap::GeoCoordinate& coordinate,
-                           int levelOfDetail)
+    // Gets dimension value. Evaluation is not supported.
+    inline double getDimension(const std::string& key,
+                               utymap::index::StringTable& stringTable,
+                               const utymap::mapcss::Style& style,
+                               double size,
+                               const utymap::GeoCoordinate& coordinate = GeoCoordinate(90, 180))
     {
-        
         uint32_t keyId = stringTable.getId(key);
         auto declaration = style.get(keyId);
         auto rawValue = declaration->value();
 
-        // defined in meters: use raw value
-        if ((*rawValue)[rawValue->size() - 1] == 'm') {
-            double meters = std::stod(rawValue->substr(0, rawValue->size() - 1));
-            return GeoUtils::getOffset(coordinate, meters);
-        }
+        char dimen = (*rawValue)[rawValue->size() - 1];
+        double value = std::stod(rawValue->substr(0, rawValue->size() - 1));
 
-        // defined in grad: use lod ratio
-        return std::stod(*style.get(keyId)->value()) * GeoUtils::getLodRatio(levelOfDetail);
+        // defined in meters: use raw value
+        if (dimen == 'm' && coordinate.latitude != 90) 
+            return GeoUtils::getOffset(coordinate, value);
+
+        // relative to size
+        if (dimen == '%') 
+            return size * value * 0.01;
+
+        throw utymap::MapCssException("Unknown width dimen.");
     }
 }}
 

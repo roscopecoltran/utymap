@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(GivenSpecificCase2_WhenSplit_CanSplit)
 
     splitter.split(start, end, result);
 
-    BOOST_CHECK_EQUAL(result.size(), 2);
+    BOOST_CHECK_EQUAL(result.size(), 4);
 }
 
 BOOST_AUTO_TEST_CASE(GivenSpecificCase3_WhenSplit_DoNotInflateDuplicates)
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(GivenSpecificCase3_WhenSplit_DoNotInflateDuplicates)
         splitter.split(points[i], points[i == lastItemIndex ? 0 : i + 1], result);
 
     // TODO better to check duplicates directly
-    BOOST_CHECK_EQUAL(result.size(), 4);
+    BOOST_CHECK_EQUAL(result.size(), 6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,9 +1,9 @@
 canvas|z15 {
-    water-max-area: 5;
+    water-max-area: 5%;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
     water-color: gradient(#72e4de);
-    water-height:-1;
+    water-height:-1m;
 }
 
 area|z15[natural=water],

@@ -21,7 +21,7 @@ struct Utils_MapCssUtilsFixture
         styleProviderPtr(nullptr)
     {
         std::string stylesheet = "way|z15[width=meters] { width: 10m; }"
-                                 "way|z15[width=grad] { width: 10; }";
+                                 "way|z15[width=percent] { width: 10%; }";
         styleProviderPtr = MapCssUtils::createStyleProviderFromString(*stringTablePtr, stylesheet);
     }
 
@@ -40,7 +40,7 @@ struct Utils_MapCssUtilsFixture
 
 BOOST_FIXTURE_TEST_SUITE(Utils_MapCssUtils, Utils_MapCssUtilsFixture)
 
-BOOST_AUTO_TEST_CASE(GivenWidthInMeters_WhenGetWidth_ThenReturnGreaterThanZero)
+BOOST_AUTO_TEST_CASE(GivenDimensionInMeters_WhenGetWidth_ThenReturnGreaterThanZero)
 {
     int lod = 15;
     Way way = ElementUtils::createElement<Way>(*stringTablePtr, 
@@ -48,22 +48,22 @@ BOOST_AUTO_TEST_CASE(GivenWidthInMeters_WhenGetWidth_ThenReturnGreaterThanZero)
     { { 52.52975 , 13.38810 } }
     );
 
-    double width = utymap::utils::getWidth("width", way.tags, *stringTablePtr, 
-        styleProviderPtr->forElement(way, lod), way.coordinates[0], lod);
+    double width = utymap::utils::getDimension("width", *stringTablePtr, 
+        styleProviderPtr->forElement(way, lod), lod, way.coordinates[0]);
 
     BOOST_CHECK(width > 0);
 }
 
-BOOST_AUTO_TEST_CASE(GivenWidthInGrad_WhenGetWidth_ThenReturnGreaterThanZero)
+BOOST_AUTO_TEST_CASE(GivenWidthInPercents_WhenGetWidth_ThenReturnGreaterThanZero)
 {
     int lod = 15;
     Way way = ElementUtils::createElement<Way>(*stringTablePtr,
-    { std::make_pair("width", "grad") },
+    { std::make_pair("width", "percent") },
     { { 52.52975, 13.38810 } }
     );
 
-    double width = utymap::utils::getWidth("width", way.tags, *stringTablePtr,
-        styleProviderPtr->forElement(way, lod), way.coordinates[0], lod);
+    double width = utymap::utils::getDimension("width", *stringTablePtr,
+        styleProviderPtr->forElement(way, lod), 1, way.coordinates[0]);
 
     BOOST_CHECK(width > 0);
 }

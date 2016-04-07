@@ -60,10 +60,6 @@ public:
         return std::move(code);
     }
 
-    static double getLodRatio(int levelOfDetail) {
-        return std::pow(2, -(levelOfDetail - 1));
-    }
-
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
     static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, Visitor& visitor)
@@ -98,7 +94,7 @@ public:
         return c;
     }
 
-    // gets offset in degrees
+    // gets offset in meters
     static double getOffset(const GeoCoordinate& point, double offsetInMeters)
     {
         double lat = deg2Rad(point.latitude);

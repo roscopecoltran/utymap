@@ -1,19 +1,19 @@
 canvas|z1 {
     layer-priority: water,border;
-    grid-cells: 10;
-    max-area: 5;
+    grid-cell-size: 10%;
+    max-area: 5%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(#72e4de);
-    height:-1;
+    height:-1%;
 
-    water-max-area: 5;
+    water-max-area: 5%;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
     water-color: gradient(#72e4de);
-    water-height:-0.2;
+    water-height:-0.2%;
 
-    border-max-area: 5;
+    border-max-area: 5%;
     border-color-noise-freq: 0.1;
     border-ele-noise-freq: 0.05;
     border-color: gradient(red);
@@ -26,7 +26,7 @@ relation|z1[featurecla=River][scalerank=2] {
     clip:true;
     builders: terrain;
     terrain-layer: water;
-    width: 0.05;
+    width: 2%;
 }
 
 area|z1[featurecla=Lake][scalerank=0],
@@ -42,7 +42,7 @@ area|z1[featurecla=Country][scalerank=1],
 relation|z1[featurecla=Country][scalerank=1] {
     clip:true;
     builders: terrain;
-    max-area: 5;
+    max-area: 5%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
@@ -53,14 +53,14 @@ relation|z1[featurecla=International boundary (verify)] {
     clip:true;
     builders: terrain;
     terrain-layer: border;
-    width: 0.05;
+    width: 2%;
 }
 
 area|z1[featurecla=Adm-0 scale ranks],
 relation|z1[featurecla=Adm-0 scale ranks]{
     clip:true;
     builders: terrain;
-    max-area: 5;
+    max-area: 5%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
@@ -69,19 +69,19 @@ relation|z1[featurecla=Adm-0 scale ranks]{
 area|z1[sr_geounit=Germany],
 relation|z1[sr_geounit=Germany] {
     color: gradient(orange);
-    height: 0.1;
+    height: 0.1%;
 }
 
 area|z1[sr_geounit=China],
 relation|z1[sr_geounit=China] {
     color: gradient(orange);
-    height: 0.2;
+    height: 0.2%;
 }
 
 area|z1[sr_geounit=Italy],
 relation|z1[sr_geounit=Italy] {
     color: gradient(blue);
-    height: 0.1;
+    height: 0.1%;
 }
 
 area|z1[sr_geounit=France],
@@ -98,7 +98,7 @@ area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
     mesh-name: ussr;
     color: gradient(red);
-    height: 0.2;
+    height: 0.2%;
 }
 
 node|z1[featurecla=Populated place],
