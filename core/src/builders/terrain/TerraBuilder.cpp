@@ -82,7 +82,7 @@ public:
         clipper_.AddPath(tileRect_, ptClip, true);
 
         double size = utymap::utils::getDimension(GridCellSize, context_.stringTable, style_,
-            bbox_.maxPoint.latitude - bbox_.minPoint.latitude);
+            bbox_.maxPoint.latitude - bbox_.minPoint.latitude, bbox_.center());
         splitter_.setParams(Scale, size);
     }
 
@@ -97,7 +97,7 @@ public:
 
         // make polygon from line by offsetting it using width specified
         double width = utymap::utils::getDimension(WidthKey, context_.stringTable, style,
-            bbox_.maxPoint.latitude - bbox_.minPoint.latitude, way.coordinates[0]);
+            bbox_.maxPoint.latitude - bbox_.minPoint.latitude, bbox_.center());
 
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
@@ -247,10 +247,10 @@ private:
             utymap::utils::getDimension(prefix + MaxAreaKey, context_.stringTable, style, quadKeyWidth * quadKeyWidth),
             utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
             utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
-            utymap::utils::getDouble(prefix + HeightKey, context_.stringTable, style),
+            utymap::utils::getDimension(prefix + HeightKey, context_.stringTable, style, quadKeyWidth, 0),
             context_.styleProvider.getGradient(*gradientKey),
             *utymap::utils::getString(prefix + MeshNameKey, context_.stringTable, style, ""),
-             /* no new vertices on boundaries */ 1));
+            /* no new vertices on boundaries */ 1));
     }
 
     void buildFromRegions(const Regions& regions, const std::shared_ptr<MeshBuilder::Options>& options)

@@ -89,6 +89,14 @@ struct BoundingBox
 
         return minLat <= maxLat && minLon <= maxLon;
     }
+
+    // Returns center of bounding box.
+    inline GeoCoordinate center() const
+    {
+        return GeoCoordinate(
+            (maxPoint.latitude - minPoint.latitude) / 2,
+            (maxPoint.longitude - minPoint.longitude) / 2);
+    }
 };
 
 }

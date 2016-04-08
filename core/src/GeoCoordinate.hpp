@@ -13,8 +13,9 @@ struct GeoCoordinate
     // Longitude.
     double longitude;
 
-    // TODO specify invalid coordinates instead of (0, 0)
-    GeoCoordinate(): latitude(0), longitude(0)
+    GeoCoordinate() : 
+        latitude(std::numeric_limits<double>::infinity()), 
+        longitude(std::numeric_limits<double>::infinity())
     {
     }
 
@@ -30,6 +31,11 @@ struct GeoCoordinate
                std::abs(longitude - rhs.longitude) < std::numeric_limits<double>::epsilon();
     }
 
+    inline bool isValid() const
+    {
+        // NOTE please note that lowest and biggest values are not included.
+        return latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180;
+    }
 };
 
 }

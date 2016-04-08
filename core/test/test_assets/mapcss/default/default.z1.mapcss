@@ -87,7 +87,7 @@ relation|z1[sr_geounit=Italy] {
 area|z1[sr_geounit=France],
 relation|z1[sr_geounit=France] {
     color: gradient(lime);
-    height: 0.1;
+    height: 0.1%;
 }
 
 area|z1[sr_geounit=Russia],

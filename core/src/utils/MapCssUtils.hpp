@@ -54,13 +54,12 @@ namespace utymap { namespace utils {
     }
 
     // Gets dimension value. Evaluation is not supported.
-    inline double getDimension(const std::string& key,
+    inline double getDimension(uint32_t keyId,
                                utymap::index::StringTable& stringTable,
                                const utymap::mapcss::Style& style,
                                double size,
-                               const utymap::GeoCoordinate& coordinate = GeoCoordinate(90, 180))
+                               const utymap::GeoCoordinate& coordinate)
     {
-        uint32_t keyId = stringTable.getId(key);
         auto declaration = style.get(keyId);
         auto rawValue = declaration->value();
 
@@ -68,14 +67,39 @@ namespace utymap { namespace utils {
         double value = std::stod(rawValue->substr(0, rawValue->size() - 1));
 
         // defined in meters: use raw value
-        if (dimen == 'm' && coordinate.latitude != 90) 
-            return GeoUtils::getOffset(coordinate, value);
+        if (dimen == 'm' && coordinate.latitude != 90)
+            return coordinate.isValid() ? GeoUtils::getOffset(coordinate, value) : value;
 
         // relative to size
-        if (dimen == '%') 
+        if (dimen == '%')
             return size * value * 0.01;
 
         throw utymap::MapCssException("Unknown width dimen.");
+    }
+
+    // Gets dimension value. Evaluation is not supported.
+    inline double getDimension(const std::string& key,
+                               utymap::index::StringTable& stringTable,
+                               const utymap::mapcss::Style& style,
+                               double size,
+                               double defaultValue,
+                               const utymap::GeoCoordinate& coordinate = GeoCoordinate())
+    {
+        uint32_t keyId = stringTable.getId(key);
+        if (!style.has(keyId))
+            return defaultValue;
+
+        return getDimension(keyId, stringTable, style, size, coordinate);
+    }
+
+    // Gets dimension value. Evaluation is not supported.
+    inline double getDimension(const std::string& key,
+                               utymap::index::StringTable& stringTable,
+                               const utymap::mapcss::Style& style,
+                               double size,
+                               const utymap::GeoCoordinate& coordinate = GeoCoordinate())
+    {
+        return getDimension(stringTable.getId(key), stringTable, style, size, coordinate);
     }
 }}
 
