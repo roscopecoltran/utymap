@@ -5,7 +5,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "heightmap/ElevationProvider.hpp"
+#include "heightmap/FlatElevationProvider.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
@@ -29,12 +29,6 @@ const char* StyleSheetString =
 
 typedef std::function<void(const Mesh&)> MeshCallback;
 
-class TestElevationProvider : public ElevationProvider
-{
-public:
-    double getElevation(double x, double y) { return 0; }
-};
-
 struct Builders_Terrain_TerraBuilderFixture
 {
     Builders_Terrain_TerraBuilderFixture() :
@@ -55,7 +49,7 @@ struct Builders_Terrain_TerraBuilderFixture
         std::remove("string.dat");
     }
 
-    TestElevationProvider eleProvider;
+    FlatElevationProvider eleProvider;
     StringTable* stringTablePtr;
     StyleProvider* styleProviderPtr;
     TerraBuilder* builderPtr;

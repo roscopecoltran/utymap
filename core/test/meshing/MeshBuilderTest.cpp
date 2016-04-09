@@ -1,4 +1,4 @@
-#include "heightmap/ElevationProvider.hpp"
+#include "heightmap/FlatElevationProvider.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 #include "clipper/clipper.hpp"
 #include "mapcss/ColorGradient.hpp"
@@ -18,19 +18,13 @@ typedef Point DPoint;
 
 const ColorGradient colorGradient(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
 
-class TestElevationProvider: public ElevationProvider
-{
-public:
-    double getElevation(double x, double y) { return 0; }
-};
-
 struct Meshing_MeshingFixture 
 {
     Meshing_MeshingFixture(): eleProvider(), builder(eleProvider)
                                     { BOOST_TEST_MESSAGE("setup fixture"); }
     ~Meshing_MeshingFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
-    TestElevationProvider eleProvider;
+    FlatElevationProvider eleProvider;
     MeshBuilder builder;
 };
 

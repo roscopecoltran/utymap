@@ -1,7 +1,7 @@
 #ifndef HEIGHTMAP_FLATELEVATIONPROVIDER_HPP_DEFINED
 #define HEIGHTMAP_FLATELEVATIONPROVIDER_HPP_DEFINED
 
-#include "heightmap/FlatElevationProvider.hpp"
+#include "heightmap/ElevationProvider.hpp"
 
 namespace utymap { namespace heightmap {
 
@@ -9,7 +9,12 @@ namespace utymap { namespace heightmap {
 class FlatElevationProvider: public ElevationProvider
 {
 public:
-    inline double getElevation(double x, double y) { return 0; };
+
+    void preload(const utymap::BoundingBox&) {}
+
+    double getElevation(const utymap::GeoCoordinate&) const { return 0; }
+
+    double getElevation(double, double) const { return 0; };
 };
 
 }}

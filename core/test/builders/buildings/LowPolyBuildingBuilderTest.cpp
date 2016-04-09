@@ -3,7 +3,7 @@
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "heightmap/ElevationProvider.hpp"
+#include "heightmap/FlatElevationProvider.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "test_utils/MapCssUtils.hpp"
@@ -21,16 +21,6 @@ using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-namespace {
-
-class TestElevationProvider : public ElevationProvider 
-{
-public:
-    double getElevation(double x, double y) { return 0; }
-};
-
-}
-
 struct Builders_Buildings_LowPolyBuildingsBuilderFixture
 {
     Builders_Buildings_LowPolyBuildingsBuilderFixture() :
@@ -47,7 +37,7 @@ struct Builders_Buildings_LowPolyBuildingsBuilderFixture
         std::remove("string.dat");
     }
 
-    TestElevationProvider eleProvider;
+    FlatElevationProvider eleProvider;
     std::shared_ptr<StringTable> stringTable;
     std::shared_ptr<StyleProvider> styleProvider;
 };

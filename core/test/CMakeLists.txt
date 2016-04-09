@@ -34,6 +34,7 @@ add_executable (TestLauncher
                         formats/osm/MultipolygonProcessorTest.cpp
                         formats/osm/pbf/OsmPbfParserTest.cpp
                         formats/osm/xml/OsmXmlParserTest.cpp
+                        heightmap/SrtmElevationProviderTest.cpp
                         index/ElementStoreTest.cpp
                         index/InMemoryElementStoreTest.cpp
                         index/StringTableTest.cpp
