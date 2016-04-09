@@ -37,8 +37,8 @@ public:
 
 private:
     int flatLodEnd_;
-    std::shared_ptr<FlatElevationProvider> flatEleProvider_;
-    std::shared_ptr<SrtmElevationProvider> srtmEleProvider_;
+    std::shared_ptr<ElevationProvider> flatEleProvider_;
+    std::shared_ptr<ElevationProvider> srtmEleProvider_;
 };
 
 }}
