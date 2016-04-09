@@ -1,5 +1,7 @@
 #define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
 
+#define TEST_EXTERNAL_ASSETS_PATH TEST_ASSETS_PATH "../../../unity/Assets/Resources/" 
+
 #define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
 #define TEST_MAPCSS_DEFAULT TEST_MAPCSS_PATH "default/default.mapcss"
 
@@ -18,3 +20,5 @@
 #define TEST_SHAPE_NE_110M_ADMIN TEST_SHAPE_NE_110M "ne_110m_admin_0_scale_rank"
 #define TEST_SHAPE_NE_110M_BORDERS TEST_SHAPE_NE_110M "ne_110m_admin_0_boundary_lines_land"
 #define TEST_SHAPE_NE_110M_POPULATED_PLACES TEST_SHAPE_NE_110M "ne_110m_populated_places_simple"
+
+#define TEST_ELEVATION_DIRECTORY TEST_EXTERNAL_ASSETS_PATH "Elevation/"

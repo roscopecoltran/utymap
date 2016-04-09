@@ -7,35 +7,38 @@
 #include <cstdint>
 #include <cmath>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <stdexcept>
 #include <map>
 #include <memory>
+#include <iomanip>
 
 namespace utymap { namespace heightmap {
 
 // Provides the way to get elevation for given location from SRTM data.
 class SrtmElevationProvider : public ElevationProvider
 {
-    typedef std::shared_ptr<char*> Data;
-
     struct HgtCellKey
     {
         int lat, lon;
 
         HgtCellKey(int lat, int lon) : lat(lat), lon(lon) { }
 
-        inline bool operator<(const HgtCellKey& other) { return lat < other.lat || (!(other.lat < lat) && lon < other.lon); }
+        bool operator<(const HgtCellKey& other) const 
+        { 
+            return lat < other.lat || (!(other.lat < lat) && lon < other.lon); 
+        }
     };
 
     struct HgtCell
     {
         int totalPx, secondsPerPx;
         int offset;
-        Data data;
+        char* data;
         int size;
        
-        HgtCell(int totalPx, int secondsPerPx, Data data, int size) :
+        HgtCell(int totalPx, int secondsPerPx, char* data, int size) :
             totalPx(totalPx), secondsPerPx(secondsPerPx), 
             offset((totalPx * totalPx - totalPx) * 2), data(data), size(size)
         {
@@ -46,9 +49,15 @@ class SrtmElevationProvider : public ElevationProvider
 
 public:
 
-    SrtmElevationProvider(std::string dataDirectory, std::string dataSchema, int maxCacheSize = 4):
-        dataDirectory_(dataDirectory), dataSchema_(dataSchema), maxCacheSize_(maxCacheSize)
+    SrtmElevationProvider(std::string dataDirectory, int maxCacheSize = 4):
+        dataDirectory_(dataDirectory), maxCacheSize_(maxCacheSize)
     {
+    }
+
+    ~SrtmElevationProvider()
+    {
+        for (const auto& pair : cells_)
+            delete pair.second->data;
     }
 
     void preload(const utymap::BoundingBox& bbox)
@@ -71,6 +80,7 @@ public:
 
                 std::string path = getFilePath(cellKey);
                 CellPtr cell = readCell(path);
+                // TODO limit loaded cells.
                 cells_[cellKey] = cell;
             }
     }
@@ -132,8 +142,8 @@ private:
     {
         int pos = cell->offset + 2 * (x - cell->totalPx*y);
         // TODO ensure that it works on all platforms
-        return *((char*)(*cell->data + pos)) << 8 |
-               *((char*)(*cell->data + pos + 1));
+        return *((cell->data + pos)) << 8 |
+               *((cell->data + pos + 1));
     }
 
     inline CellPtr readCell(const std::string& path) const
@@ -158,9 +168,9 @@ private:
                 throw std::domain_error(std::string("Cannot load srtm file:") + path);
         }
 
-        Data data(new char[size]);
+        char* data = new char[size];
         file.seekg(0, std::ios::beg);
-        file.read(*data, size);
+        file.read(data, size);
         file.close();
 
         return CellPtr(new HgtCell(totalPx, secondsPerPx, data, size));
@@ -168,19 +178,19 @@ private:
 
     std::string getFilePath(const HgtCellKey& key) const
     {
-        auto directoryLength = dataDirectory_.size();
-        std::shared_ptr<char*> buffer(new char[directoryLength + 1 + 2 + 1 + 4 + 4]);
-
-        std::sprintf(*buffer, "%s/%c%.2i%s%.4i", dataDirectory_, 
-            key.lat > 0 ? 'N' : 'S', std::abs(key.lat),
-            key.lon > 0 ? 'E' : 'W', std::abs(key.lon));
-
-        return std::string(*buffer);
+        std::ostringstream stream;
+        stream << dataDirectory_ 
+            << std::setfill('0')
+            << (key.lat > 0 ? 'N' : 'S')
+            << std::setw(2) << std::abs(key.lat) << std::setw(0)
+            << (key.lon > 0 ? 'E' : 'W') 
+            << std::setw(3) << std::abs(key.lon) 
+            << ".hgt";
+        return stream.str();
     }
 
     std::map<HgtCellKey, CellPtr> cells_;
     std::string dataDirectory_;
-    std::string dataSchema_;
     int maxCacheSize_;
 };
 
