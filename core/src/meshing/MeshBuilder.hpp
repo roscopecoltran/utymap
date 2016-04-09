@@ -55,7 +55,7 @@ public:
     };
 
     // Creates builder with given elevation provider.
-    MeshBuilder(utymap::heightmap::ElevationProvider& eleProvider);
+    MeshBuilder(const utymap::heightmap::ElevationProvider& eleProvider);
     ~MeshBuilder();
 
     // Adds polygon to existing mesh using options provided.

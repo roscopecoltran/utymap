@@ -13,10 +13,11 @@ extern "C"
     // Composes object graph.
     void EXPORT_API configure(const char* stringPath,  // path to string table directory
                               const char* dataPath,    // path to index directory
+                              const char* elePath,     // path to elevation directory
                               OnError* errorCallback)  // completion callback.
-   {
-       applicationPtr = new Application(stringPath, dataPath, errorCallback);
-   }
+    {
+        applicationPtr = new Application(stringPath, dataPath, elePath, errorCallback);
+    }
 
     // Performs cleanup.
     void EXPORT_API cleanup()

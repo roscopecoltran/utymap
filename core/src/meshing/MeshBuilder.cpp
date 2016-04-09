@@ -14,7 +14,7 @@ class MeshBuilder::MeshBuilderImpl
 {
 public:
 
-    MeshBuilderImpl(ElevationProvider& eleProvider)
+    MeshBuilderImpl(const ElevationProvider& eleProvider)
     : eleProvider_(eleProvider) { }
      
     void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
@@ -86,8 +86,8 @@ public:
 
     inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
     {
-        double ele1 = eleProvider_.getElevation(p1.x, p1.y);
-        double ele2 = eleProvider_.getElevation(p2.x, p2.y);
+        double ele1 = eleProvider_.getElevation(p1.y, p1.x);
+        double ele2 = eleProvider_.getElevation(p2.y, p2.x);
 
         ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.eleNoiseFreq);
         ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.eleNoiseFreq);
@@ -133,7 +133,7 @@ private:
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-            double ele = eleProvider_.getElevation(x, y);
+            double ele = eleProvider_.getElevation(y, x);
 
             ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq) + options.heightOffset;
 
@@ -152,10 +152,10 @@ private:
           }
     }
 
-    ElevationProvider& eleProvider_;
+    const ElevationProvider& eleProvider_;
 };
 
-MeshBuilder::MeshBuilder(ElevationProvider& eleProvider) :
+MeshBuilder::MeshBuilder(const ElevationProvider& eleProvider) :
     pimpl_(new MeshBuilder::MeshBuilderImpl(eleProvider))
 {
 }

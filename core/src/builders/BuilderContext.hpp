@@ -32,7 +32,7 @@ struct BuilderContext
     BuilderContext(const utymap::QuadKey& quadKey,
                    const utymap::mapcss::StyleProvider& styleProvider,
                    utymap::index::StringTable& stringTable,
-                   utymap::heightmap::ElevationProvider& eleProvider,
+                   const utymap::heightmap::ElevationProvider& eleProvider,
                    std::function<void(const utymap::meshing::Mesh&)> meshCallback,
                    std::function<void(const utymap::entities::Element&)> elementCallback) :
         quadKey(quadKey), 

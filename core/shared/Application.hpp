@@ -9,6 +9,7 @@
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
+#include "heightmap/SrtmElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
@@ -17,12 +18,14 @@
 #include "mapcss/StyleProvider.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <cstdint>
 #include <exception>
 #include <fstream>
 #include <string>
 #include <memory>
+#include <mutex>
 #include <vector>
 #include <unordered_map>
 
@@ -45,6 +48,7 @@ class Application
 {
     const std::string InMemoryStorageKey = "InMemory";
     const std::string PersistentStorageKey = "OnDisk";
+    const int SrtmElevationLodStart = 12;
 
     // Visits element in quadkey.
     struct QuadKeyElementVisitor : public utymap::entities::ElementVisitor
@@ -131,9 +135,10 @@ class Application
 
 public:
     // Composes object graph.
-    Application(const char* stringPath, const char* dataPath, OnError* errorCallback) :
+    Application(const char* stringPath, const char* dataPath, const char* elePath, OnError* errorCallback) :
         stringTable_(stringPath), inMemoryStore_(stringTable_), persistentStore_(dataPath, stringTable_),
-        geoStore_(stringTable_), eleProvider_(), quadKeyBuilder_(geoStore_, stringTable_, eleProvider_)
+        geoStore_(stringTable_), srtmEleProvider_(elePath), flatEleProvider_(),
+        quadKeyBuilder_(geoStore_, stringTable_)
     {
         geoStore_.registerStore(InMemoryStorageKey, inMemoryStore_);
         geoStore_.registerStore(PersistentStorageKey, persistentStore_);
@@ -202,9 +207,18 @@ public:
                   OnElementLoaded* elementCallback, OnError* errorCallback)
     {
         try {
+            auto& eleProvider = quadKey.levelOfDetail <= SrtmElevationLodStart
+                ? flatEleProvider_
+                : (utymap::heightmap::ElevationProvider&) srtmEleProvider_;
+
+            // Preloading is not thread safe
+            lock_.lock();
+            eleProvider.preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
+            lock_.unlock();
+
             utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
             QuadKeyElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-            quadKeyBuilder_.build(quadKey, styleProvider,
+            quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 meshCallback(mesh.name.data(),
                     mesh.vertices.data(), mesh.vertices.size(),
@@ -254,9 +268,11 @@ private:
     utymap::index::InMemoryElementStore inMemoryStore_;
     utymap::index::PersistentElementStore persistentStore_;
     utymap::index::GeoStore geoStore_;
-    utymap::heightmap::FlatElevationProvider eleProvider_;
-    utymap::builders::QuadKeyBuilder quadKeyBuilder_;
+    utymap::heightmap::FlatElevationProvider flatEleProvider_;
+    utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
 
+    utymap::builders::QuadKeyBuilder quadKeyBuilder_;
+    std::mutex lock_;
 
     std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders_;
 };

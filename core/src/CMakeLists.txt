@@ -34,7 +34,6 @@ set(HEADER_FILES
                 formats/shape/ShapeParser.hpp
                 formats/shape/ShapeDataVisitor.hpp
                 heightmap/ElevationProvider.hpp
-                heightmap/ElevationProviderFactory.hpp
                 heightmap/FlatElevationProvider.hpp
                 heightmap/SrtmElevationProvider.hpp
                 index/GeoStore.hpp

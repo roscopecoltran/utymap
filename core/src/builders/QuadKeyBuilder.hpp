@@ -27,8 +27,7 @@ public:
     typedef std::function<std::shared_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
     QuadKeyBuilder(utymap::index::GeoStore& geoStore,
-                   utymap::index::StringTable& stringTable,
-                   utymap::heightmap::ElevationProvider& eleProvider);
+                   utymap::index::StringTable& stringTable);
 
     ~QuadKeyBuilder();
 
@@ -38,6 +37,7 @@ public:
     // Builds tile for given quadkey.
     void build(const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider,
+               const utymap::heightmap::ElevationProvider& eleProvider,
                MeshCallback meshFunc,
                ElementCallback elementFunc);
 

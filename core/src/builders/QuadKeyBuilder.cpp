@@ -37,7 +37,7 @@ public:
     AggregateElemenVisitor(const QuadKey& quadKey,
                            const StyleProvider& styleProvider,
                            StringTable& stringTable,
-                           ElevationProvider& eleProvider,
+                           const ElevationProvider& eleProvider,
                            const MeshCallback& meshFunc,
                            const ElementCallback& elementFunc,
                            BuilderFactoryMap& builderFactoryMap,
@@ -102,10 +102,9 @@ private:
 
 public:
 
-    QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
+    QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable) :
         geoStore_(geoStore),
         stringTable_(stringTable),
-        eleProvider_(eleProvider),
         builderKeyId_(stringTable.getId(BuilderKeyName)),
         builderFactory_()
     {
@@ -118,11 +117,12 @@ public:
 
     void build(const QuadKey& quadKey,
                const StyleProvider& styleProvider,
+               const ElevationProvider& eleProvider,
                const MeshCallback& meshFunc,
                const ElementCallback& elementFunc)
     {
         AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_,
-            eleProvider_, meshFunc, elementFunc, builderFactory_, builderKeyId_);
+            eleProvider, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
         geoStore_.search(quadKey, styleProvider, elementVisitor);
         elementVisitor.complete();
@@ -131,7 +131,6 @@ public:
 private:
     GeoStore& geoStore_;
     StringTable& stringTable_;
-    ElevationProvider& eleProvider_;
     std::uint32_t builderKeyId_;
     BuilderFactoryMap builderFactory_;
 };
@@ -141,13 +140,14 @@ void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuil
     pimpl_->registerElementVisitor(name, factory);
 }
 
-void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, MeshCallback meshFunc, ElementCallback elementFunc)
+void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, const ElevationProvider& eleProvider, 
+    MeshCallback meshFunc, ElementCallback elementFunc)
 {
-    pimpl_->build(quadKey, styleProvider, meshFunc, elementFunc);
+    pimpl_->build(quadKey, styleProvider, eleProvider, meshFunc, elementFunc);
 }
 
-QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable, ElevationProvider& eleProvider) :
-    pimpl_(new QuadKeyBuilder::QuadKeyBuilderImpl(geoStore, stringTable, eleProvider))
+QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable) :
+    pimpl_(new QuadKeyBuilder::QuadKeyBuilderImpl(geoStore, stringTable))
 {
 }
 
