@@ -1,11 +1,11 @@
 canvas|z15 {
-    drive-max-area: 0.0005;
+    drive-max-area: 5%;
     drive-color-noise-freq: 0.1;
     drive-ele-noise-freq: 0;
     drive-color: gradient(#4d4d4d);
-    drive-height:-0.2;
+    drive-height:-0.2m;
 
-    pedestrian-max-area: 0.0005;
+    pedestrian-max-area: 5%;
     pedestrian-color-noise-freq: 0.1;
     pedestrian-ele-noise-freq: 0.05;
     pedestrian-color: gradient(#636363);

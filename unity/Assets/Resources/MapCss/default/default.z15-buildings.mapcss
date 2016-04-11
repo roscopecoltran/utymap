@@ -5,5 +5,5 @@ area|z15[building=residential] {
     clip: false;
     builders: building;
     color: gradient(blue);
-    height: 12;
+    height: 12m;
 }
