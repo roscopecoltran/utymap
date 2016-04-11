@@ -7,6 +7,7 @@
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 
+#include <limits>
 #include <memory>
 
 namespace utymap { namespace meshing {
@@ -25,6 +26,8 @@ public:
         double colorNoiseFreq;
         // Height offset.
         double heightOffset;
+        // Fixed elevation.
+        double elevation;
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;
         // Mesh name
@@ -41,6 +44,7 @@ public:
                 double colorNoiseFreq,
                 double heightOffset,
                 const utymap::mapcss::ColorGradient& gradient,
+                double elevation = std::numeric_limits<double>::lowest(),
                 std::string meshName = "",
                 int segmentSplit = 0) :
             area(area), 
@@ -48,6 +52,7 @@ public:
             colorNoiseFreq(colorNoiseFreq),
             heightOffset(heightOffset),
             gradient(gradient),
+            elevation(elevation),
             meshName(meshName),
             segmentSplit(segmentSplit)
         {

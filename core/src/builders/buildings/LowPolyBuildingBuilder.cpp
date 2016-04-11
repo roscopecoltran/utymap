@@ -40,6 +40,7 @@ public:
         auto gradientKey = utymap::utils::getString("color", context_.stringTable, style);
         ColorGradient gradient = context_.styleProvider.getGradient(*gradientKey);
         double height = utymap::utils::getDouble("height", context_.stringTable, style);
+        double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
 
         Mesh mesh("building");
         LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_.meshBuilder);
@@ -47,11 +48,14 @@ public:
         polygon.addContour(toPoints(area.coordinates));
         roofBuilder
             .setHeight(height)
+            .setMinHeight(minHeight)
             .build(polygon);
         // TODO add floor
 
         LowPolyWallBuilder wallBuilder(mesh, gradient, context_.meshBuilder);
-        wallBuilder.setHeight(height);
+        wallBuilder
+            .setHeight(height)
+            .setMinHeight(minHeight);
         int last = area.coordinates.size() - 1;
         for (auto i = last; i >= 0; --i) 
             wallBuilder.build(area.coordinates[i], area.coordinates[i != 0 ? i - 1 : last]);

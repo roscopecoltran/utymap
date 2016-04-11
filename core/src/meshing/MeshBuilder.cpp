@@ -133,7 +133,9 @@ private:
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-            double ele = eleProvider_.getElevation(y, x);
+            double ele = options.elevation > std::numeric_limits<double>::lowest()
+                ? options.elevation 
+                : eleProvider_.getElevation(y, x);
 
             ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq) + options.heightOffset;
 

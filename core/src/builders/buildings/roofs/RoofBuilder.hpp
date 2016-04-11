@@ -23,6 +23,9 @@ public:
     // Sets height.
     inline RoofBuilder& setHeight(double height) { height_ = height; return *this; }
 
+    // Sets height above ground level.
+    inline RoofBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
+
     // Sets color freq.
     inline RoofBuilder& setColorNoise(double freq) { colorNoiseFreq_ = freq; return *this; }
 
@@ -32,7 +35,7 @@ public:
 protected:
     utymap::meshing::Mesh& mesh_;
     const utymap::mapcss::ColorGradient& gradient_;
-    double height_, colorNoiseFreq_;
+    double height_, minHeight_, colorNoiseFreq_;
 };
 
 }}

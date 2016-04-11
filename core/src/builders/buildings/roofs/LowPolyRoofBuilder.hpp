@@ -23,7 +23,6 @@ public:
     {
     }
 
-
     void build(utymap::meshing::Polygon& polygon)
     {
         meshBuilder_.addPolygon(mesh_, polygon, utymap::meshing::MeshBuilder::Options
@@ -32,7 +31,8 @@ public:
             0, // ele noise
             colorNoiseFreq_,
             height_,
-            gradient_
+            gradient_,
+            minHeight_
         });
     }
 
