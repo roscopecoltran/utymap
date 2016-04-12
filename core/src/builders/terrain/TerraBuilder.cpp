@@ -336,14 +336,20 @@ private:
     void processHeightOffset(const std::shared_ptr<MeshBuilder::Options>& options, const Points& points, bool isHole)
     {
         auto index = mesh_.vertices.size() / 3;
+
+        // do not use elevation noise for height offset.
+        auto newOptions = *options;
+        newOptions.eleNoiseFreq = 0;
+
         for (auto i = 0; i < points.size(); ++i) {
             Point p1 = points[i];
             Point p2 = points[i == (points.size() - 1) ? 0 : i + 1];
 
             // check whether two points are on cell rect
-            if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2)) continue;
+            if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2)) 
+                continue;
 
-            context_.meshBuilder.addPlane(mesh_, p1, p2, *options);
+            context_.meshBuilder.addPlane(mesh_, p1, p2, newOptions);
         }
     }
 
