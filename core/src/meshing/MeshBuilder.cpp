@@ -58,8 +58,9 @@ public:
             out.pointattributelist = nullptr;
             out.trianglelist = nullptr;
             out.triangleattributelist = nullptr;
+            out.pointmarkerlist = nullptr;
 
-            std::string triOptions = "prazBPQ";
+            std::string triOptions = "prazPQ";
             for (int i = 0; i < options.segmentSplit; i++) {
                 triOptions += "Y";
             }
@@ -133,11 +134,15 @@ private:
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-            double ele = options.elevation > std::numeric_limits<double>::lowest()
-                ? options.elevation 
-                : eleProvider_.getElevation(y, x);
 
-            ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq) + options.heightOffset;
+            double ele = options.heightOffset +
+                (options.elevation > std::numeric_limits<double>::lowest()
+                ? options.elevation
+                : eleProvider_.getElevation(y, x));
+
+            // do no apply noise on boundaries
+            if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
+                ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq);
 
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
