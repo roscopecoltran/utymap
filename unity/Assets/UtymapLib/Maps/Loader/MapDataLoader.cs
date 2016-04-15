@@ -13,6 +13,7 @@ using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Maps.Elevation;
+using Assets.UtymapLib.Maps.Imaginary;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace Assets.UtymapLib.Maps.Loader
@@ -44,15 +45,18 @@ namespace Assets.UtymapLib.Maps.Loader
         private string _mapDataFormatExtension;
         private string _cachePath;
         private IFileSystemService _fileSystemService;
+        private readonly ImaginaryProvider _imaginaryProvider;
 
         [Dependency]
         public ITrace Trace { get; set; }
 
         [Dependency]
-        public MapDataLoader(IElevationProvider elevationProvider, IFileSystemService fileSystemService, IPathResolver pathResolver)
+        public MapDataLoader(IElevationProvider elevationProvider, IFileSystemService fileSystemService,
+            ImaginaryProvider imaginaryProvider, IPathResolver pathResolver)
         {
             _elevationProvider = elevationProvider;
             _fileSystemService = fileSystemService;
+            _imaginaryProvider = imaginaryProvider;
             _pathResolver = pathResolver;
         }
 
@@ -77,6 +81,7 @@ namespace Assets.UtymapLib.Maps.Loader
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
             return CreateElevationSequence(tile)
+                .SelectMany(t => _imaginaryProvider.Get(t).Select(_ => t))
                 .SelectMany(t => CreateDownloadSequence(t))
                 .SelectMany(t => CreateLoadSequence(t));
         }
@@ -92,8 +97,10 @@ namespace Assets.UtymapLib.Maps.Loader
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
             var dataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial", @"/"));
 
+            var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local", @"/"));
+
             string errorMsg = null;
-            UtymapLib.Configure(stringPath, dataPath, error => errorMsg = error);
+            UtymapLib.Configure(stringPath, dataPath, elePath, error => errorMsg = error);
             if (errorMsg != null)
                 throw new MapDataException(errorMsg);
         }
@@ -172,9 +179,12 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
-                Trace.Info(TraceCategory, "loading tile: {0}", tile.QuadKey.ToString());
+                string tileDesc = String.Format("({0},{1}:{2})", tile.QuadKey.TileX, tile.QuadKey.TileY,
+                    tile.QuadKey);
+
+                Trace.Info(TraceCategory, "loading tile: {0}", tileDesc);
                 bool noException = true;
-                UtymapLib.LoadTile(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey,
+                UtymapLib.LoadQuadKey(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey,
                     // mesh callback
                     (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
                     {
@@ -209,9 +219,11 @@ namespace Assets.UtymapLib.Maps.Loader
                     {
                         noException = false;
                         var exception = new MapDataException(message);
-                        Trace.Error(TraceCategory, exception, "cannot load tile: {0}", tile.QuadKey.ToString());
+                        Trace.Error(TraceCategory, exception, "cannot load tile: {0}", tileDesc);
                         observer.OnError(exception);
                     });
+
+                Trace.Info(TraceCategory, "tile loaded: {0}", tileDesc);
                 if (noException)
                     observer.OnCompleted();
 

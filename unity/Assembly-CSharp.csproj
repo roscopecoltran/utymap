@@ -239,6 +239,8 @@
      <Compile Include="Assets\UtymapLib\Maps\Elevation\SrtmElevationProvider.cs" />
      <Compile Include="Assets\UtymapLib\Maps\Geocoding\IGeocoder.cs" />
      <Compile Include="Assets\UtymapLib\Maps\Geocoding\NominatimGeocoder.cs" />
+     <Compile Include="Assets\UtymapLib\Maps\Imaginary\BingImaginaryProvider.cs" />
+     <Compile Include="Assets\UtymapLib\Maps\Imaginary\ImaginaryProvider.cs" />
      <Compile Include="Assets\UtymapLib\Maps\Loader\MapDataLoader.cs" />
      <Compile Include="Assets\UtymapLib\Maps\Loader\UtymapLib.cs" />
      <Compile Include="Assets\UtymapLib\Strings.cs" />

@@ -142,10 +142,6 @@ namespace Assets.Scripts
                     .ObserveOnMainThread()
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
 
-                // TODO replace this with autoloading
-                GetService<IMapDataLoader>().AddToInMemoryStore(@"Osm\berlin.osm.xml", 
-                    GetService<Stylesheet>(), new Range<int>(_zoomLevel, _zoomLevel));
-
                 IsInitialized = true;
             }
             catch (Exception ex)

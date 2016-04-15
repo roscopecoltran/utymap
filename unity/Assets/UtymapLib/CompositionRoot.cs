@@ -10,6 +10,7 @@ using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Geocoding;
+using Assets.UtymapLib.Maps.Imaginary;
 using Assets.UtymapLib.Maps.Loader;
 
 [assembly: InternalsVisibleTo("UtymapLib.Tests")]
@@ -62,6 +63,7 @@ namespace Assets.UtymapLib
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
+            _container.Register(Component.For<ImaginaryProvider>().Use<BingImaginaryProvider>().SetConfig(_configSection));
 
             _bootstrapperActions.ForEach(a => a(_container, _configSection));
             _isInitialized = true;

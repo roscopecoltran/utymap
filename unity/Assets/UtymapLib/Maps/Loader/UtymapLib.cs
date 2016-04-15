@@ -9,10 +9,11 @@ namespace Assets.UtymapLib.Maps.Loader
         /// <summary> Configure utymap. Should be called first. </summary>
         /// <param name="stringPath"> Path to string table. </param>
         /// <param name="dataPath"> Path to map data. </param>
+        /// <param name="elePath"> Path to elevation data. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void Configure(string stringPath, string dataPath, OnError onError)
+        public static void Configure(string stringPath, string dataPath, string elePath, OnError onError)
         {
-            configure(stringPath, dataPath, onError);
+            configure(stringPath, dataPath, elePath, onError);
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Assets.UtymapLib.Maps.Loader
         internal delegate void OnError([In] string message);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
-        private static extern void configure(string stringPath, string dataPath, OnError errorHandler);
+        private static extern void configure(string stringPath, string dataPath, string elePath, OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern void addToInMemoryStoreInRange(string stylePath, string path, int startLod, int endLod,

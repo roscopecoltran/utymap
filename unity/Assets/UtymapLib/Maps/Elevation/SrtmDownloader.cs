@@ -59,7 +59,7 @@ namespace Assets.UtymapLib.Maps.Elevation
                     var url = String.Format("{0}/{1}/{2}", _server, ContinentMap[int.Parse(parameters[1])],
                         parameters[1].EndsWith("zip") ? "" : parameters[0] + ".hgt.zip");
                     _trace.Warn(TraceCategory, String.Format("Downloading SRTM data from {0}", url));
-                    return ObservableWWW.GetAndGetBytes(url).Take(1);
+                    return ObservableWWW.GetAndGetBytes(url);
                 }
             }
             return Observable.Throw<byte[]>(new ArgumentException(
