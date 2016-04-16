@@ -81,7 +81,7 @@ namespace Assets.UtymapLib.Maps.Loader
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
             return CreateElevationSequence(tile)
-                .SelectMany(t => _imaginaryProvider.Get(t).Select(_ => t))
+                //.SelectMany(t => _imaginaryProvider.Get(t).Select(_ => t))
                 .SelectMany(t => CreateDownloadSequence(t))
                 .SelectMany(t => CreateLoadSequence(t));
         }
@@ -137,7 +137,7 @@ namespace Assets.UtymapLib.Maps.Loader
                     ? Observable.Return(tile)
                     : Observable.Throw<Tile>(new MapDataException(Strings.CannotAddDataToInMemoryStore, errorMsg));
             }
-            
+
             // need to download from remote server
             return Observable.Create<Tile>(observer =>
             {
@@ -239,9 +239,9 @@ namespace Assets.UtymapLib.Maps.Loader
             UtymapLib.AddToInMemoryStore(
                 _pathResolver.Resolve(tile.Stylesheet.Path),
                 _pathResolver.Resolve(filePath),
-                tile.QuadKey, 
+                tile.QuadKey,
                 error => errorMsg = error);
-            
+
             return errorMsg;
         }
 
