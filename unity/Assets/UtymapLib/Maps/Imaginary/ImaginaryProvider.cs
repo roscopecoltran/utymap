@@ -23,20 +23,18 @@ namespace Assets.UtymapLib.Maps.Imaginary
         protected abstract string FormatExtension { get; }
 
         /// <summary> Tries to download and store in cache remote tile. </summary>
-        public IObservable<Unit> Get(Tile tile)
+        public IObservable<string> Get(Tile tile)
         {
             string filePath = Path.Combine(_cachePath, tile.QuadKey + FormatExtension);
-            tile.Stylesheet.ImaginaryFile = filePath;
-
             return FileSystemService.Exists(filePath)
-                ? Observable.Return(Unit.Default)
+                ? Observable.Return(filePath)
                 : ObservableWWW
                     .GetAndGetBytes(GetUrl(tile.QuadKey))
                     .Select(bytes =>
                     {
                         using(var stream = FileSystemService.WriteStream(filePath))
                             stream.Write(bytes, 0, bytes.Length);
-                        return Unit.Default;
+                        return filePath;
                     });
         }
 
