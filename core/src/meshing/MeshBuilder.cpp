@@ -90,16 +90,16 @@ public:
         double ele1 = eleProvider_.getElevation(p1.y, p1.x);
         double ele2 = eleProvider_.getElevation(p2.y, p2.x);
 
-        ele1 += NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.eleNoiseFreq);
-        ele2 += NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.eleNoiseFreq);
+        ele1 += NoiseUtils::perlin2D(p1.x, p1.y, options.eleNoiseFreq);
+        ele2 += NoiseUtils::perlin2D(p2.x, p2.y, options.eleNoiseFreq);
 
         addPlane(mesh, p1, p2, ele1, ele2, options);
     }
 
     inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
     {
-        auto color1 = options.gradient.evaluate((NoiseUtils::perlin3D(p1.x, ele1, p1.y, options.colorNoiseFreq) + 1) / 2);
-        auto color2 = options.gradient.evaluate((NoiseUtils::perlin3D(p2.x, ele2, p2.y, options.colorNoiseFreq) + 1) / 2);
+        auto color1 = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
+        auto color2 = options.gradient.evaluate((NoiseUtils::perlin2D(p2.x, p2.y, options.colorNoiseFreq) + 1) / 2);
 
         int index = mesh.vertices.size() / 3;
         addVertex(mesh, p1, ele1, color1, index);
@@ -142,14 +142,13 @@ private:
 
             // do no apply noise on boundaries
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
-                ele += NoiseUtils::perlin3D(x, ele, y, options.eleNoiseFreq);
+                ele += NoiseUtils::perlin2D(x, y, options.eleNoiseFreq);
 
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            mesh.colors.push_back(
-                GradientUtils::getColor(options.gradient, x, y, ele, options.colorNoiseFreq));
+            mesh.colors.push_back(GradientUtils::getColor(options.gradient, x, y, options.colorNoiseFreq));
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {

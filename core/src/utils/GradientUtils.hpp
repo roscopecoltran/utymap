@@ -25,9 +25,9 @@ public:
 
     // Gets color for specific coordinate using coherent noise function
     static inline utymap::mapcss::Color getColor(const utymap::mapcss::ColorGradient& gradient,
-                                                 double x, double y, double ele, double noise)
+                                                 double x, double y, double noise)
     {
-        double colorTime = (NoiseUtils::perlin3D(x, ele, y, noise) + 1) / 2;
+        double colorTime = (NoiseUtils::perlin2D(x, y, noise) + 1) / 2;
         return gradient.evaluate(colorTime);
     }
 

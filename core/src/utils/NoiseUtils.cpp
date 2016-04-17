@@ -4,6 +4,8 @@
 
 using namespace utymap::utils;
 
+const double Sqr2 = std::sqrt(2);
+
 const int NoiseUtils::Hash[] =
 {
     151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225,
@@ -40,6 +42,18 @@ const int NoiseUtils::Hash[] =
     222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 };
 
+const NoiseUtils::Vector2 NoiseUtils::Gradients2D[] =
+{
+    { 1, 0 },
+    { -1, 0 },
+    { 0, 1 },
+    { 0, -1 },
+    { 1 / Sqr2, 1 / Sqr2 },
+    { -1 / Sqr2, 1 / Sqr2 },
+    { 1 / Sqr2, -1 / Sqr2 },
+    { -1 / Sqr2, -1 / Sqr2 }
+};
+
 const NoiseUtils::Vector3 NoiseUtils::Gradients3D[] =
 {
     NoiseUtils::Vector3(1, 1, 0),
@@ -59,6 +73,46 @@ const NoiseUtils::Vector3 NoiseUtils::Gradients3D[] =
     NoiseUtils::Vector3(0, -1, 1),
     NoiseUtils::Vector3(0, -1, -1)
 };
+
+double NoiseUtils::perlin2D(double x, double y, float frequency)
+{
+    if (frequency < 1E-5) return 0;
+
+    Vector2 point(x * frequency, y* frequency);
+
+    int ix0 = std::floor(point.x);
+    int iy0 = std::floor(point.y);
+    double tx0 = point.x - ix0;
+    double ty0 = point.y - iy0;
+    double tx1 = tx0 - 1;
+    double ty1 = ty0 - 1;
+    ix0 &= HashMask;
+    iy0 &= HashMask;
+    int ix1 = ix0 + 1;
+    int iy1 = iy0 + 1;
+
+    int h0 = Hash[ix0];
+    int h1 = Hash[ix1];
+    Vector2 g00 = Gradients2D[Hash[h0 + iy0] & GradientsMask2D];
+    Vector2 g10 = Gradients2D[Hash[h1 + iy0] & GradientsMask2D];
+    Vector2 g01 = Gradients2D[Hash[h0 + iy1] & GradientsMask2D];
+    Vector2 g11 = Gradients2D[Hash[h1 + iy1] & GradientsMask2D];
+
+    double v00 = dot(g00, tx0, ty0);
+    double v10 = dot(g10, tx1, ty0);
+    double v01 = dot(g01, tx0, ty1);
+    double v11 = dot(g11, tx1, ty1);
+
+    double tx = smooth(tx0);
+    double ty = smooth(ty0);
+
+    double a = v00;
+    double b = v10 - v00;
+    double c = v01 - v00;
+    double d = v11 - v01 - v10 + v00;
+
+    return (a + b * tx + (c + d * tx) * ty) * Sqr2;
+}
 
 double NoiseUtils::perlin3D(double x, double y, double z, double frequency)
 {
