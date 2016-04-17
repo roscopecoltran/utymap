@@ -190,14 +190,35 @@ namespace Assets.UtymapLib.Maps.Loader
                     {
                         Trace.Debug(TraceCategory, "receive mesh: {0}", name);
 
-                        Vector3[] worldPoints = new Vector3[count/3];
-                        for (int i = 0; i < vertices.Length; i += 3)
-                            worldPoints[i/3] = tile.Projection
-                                .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
+                        Vector3[] worldPoints;
+                        Color[] unityColors;
 
-                        Color[] unityColors = new Color[colorCount];
-                        for (int i = 0; i < colorCount; ++i)
-                            unityColors[i] = ColorUtils.FromInt(colors[i]);
+                        // NOTE process terrain differently to emulate flat shading effect by 
+                        // avoiding triangles to share the same vertex.
+                        if (name.Contains("terrain"))
+                        {
+                            worldPoints = new Vector3[triangleCount];
+                            unityColors = new Color[triangleCount];
+                            for (int i = 0; i < triangles.Length; ++i)
+                            {
+                                int vertIndex = triangles[i] * 3;
+                                worldPoints[i] = tile.Projection
+                                    .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
+                                unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
+                                triangles[i] = i;
+                            }
+                        }
+                        else
+                        {
+                            worldPoints = new Vector3[count / 3];
+                            for (int i = 0; i < vertices.Length; i += 3)
+                                worldPoints[i / 3] = tile.Projection
+                                    .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
+
+                            unityColors = new Color[colorCount];
+                            for (int i = 0; i < colorCount; ++i)
+                                unityColors[i] = ColorUtils.FromInt(colors[i]);
+                        }
 
                         Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
                         observer.OnNext(new Union<Element, Mesh>(mesh));

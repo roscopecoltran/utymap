@@ -1,8 +1,8 @@
 canvas|z15 {
     grid-cell-size: 5%;
-    max-area: 5%;
-    color-noise-freq: 0.1;
-    ele-noise-freq: 0.05;
+    max-area: 0.05%;
+    color-noise-freq: 100000;
+    ele-noise-freq: 100000;
     color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
 }
 
@@ -13,9 +13,9 @@ area|z15[historic=memorial],
 area|z15[landuse] {
     clip:true;
     builders: terrain;
-    max-area: 5%;
-    color-noise-freq: 0.1;
-    ele-noise-freq: 0.05;
+    max-area: 0.05%;
+    color-noise-freq: 100000;
+    ele-noise-freq: 100000;
     color: gradient(#10ff00, #0ff000 50%, #098a00);
 }
 
