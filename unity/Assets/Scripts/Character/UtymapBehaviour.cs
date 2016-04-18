@@ -62,7 +62,7 @@ namespace Assets.Scripts.Character
         {
             AppManager = ApplicationManager.Instance;
             AppManager.InitializeFramework(GetConfigBuilder(), GetInitAction());
-            AppManager.SetZoomLevel(15);
+            AppManager.SetZoomLevel(16);
         }
 
         void Start()

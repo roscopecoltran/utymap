@@ -1,4 +1,4 @@
-canvas|z15 {
+canvas|z16 {
     water-max-area: 5%;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
@@ -6,10 +6,10 @@ canvas|z15 {
     water-height:-1m;
 }
 
-area|z15[natural=water],
-area|z15[landuse=basin],
-area|z15[waterway=riverbank],
-area|z15[waterway=dock] {
+area|z16[natural=water],
+area|z16[landuse=basin],
+area|z16[waterway=riverbank],
+area|z16[waterway=dock] {
     clip:true;
     builders: terrain;
     terrain-layer: water;

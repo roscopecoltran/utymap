@@ -21,7 +21,7 @@ namespace UtymapLib.Tests
     /// <summary> Used to debug application on high level of details. </summary>
     internal class Program
     {
-        private const int LevelOfDetails = 15;
+        private const int LevelOfDetails = 16;
         private const string TraceCategory = "test.app";
 
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;

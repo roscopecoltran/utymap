@@ -1,0 +1,9 @@
+area|z16[building=yes],
+area|z16[building=apartments],
+area|z16[building=office],
+area|z16[building=residential] {
+    clip: false;
+    builders: building;
+    color: gradient(blue);
+    height: 12m;
+}

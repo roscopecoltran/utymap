@@ -10,9 +10,7 @@ using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
-using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Loader;
 using IContainer = Assets.UtymapLib.Infrastructure.Dependencies.IContainer;
 using Container = Assets.UtymapLib.Infrastructure.Dependencies.Container;
 using Component = Assets.UtymapLib.Infrastructure.Dependencies.Component;
@@ -28,7 +26,7 @@ namespace Assets.Scripts
         private CompositionRoot _compositionRoot;
         private ITileController _tileController;
 
-        private int _zoomLevel = 15;
+        private int _zoomLevel = 16;
 
         #region Singleton implementation
 
