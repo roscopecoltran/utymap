@@ -70,33 +70,33 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllQuadKeysAreLoadedAtZoomOne_ThenCallbac
 // This case tests storing lod range.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_ThenCallbacksAreCalled)
 {
-    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 15, 15, callback);
+    ::addToInMemoryStoreInRange(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 16, 16, callback);
 
-    loadQuadKeys(15, 17602, 17602, 10744, 10744);
+    loadQuadKeys(16, 35205, 35205, 21489, 21489);
 }
 
 // This case tests dynamic addtion incremental addtion/search to store.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeysAreLoadedInSequenceAtDetailedZoom_ThenCallbacksAreCalled)
 {
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
-    loadQuadKeys(15, 17602, 17602, 10744, 10744);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);
+    loadQuadKeys(16, 35205, 35205, 21489, 21489);
 
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17601, 10745, 15, callback);
-    loadQuadKeys(15, 17601, 17601, 10745, 10745);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35204, 21490, 16, callback);
+    loadQuadKeys(16, 35204, 35204, 21490, 21490);
 }
 
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenHasDataReturnsTrue)
 {
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);
 
-    BOOST_CHECK(::hasData(17602, 10744, 15));
+    BOOST_CHECK(::hasData(35205, 21489, 16));
 }
 
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturnsFalseForAnother)
 {
-    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 17602, 10744, 15, callback);
+    ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);
 
-    BOOST_CHECK(::hasData(17601, 10745, 15) == false);
+    BOOST_CHECK(::hasData(35204, 21490, 16) == false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
