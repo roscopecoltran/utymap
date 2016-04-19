@@ -21,7 +21,7 @@ using namespace utymap::mapcss;
 
 namespace utymap { namespace index {
 
-const static double Scale = 1E8; // max precision for Lat/Lon
+const static double Scale = 1E7; // max precision for Lat/Lon
 const static std::string ClipKey = "clip";
 const static std::string SkipKey = "skip";
 
