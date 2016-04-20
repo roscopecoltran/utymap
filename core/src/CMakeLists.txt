@@ -14,6 +14,7 @@ set(HEADER_FILES
                 builders/QuadKeyBuilder.hpp
                 builders/terrain/LineGridSplitter.hpp
                 builders/terrain/TerraBuilder.hpp
+                builders/terrain/TerraGenerator.hpp
                 builders/buildings/LowPolyBuildingBuilder.hpp
                 builders/buildings/facades/LowPolyWallBuilder.hpp
                 builders/buildings/roofs/LowPolyRoofBuilder.hpp
@@ -72,6 +73,7 @@ add_library (UtyMap
                 ${LIB_SOURCE}/shapefile/safileio.c
                 ${LIB_SOURCE}/shapefile/shpopen.c
                 builders/terrain/TerraBuilder.cpp
+                builders/terrain/TerraGenerator.cpp
                 builders/QuadKeyBuilder.cpp
                 builders/buildings/LowPolyBuildingBuilder.cpp
                 formats/osm/MultipolygonProcessor.cpp

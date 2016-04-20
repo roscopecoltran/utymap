@@ -137,7 +137,7 @@ struct Mesh
 
     Mesh(const std::string& name) : name(name) { }
 
-    // disable copying
+    // disable copying to prevent accidential copy
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
 };
