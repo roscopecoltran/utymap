@@ -11,20 +11,20 @@ using namespace utymap::index;
 
 class StringTable::StringTableImpl
 {
-    typedef std::vector<uint32_t> IdList;
-    typedef std::unordered_map<uint32_t, IdList> HashIdMap;
+    typedef std::vector<std::uint32_t> IdList;
+    typedef std::unordered_map<std::uint32_t, IdList> HashIdMap;
 
     std::fstream indexFile_;
     std::fstream dataFile_;
-    uint32_t seed_;
-    uint32_t nextId_;
+    std::uint32_t seed_;
+    std::uint32_t nextId_;
 
     // TODO think about better data structure alternative
     HashIdMap map_;
-    std::vector<uint32_t> offsets_;
+    std::vector<std::uint32_t> offsets_;
 
 public:
-    StringTableImpl(const std::string& indexPath, const std::string& dataPath, uint32_t seed) :
+    StringTableImpl(const std::string& indexPath, const std::string& dataPath, std::uint32_t seed) :
         indexFile_(indexPath, ios::in | ios::out | ios::binary | ios::ate | ios::app),
         dataFile_(dataPath, ios::in | ios::out | ios::binary | ios::app),
         seed_(seed),
@@ -32,7 +32,7 @@ public:
         map_(),
         offsets_()
     {
-        nextId_ = indexFile_.tellg() / (sizeof(uint32_t) * 2);
+        nextId_ = indexFile_.tellg() / (sizeof(std::uint32_t) * 2);
         if (nextId_ > 0)
         {
             int32_t count = nextId_;
@@ -40,7 +40,7 @@ public:
             indexFile_.seekg(0, ios::beg);
             for (int i = 0; i < count; ++i)
             {
-                uint32_t hash, offset;
+                std::uint32_t hash, offset;
                 indexFile_.read(reinterpret_cast<char*>(&hash), sizeof(hash));
                 indexFile_.read(reinterpret_cast<char*>(&offset), sizeof(offset));
                 offsets_.push_back(offset);
@@ -55,15 +55,15 @@ public:
         dataFile_.close();
     }
 
-    uint32_t getId(const std::string& str)
+    std::uint32_t getId(const std::string& str)
     {
-        uint32_t hash;
+        std::uint32_t hash;
         MurmurHash3_x86_32(str.c_str(), str.size(), seed_, &hash);
 
         HashIdMap::iterator hashLookupResult = map_.find(hash);
         if (hashLookupResult != map_.end())
         {
-            for (uint32_t id : hashLookupResult->second)
+            for (std::uint32_t id : hashLookupResult->second)
             {
                 std::string data;
                 readString(id, data);
@@ -76,7 +76,7 @@ public:
         return nextId_++;
     }
 
-    std::string getString(uint32_t id)
+    std::string getString(std::uint32_t id)
     {
         std::string str;
         readString(id, str);
@@ -88,11 +88,11 @@ public:
 private:
 
     // reads string by id.
-    void readString(uint32_t id, std::string& data)
+    void readString(std::uint32_t id, std::string& data)
     {
         if (id < offsets_.size())
         {
-            uint32_t offset = offsets_[id];
+            std::uint32_t offset = offsets_[id];
             std::string::size_type size = id + 1 < nextId_ ? offsets_[id] : 8;
             data.reserve(size);
 
@@ -102,11 +102,11 @@ private:
     }
 
     // write string to index.
-    void writeString(uint32_t hash, const std::string& data)
+    void writeString(std::uint32_t hash, const std::string& data)
     {
         // get offset as file size
         dataFile_.seekg(0, ios::end);
-        uint32_t offset = dataFile_.tellg();
+        std::uint32_t offset = dataFile_.tellg();
 
         // write string
         dataFile_.seekp(0, ios::end);
@@ -129,12 +129,12 @@ StringTable::StringTable(const std::string& path) :
 
 StringTable::~StringTable() { }
 
-uint32_t StringTable::getId(const std::string& str)
+std::uint32_t StringTable::getId(const std::string& str)
 {
     return pimpl_->getId(str);
 }
 
-std::string StringTable::getString(uint32_t id)
+std::string StringTable::getString(std::uint32_t id)
 {
     return pimpl_->getString(id);
 }

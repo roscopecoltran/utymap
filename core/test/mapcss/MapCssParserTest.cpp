@@ -5,10 +5,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <fstream>
-#include <string>
-#include <memory>
-
 using namespace utymap::mapcss;
 
 typedef std::string::const_iterator StringIterator;
@@ -46,8 +42,8 @@ BOOST_AUTO_TEST_CASE( GivenCppComment_WhenParse_ThenDoesNotBreak )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( stylesheet.rules.size() == 1 );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
 }
 
 BOOST_AUTO_TEST_CASE( GivenHtmlComment_WhenParse_ThenDoesNotBreak )
@@ -56,8 +52,8 @@ BOOST_AUTO_TEST_CASE( GivenHtmlComment_WhenParse_ThenDoesNotBreak )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( stylesheet.rules.size() == 1 );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
 }
 
 /* Condition */
@@ -67,10 +63,10 @@ BOOST_AUTO_TEST_CASE( GivenExistenceCondition_WhenParse_ThenOnlyKeyIsSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( condition.key == "highway" );
-    BOOST_CHECK( condition.operation.empty() == true );
-    BOOST_CHECK( condition.value.empty() == true );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(condition.key, "highway");
+    BOOST_CHECK(condition.operation.empty());
+    BOOST_CHECK(condition.value.empty());
 }
 
 BOOST_AUTO_TEST_CASE( GivenEqualCondition_WhenParse_ThenKeyOpValueAreSet )
@@ -79,10 +75,10 @@ BOOST_AUTO_TEST_CASE( GivenEqualCondition_WhenParse_ThenKeyOpValueAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( condition.key == "highway" );
-    BOOST_CHECK( condition.operation == "=" );
-    BOOST_CHECK( condition.value == "primary" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(condition.key, "highway");
+    BOOST_CHECK_EQUAL(condition.operation, "=");
+    BOOST_CHECK_EQUAL(condition.value, "primary");
 }
 
 BOOST_AUTO_TEST_CASE( GivenNegativeCondition_WhenParse_ThenKeyOpValueAreSet )
@@ -91,10 +87,10 @@ BOOST_AUTO_TEST_CASE( GivenNegativeCondition_WhenParse_ThenKeyOpValueAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), conditionGrammar, skipper, condition);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( condition.key == "highway" );
-    BOOST_CHECK( condition.operation == "!=" );
-    BOOST_CHECK( condition.value == "primary" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(condition.key, "highway");
+    BOOST_CHECK_EQUAL(condition.operation, "!=");
+    BOOST_CHECK_EQUAL(condition.value, "primary");
 }
 
 /* Zoom */
@@ -104,9 +100,9 @@ BOOST_AUTO_TEST_CASE( GivenOneZoom_WhenParse_ThenStartAndEndAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), zoomGrammar, skipper, zoom);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( zoom.start == 1 );
-    BOOST_CHECK( zoom.end == 1 );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(zoom.start, 1);
+    BOOST_CHECK_EQUAL(zoom.end, 1);
 }
 
 BOOST_AUTO_TEST_CASE( GivenZoomRange_WhenParse_ThenStartAndEndAreSet )
@@ -115,9 +111,9 @@ BOOST_AUTO_TEST_CASE( GivenZoomRange_WhenParse_ThenStartAndEndAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), zoomGrammar, skipper, zoom);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( zoom.start == 12 );
-    BOOST_CHECK( zoom.end == 21 );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(zoom.start, 12);
+    BOOST_CHECK_EQUAL(zoom.end, 21);
 }
 
 /* Selector */
@@ -127,10 +123,10 @@ BOOST_AUTO_TEST_CASE( GivenSingleSelector_WhenParse_ThenNameAndConditionsAreSet 
 
     bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( selector.name == "way" );
-    BOOST_CHECK( selector.conditions.size() == 1 );
-    BOOST_CHECK( selector.conditions[0].key == "highway" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(selector.name, "way");
+    BOOST_CHECK_EQUAL(selector.conditions.size(), 1);
+    BOOST_CHECK_EQUAL(selector.conditions[0].key, "highway");
 }
 
 BOOST_AUTO_TEST_CASE( GivenTwoSelectors_WhenParse_ThenNameAndConditionsAreSet )
@@ -139,11 +135,11 @@ BOOST_AUTO_TEST_CASE( GivenTwoSelectors_WhenParse_ThenNameAndConditionsAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( selector.name == "way" );
-    BOOST_CHECK( selector.conditions.size() == 2 );
-    BOOST_CHECK( selector.conditions[0].key == "highway" );
-    BOOST_CHECK( selector.conditions[1].key == "landuse" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(selector.name, "way");
+    BOOST_CHECK_EQUAL(selector.conditions.size(), 2);
+    BOOST_CHECK_EQUAL(selector.conditions[0].key, "highway");
+    BOOST_CHECK_EQUAL(selector.conditions[1].key, "landuse");
 }
 
 /* Declaration */
@@ -153,9 +149,9 @@ BOOST_AUTO_TEST_CASE( GivenSingleDeclaraion_WhenParse_ThenKeyValueAreSet )
 
     bool success = phrase_parse(str.cbegin(), str.cend(), declarationGrammar, skipper, declaration);
 
-    BOOST_CHECK( success == true );
-    BOOST_CHECK( declaration.key == "key1" );
-    BOOST_CHECK( declaration.value == "value1" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(declaration.key, "key1");
+    BOOST_CHECK_EQUAL(declaration.value, "value1");
 }
 
 BOOST_AUTO_TEST_CASE(GivenGradientDeclaraion_WhenParse_ThenGradientValueIsCorrect)
@@ -176,13 +172,12 @@ BOOST_AUTO_TEST_CASE( GivenSimpleRule_WhenParse_ThenSelectorAndDeclarationAreSet
 
     bool success = phrase_parse(str.cbegin(), str.cend(), ruleGrammar, skipper, rule);
 
-    BOOST_CHECK(success == true);
-
-    BOOST_CHECK( rule.selectors.size() == 1 );
-    BOOST_CHECK( rule.declarations.size() == 1 );
-    BOOST_CHECK( rule.selectors[0].conditions[0].key == "highway" );
-    BOOST_CHECK( rule.declarations[0].key == "key1" );
-    BOOST_CHECK( rule.declarations[0].value == "value1" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(rule.selectors.size(), 1);
+    BOOST_CHECK_EQUAL(rule.declarations.size(), 1);
+    BOOST_CHECK_EQUAL(rule.selectors[0].conditions[0].key , "highway");
+    BOOST_CHECK_EQUAL(rule.declarations[0].key, "key1");
+    BOOST_CHECK_EQUAL(rule.declarations[0].value,"value1");
 }
 
 BOOST_AUTO_TEST_CASE( GivenComplexRule_WhenParse_ThenSelectorAndDeclarationAreSet )
@@ -191,18 +186,17 @@ BOOST_AUTO_TEST_CASE( GivenComplexRule_WhenParse_ThenSelectorAndDeclarationAreSe
 
     bool success = phrase_parse(str.cbegin(), str.cend(), ruleGrammar, skipper, rule);
 
-    BOOST_CHECK(success == true);
-
-    BOOST_CHECK( rule.selectors.size() == 2 );
-    BOOST_CHECK( rule.declarations.size() == 2 );
-    BOOST_CHECK( rule.selectors[0].name == "way" );
-    BOOST_CHECK( rule.selectors[1].name == "area" );
-    BOOST_CHECK( rule.selectors[0].conditions[0].key == "highway" );
-    BOOST_CHECK( rule.selectors[1].conditions[0].key == "landuse" );
-    BOOST_CHECK( rule.declarations[0].key == "key1" );
-    BOOST_CHECK( rule.declarations[0].value == "value1" );
-    BOOST_CHECK( rule.declarations[1].key == "key2" );
-    BOOST_CHECK( rule.declarations[1].value == "value2" );
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(rule.selectors.size(), 2);
+    BOOST_CHECK_EQUAL(rule.declarations.size(), 2);
+    BOOST_CHECK_EQUAL(rule.selectors[0].name,"way");
+    BOOST_CHECK_EQUAL(rule.selectors[1].name, "area");
+    BOOST_CHECK_EQUAL(rule.selectors[0].conditions[0].key, "highway");
+    BOOST_CHECK_EQUAL(rule.selectors[1].conditions[0].key, "landuse");
+    BOOST_CHECK_EQUAL(rule.declarations[0].key,"key1");
+    BOOST_CHECK_EQUAL(rule.declarations[0].value, "value1");
+    BOOST_CHECK_EQUAL(rule.declarations[1].key, "key2");
+    BOOST_CHECK_EQUAL(rule.declarations[1].value, "value2");
 }
 
 /* StyleSheet */
@@ -214,9 +208,9 @@ BOOST_AUTO_TEST_CASE( GivenFourRulesOnDifferentLines_WhenParse_ThenHasFourRules 
         "node|z3[amenity] { key3:value3; }\n"
         "canvas|z3        { key4:value4; }";
 
-    bool success = phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
+    phrase_parse(str.cbegin(), str.cend(), styleSheetGrammar, skipper, stylesheet);
 
-    BOOST_CHECK( stylesheet.rules.size() == 4) ;
+    BOOST_CHECK_EQUAL( stylesheet.rules.size(), 4) ;
 }
 
 BOOST_AUTO_TEST_CASE(GivenImport_WhenParse_ThenStyleSheetIsImported)
@@ -226,7 +220,7 @@ BOOST_AUTO_TEST_CASE(GivenImport_WhenParse_ThenStyleSheetIsImported)
 
     bool success = phrase_parse(str.cbegin(), str.cend(), importGrammar, skipper);
 
-    BOOST_CHECK(success == true);
+    BOOST_CHECK(success);
 }
 
 BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasValidStyleSheet )
@@ -236,7 +230,7 @@ BOOST_AUTO_TEST_CASE( GivenSimpleStyleSheet_WhenParserParse_ThenNoErrorsAndHasVa
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK( stylesheet.rules.size() == 1 );
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
 }
 
 BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
@@ -246,7 +240,7 @@ BOOST_AUTO_TEST_CASE(GivenCanvasRule_WhenParse_ThenProcessValidStyleSheet)
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK(stylesheet.rules.size() == 1);
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
 }
 
 
@@ -258,8 +252,8 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRuleWithZoomRange_WhenParse_ThenReturnCorrectZoo
     StyleSheet stylesheet = parser.parse(str);
 
     Selector selector = stylesheet.rules[0].selectors[0];
-    BOOST_CHECK_EQUAL(1, selector.zoom.start);
-    BOOST_CHECK_EQUAL(12, selector.zoom.end);
+    BOOST_CHECK_EQUAL(selector.zoom.start, 1);
+    BOOST_CHECK_EQUAL(selector.zoom.end, 12);
 }
 
 BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientValue)
@@ -269,7 +263,7 @@ BOOST_AUTO_TEST_CASE(GivenRuleWithGradient_WhenParse_ThenReturnCorrectGradientVa
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
     BOOST_CHECK_EQUAL(stylesheet.rules[0].declarations[0].value, "gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080)");
 }
 
@@ -280,8 +274,8 @@ BOOST_AUTO_TEST_CASE(GivenSimpleRule_WhenToString_ThenReturnCorrectRepresentatio
 
     StyleSheet stylesheet = parser.parse(str);
 
-    BOOST_CHECK_EQUAL(1, stylesheet.rules.size());
-    BOOST_CHECK_EQUAL(str, utymap::utils::toString(stylesheet.rules[0]));
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
+    BOOST_CHECK_EQUAL(utymap::utils::toString(stylesheet.rules[0]), str);
 }
 
 BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
@@ -291,7 +285,7 @@ BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
 
     StyleSheet stylesheet = parser.parse(styleFile);
 
-    BOOST_CHECK_EQUAL(5, stylesheet.rules.size());
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

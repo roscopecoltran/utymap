@@ -24,10 +24,10 @@ public:
     ~StringTable();
 
     // Gets id of given string.
-    uint32_t getId(const std::string& str);
+    std::uint32_t getId(const std::string& str);
 
     // Gets original string by id.
-    std::string getString(uint32_t id);
+    std::string getString(std::uint32_t id);
 
     // Flushes changes to disk.
     void flush();

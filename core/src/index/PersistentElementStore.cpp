@@ -1,9 +1,7 @@
 #include "BoundingBox.hpp"
-#include "GeoCoordinate.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
-#include "entities/ElementVisitor.hpp"
 #include "index/PersistentElementStore.hpp"
 
 using namespace utymap;
@@ -20,21 +18,13 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node& node)
-    {
-    }
+    void visitNode(const utymap::entities::Node& node) { }
 
-    void visitWay(const utymap::entities::Way& way)
-    {
-    }
+    void visitWay(const utymap::entities::Way& way) { }
 
-    void visitArea(const utymap::entities::Area& area)
-    {
-    }
+    void visitArea(const utymap::entities::Area& area) { }
 
-    virtual void visitRelation(const utymap::entities::Relation& relation)
-    {
-    }
+    virtual void visitRelation(const utymap::entities::Relation& relation) { }
 
     void setQuadKey(const QuadKey& quadKey) { currentQuadKey_ = quadKey; }
 

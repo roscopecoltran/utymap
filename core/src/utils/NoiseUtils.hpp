@@ -23,7 +23,7 @@ private:
 public:
 
     // Calculates perlin 2D noise.
-    static double NoiseUtils::perlin2D(double x, double y, float frequency);
+    static double perlin2D(double x, double y, double frequency);
 
     // Calculates perlin 3D noise.
     static double perlin3D(double x, double y, double z, double freq);

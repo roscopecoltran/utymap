@@ -33,7 +33,6 @@ public:
 
 private:
     static const std::regex gradientRegEx;
-    static const std::unordered_map<std::string, utymap::mapcss::Color> colorMap;
 };
 
 }}

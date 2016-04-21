@@ -2,8 +2,6 @@
 #include "formats/shape/ShapeParser.hpp"
 #include "formats/shape/ShapeDataVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "LodRange.hpp"
-#include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 

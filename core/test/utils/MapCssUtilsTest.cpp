@@ -1,6 +1,5 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Way.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "utils/MapCssUtils.hpp"
 

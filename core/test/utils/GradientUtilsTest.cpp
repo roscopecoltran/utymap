@@ -3,8 +3,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <string>
-
 using namespace utymap::mapcss;
 using namespace utymap::utils;
 

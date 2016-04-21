@@ -8,9 +8,8 @@
 namespace utymap { namespace entities {
 
 // Represents point on map.
-class Node : public Element
+ struct Node : public Element
 {
-public:
     // Returns coordinate on map.
     GeoCoordinate coordinate;
 

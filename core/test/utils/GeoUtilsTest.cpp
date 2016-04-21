@@ -1,5 +1,4 @@
 #include "BoundingBox.hpp"
-#include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "utils/GeoUtils.hpp"
 

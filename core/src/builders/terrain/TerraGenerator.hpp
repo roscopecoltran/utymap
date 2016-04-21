@@ -19,7 +19,7 @@ class TerraGenerator
 {
 public:
 
-    // Represents terrain region points.
+    // Represents terrain region.
     struct Region
     {
         bool isLayer;
@@ -32,10 +32,13 @@ public:
                    const utymap::mapcss::Style& style,
                    ClipperLib::ClipperEx& clipper);
 
+    // Adds region
     void addRegion(const std::string& type, const Region& region);
 
+    // Generates mesh and calls callback from context.
     void generate(ClipperLib::Path& tileRect);
 
+    // Creates mesh options.
     std::shared_ptr<utymap::meshing::MeshBuilder::Options> createMeshOptions(const utymap::mapcss::Style& style,
                                                                              const std::string& prefix);
 
@@ -44,8 +47,10 @@ private:
     typedef std::vector<Region> Regions;
     typedef std::unordered_map<std::string, Regions> Layers;
 
+    // Builds all objects for quadkey organized by layers
     void buildLayers();
 
+    // Builds background as clip area of layers
     void buildBackground(ClipperLib::Path& tileRect);
 
     void buildFromRegions(const Regions& regions,

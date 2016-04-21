@@ -1,13 +1,10 @@
 #include "BoundingBox.hpp"
-#include "GeoCoordinate.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "entities/ElementVisitor.hpp"
 #include "index/InMemoryElementStore.hpp"
 
-#include <memory>
 #include <map>
 
 using namespace utymap;

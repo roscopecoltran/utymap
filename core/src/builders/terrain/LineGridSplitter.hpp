@@ -43,7 +43,7 @@ public:
     {
     }
 
-    void setParams(uint64_t scale, double step)
+    void setParams(double scale, double step)
     {
         scale_ = scale;
         step_ = step;

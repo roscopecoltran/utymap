@@ -25,7 +25,6 @@
 #include <fstream>
 #include <string>
 #include <memory>
-#include <mutex>
 #include <vector>
 #include <unordered_map>
 
@@ -211,10 +210,8 @@ public:
                 ? flatEleProvider_
                 : (utymap::heightmap::ElevationProvider&) srtmEleProvider_;
 
-            // Preloading is not thread safe
-            lock_.lock();
+            // TODO: preloading is not thread safe: extract separate API function
             eleProvider.preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
-            lock_.unlock();
 
             utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
             QuadKeyElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
@@ -272,8 +269,6 @@ private:
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
 
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
-    std::mutex lock_;
-
     std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders_;
 };
 

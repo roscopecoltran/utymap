@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(GivenOuterBoundingBox_WhenContains_ThenReturnFalse)
 
     bool result = bbox.contains(b);
 
-    BOOST_CHECK(result == false);
+    BOOST_CHECK(!result);
 }
 
 BOOST_AUTO_TEST_CASE(GivenInnerCoordinate_WhenContains_ThenReturnTrue)
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(GivenOuterCoordinate_WhenContains_ThenReturnFalse)
 {
     bool result = bbox.contains(GeoCoordinate(15, 15));
 
-    BOOST_CHECK(result == false);
+    BOOST_CHECK(!result );
 }
 
 BOOST_AUTO_TEST_CASE(GivenIntersectBoundingBox_WhenIntersects_ThenReturnTrue)
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(GivenOuterBoundingBox_WhenIntersects_ThenReturnFalse)
 
     bool result = bbox.intersects(b);
 
-    BOOST_CHECK(result == false);
+    BOOST_CHECK(!result);
 }
 
 BOOST_AUTO_TEST_CASE(GivenBoundingBox_WhenExpandOperator_ThenReturnExpanded)

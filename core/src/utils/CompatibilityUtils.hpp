@@ -1,7 +1,7 @@
 #ifndef UTILS_COMPATIBILITYUTILS_HPP_DEFINED
 #define UTILS_COMPATIBILITYUTILS_HPP_DEFINED
 
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(__MINGW32__)
 
 #include <string>
 #include <sstream>

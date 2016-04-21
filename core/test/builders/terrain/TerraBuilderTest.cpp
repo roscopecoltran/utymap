@@ -6,8 +6,6 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
-#include "index/StringTable.hpp"
-#include "mapcss/StyleProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -26,8 +24,6 @@ const char* StyleSheetString =
 "canvas|z1 { grid-cell-size: 1%; layer-priority: water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
             "water-ele-noise-freq: 0.05; water-color-noise-freq: 0.1; water-color:gradient(red);  water-max-area: 5%;}"
 "area|z1[natural=water] { builders:terrain; terrain-layer:water; }";
-
-typedef std::function<void(const Mesh&)> MeshCallback;
 
 struct Builders_Terrain_TerraBuilderFixture
 {

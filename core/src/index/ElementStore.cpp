@@ -1,17 +1,12 @@
 #include "BoundingBox.hpp"
-#include "GeoCoordinate.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "entities/ElementVisitor.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
-#include "mapcss/Style.hpp"
-#include "mapcss/StyleProvider.hpp"
-#include "utils/GeoUtils.hpp"
 #include "clipper/clipper.hpp"
 
 using namespace utymap;

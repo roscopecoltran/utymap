@@ -3,16 +3,9 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "utils/GradientUtils.hpp"
-
-#include <algorithm>
-#include <cstdint>
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 using namespace utymap::entities;
 using namespace utymap::index;
@@ -121,18 +114,16 @@ private:
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {
-            for (const Filter& filter : iter->second) {
-                for(auto it = filter.conditions.cbegin(); it != filter.conditions.cend(); ++it) {
-                    bool isMatched = true;
-                    for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                        isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
-                    }
-                    // merge declarations to style
-                    if (isMatched) {
-                        canBuild_ = true;
-                        for (const auto& d : filter.declarations) {
-                            style_.put(d.second);
-                        }
+            for (const Filter &filter : iter->second) {
+                bool isMatched = true;
+                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
+                    isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                }
+                // merge declarations to style
+                if (isMatched) {
+                    canBuild_ = true;
+                    for (const auto &d : filter.declarations) {
+                        style_.put(d.second);
                     }
                 }
             }
@@ -145,15 +136,13 @@ private:
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {
             for (const Filter& filter : iter->second) {
-                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend(); ++it) {
-                    bool isMatched = true;
-                    for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                        isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
-                    }
-                    if (isMatched) {
-                        canBuild_ = true;
-                        return;
-                    }
+                bool isMatched = true;
+                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
+                    isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                }
+                if (isMatched) {
+                    canBuild_ = true;
+                    return;
                 }
             }
         }
@@ -268,11 +257,9 @@ Style StyleProvider::forElement(const Element& element, int levelOfDetails) cons
 Style StyleProvider::forCanvas(int levelOfDetails) const
 {
     Style style;
-    for (const auto& rule : pimpl_->filters.canvases[levelOfDetails]) {
-        for (const auto& filter : pimpl_->filters.canvases[levelOfDetails]) {
-            for (const auto& declaration : filter.declarations) {
-                style.put(declaration.second);
-            }
+    for (const auto &filter : pimpl_->filters.canvases[levelOfDetails]) {
+        for (const auto &declaration : filter.declarations) {
+            style.put(declaration.second);
         }
     }
     return std::move(style);

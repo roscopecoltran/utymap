@@ -3,14 +3,9 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
-#include "index/StringTable.hpp"
 #include "test_utils/ElementUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
-
-#include <cstdio>
-#include <initializer_list>
-#include <tuple>
 
 using namespace utymap;
 using namespace utymap::entities;

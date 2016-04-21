@@ -5,7 +5,6 @@
 #include "formats/osm/MultipolygonProcessor.hpp"
 #include "utils/GeoUtils.hpp"
 
-#include <algorithm>
 #include <deque>
 
 using namespace utymap;

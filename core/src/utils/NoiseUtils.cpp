@@ -74,7 +74,7 @@ const NoiseUtils::Vector3 NoiseUtils::Gradients3D[] =
     NoiseUtils::Vector3(0, -1, -1)
 };
 
-double NoiseUtils::perlin2D(double x, double y, float frequency)
+double NoiseUtils::perlin2D(double x, double y, double frequency)
 {
     if (frequency < 1E-5) return 0;
 

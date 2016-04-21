@@ -2,18 +2,11 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
-#include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "entities/ElementVisitor.hpp"
-#include "utils/CompatibilityUtils.hpp"
 #include "utils/CoreUtils.hpp"
-
-#include <stdexcept>
-#include <sstream>
-#include <unordered_map>
 
 using namespace utymap;
 using namespace utymap::builders;

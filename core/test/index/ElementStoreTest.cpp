@@ -5,15 +5,8 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "index/ElementStore.hpp"
-#include "mapcss/StyleProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 #include "test_utils/MapCssUtils.hpp"
-
-#include <boost/test/unit_test.hpp>
-
-#include <functional>
-#include <initializer_list>
-#include <utility>
 
 using namespace utymap;
 using namespace utymap::entities;

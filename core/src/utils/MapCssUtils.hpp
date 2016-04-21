@@ -74,7 +74,7 @@ namespace utymap { namespace utils {
         if (dimen == '%')
             return size * value * 0.01;
 
-        throw utymap::MapCssException("Unknown width dimen.");
+        throw utymap::MapCssException("Unknown width dimension.");
     }
 
     // Gets dimension value. Evaluation is not supported.

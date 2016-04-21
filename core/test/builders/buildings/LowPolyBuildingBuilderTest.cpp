@@ -4,14 +4,8 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
-#include "index/StringTable.hpp"
-#include "mapcss/StyleProvider.hpp"
 #include "test_utils/MapCssUtils.hpp"
 #include "test_utils/ElementUtils.hpp"
-
-#include <boost/test/unit_test.hpp>
-#include <cstdio>
-#include <memory>
 
 using namespace utymap;
 using namespace utymap::builders;

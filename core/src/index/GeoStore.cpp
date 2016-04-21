@@ -9,11 +9,7 @@
 #include "index/PersistentElementStore.hpp"
 #include "utils/CoreUtils.hpp"
 
-#include <cstdint>
 #include <set>
-#include <stdexcept>
-#include <fstream>
-#include <unordered_map>
 
 using namespace utymap::entities;
 using namespace utymap::formats;

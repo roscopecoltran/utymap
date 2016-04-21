@@ -8,10 +8,7 @@
 #include "builders/buildings/facades/LowPolyWallBuilder.hpp"
 #include "builders/buildings/roofs/LowPolyRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
-#include "utils/GradientUtils.hpp"
 #include "utils/MapCssUtils.hpp"
-
-#include <vector>
 
 using namespace utymap;
 using namespace utymap::builders;

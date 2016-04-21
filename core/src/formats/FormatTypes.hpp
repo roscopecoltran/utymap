@@ -25,7 +25,7 @@ struct Tag
 // this type is specific for osm formats
 struct RelationMember
 {
-    uint64_t refId;
+    std::uint64_t refId;
     std::string type;
     std::string role;
 };

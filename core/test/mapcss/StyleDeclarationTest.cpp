@@ -1,12 +1,9 @@
 #include "entities/Node.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/StyleDeclaration.hpp"
 
 #include <boost/test/unit_test.hpp>
-#include "test_utils/ElementUtils.hpp"
 
-#include <cstdio>
-#include <memory>
+#include "test_utils/ElementUtils.hpp"
 
 using namespace utymap::entities;
 using namespace utymap::index;

@@ -5,7 +5,7 @@
 
 namespace utymap { namespace heightmap {
 
-// Provides the way to get elevation for given location.
+// Simple implementation of ElevationProvider which returns zero for all places.
 class FlatElevationProvider: public ElevationProvider
 {
 public:

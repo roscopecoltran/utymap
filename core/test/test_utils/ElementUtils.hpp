@@ -6,8 +6,6 @@
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
-#include <boost/test/unit_test.hpp>
-
 #include <cstdint>
 #include <string>
 #include <initializer_list>

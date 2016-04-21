@@ -5,8 +5,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <fstream>
-
 using namespace utymap::formats;
 
 struct Formats_Osm_Xml_OsmXmlParserFixture

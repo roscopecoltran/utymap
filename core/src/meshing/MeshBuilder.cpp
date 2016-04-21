@@ -4,7 +4,6 @@
 #include "meshing/MeshBuilder.hpp"
 #include "triangle/triangle.h"
 #include "utils/GradientUtils.hpp"
-#include "utils/NoiseUtils.hpp"
 
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
@@ -101,7 +100,7 @@ public:
         auto color1 = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
         auto color2 = options.gradient.evaluate((NoiseUtils::perlin2D(p2.x, p2.y, options.colorNoiseFreq) + 1) / 2);
 
-        int index = mesh.vertices.size() / 3;
+        auto index = mesh.vertices.size() / 3;
         addVertex(mesh, p1, ele1, color1, index);
         addVertex(mesh, p2, ele2, color1, index + 2);
         addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
@@ -148,7 +147,8 @@ private:
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            mesh.colors.push_back(GradientUtils::getColor(options.gradient, x, y, options.colorNoiseFreq));
+            int color = GradientUtils::getColor(options.gradient, x, y, options.colorNoiseFreq);
+            mesh.colors.push_back(color);
         }
 
         for (int i = 0; i < io->numberoftriangles; i++) {

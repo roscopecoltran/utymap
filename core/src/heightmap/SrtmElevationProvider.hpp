@@ -150,7 +150,7 @@ private:
     {
         std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
         file.seekg(0, std::ios::end);
-        std::uint32_t size = file.tellg();
+        auto size = file.tellg();
 
         int totalPx, secondsPerPx;
         switch (size)

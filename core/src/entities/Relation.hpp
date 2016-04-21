@@ -14,10 +14,8 @@
 namespace utymap { namespace entities {
 
 // Represents union of elements on map.
-class Relation : public Element
+struct Relation : public Element
 {
-public:
-
     std::vector<std::shared_ptr<Element>> elements;
 
     // Accepts visitor.

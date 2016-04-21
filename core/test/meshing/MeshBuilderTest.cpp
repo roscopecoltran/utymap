@@ -1,10 +1,8 @@
 #include "heightmap/FlatElevationProvider.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
-#include "clipper/clipper.hpp"
 #include "mapcss/ColorGradient.hpp"
 #include "meshing/Polygon.hpp"
 #include "meshing/MeshBuilder.hpp"
-#include "meshing/MeshTypes.hpp"
 
 #include <boost/test/unit_test.hpp>
 

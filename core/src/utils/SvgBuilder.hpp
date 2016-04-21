@@ -93,13 +93,13 @@ public:
                 if (p.size() < 3) continue;
 
                 out << string_format(" M %.2f %.2f",
-                    (double)((double)p[0].X * scale + offsetX),
-                    (double)((double)p[0].Y * scale + offsetY));
+                    ((double)p[0].X * scale + offsetX),
+                    ((double)p[0].Y * scale + offsetY));
 
                 for (int k = 1; k < p.size(); k++) {
                     out << string_format(" L %.2f %.2f",
-                        (double)((double)p[k].X * scale + offsetX),
-                        (double)((double)p[k].Y * scale + offsetY));
+                        ((double)p[k].X * scale + offsetX),
+                        ((double)p[k].Y * scale + offsetY));
                 }
                 out << " z";
             }

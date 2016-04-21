@@ -8,9 +8,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <cstdio>
-#include <utility>
-
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;

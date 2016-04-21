@@ -59,8 +59,6 @@ BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithIntStep_CanSplit)
 
 BOOST_AUTO_TEST_CASE(Given45Angle_WhenSplitWithHighLoD_CanSplit)
 {
-    int roundDigits = 1;
-    double scale = 1;
     LineGridSplitter splitter;
     IntPoint start(0, 0);
     IntPoint end(10, 10);
