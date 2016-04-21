@@ -71,6 +71,7 @@ public:
             free(out.pointattributelist);
             free(out.trianglelist);
             free(out.triangleattributelist);
+            free(out.pointmarkerlist);
         }
 
         free(in.pointmarkerlist);
@@ -170,7 +171,7 @@ MeshBuilder::~MeshBuilder() { }
 
 void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
 {
-    return pimpl_->addPolygon(mesh, polygon, options);
+    pimpl_->addPolygon(mesh, polygon, options);
 }
 
 void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
