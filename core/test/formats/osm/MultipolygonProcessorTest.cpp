@@ -7,6 +7,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
+
 using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::formats;

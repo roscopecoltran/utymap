@@ -3,6 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
+
 #include "test_utils/ElementUtils.hpp"
 
 using namespace utymap::entities;

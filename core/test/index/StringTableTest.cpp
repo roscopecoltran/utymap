@@ -2,6 +2,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cstdio>
+
 using namespace utymap::index;
 
 struct Index_StringTableFixture
