@@ -324,63 +324,55 @@ ElementStore::~ElementStore()
 
 bool ElementStore::store(const Element& element, const utymap::LodRange& range, const StyleProvider& styleProvider)
 {
+    return store(element, range, styleProvider, [&](const BoundingBox& elementBoundingBox) {
+        return true;
+    });
+}
+
+bool ElementStore::store(const Element& element, const QuadKey& quadKey, const StyleProvider& styleProvider)
+{
+    const BoundingBox quadKeyBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
+    return store(element, LodRange(quadKey.levelOfDetail, quadKey.levelOfDetail), styleProvider, [&](const BoundingBox& elementBoundingBox) {
+        return elementBoundingBox.intersects(quadKeyBbox);
+    });
+}
+
+bool ElementStore::store(const Element& element, const BoundingBox& bbox, const utymap::LodRange& range, const StyleProvider& styleProvider)
+{
+    return store(element, range, styleProvider, [&](const BoundingBox& elementBoundingBox) {
+        return elementBoundingBox.intersects(bbox);
+    });
+}
+
+template <typename Visitor>
+bool ElementStore::store(const Element& element, const LodRange& range, const StyleProvider& styleProvider, const Visitor& visitor)
+{
     BoundingBoxVisitor bboxVisitor;
     bool wasStored = false;
     for (int lod = range.start; lod <= range.end; ++lod) {
-        if (!styleProvider.hasStyle(element, lod)) 
+        if (!styleProvider.hasStyle(element, lod))
             continue;
         Style style = styleProvider.forElement(element, lod);
-        if (style.has(skipKeyId_, "true"))
-            continue;
+        if (style.has(skipKeyId_, "true")) continue;
 
         // initialize bounding box only once
-        if (!bboxVisitor.boundingBox.isValid()) {
+        if (!bboxVisitor.boundingBox.isValid())
             element.accept(bboxVisitor);
-        }       
 
-        storeInTileRange(element, bboxVisitor.boundingBox, lod, style.has(clipKeyId_, "true"));
+        if (!visitor(bboxVisitor.boundingBox)) return false;
+
+        ElementGeometryVisitor geometryClipper(*this);
+        utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+            if (style.has(clipKeyId_, "true"))
+                geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
+            else
+                storeImpl(element, quadKey);
+        });
         wasStored = true;
     }
 
     // NOTE still might be clipped and then skipped
     return wasStored;
-}
-
-bool ElementStore::store(const Element& element, const QuadKey& quadKey, const StyleProvider& styleProvider)
-{
-    if (!styleProvider.hasStyle(element, quadKey.levelOfDetail))
-        return false;
-
-    Style style = styleProvider.forElement(element, quadKey.levelOfDetail);
-    if (style.has(skipKeyId_, "true"))
-        return false;
-
-    const BoundingBox quadKeyBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
-    BoundingBoxVisitor bboxVisitor;
-    element.accept(bboxVisitor);
-
-    if (!bboxVisitor.boundingBox.intersects(quadKeyBbox))
-        return false;
-
-    ElementGeometryVisitor geometryClipper(*this);
-    if (style.has(clipKeyId_, "true"))
-        geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
-    else
-        storeImpl(element, quadKey);
-
-    return true;
-}
-
-void ElementStore::storeInTileRange(const Element& element, const BoundingBox& elementBbox, int levelOfDetails, bool shouldClip)
-{
-    ElementGeometryVisitor geometryClipper(*this);
-    auto visitor = [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
-        if (shouldClip)
-            geometryClipper.clipAndStore(element, quadKey, quadKeyBbox);
-        else
-            storeImpl(element, quadKey);
-    };
-    utymap::utils::GeoUtils::visitTileRange(elementBbox, levelOfDetails, visitor);
 }
 
 }}

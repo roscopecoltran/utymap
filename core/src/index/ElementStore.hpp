@@ -40,6 +40,12 @@ public:
                const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider);
 
+    // Stores element in storage only in given bounding box.
+    bool store(const utymap::entities::Element& element,
+               const utymap::BoundingBox& bbox,
+               const utymap::LodRange& range,
+               const utymap::mapcss::StyleProvider& styleProvider);
+
 protected:
     // Stores element in given quadkey.
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;
@@ -48,10 +54,11 @@ private:
     class ElementGeometryVisitor;
     class BoundingBoxVisitor;
 
-    void storeInTileRange(const utymap::entities::Element& element,
-                          const utymap::BoundingBox& elementBbox,
-                          int levelOfDetails,
-                          bool shouldClip);
+    template <typename Visitor>
+    bool store(const utymap::entities::Element& element,
+               const utymap::LodRange& range,
+               const utymap::mapcss::StyleProvider& styleProvider,
+               const Visitor& visitor);
 
     std::uint32_t clipKeyId_, skipKeyId_;
 };

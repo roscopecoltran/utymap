@@ -36,16 +36,23 @@ public:
              const utymap::LodRange& range, 
              const utymap::mapcss::StyleProvider& styleProvider);
 
-    // Adds elements from given path to selected store.
+    // Adds all data from file to selected store in given level of detail range.
     void add(const std::string& storeKey, 
              const std::string& path,
              const utymap::LodRange& range, 
              const utymap::mapcss::StyleProvider& styleProvider);
 
-    // Adds elements from given path to selected store.
+    // Adds all data from file to selected store in given quad key.
     void add(const std::string& storeKey,
              const std::string& path,
              const utymap::QuadKey& quadKey,
+             const utymap::mapcss::StyleProvider& styleProvider);
+
+    // Adds all data from file to selected store in given boundging box.
+    void add(const std::string& storeKey,
+             const std::string& path,
+             const utymap::BoundingBox& bbox,
+             const utymap::LodRange& range,
              const utymap::mapcss::StyleProvider& styleProvider);
 
     // Searches for elements inside quadkey.

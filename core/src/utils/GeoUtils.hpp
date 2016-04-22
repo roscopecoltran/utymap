@@ -62,7 +62,7 @@ public:
 
     // Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
-    static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, Visitor& visitor)
+    static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, const Visitor& visitor)
     {
         if (!bbox.isValid()) return;
 

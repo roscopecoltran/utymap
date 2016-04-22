@@ -81,6 +81,14 @@ public:
         });
     }
 
+    void add(const std::string& storeKey, const std::string& path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
+    {
+        ElementStore* elementStorePtr = storeMap_[storeKey];
+        add(path, styleProvider, [&](Element& element) {
+            return elementStorePtr->store(element, bbox, range, styleProvider);
+        });
+    }
+
     void add(const std::string& path, const StyleProvider& styleProvider, std::function<bool(Element&)> functor)
     {
         switch (getFormatTypeFromPath(path))
@@ -170,6 +178,11 @@ void utymap::index::GeoStore::add(const std::string& storeKey, const std::string
     pimpl_->add(storeKey, path, quadKey, styleProvider);
 }
 
+void utymap::index::GeoStore::add(const std::string &storeKey, const std::string &path, const utymap::BoundingBox& bbox, const LodRange& range, const utymap::mapcss::StyleProvider& styleProvider)
+{
+    pimpl_->add(storeKey, path, bbox, range, styleProvider);
+}
+
 void utymap::index::GeoStore::search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
 {
     pimpl_->search(quadKey, styleProvider, visitor);
@@ -184,3 +197,5 @@ bool utymap::index::GeoStore::hasData(const QuadKey& quadKey)
 {
     return pimpl_->hasData(quadKey);
 }
+
+

@@ -7,28 +7,6 @@
 using namespace utymap;
 using namespace utymap::utils;
 
-class TileRangeVisitor
-{
-public:
-    TileRangeVisitor() :
-        count(0),
-        lastQuadKey(),
-        lastBoundingBox(GeoCoordinate(0, 0), GeoCoordinate(0, 0))
-    {
-    }
-
-    void operator()(const QuadKey& quadKey, const BoundingBox& bbox)
-    {
-        lastQuadKey = quadKey;
-        lastBoundingBox = bbox;
-        count++;
-    }
-
-    int count;
-    QuadKey lastQuadKey;
-    BoundingBox lastBoundingBox;
-};
-
 BOOST_AUTO_TEST_SUITE(Index_GeoUtils)
 
 const double Precision = 0.1e-7;
@@ -92,23 +70,30 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenToString_ThenReturnValidCode)
 BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsOneTile)
 {
     BoundingBox bbox(GeoCoordinate(1, 1), GeoCoordinate(2, 2));
-    TileRangeVisitor visitor;
+    int count = 0;
+    QuadKey lastQuadKey;
 
-    GeoUtils::visitTileRange(bbox, 1, visitor);
+    GeoUtils::visitTileRange(bbox, 1, [&](const QuadKey& quadKey, const BoundingBox&) {
+        count++;
+        lastQuadKey.tileX = quadKey.tileX;
+        lastQuadKey.tileY = quadKey.tileY;
+    });
 
-    BOOST_CHECK_EQUAL(1, visitor.count);
-    BOOST_CHECK_EQUAL(1, visitor.lastQuadKey.tileX);
-    BOOST_CHECK_EQUAL(0, visitor.lastQuadKey.tileY);
+    BOOST_CHECK_EQUAL(1, count);
+    BOOST_CHECK_EQUAL(1, lastQuadKey.tileX);
+    BOOST_CHECK_EQUAL(0, lastQuadKey.tileY);
 }
 
 BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsTwoTiles)
 {
     BoundingBox bbox(GeoCoordinate(-1, 1), GeoCoordinate(2, 2));
-    TileRangeVisitor visitor;
+    int count = 0;
 
-    GeoUtils::visitTileRange(bbox, 1, visitor);
+    GeoUtils::visitTileRange(bbox, 1, [&](const QuadKey& quadKey, const BoundingBox&) {
+        count++;
+    });
 
-    BOOST_CHECK_EQUAL(2, visitor.count);
+    BOOST_CHECK_EQUAL(2, count);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
