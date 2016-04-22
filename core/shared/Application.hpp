@@ -1,6 +1,8 @@
 #ifndef APPLICATION_HPP_DEFINED
 #define APPLICATION_HPP_DEFINED
 
+#include "GeoCoordinate.hpp"
+#include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
@@ -179,6 +181,17 @@ public:
     {
         try {
             geoStore_.add(InMemoryStorageKey, path, quadKey, *getStyleProvider(styleFile).get());
+        }
+        catch (std::exception& ex) {
+            errorCallback(ex.what());
+        }
+    }
+
+    // Adds data to in-memory store.
+    void addToInMemoryStore(const char* styleFile, const char* path, const utymap::BoundingBox& bbox, const utymap::LodRange& range, OnError* errorCallback)
+    {
+        try {
+            geoStore_.add(InMemoryStorageKey, path, bbox, range, *getStyleProvider(styleFile).get());
         }
         catch (std::exception& ex) {
             errorCallback(ex.what());

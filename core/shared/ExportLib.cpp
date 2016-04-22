@@ -57,6 +57,22 @@ extern "C"
         applicationPtr->addToInMemoryStore(styleFile, path, utymap::LodRange(startLod, endLod), errorCallback);
    }
 
+    // Adds data to in-memory store to specific level of details range.
+    void EXPORT_API addToInMemoryStoreInBoundingBox(const char* styleFile,     // style file
+                                                   const char* path,          // path to data
+                                                   double minLat,             // minimal latitude
+                                                   double minLon,             // minimal longitude
+                                                   double maxLat,             // maximal latitude
+                                                   double maxLon,             // maximal longitude
+                                                   int startLod,              // start zoom level
+                                                   int endLod,                // end zoom level
+                                                   OnError* errorCallback)    // completion callback
+    {
+        utymap::BoundingBox bbox(utymap::GeoCoordinate(minLat, minLon), utymap::GeoCoordinate(maxLat,maxLon));
+        utymap::LodRange lod(startLod, endLod);
+        applicationPtr->addToInMemoryStore(styleFile, path, bbox, lod, errorCallback);
+    }
+
     // Adds data to in-memory store to specific quadkey only.
     void EXPORT_API addToInMemoryStoreInQuadKey(const char* styleFile,     // style file
                                                 const char* path,          // path to data
