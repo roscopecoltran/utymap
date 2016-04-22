@@ -51,9 +51,6 @@ protected:
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;
 
 private:
-    class ElementGeometryVisitor;
-    class BoundingBoxVisitor;
-
     template <typename Visitor>
     bool store(const utymap::entities::Element& element,
                const utymap::LodRange& range,

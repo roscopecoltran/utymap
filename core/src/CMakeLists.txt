@@ -37,8 +37,9 @@ set(HEADER_FILES
                 heightmap/ElevationProvider.hpp
                 heightmap/FlatElevationProvider.hpp
                 heightmap/SrtmElevationProvider.hpp
-                index/GeoStore.hpp
+                index/ElementGeometryClipper.hpp
                 index/ElementStore.hpp
+                index/GeoStore.hpp
                 index/InMemoryElementStore.hpp
                 index/PersistentElementStore.hpp
                 index/StringTable.hpp
@@ -80,6 +81,7 @@ add_library (UtyMap
                 formats/osm/pbf/fileformat.pb.cc
                 formats/osm/pbf/osmformat.pb.cc
                 formats/osm/OsmDataVisitor.cpp
+                index/ElementGeometryClipper.cpp
                 index/ElementStore.cpp
                 index/GeoStore.cpp
                 index/InMemoryElementStore.cpp
