@@ -8,16 +8,6 @@ set(SHARED_SOURCE ${PROJECT_SOURCE_DIR}/shared)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set (BOOST_ROOT g:/__ASM/cpp/boost)
-set (BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib)
-
-# TODO improve the way how libs are included
-set (PROTOBUF_INCLUDE_DIR g:/__ASM/cpp/protobuf/src)
-set (PROTOBUF_LIBRARY g:/__ASM/cpp/protobuf/vsprojects/x64/Debug/libprotobuf.lib)
-
-set (ZLIB_INCLUDE_DIR g:/__ASM/cpp/zlib)
-set (ZLIB_LIBRARY g:/__ASM/cpp/zlib/build/Debug/zlibd.lib)
-
 # initialize boost
 find_package(Boost REQUIRED)
 IF (Boost_FOUND)
