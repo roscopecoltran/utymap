@@ -56,7 +56,8 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Terrain_TerraBuilder, Builders_Terrain_TerraBu
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {
     bool isCalled = false;
-    BuilderContext context(QuadKey{ 1, 0, 0 }, *styleProviderPtr, *stringTablePtr, eleProvider, 
+    QuadKey quadKey = {1, 0, 0};
+    BuilderContext context(quadKey, *styleProviderPtr, *stringTablePtr, eleProvider,
         [&](const Mesh& mesh) {
             isCalled = true;
             BOOST_CHECK_GT(mesh.vertices.size(), 0);
