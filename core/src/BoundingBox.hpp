@@ -94,8 +94,8 @@ struct BoundingBox
     inline GeoCoordinate center() const
     {
         return GeoCoordinate(
-            (maxPoint.latitude - minPoint.latitude) / 2,
-            (maxPoint.longitude - minPoint.longitude) / 2);
+            minPoint.latitude + (maxPoint.latitude - minPoint.latitude) / 2,
+            minPoint.longitude + (maxPoint.longitude - minPoint.longitude) / 2);
     }
 };
 

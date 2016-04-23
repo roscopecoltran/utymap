@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturn
 {
     ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);
 
-    BOOST_CHECK(!::hasData(35204, 21490, 16));
+    BOOST_CHECK(!::hasData(35204, 21489, 16));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

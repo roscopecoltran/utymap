@@ -60,22 +60,26 @@ ElementStore::~ElementStore()
 
 bool ElementStore::store(const Element& element, const utymap::LodRange& range, const StyleProvider& styleProvider)
 {
-    return store(element, range, styleProvider, [&](const BoundingBox& elementBoundingBox) {
+    return store(element, range, styleProvider, [&](const BoundingBox&, const BoundingBox&) {
         return true;
     });
 }
 
 bool ElementStore::store(const Element& element, const QuadKey& quadKey, const StyleProvider& styleProvider)
 {
-    const BoundingBox quadKeyBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
-    return store(element, LodRange(quadKey.levelOfDetail, quadKey.levelOfDetail), styleProvider, [&](const BoundingBox& elementBoundingBox) {
-        return elementBoundingBox.intersects(quadKeyBbox);
-    });
+    const BoundingBox expectedQuadKeyBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
+    return store(element, 
+                LodRange(quadKey.levelOfDetail, quadKey.levelOfDetail), 
+                styleProvider, 
+                [&](const BoundingBox& elementBoundingBox, const BoundingBox& quadKeyBbox) {
+                    return elementBoundingBox.intersects(expectedQuadKeyBbox) &&
+                           expectedQuadKeyBbox.center() == quadKeyBbox.center();
+                });
 }
 
 bool ElementStore::store(const Element& element, const BoundingBox& bbox, const utymap::LodRange& range, const StyleProvider& styleProvider)
 {
-    return store(element, range, styleProvider, [&](const BoundingBox& elementBoundingBox) {
+    return store(element, range, styleProvider, [&](const BoundingBox& elementBoundingBox, const BoundingBox& quadKeyBbox) {
         return elementBoundingBox.intersects(bbox);
     });
 }
@@ -97,9 +101,10 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
         if (!bboxVisitor.boundingBox.isValid())
             element.accept(bboxVisitor);
 
-        if (!visitor(bboxVisitor.boundingBox)) return false;
+         utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
+             if (!visitor(bboxVisitor.boundingBox, quadKeyBbox)) 
+                 return false;
 
-        utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
             if (style.has(clipKeyId_, "true"))
                 geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
             else
