@@ -1,5 +1,7 @@
 #if _MSC_VER
 #define EXPORT_API __declspec(dllexport)
+#elif _GCC
+#define EXPORT_API __attribute__((visibility("default")))
 #else
 #define EXPORT_API
 #endif
