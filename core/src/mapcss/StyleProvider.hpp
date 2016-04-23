@@ -4,7 +4,7 @@
 #include "index/StringTable.hpp"
 #include "entities/Element.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "mapcss/Stylesheet.hpp"
+#include "mapcss/StyleSheet.hpp"
 #include "mapcss/Style.hpp"
 
 #include <string>

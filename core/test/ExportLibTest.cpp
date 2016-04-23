@@ -10,7 +10,7 @@ struct ExportLibFixture {
     ExportLibFixture()
     {
         ::configure(TEST_ASSETS_PATH, TEST_ASSETS_PATH, TEST_ELEVATION_DIRECTORY,
-            [](const char* message) { BOOST_TEST_FAIL(message); });
+            [](const char* message) { BOOST_FAIL(message); });
         ::registerElementBuilder("place");
     }
 
@@ -32,7 +32,7 @@ struct ExportLibFixture {
                     isCalled = true;
                 },
                     [](const char* message) { 
-                        BOOST_TEST_FAIL(message); 
+                        BOOST_FAIL(message);
                     }
                 );
             }

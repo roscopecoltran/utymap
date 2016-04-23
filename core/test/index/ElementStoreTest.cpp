@@ -53,7 +53,7 @@ struct Index_ElementStoreFixture
 
     ~Index_ElementStoreFixture()
     {
-        BOOST_TEST_CHECK(elementStorePtr->times > 0);
+        BOOST_CHECK(elementStorePtr->times > 0);
         delete elementStorePtr;
         delete styleProviderPtr;
         delete stringTablePtr;
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
             checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, 0 }, { 10, 10 } });
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
             checkGeometry<Way>(reinterpret_cast<const Way&>(*relation.elements[1]), { { 10, 0 }, { 10, 10 } });
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -155,10 +155,10 @@ BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStor
             BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            BOOST_TEST_FAIL("This quadkey should be skipped!!");
+            BOOST_FAIL("This quadkey should be skipped!!");
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
             checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 10 }, { 20, 0 }, { 10, 0 }, { 10, 10 } });
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
             checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[1]), { { 10, 10 }, { 10, 0 }, { 5, 0 }, { 5, 10 } });
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_AreaIsReturnedWith
                 { 10, 0 }, { 10, -5 }, { 15, -5 }, { 15, 0 }, { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 }
             });
         } else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
             checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
         }
         else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
         } else {
-            BOOST_TEST_FAIL("Unexpected quadKey!");
+            BOOST_FAIL("Unexpected quadKey!");
         }
     });
 
