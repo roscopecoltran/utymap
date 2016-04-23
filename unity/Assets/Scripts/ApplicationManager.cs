@@ -55,7 +55,7 @@ namespace Assets.Scripts
             Scheduler.MainThread = UnityMainThreadScheduler.MainThread;
 
             // create default container which should not be exposed outside
-            // to avoid Service Locator pattern. 
+            // to avoid Service Locator pattern.
             _container = new Container();
 
             // create trace to log important messages
@@ -76,7 +76,7 @@ namespace Assets.Scripts
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
                     .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<DemoPathResolver>()))
                     .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<DemoModelBuilder>()))
-                    .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"\MapCss\default\default.mapcss")));
+                    .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"/MapCss/default/default.mapcss")));
 
                 // this is the way to insert custom extensions from outside. You may need to do it for
                 // some scenes.
