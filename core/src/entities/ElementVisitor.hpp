@@ -3,10 +3,10 @@
 
 namespace utymap { namespace entities {
 
-class Node;
-class Way;
-class Area;
-class Relation;
+struct Node;
+struct Way;
+struct Area;
+struct Relation;
 
 class ElementVisitor
 {
