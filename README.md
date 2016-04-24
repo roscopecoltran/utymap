@@ -5,7 +5,7 @@
 
 <ul>
     <li><b>core</b> contains essential logic written on C++11 to build library for constructing of map based apps. </li>
-    <li><b>unity</b> contains logic written on C# which can be used to build map oriented Unity apps using core library. </li>
+    <li><b>unity</b> contains example written on C# which can be reused to build map oriented Unity apps using core library. </li>
 </ul>
 
 <h2> Project status </h2>
