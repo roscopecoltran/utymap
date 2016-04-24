@@ -1,6 +1,11 @@
 set(LIBRARY_NAME UtyMap)
 
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+
 set(HEADER_FILES
+        ${PROTO_HDRS}
         ${LIB_SOURCE}/clipper/clipper.hpp
         ${LIB_SOURCE}/hashing/MurmurHash3.h
         ${LIB_SOURCE}/triangle/triangle.h
@@ -30,8 +35,6 @@ set(HEADER_FILES
         formats/FormatTypes.hpp
         formats/osm/MultipolygonProcessor.hpp
         formats/osm/OsmDataVisitor.hpp
-        formats/osm/pbf/fileformat.pb.h
-        formats/osm/pbf/osmformat.pb.h
         formats/osm/pbf/OsmPbfParser.hpp
         formats/osm/xml/OsmXmlParser.hpp
         formats/shape/ShapeParser.hpp
@@ -69,6 +72,7 @@ set(HEADER_FILES
 
 add_library(${LIBRARY_NAME}
         ${HEADER_FILES}
+        ${PROTO_SRCS}
         ${LIB_SOURCE}/clipper/clipper.cpp
         ${LIB_SOURCE}/hashing/MurmurHash3.cpp
         ${LIB_SOURCE}/triangle/triangle.c
@@ -80,8 +84,6 @@ add_library(${LIBRARY_NAME}
         builders/QuadKeyBuilder.cpp
         builders/buildings/LowPolyBuildingBuilder.cpp
         formats/osm/MultipolygonProcessor.cpp
-        formats/osm/pbf/fileformat.pb.cc
-        formats/osm/pbf/osmformat.pb.cc
         formats/osm/OsmDataVisitor.cpp
         index/ElementGeometryClipper.cpp
         index/ElementStore.cpp
@@ -101,4 +103,4 @@ add_library(${LIBRARY_NAME}
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-include_directories(${MAIN_SOURCE} ${LIB_SOURCE})
+include_directories(${MAIN_SOURCE} ${LIB_SOURCE} ${CMAKE_CURRENT_BINARY_DIR})

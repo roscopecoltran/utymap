@@ -3,9 +3,9 @@
 
 #include "BoundingBox.hpp"
 #include "formats/FormatTypes.hpp"
-#include "formats/osm/pbf/fileformat.pb.h"
-#include "formats/osm/pbf/osmformat.pb.h"
 
+#include <fileformat.pb.h>
+#include <osmformat.pb.h>
 #include <zlib.h>
 
 #include <cstdint>

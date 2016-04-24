@@ -6,22 +6,29 @@ string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
         MODIFIED_FILE_CONTENT "${FILE_CONTENT}")
 file(WRITE ${TEST_SOURCE}/config.hpp "${MODIFIED_FILE_CONTENT}")
 
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+
 include_directories(${MAIN_SOURCE}
         ${LIB_SOURCE}
         ${SHARED_SOURCE}
         ${TEST_SOURCE}
         ${Boost_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_BINARY_DIR}
         )
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 
 set(HEADER_FILES
+        ${PROTO_HDRS}
         config.hpp
         formats/osm/TestOsmDataVisitor.hpp
         formats/shape/TestShapeDataVisitor.hpp
         )
 
 add_executable(TestLauncher
+        ${PROTO_SRCS}
         main.cpp
         BoundingBoxTest.cpp
         ExportLibTest.cpp
