@@ -1,5 +1,9 @@
 language: cpp
 compiler: gcc
+addons:
+    apt:
+        sources: ['kalakris-cmake']
+        packages: ['cmake']
 before_script:
   - cd core
   - mkdir build
