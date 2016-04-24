@@ -2,8 +2,15 @@ language: cpp
 compiler: gcc
 addons:
     apt:
-        sources: ['kalakris-cmake']
-        packages: ['cmake']
+        sources:
+            - kalakris-cmake
+            - boost-latest
+        packages:   
+            - cmake
+            - libboost-all-dev
+            - protobuf-compiler 
+            - libprotobuf-dev
+            - zlib1g-dev
 before_script:
   - cd core
   - mkdir build
