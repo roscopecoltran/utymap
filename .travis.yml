@@ -12,7 +12,7 @@ addons:
         packages:   
             - cmake
             - cmake-data
-            - libboost1.55-all-dev
+            - libboost1.58-all-dev
             - protobuf-compiler 
             - libprotobuf-dev
             - zlib1g-dev
