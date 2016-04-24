@@ -2,10 +2,8 @@ language: cpp
 compiler: gcc
 addons:
     apt:
-      packages:
-        - cmake
-      sources:
-        - kalakris-cmake
+      sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7', 'kalakris-cmake']
+      packages: ['clang-3.7', 'cmake']
 before_script:
   - cd core
   - mkdir build
