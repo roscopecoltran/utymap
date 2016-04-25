@@ -19,11 +19,12 @@ addons:
             - g++-5
             - clang
 before_script:
-  - sudo apt-get update -qq
-  - sudo apt-get install libboost-all-dev
-  - cd core
-  - mkdir build
-  - cd build
-  - cmake ..
+    - sudo add-apt-repository ppa:boost-latest/ppa
+    - sudo apt-get update -qq
+    - sudo apt-get install libboost-all-dev
+    - cd core
+    - mkdir build
+    - cd build
+    - cmake ..
 
 script: make
