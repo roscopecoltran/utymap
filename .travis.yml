@@ -28,5 +28,6 @@ before_script:
     - cmake ..
 script:
     - make
-#    - cd test
+    - cd test
+    - Test -l all
 #    - ctest -V
