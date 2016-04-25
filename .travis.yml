@@ -1,7 +1,6 @@
 language: cpp
+os: linux
 compiler: g++
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
 addons:
     apt:
         sources:
@@ -12,12 +11,12 @@ addons:
         packages:   
             - cmake
             - cmake-data
-            - libboost1.55-all-dev
+			- zlib1g-dev
+			- libprotobuf-dev
             - protobuf-compiler 
-            - libprotobuf-dev
-            - zlib1g-dev
-            - gcc-4.9
-            - g++-4.9
+            - libboost1.55-all-dev           
+			- gcc-5
+			- g++-5
             - clang
 before_script:
   - cd core
