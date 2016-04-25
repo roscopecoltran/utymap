@@ -1,4 +1,4 @@
-<h2> Description </h2>
+[![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
 <p>Utymap is a library for building dynamically real city environment using various map data sources, e.g. OpenStreetmap or Natural Earth.</p>
 
 <h2> Project structure </h2>
