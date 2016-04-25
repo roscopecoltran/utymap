@@ -29,5 +29,5 @@ before_script:
 script:
     - make
     - cd test
-    - Test -l all
+    - ./Test --log_level=all
 #    - ctest -V
