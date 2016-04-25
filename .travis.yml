@@ -8,20 +8,20 @@ addons:
             - boost-latest
             - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
             - ubuntu-toolchain-r-test
-        packages:   
+        packages:
             - cmake
             - cmake-data
-			- zlib1g-dev
-			- libprotobuf-dev
+            - zlib1g-dev
+            - libprotobuf-dev
             - protobuf-compiler 
-            - libboost1.55-all-dev           
-			- gcc-5
-			- g++-5
+            - libboost1.55-all-dev
+            - gcc-5
+            - g++-5
             - clang
 before_script:
   - cd core
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake
 
 script: make
