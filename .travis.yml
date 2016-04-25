@@ -22,6 +22,6 @@ before_script:
   - cd core
   - mkdir build
   - cd build
-  - cmake
+  - cmake ..
 
 script: make
