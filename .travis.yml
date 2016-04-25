@@ -1,6 +1,8 @@
 language: cpp
 os: linux
 compiler: g++
+install:
+     + - if [ "$CXX" = "g++" ]; then export CXX="g++-5"; fi
 addons:
     apt:
         sources:
