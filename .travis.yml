@@ -7,7 +7,6 @@ addons:
     apt:
         sources:
             - kalakris-cmake
-            - boost-latest
             - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
             - ubuntu-toolchain-r-test
         packages:
@@ -16,11 +15,12 @@ addons:
             - zlib1g-dev
             - libprotobuf-dev
             - protobuf-compiler 
-            - libboost1.55-all-dev
             - gcc-5
             - g++-5
             - clang
 before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install libboost-all-dev
   - cd core
   - mkdir build
   - cd build
