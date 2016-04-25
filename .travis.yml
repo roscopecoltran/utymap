@@ -1,13 +1,13 @@
 language: cpp
 os: linux
-compiler: g++
+compiler: gcc
 install:
-     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 addons:
     apt:
         sources:
             - kalakris-cmake
-            - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
+            - george-edison55-precise-backports # cmake 3.x
             - ubuntu-toolchain-r-test
             - boost-latest
         packages:
