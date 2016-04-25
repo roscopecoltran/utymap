@@ -1,5 +1,7 @@
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
+enable_testing ()
+
 # Define test assets path
 file(READ ${TEST_SOURCE}/config.hpp FILE_CONTENT)
 string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
@@ -27,7 +29,9 @@ set(HEADER_FILES
         formats/shape/TestShapeDataVisitor.hpp
         )
 
-add_executable(TestLauncher
+set (TEST Test)
+
+add_executable(${TEST}
         ${PROTO_SRCS}
         main.cpp
         BoundingBoxTest.cpp
@@ -58,9 +62,12 @@ add_executable(TestLauncher
         ${HEADER_FILES}
         )
 
-target_link_libraries(TestLauncher
+target_link_libraries(${TEST}
         UtyMap
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
         ${PROTOBUF_LIBRARY}
         ${ZLIB_LIBRARY}
         )
+
+enable_testing ()
+add_test (${TEST} ${TEST})

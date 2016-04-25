@@ -26,6 +26,3 @@ include_directories(${ZLIB_INCLUDE_DIR})
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(shared)
-
-enable_testing ()
-add_test (NAME Tests COMMAND Test)

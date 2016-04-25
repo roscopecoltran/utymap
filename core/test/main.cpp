@@ -1,2 +1,2 @@
-#define BOOST_TEST_MODULE "C++ Unit Tests for UtyMap"
+#define BOOST_TEST_MODULE utymap_testsuite
 #include <boost/test/unit_test.hpp>
