@@ -2,6 +2,7 @@
 #include "mapcss/MapCssParser.hpp"
 #include "Exceptions.hpp"
 
+#define BOOST_SPIRIT_USE_PHOENIX_V3
 #include <boost/bind.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>

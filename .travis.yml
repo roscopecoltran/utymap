@@ -2,26 +2,25 @@ language: cpp
 os: linux
 compiler: g++
 install:
-     - if [ "$CXX" = "g++" ]; then export CXX="g++-5"; fi
+     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
 addons:
     apt:
         sources:
             - kalakris-cmake
             - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
             - ubuntu-toolchain-r-test
+            - boost-latest
         packages:
             - cmake
             - cmake-data
             - zlib1g-dev
             - libprotobuf-dev
-            - protobuf-compiler 
-            - gcc-5
-            - g++-5
+            - protobuf-compiler
+            - libboost1.55-all-dev
+            - gcc-4.9
+            - g++-4.9
             - clang
 before_script:
-    - sudo add-apt-repository --yes  ppa:boost-latest/ppa
-    - sudo apt-get update -qq
-    - sudo apt-get install libboost1.60-all-dev
     - cd core
     - mkdir build
     - cd build
