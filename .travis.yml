@@ -20,7 +20,6 @@ addons:
             - libboost1.55-all-dev
             - gcc-4.9
             - g++-4.9
-            - clang
 before_script:
     - cd core
     - mkdir build
@@ -29,5 +28,4 @@ before_script:
 script:
     - make
     - cd test
-    - ./Test #--log_level=all
     - ctest -V
