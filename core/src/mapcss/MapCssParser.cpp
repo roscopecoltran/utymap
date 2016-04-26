@@ -116,15 +116,13 @@ struct ZoomGrammar : qi::grammar < Iterator, Zoom(), CommentSkipper<Iterator> >
     ZoomGrammar() : ZoomGrammar::base_type(start, "zoom")
     {
         start =
-            '|'
-            > qi::lexeme['z' > qi::int_
-            [
-                boost::phoenix::at_c<0>(qi::_val) = qi::_1,
-                boost::phoenix::at_c<1>(qi::_val) = qi::_1]
-            ]
+            "|z"
+            > qi::int_[phoenix::at_c<0>(qi::_val) = qi::_1]
+            > qi::eps [phoenix::at_c<1>(qi::_val) = phoenix::at_c<0>(qi::_val)]
             > -qi::lit('-')
             > -qi::int_[boost::phoenix::at_c<1>(qi::_val) = qi::_1]
-        ;
+            ;
+
         start.name("zoom");
     }
     qi::rule<Iterator, Zoom(), CommentSkipper<Iterator> > start;
