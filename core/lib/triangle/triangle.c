@@ -221,6 +221,7 @@
 #define POINTER_TYPE unsigned long long
 #else
 #define POINTER_TYPE unsigned long
+#define PRINT_OBJECTS true
 #endif
 
 /* If yours is not a Unix system, define the NO_TIMER compiler switch to     */
@@ -3678,6 +3679,7 @@ struct otri *t;
 #endif /* not ANSI_DECLARATORS */
 
 {
+#if PRINT_OBJECTS
   struct otri printtri;
   struct osub printsh;
   vertex printvertex;
@@ -3749,6 +3751,9 @@ struct otri *t;
   if (b->vararea) {
     printf("    Area constraint:  %.4g\n", areabound(*t));
   }
+#else
+  printf("printtriangle is not supported");
+#endif
 }
 
 /*****************************************************************************/
@@ -3772,6 +3777,7 @@ struct osub *s;
 #endif /* not ANSI_DECLARATORS */
 
 {
+#if PRINT_OBJECTS
   struct osub printsh;
   struct otri printtri;
   vertex printvertex;
@@ -3837,6 +3843,9 @@ struct osub *s;
     printf("    Segment dest  [%d] = x%lx  (%.12g, %.12g)\n",
            5 - s->ssorient, (POINTER_TYPE) printvertex,
            printvertex[0], printvertex[1]);
+#else
+    printf("printsubseg is not supported");
+#endif
 }
 
 /**                                                                         **/
