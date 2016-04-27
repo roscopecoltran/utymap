@@ -103,7 +103,7 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
 
          utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod, [&](const QuadKey& quadKey, const BoundingBox& quadKeyBbox) {
              if (!visitor(bboxVisitor.boundingBox, quadKeyBbox)) 
-                 return false;
+                 return;
 
             if (style.has(clipKeyId_, "true"))
                 geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
