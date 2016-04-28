@@ -57,7 +57,11 @@ private:
                const utymap::mapcss::StyleProvider& styleProvider,
                const Visitor& visitor);
 
-    std::uint32_t clipKeyId_, skipKeyId_;
+    bool checkSize(const utymap::BoundingBox& quadKeyBBox,
+                   const utymap::BoundingBox& elementBbox,
+                   double minSize) const;
+
+    std::uint32_t clipKeyId_, skipKeyId_, sizeKeyId_;
 };
 
 }}

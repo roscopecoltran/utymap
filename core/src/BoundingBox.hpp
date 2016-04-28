@@ -97,6 +97,12 @@ struct BoundingBox
             minPoint.latitude + (maxPoint.latitude - minPoint.latitude) / 2,
             minPoint.longitude + (maxPoint.longitude - minPoint.longitude) / 2);
     }
+
+    // Returns width.
+    inline double width() const
+    {
+        return maxPoint.longitude - minPoint.longitude;
+    }
 };
 
 }
