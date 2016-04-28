@@ -55,7 +55,6 @@ namespace utymap { namespace utils {
 
     // Gets dimension value. Evaluation is not supported.
     inline double getDimension(uint32_t keyId,
-                               utymap::index::StringTable& stringTable,
                                const utymap::mapcss::Style& style,
                                double size,
                                const utymap::GeoCoordinate& coordinate)
@@ -89,7 +88,7 @@ namespace utymap { namespace utils {
         if (!style.has(keyId))
             return defaultValue;
 
-        return getDimension(keyId, stringTable, style, size, coordinate);
+        return getDimension(keyId, style, size, coordinate);
     }
 
     // Gets dimension value. Evaluation is not supported.
@@ -99,7 +98,7 @@ namespace utymap { namespace utils {
                                double size,
                                const utymap::GeoCoordinate& coordinate = GeoCoordinate())
     {
-        return getDimension(stringTable.getId(key), stringTable, style, size, coordinate);
+        return getDimension(stringTable.getId(key), style, size, coordinate);
     }
 }}
 
