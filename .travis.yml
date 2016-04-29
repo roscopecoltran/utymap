@@ -1,4 +1,4 @@
-sude: false
+sudo: false
 language: cpp
 os: linux
 compiler: gcc
@@ -11,6 +11,7 @@ addons:
             - george-edison55-precise-backports # cmake 3.x
             - ubuntu-toolchain-r-test
             - boost-latest
+            - v-kukol/mono-3
         packages:
             - cmake
             - cmake-data
@@ -20,6 +21,7 @@ addons:
             - libboost1.55-all-dev
             - gcc-4.9
             - g++-4.9
+            - mono-complete
 before_script:
     - cd core
     - mkdir build
