@@ -35,7 +35,6 @@ script:
     #- make
     #- cd test
     #- ctest -V
-    #- cd ../../unity
     - cd ../../unity
     - mozroots --import --sync
     - mono --runtime=v4.0.30319 .nuget/NuGet.exe restore unity.Tests.sln
