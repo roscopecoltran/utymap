@@ -1,6 +1,10 @@
 sudo: false
-language: cpp
+language: 
+    cpp
+    csharp
 os: linux
+mono:
+ - latest
 compiler: gcc
 install:
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
@@ -11,7 +15,6 @@ addons:
             - george-edison55-precise-backports # cmake 3.x
             - ubuntu-toolchain-r-test
             - boost-latest
-            - v-kukol/mono-3
         packages:
             - cmake
             - cmake-data
@@ -22,6 +25,7 @@ addons:
             - gcc-4.9
             - g++-4.9
             - mono-complete
+            - nunit-console
 before_script:
     - cd core
     - mkdir build
@@ -31,3 +35,8 @@ script:
     - make
     - cd test
     - ctest -V
+    - cd ../../unity
+    - mozroots --import --sync
+    - mono --runtime=v4.0.30319 .nuget/NuGet.exe restore unity.Tests.sln
+    - xbuild /p:Configuration=Debug /p:DefineConstants="CONSOLE" unity.Tests.sln
+    - nunit-console UtymapLib.Tests/bin/Debug/UtymapLib.Tests.exe

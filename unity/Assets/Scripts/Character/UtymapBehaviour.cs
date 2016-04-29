@@ -67,6 +67,7 @@ namespace Assets.Scripts.Character
 
         void Start()
         {
+#if !CONSOLE
             // set gravity to zero on start to prevent free fall as terrain loading takes some time.
             // restore it afterwards.
             var thirdPersonController = gameObject.GetComponent<ThirdPersonController>();
@@ -88,6 +89,7 @@ namespace Assets.Scripts.Character
                     //transform.position = new Vector3(position.x, elevation + 90, position.z);
                     thirdPersonController.gravity = _initialGravity;
                 });
+#endif
         }
 
         /// <summary> Runs game after all Start() methods are called. </summary>
