@@ -6,8 +6,8 @@ os: linux
 mono:
  - latest
 compiler: gcc
-install:
-    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+#install:
+    #- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 addons:
     apt:
         sources:
@@ -30,13 +30,13 @@ before_script:
     - cd core
     - mkdir build
     - cd build
-    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++-4.9 -DCMAKE_CC_COMPILER=/usr/bin/gcc-4.9 -DCMAKE_BUILD_TYPE=Release ..
 script:
     #- make
     #- cd test
     #- ctest -V
     #- cd ../../unity
-    - cd ../unity
+    - cd ../../unity
     - mozroots --import --sync
     - mono --runtime=v4.0.30319 .nuget/NuGet.exe restore unity.Tests.sln
     - xbuild /p:Configuration=Debug /p:DefineConstants="CONSOLE" unity.Tests.sln
