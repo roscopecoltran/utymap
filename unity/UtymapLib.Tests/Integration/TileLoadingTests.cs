@@ -15,7 +15,7 @@ using UtymapLib.Tests.Helpers;
 
 namespace UtymapLib.Tests.Integration
 {
-    [TestFixture(Category = TestHelper.IntegrationTestCategory)]
+    /*[TestFixture(Category = TestHelper.IntegrationTestCategory)]
     public class TileLoadingTests
     {
         private const int LevelOfDetails = 16;
@@ -29,7 +29,7 @@ namespace UtymapLib.Tests.Integration
         public void Setup()
         {
             // create default container which should not be exposed outside
-            // to avoid Service Locator pattern. 
+            // to avoid Service Locator pattern.
             IContainer container = new Container();
 
             // create default application configuration
@@ -112,5 +112,5 @@ namespace UtymapLib.Tests.Integration
         }
 
         #endregion
-    }
+    }*/
 }
