@@ -18,7 +18,7 @@ using UtymapLib.Tests.Helpers;
 
 namespace UtymapLib.Tests
 {
-    /// <summary> Used to debug application on high level of details. </summary>
+    /// <summary> This class is useful to debug/profile application independenly from Unity Editor. </summary>
     internal class Program
     {
         private const int LevelOfDetails = 16;

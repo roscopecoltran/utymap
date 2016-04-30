@@ -9,6 +9,8 @@ namespace UtymapLib.Tests.Helpers
     {
         #region Constants values
 
+        public const string IntegrationTestCategory = "Integration";
+
         public static GeoCoordinate WorldZeroPoint = new GeoCoordinate(52.5317429, 13.3871987);
 
         public const string TestAssetsFolder = @"../../../Assets/Resources";
