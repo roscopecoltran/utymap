@@ -197,5 +197,3 @@ bool utymap::index::GeoStore::hasData(const QuadKey& quadKey)
 {
     return pimpl_->hasData(quadKey);
 }
-
-

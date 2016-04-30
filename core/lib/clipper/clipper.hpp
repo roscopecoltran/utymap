@@ -398,5 +398,3 @@ public:
 } //ClipperLib namespace
 
 #endif //clipper_hpp
-
-
