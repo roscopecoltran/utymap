@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
 <h2> Description </h2>
 
-<p>Utymap is a library for building dynamically real city environment in 2D/3D using various map data sources, e.g. OpenStreetMap or Natural Earth.</p>
+<p>Utymap is a library for building real city environment in 2D/3D dynamically using various map data sources, e.g. OpenStreetMap or Natural Earth.</p>
 
 <h2> Project structure </h2>
 Project consists of two sub-projects:
@@ -64,8 +64,8 @@ cp shared/libUtyMapLib.so ../../unity/Assets/Plugins/libUtyMapLib.so
 Visual Studio 2013 is proven for usage on development environment.
 <h5>1. Download and build/install dependencies. </h5>
 See dependencies list above.
-<h5>2. Make sure that Cmake can find them. </h5>
-You can register them in your PATH variable or update CMakeTests.txt, e.g.:
+<h5>2. Make sure that Cmake can find dependencies. </h5>
+You can register dependencies in your PATH variable or update main CMakeLists.txt, e.g.:
 
 ```
 set(BOOST_ROOT c:/_libs/boost_1_55_0)
@@ -92,6 +92,10 @@ cd build
 <path_to_cmake>\cmake.exe -G "Visual Studio 12 Win64" ..
 ```
 <h5>4. Open created solution and build all projects.</h5>
-<h5>5. Copy UtyMapLib.dll from build/shared into unity/Assets/Plugins repository.
-Ensure that zlib.dll (or zlibd.dll) is also there or in your PATH variable.
-<h5>6. Import Unity3d project from unity folder using Unity Editor. </h5>
+
+<h5>5. Copy UtyMapLib.dll </h5>
+
+This file is build artefact in build/shared directory and should be copied into unity/Assets/Plugins directory. Ensure that zlib.dll (or zlibd.dll) is also there or in your PATH variable.
+
+<h5>6. Import Unity3d example project. </h5>
+Launch Unity Editor and open unity folder as existing project.
