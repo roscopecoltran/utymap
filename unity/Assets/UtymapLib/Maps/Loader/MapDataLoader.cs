@@ -94,10 +94,10 @@ namespace Assets.UtymapLib.Maps.Loader
             _mapDataFormatExtension = "." + configSection.GetString(@"data/remote/format", "xml");
             _cachePath = configSection.GetString(@"data/cache", null);
 
-            var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings", @"/"));
-            var dataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial", @"/"));
+            var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings"));
+            var dataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial"));
 
-            var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local", @"/"));
+            var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local"));
 
             string errorMsg = null;
             UtymapLib.Configure(stringPath, dataPath, elePath, error => errorMsg = error);

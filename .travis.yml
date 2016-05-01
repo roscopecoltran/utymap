@@ -37,5 +37,5 @@ script:
     - mozroots --import --sync
     - mono --runtime=v4.0.30319 .nuget/NuGet.exe restore unity.Tests.sln
     - xbuild /p:Configuration=Debug /p:DefineConstants="CONSOLE" unity.Tests.sln
-    - cp ../core/build/shared/libUtyMapLib.so UtymapLib.Tests/bin/Debug/UtyMapLib.so
-    - nunit-console UtymapLib.Tests/bin/Debug/UtymapLib.Tests.exe
+    - cp ../core/build/shared/libUtyMapLib.so UtymapLib.Tests/bin/Debug/
+    - nunit-console -no-shadow UtymapLib.Tests/bin/Debug/UtymapLib.Tests.exe
