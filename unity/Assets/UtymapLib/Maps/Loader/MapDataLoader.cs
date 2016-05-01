@@ -188,8 +188,6 @@ namespace Assets.UtymapLib.Maps.Loader
                     // mesh callback
                     (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
                     {
-                        Trace.Debug(TraceCategory, "receive mesh: {0}", name);
-
                         Vector3[] worldPoints;
                         Color[] unityColors;
 
@@ -226,8 +224,6 @@ namespace Assets.UtymapLib.Maps.Loader
                     // element callback
                     (id, tags, count, vertices, vertexCount, styles, styleCount) =>
                     {
-                        Trace.Debug(TraceCategory, "receive element: {0}", id.ToString());
-
                         var geometry = new GeoCoordinate[vertexCount/2];
                         for (int i = 0; i < vertexCount/2; i += 2)
                             geometry[i/2] = new GeoCoordinate(vertices[i + 1], vertices[i]);

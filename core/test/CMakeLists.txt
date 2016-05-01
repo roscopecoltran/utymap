@@ -62,12 +62,7 @@ add_executable(${TEST}
         ${HEADER_FILES}
         )
 
-target_link_libraries(${TEST}
-        UtyMap
-        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-        ${PROTOBUF_LIBRARY}
-        ${ZLIB_LIBRARY}
-        )
+target_link_libraries(${TEST} UtyMap ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 enable_testing ()
 add_test (${TEST} ${TEST})

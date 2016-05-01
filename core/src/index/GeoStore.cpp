@@ -3,6 +3,7 @@
 #include "formats/shape/ShapeDataVisitor.hpp"
 #include "formats/shape/ShapeParser.hpp"
 #include "formats/osm/xml/OsmXmlParser.hpp"
+#include "formats/osm/pbf/OsmPbfParser.hpp"
 #include "formats/osm/OsmDataVisitor.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -106,6 +107,14 @@ public:
                 std::ifstream xmlFile(path);
                 OsmDataVisitor visitor(stringTable_, functor);
                 parser.parse(xmlFile, visitor);
+                break;
+            }
+            case FormatType::Pbf:
+            {
+                OsmPbfParser<OsmDataVisitor> parser;
+                std::ifstream pbfFile(path, std::ios::in | std::ios::binary);
+                OsmDataVisitor visitor(stringTable_, functor);
+                parser.parse(pbfFile, visitor);
                 break;
             }
             default:

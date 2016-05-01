@@ -21,15 +21,15 @@ struct Formats_Osm_Pbf_OsmPbfParserFixture
     std::ifstream istream;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Formats_Osm_Pbf_Parser, Formats_Osm_Pbf_OsmPbfParserFixture)
+BOOST_FIXTURE_TEST_SUITE(Formats_Osm_Pbf_PbfParser, Formats_Osm_Pbf_OsmPbfParserFixture)
 
 BOOST_AUTO_TEST_CASE(GivenDefaultPbf_WhenParserParse_ThenHasExpectedElementCount)
 {
     parser.parse(istream, visitor);
 
-    BOOST_CHECK_EQUAL( visitor.nodes, 151506 );
-    BOOST_CHECK_EQUAL( visitor.ways, 27791 );
-    BOOST_CHECK_EQUAL( visitor.relations, 362);
+    BOOST_CHECK_EQUAL(visitor.nodes, 562170);
+    BOOST_CHECK_EQUAL(visitor.ways, 82731);
+    BOOST_CHECK_EQUAL(visitor.relations, 3064);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

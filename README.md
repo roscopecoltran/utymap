@@ -24,7 +24,7 @@ Core library has some dependencies. The following versions are used in developme
 
 <h3>Linux</h3>
 If you have some issues, you may check .travis.yml file for details.
-<h4> 1. Install dependencies:</h4>
+<h5> 1. Install dependencies:</h5>
 
 ``` bash
 #update repositories: you may skip this step
@@ -40,7 +40,7 @@ install cmake cmake-data zlib1g-dev libprotobuf-dev protobuf-compiler
 libboost1.55-all-dev gcc-4.9 g++-4.9 mono-complete nunit-console
 ```
 
-<h4>2. Build core library:</h4>
+<h5>2. Build core library:</h5>
 
 ``` bash
 # ensure that correct compiler is selected
@@ -51,20 +51,20 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
-<h4>3. Copy core library into Unity3d plugin folder: </h4>
+<h5>3. Copy core library into Unity3d plugin folder: </h5>
 
 ``` bash
 cp shared/libUtyMapLib.so ../../unity/Assets/Plugins/libUtyMapLib.so
 
 ```
 
-<h4>4. Import Unity3d project from unity folder using Unity Editor. </h4>
+<h5>4. Import Unity3d project from unity folder using Unity Editor. </h5>
 
 <h3>Windows</h3>
 Visual Studio 2013 is proven for usage on development environment.
-<h4>1. Download and build/install dependencies. </h4>
+<h5>1. Download and build/install dependencies. </h5>
 See dependencies list above.
-<h4>2. Make sure that Cmake can find them. </h4>
+<h5>2. Make sure that Cmake can find them. </h5>
 You can register them in your PATH variable or update CMakeTests.txt, e.g.:
 
 ```
@@ -83,7 +83,7 @@ set(ZLIB_INCLUDE_DIR c:/_libs/zlib-1.2.8)
 set(ZLIB_LIBRARY $(ZLIB_INCLUDE_DIR)/zlibd.lib)
 ```
 
-<h4>3. Create Visual Studio project by make:</h4>
+<h5>3. Create Visual Studio project by make:</h5>
 
 ``` shell
 cd core
@@ -91,6 +91,7 @@ mkdir build
 cd build
 <path_to_cmake>\cmake.exe -G "Visual Studio 12 Win64" ..
 ```
-<h4>4. Open created solution and build all projects.</h4>
+<h5>4. Open created solution and build all projects.</h5>
 <h5>5. Copy UtyMapLib.dll from build/shared into unity/Assets/Plugins repository.
-<h4>6. Import Unity3d project from unity folder using Unity Editor. </h4>
+Ensure that zlib.dll (or zlibd.dll) is also there or in your PATH variable.
+<h5>6. Import Unity3d project from unity folder using Unity Editor. </h5>

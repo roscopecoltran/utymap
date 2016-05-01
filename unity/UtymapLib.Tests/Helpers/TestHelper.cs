@@ -16,6 +16,7 @@ namespace UtymapLib.Tests.Helpers
         public const string TestAssetsFolder = @"../../../Assets/Resources";
         public const string ConfigTestRootFile = TestAssetsFolder + @"/Config/test.json";
         public const string BerlinXmlData = TestAssetsFolder + @"/Osm/berlin.osm.xml";
+        public const string BerlinPbfData = TestAssetsFolder + @"/Osm/berlin.osm.pbf";
         public const string NmeaFilePath = TestAssetsFolder + @"/Nmea/invalidenstrasse_borsigstrasse.nme";
         public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
 

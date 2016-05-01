@@ -55,13 +55,12 @@ namespace UtymapLib.Tests.Integration
             _compositionRoot.Dispose();
         }
 
-        [Test(Description = "This test loads multiple tiles from osm file to ensure that there are no unexpected crashes.")]
+        [Test(Description = "This test loads 100 tiles from osm file to ensure that there are no unexpected crashes at least at test region.")]
         public void CanLoadMultipleTiles()
         {
-            // TODO use larger pbf file and load more tiles
             // ARRANGE
-            SetupMapData(TestHelper.BerlinXmlData);
-            var count = 2;
+            SetupMapData(TestHelper.BerlinPbfData);
+            var count = 10;
             var centerQuadKey = new QuadKey(35205, 21489, LevelOfDetails);
 
             // ACT & ASSERT
