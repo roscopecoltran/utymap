@@ -15,7 +15,7 @@ using UtymapLib.Tests.Helpers;
 
 namespace UtymapLib.Tests.Integration
 {
-    /*[TestFixture(Category = TestHelper.IntegrationTestCategory)]
+    [TestFixture(Category = TestHelper.IntegrationTestCategory)]
     public class TileLoadingTests
     {
         private const int LevelOfDetails = 16;
@@ -112,5 +112,5 @@ namespace UtymapLib.Tests.Integration
         }
 
         #endregion
-    }*/
+    }
 }
