@@ -95,6 +95,7 @@
     <Compile Include="Assets\UtymapLib\Core\Utils\ColorUtils.cs" />
     <Compile Include="Assets\UtymapLib\Core\Utils\GeoUtils.cs" />
     <Compile Include="Assets\UtymapLib\Core\Utils\MathUtils.cs" />
+    <Compile Include="Assets\UtymapLib\Explorer\Customization\CustomizationService.cs" />
     <Compile Include="Assets\UtymapLib\Exceptions.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Config\CodeConfigSection.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Config\ConfigBuilder.cs" />

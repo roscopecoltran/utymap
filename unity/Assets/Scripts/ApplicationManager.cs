@@ -6,11 +6,14 @@ using Assets.UtymapLib;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
+using Assets.UtymapLib.Explorer.Customization;
 using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
+using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
+using Assets.UtymapLib.Maps.Loader;
 using IContainer = Assets.UtymapLib.Infrastructure.Dependencies.IContainer;
 using Container = Assets.UtymapLib.Infrastructure.Dependencies.Container;
 using Component = Assets.UtymapLib.Infrastructure.Dependencies.Component;
@@ -76,6 +79,7 @@ namespace Assets.Scripts
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
                     .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<DemoPathResolver>()))
                     .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<DemoModelBuilder>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<CustomizationService>().Use<CustomizationService>()))
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"/MapCss/default/default.mapcss")));
 
                 // this is the way to insert custom extensions from outside. You may need to do it for
@@ -139,6 +143,11 @@ namespace Assets.Scripts
                     .AsObservable<TileLoadStartMessage>()
                     .ObserveOnMainThread()
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
+
+                _compositionRoot.GetService<IMapDataLoader>()
+                    .AddToInMemoryStore(@"Osm/berlin.osm.xml", 
+                    _compositionRoot.GetService<Stylesheet>(), 
+                    new Range<int>(_zoomLevel, _zoomLevel));
 
                 IsInitialized = true;
             }
