@@ -98,18 +98,17 @@ public:
 
     inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
     {
-        auto color1 = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
-        auto color2 = options.gradient.evaluate((NoiseUtils::perlin2D(p2.x, p2.y, options.colorNoiseFreq) + 1) / 2);
-
+        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
         auto index = mesh.vertices.size() / 3;
-        addVertex(mesh, p1, ele1, color1, index);
-        addVertex(mesh, p2, ele2, color1, index + 2);
-        addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
+
+        addVertex(mesh, p1, ele1, color, index);
+        addVertex(mesh, p2, ele2, color, index + 2);
+        addVertex(mesh, p2, ele2 + options.heightOffset, color, index + 1);
         index += 3;
 
-        addVertex(mesh, p1, ele1 + options.heightOffset, color1, index);
-        addVertex(mesh, p1, ele1, color1, index + 2);
-        addVertex(mesh, p2, ele2 + options.heightOffset, color1, index + 1);
+        addVertex(mesh, p1, ele1 + options.heightOffset, color, index);
+        addVertex(mesh, p1, ele1, color, index + 2);
+        addVertex(mesh, p2, ele2 + options.heightOffset, color, index + 1);
     }
 
 private:

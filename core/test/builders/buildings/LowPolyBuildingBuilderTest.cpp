@@ -47,6 +47,7 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
         isCalled = true;
         BOOST_CHECK_GT(mesh.vertices.size(), 0);
         BOOST_CHECK_GT(mesh.triangles.size(), 0);
+        BOOST_CHECK_GT(mesh.colors.size(), 0);
     }, nullptr);
     Area building = ElementUtils::createElement<Area>(*stringTable, { { "building", "yes" } }, 
         { { 0, 0 }, {0, 10}, {10, 10}, {10, 0} });
