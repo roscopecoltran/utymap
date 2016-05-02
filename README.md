@@ -18,8 +18,8 @@ Core library has some dependencies. The following versions are used in developme
 <ul>
     <li> <b>CMake 3.1 or higher.  </b> Some specific flags (CMAKE_CXX_STANDARD, POSITION_INDEPENDENT_CODE) are used. </li>
     <li> <b>Boost 1.55 or higher. </b> Boost is used only for parsing mapcss, xml deserialization and unit testing.  </li>
-    <li> <b> Protobuf library and compiler 2.6.1. </b> Protobuf is used for parsing osm pbf files.</li>
-    <li> <b> zlib 1.2.8. </b> Used for osm pbf files decompression. </li>
+    <li> <b> Protobuf library and compiler 2.6.1 or other compatible. </b> Protobuf is used for parsing osm pbf files.</li>
+    <li> <b> zlib 1.2.8 or other compatible. </b> Used for osm pbf files decompression. </li>
 </ul>
 
 <h3>Linux</h3>
@@ -37,7 +37,7 @@ sudo -E apt-get -yq update
 #install
 sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes
 install cmake cmake-data zlib1g-dev libprotobuf-dev protobuf-compiler
-libboost1.55-all-dev gcc-4.9 g++-4.9 mono-complete nunit-console
+libboost1.55-all-dev gcc-4.9 g++-4.9
 ```
 
 <h5>2. Build core library:</h5>
@@ -99,3 +99,7 @@ This file is build artefact in build/shared directory and should be copied into 
 
 <h5>6. Import Unity3d example project. </h5>
 Launch Unity Editor and open unity folder as existing project.
+
+<h3>OSX</h3>
+
+Should work as well, but not tested yet.
