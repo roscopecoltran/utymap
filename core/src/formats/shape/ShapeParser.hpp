@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 namespace utymap { namespace formats {
