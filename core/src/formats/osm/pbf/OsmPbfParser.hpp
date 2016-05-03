@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <istream>
+#include <stdexcept>
 
 namespace utymap { namespace formats {
 
