@@ -244,6 +244,7 @@
     <Compile Include="Assets\UtymapLib\Maps\Imaginary\BingImaginaryProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Imaginary\ImaginaryProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Loader\MapDataLoader.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Loader\MapTileAdapter.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Loader\UtymapLib.cs" />
     <Compile Include="Assets\UtymapLib\Strings.cs" />
     <None Include="Assets\Resources\Osm\berlin.osm.xml" />

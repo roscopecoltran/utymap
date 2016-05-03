@@ -144,6 +144,9 @@ namespace Assets.Scripts
                     .ObserveOnMainThread()
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
 
+                // NOTE this is just example: you can load your regions into memory once
+                // game is started. Also you can specify different zoom level if you
+                // have valid mapcss stylesheet
                 _compositionRoot.GetService<IMapDataLoader>()
                     .AddToInMemoryStore(@"Osm/berlin.osm.xml", 
                     _compositionRoot.GetService<Stylesheet>(), 

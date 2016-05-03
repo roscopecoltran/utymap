@@ -7,7 +7,6 @@ using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Geocoding;
 
 using Component = Assets.UtymapLib.Infrastructure.Dependencies.Component;
@@ -67,6 +66,8 @@ namespace Assets.Scripts.Character
 
         void Start()
         {
+            // Need to wrap by conditional compilation symbols due to issues with compilation
+            // on CI withoud Unity3d: ThirdPersonController is javascript class.
 #if !CONSOLE
             // set gravity to zero on start to prevent free fall as terrain loading takes some time.
             // restore it afterwards.

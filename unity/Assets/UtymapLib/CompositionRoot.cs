@@ -13,11 +13,16 @@ using Assets.UtymapLib.Maps.Geocoding;
 using Assets.UtymapLib.Maps.Imaginary;
 using Assets.UtymapLib.Maps.Loader;
 
+// has to be there due to Unity3d's generated project 
 [assembly: InternalsVisibleTo("UtymapLib.Tests")]
 
 namespace Assets.UtymapLib
 {
-    /// <summary> Represents application's compistion root. </summary>
+    /// <summary> Represents application's composition root. </summary>
+    /// <remarks> 
+    ///     At this level, application setups object graph by specifying 
+    ///     concrete implementations. 
+    ///  </remarks>
     public class CompositionRoot : IDisposable
     {
         private bool _isInitialized;
@@ -45,11 +50,14 @@ namespace Assets.UtymapLib
             return this;
         }
 
-        /// <summary> Performs setup </summary>
+        /// <summary> Performs object graph setup. </summary>
         public CompositionRoot Setup()
         {
             if (_isInitialized)
                 throw new InvalidOperationException(Strings.SetupIsCalledMoreThanOnce);
+
+            // register all services which has to be registered, but concrete implementation 
+            // can be overriden in custom action by RegisterAction
 
             // infrastructure services
             _container.Register(Component.For<ITrace>().Use<DefaultTrace>());
@@ -57,7 +65,7 @@ namespace Assets.UtymapLib
             _container.Register(Component.For<IPathResolver>().Use<PathResolver>());
             _container.Register(Component.For<IFileSystemService>().Use<FileSystemService>());
 
-            // core services
+            // core services 
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
             _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
@@ -65,8 +73,11 @@ namespace Assets.UtymapLib
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
             _container.Register(Component.For<ImaginaryProvider>().Use<BingImaginaryProvider>().SetConfig(_configSection));
 
-            _bootstrapperActions.ForEach(a => a(_container, _configSection));
+            // go through all actions to add/override services.
+            _bootstrapperActions.ForEach(action => action(_container, _configSection));
+            
             _isInitialized = true;
+
             return this;
         }
 

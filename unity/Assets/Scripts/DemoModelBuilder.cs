@@ -20,11 +20,13 @@ namespace Assets.Scripts
             _customizationService = customizationService;
         }
 
+        /// <inheritdoc />
         public void BuildElement(Tile tile, Element element)
         {
-            // TODO
+            // TODO Use this method to build your objects in scene from map data
         }
 
+        /// <inheritdoc />
         public void BuildMesh(Tile tile, Mesh mesh)
         {
             var gameObject = new GameObject(mesh.Name);

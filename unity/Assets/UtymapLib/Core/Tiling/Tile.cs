@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Assets.UtymapLib.Core.Utils;
 using Assets.UtymapLib.Infrastructure.Primitives;
 
@@ -47,6 +48,12 @@ namespace Assets.UtymapLib.Core.Tiling
         {
             return (position.x > Rectangle.Left + offset) && (position.y < Rectangle.Top - offset) &&
                    (position.x < Rectangle.Right - offset) && (position.y > Rectangle.Bottom + offset);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return String.Format("({0},{1}:{2})", QuadKey.TileX, QuadKey.TileY, QuadKey);
         }
     }
 }

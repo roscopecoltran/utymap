@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using UnityEngine;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
-using Assets.UtymapLib.Core.Utils;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
@@ -45,6 +42,7 @@ namespace Assets.UtymapLib.Maps.Loader
         private string _mapDataFormatExtension;
         private string _cachePath;
         private IFileSystemService _fileSystemService;
+
         private readonly ImaginaryProvider _imaginaryProvider;
 
         [Dependency]
@@ -179,70 +177,18 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
-                string tileDesc = String.Format("({0},{1}:{2})", tile.QuadKey.TileX, tile.QuadKey.TileY,
-                    tile.QuadKey);
+                Trace.Info(TraceCategory, "loading tile: {0}", tile.ToString());
+                var adapter = new MapTileAdapter(tile, observer, Trace);
 
-                Trace.Info(TraceCategory, "loading tile: {0}", tileDesc);
-                bool noException = true;
-                UtymapLib.LoadQuadKey(_pathResolver.Resolve(tile.Stylesheet.Path), tile.QuadKey,
-                    // mesh callback
-                    (name, vertices, count, triangles, triangleCount, colors, colorCount) =>
-                    {
-                        Vector3[] worldPoints;
-                        Color[] unityColors;
+                UtymapLib.LoadQuadKey(
+                    _pathResolver.Resolve(tile.Stylesheet.Path), 
+                    tile.QuadKey,
+                    adapter.AdaptMesh,
+                    adapter.AdaptElement,
+                    adapter.AdaptError);
 
-                        // NOTE process terrain differently to emulate flat shading effect by 
-                        // avoiding triangles to share the same vertex.
-                        if (name.Contains("terrain"))
-                        {
-                            worldPoints = new Vector3[triangleCount];
-                            unityColors = new Color[triangleCount];
-                            for (int i = 0; i < triangles.Length; ++i)
-                            {
-                                int vertIndex = triangles[i] * 3;
-                                worldPoints[i] = tile.Projection
-                                    .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
-                                unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
-                                triangles[i] = i;
-                            }
-                        }
-                        else
-                        {
-                            worldPoints = new Vector3[count / 3];
-                            for (int i = 0; i < vertices.Length; i += 3)
-                                worldPoints[i / 3] = tile.Projection
-                                    .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
-
-                            unityColors = new Color[colorCount];
-                            for (int i = 0; i < colorCount; ++i)
-                                unityColors[i] = ColorUtils.FromInt(colors[i]);
-                        }
-
-                        Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
-                        observer.OnNext(new Union<Element, Mesh>(mesh));
-                    },
-                    // element callback
-                    (id, tags, count, vertices, vertexCount, styles, styleCount) =>
-                    {
-                        var geometry = new GeoCoordinate[vertexCount/2];
-                        for (int i = 0; i < vertexCount/2; i += 2)
-                            geometry[i/2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
-
-                        Element element = new Element(id, geometry, ReadDict(tags), ReadDict(styles));
-                        observer.OnNext(new Union<Element, Mesh>(element));
-                    },
-                    // error callback
-                    message =>
-                    {
-                        noException = false;
-                        var exception = new MapDataException(message);
-                        Trace.Error(TraceCategory, exception, "cannot load tile: {0}", tileDesc);
-                        observer.OnError(exception);
-                    });
-
-                Trace.Info(TraceCategory, "tile loaded: {0}", tileDesc);
-                if (noException)
-                    observer.OnCompleted();
+                Trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
+                observer.OnCompleted();
 
                 return Disposable.Empty;
             });
@@ -267,14 +213,6 @@ namespace Assets.UtymapLib.Maps.Loader
         {
             var cacheFileName = tile.QuadKey + _mapDataFormatExtension;
             return Path.Combine(_cachePath, cacheFileName);
-        }
-
-        private static Dictionary<string, string> ReadDict(string[] data)
-        {
-            var map = new Dictionary<string, string>(data.Length / 2);
-            for (int i = 0; i < data.Length; i += 2)
-                map.Add(data[i], data[i + 1]);
-            return map;
         }
 
         #endregion
