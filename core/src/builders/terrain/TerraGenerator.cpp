@@ -64,10 +64,10 @@ void TerraGenerator::buildLayers()
         }
     }
 
-    // 2. Process the rest: each region has aready its own properties.
+    // 2. Process the rest: each region has already its own properties.
     for (auto& layer : layers_)
         for (auto& region : layer.second) {
-        buildFromPaths(region.points, region.options);
+            buildFromPaths(region.points, region.options);
         }
 }
 

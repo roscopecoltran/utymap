@@ -62,8 +62,7 @@ private:
     {
         Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
         std::stringstream ss(*style.get(builderKeyId_)->value());
-        while (ss.good())
-        {
+        while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
             element.accept(getVisitor(name));

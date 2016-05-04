@@ -39,8 +39,7 @@ class GeoStore::GeoStoreImpl
 
         inline void visitIfNecessary(const Element& element)
         { 
-            if (element.id == 0 || ids_.find(element.id) == ids_.end())
-            {
+            if (element.id == 0 || ids_.find(element.id) == ids_.end()) {
                 element.accept(visitor_);
                 ids_.insert(element.id);
             }
