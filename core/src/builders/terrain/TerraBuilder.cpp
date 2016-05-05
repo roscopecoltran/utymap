@@ -137,7 +137,8 @@ public:
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
             region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
             if (!region.isLayer)
-                region.options = generator_.createMeshOptions(style, "");
+                region.context = std::shared_ptr<TerraGenerator::RegionContext>(
+                    new TerraGenerator::RegionContext(generator_.createRegionContext(style, "")));
 
             std::string type = region.isLayer 
                 ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
@@ -167,7 +168,8 @@ private:
 
         region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region.isLayer)
-            region.options = generator_.createMeshOptions(style, "");
+            region.context = std::shared_ptr<TerraGenerator::RegionContext>(
+                new TerraGenerator::RegionContext(generator_.createRegionContext(style, "")));
 
         return std::move(region);
     }

@@ -30,8 +30,6 @@ public:
         double elevation;
         // Gradient data
         const utymap::mapcss::ColorGradient& gradient;
-        // Mesh name
-        const std::string meshName;
 
         // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
@@ -45,7 +43,6 @@ public:
                 double heightOffset,
                 const utymap::mapcss::ColorGradient& gradient,
                 double elevation = std::numeric_limits<double>::lowest(),
-                std::string meshName = "",
                 int segmentSplit = 0) :
             area(area), 
             eleNoiseFreq(eleNoiseFreq), 
@@ -53,7 +50,6 @@ public:
             heightOffset(heightOffset),
             gradient(gradient),
             elevation(elevation),
-            meshName(meshName),
             segmentSplit(segmentSplit)
         {
         }
