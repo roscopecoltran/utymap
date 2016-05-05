@@ -164,6 +164,8 @@ GeoStore::GeoStore(StringTable& stringTable) : pimpl_(new GeoStore::GeoStoreImpl
 
 GeoStore::~GeoStore()
 {
+    // according to docs, should be called only once on app end.
+    google::protobuf::ShutdownProtobufLibrary();
 }
 
 void utymap::index::GeoStore::registerStore(const std::string& storeKey, ElementStore& store)

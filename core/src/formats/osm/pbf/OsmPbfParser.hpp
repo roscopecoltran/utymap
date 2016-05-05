@@ -33,7 +33,6 @@ public:
     {
         delete[] buffer_;
         delete[] unpack_buffer_;
-        //google::protobuf::ShutdownProtobufLibrary();
     }
 
     void parse(std::istream& stream, Visitor& visitor)

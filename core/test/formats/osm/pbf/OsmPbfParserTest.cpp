@@ -16,6 +16,12 @@ struct Formats_Osm_Pbf_OsmPbfParserFixture
     {
     }
 
+    ~Formats_Osm_Pbf_OsmPbfParserFixture()
+    {
+        // In app, it should be called in class destructor which uses parser.
+        google::protobuf::ShutdownProtobufLibrary();
+    }
+
     OsmPbfParser<TestOsmDataVisitor> parser;
     TestOsmDataVisitor visitor;
     std::ifstream istream;
