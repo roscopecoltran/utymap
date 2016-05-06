@@ -68,6 +68,14 @@ public:
     // Adds simple plane to existing mesh using elevation and options provided.
     void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const;
 
+    // Adds triangle to mesh.
+    void addTriangle(Mesh& mesh,
+                     const utymap::meshing::Vector3& v0,
+                     const utymap::meshing::Vector3& v1,
+                     const utymap::meshing::Vector3& v2,
+                     const MeshBuilder::Options& options,
+                     bool hasBackSide) const;
+
 private:
     class MeshBuilderImpl;
     std::unique_ptr<MeshBuilderImpl> pimpl_;

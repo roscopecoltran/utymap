@@ -19,14 +19,18 @@ set(HEADER_FILES
         builders/ElementBuilder.hpp
         builders/ExternalBuilder.hpp
         builders/QuadKeyBuilder.hpp
-        builders/terrain/LineGridSplitter.hpp
-        builders/terrain/TerraBuilder.hpp
-        builders/terrain/TerraExtras.hpp
-        builders/terrain/TerraGenerator.hpp
         builders/buildings/LowPolyBuildingBuilder.hpp
         builders/buildings/facades/LowPolyWallBuilder.hpp
         builders/buildings/roofs/LowPolyRoofBuilder.hpp
         builders/buildings/roofs/RoofBuilder.hpp
+        builders/generators/AbstractGenerator.hpp
+        builders/generators/CylinderGenerator.hpp
+        builders/generators/IcoSphereGenerator.hpp
+        builders/generators/TreeGenerator.hpp
+        builders/terrain/LineGridSplitter.hpp
+        builders/terrain/TerraBuilder.hpp
+        builders/terrain/TerraExtras.hpp
+        builders/terrain/TerraGenerator.hpp
         entities/Element.hpp
         entities/ElementVisitor.hpp
         entities/Node.hpp

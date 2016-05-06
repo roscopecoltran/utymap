@@ -37,6 +37,7 @@ add_executable(${TEST}
         BoundingBoxTest.cpp
         ExportLibTest.cpp
         builders/buildings/LowPolyBuildingBuilderTest.cpp
+        builders/generators/GeneratorTests.cpp
         builders/terrain/TerraBuilderTest.cpp
         builders/terrain/LineGridSplitterTest.cpp
         entities/ElementTest.cpp

@@ -30,6 +30,41 @@ struct Point
     }
 };
 
+// Represents vector3 which can be used as point or direction in space.s
+struct Vector3
+{
+    double x;
+    double y;
+    double z;
+    Vector3() : x(0), y(0), z(0)  { }
+    Vector3(double x, double y, double z) : x(x), y(y), z(z) { }
+
+    inline Vector3& operator*(int mult)
+    {
+        x *= mult; y *= mult; z *= mult;
+        return *this;
+    }
+
+    inline Vector3& operator+(const Vector3& rhs)
+    {
+        x += rhs.x; y += rhs.y; z += rhs.z;
+        return *this;
+    }
+
+    inline double magnitude()
+    {
+        return std::sqrt(x*x + y*y + z*z);
+    }
+
+    inline Vector3 normalized()
+    {
+        double length = magnitude();
+        return length > std::numeric_limits<double>::epsilon()
+            ? Vector3(x / length, y / length, z / length)
+            : Vector3(); // degenerative case
+    }
+};
+
 /// Geometry line in linear form. General form:
 /// Ax + By + C = 0;
 /// <see href="http://en.wikipedia.org/wiki/Linear_equation"/>

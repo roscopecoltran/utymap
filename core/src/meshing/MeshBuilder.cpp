@@ -111,6 +111,23 @@ public:
         addVertex(mesh, p2, ele2 + options.heightOffset, color, index + 1);
     }
 
+    inline void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
+    {
+        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, options.colorNoiseFreq) + 1) / 2);
+        auto startIndex = mesh.vertices.size() / 3;
+
+        addVertex(mesh, v0, color, startIndex);
+        addVertex(mesh, v1, color, ++startIndex);
+        addVertex(mesh, v2, color, ++startIndex);
+
+        if (hasBackSide) {
+            // TODO check indices
+            addVertex(mesh, v2, color, startIndex);
+            addVertex(mesh, v1, color, ++startIndex);
+            addVertex(mesh, v0, color, ++startIndex);
+        }
+    }
+
 private:
 
     inline void addVertex(Mesh& mesh, const Point& p, double ele, std::uint32_t color, std::uint32_t triIndex) const
@@ -120,6 +137,11 @@ private:
         mesh.vertices.push_back(ele);
         mesh.colors.push_back(color);
         mesh.triangles.push_back(triIndex);
+    }
+
+    inline void addVertex(Mesh& mesh, const Vector3& vertex, std::uint32_t color, std::uint32_t triIndex) const
+    {
+        addVertex(mesh, Point(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
 
     void fillMesh(triangulateio* io, Mesh& mesh, const MeshBuilder::Options& options) const
@@ -181,4 +203,9 @@ void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, const M
 void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
 {
     pimpl_->addPlane(mesh, p1, p2, ele1, ele2, options);
+}
+
+void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
+{
+    pimpl_->addTriangle(mesh, v0, v1, v2, options, hasBackSide);
 }
