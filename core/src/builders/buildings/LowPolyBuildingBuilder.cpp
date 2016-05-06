@@ -71,12 +71,12 @@ public:
 
 private:
 
-    inline std::vector<Point> toPoints(const std::vector<GeoCoordinate>& coordinates) const
+    inline std::vector<Vector2> toPoints(const std::vector<GeoCoordinate>& coordinates) const
     {
-        std::vector<Point> points;
+        std::vector<Vector2> points;
         points.reserve(coordinates.size());
         for (const auto& coordinate : coordinates) {
-            points.push_back(Point(coordinate.longitude, coordinate.latitude));
+            points.push_back(Vector2(coordinate.longitude, coordinate.latitude));
         }
 
         return std::move(points);

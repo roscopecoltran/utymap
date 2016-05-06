@@ -64,11 +64,11 @@ public:
             double firstAngle = j * angleStep;
             double secondAngle = (j == radialSegments_ - 1 ? 0 : j + 1) * angleStep;
 
-            utymap::meshing::Point first(
+            utymap::meshing::Vector2 first(
                     radius_ * std::cos(firstAngle) + center_.x,
                     radius_ * std::sin(firstAngle) + center_.z);
 
-            utymap::meshing::Point second(
+            utymap::meshing::Vector2 second(
                     radius_ * std::cos(secondAngle) + center_.x,
                     radius_ * std::sin(secondAngle) + center_.z);
 

@@ -223,8 +223,8 @@ void TerraGenerator::processHeightOffset(const Points& points, const RegionConte
     newOptions.eleNoiseFreq = 0;
 
     for (auto i = 0; i < points.size(); ++i) {
-        Point p1 = points[i];
-        Point p2 = points[i == (points.size() - 1) ? 0 : i + 1];
+        Vector2 p1 = points[i];
+        Vector2 p2 = points[i == (points.size() - 1) ? 0 : i + 1];
 
         // check whether two points are on cell rect
         if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))

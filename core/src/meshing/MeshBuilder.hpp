@@ -63,10 +63,10 @@ public:
     void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const;
 
     // Adds simple plane to existing mesh using options provided.
-    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const;
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const;
 
     // Adds simple plane to existing mesh using elevation and options provided.
-    void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const;
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const;
 
     // Adds triangle to mesh.
     void addTriangle(Mesh& mesh,

@@ -11,20 +11,20 @@
 namespace utymap { namespace meshing {
 
 // represents point in 2D space.
-struct Point
+struct Vector2
 {
     double x;
     double y;
-    Point() : x(0), y(0)  { }
-    Point(double x, double y) : x(x), y(y) { }
+    Vector2() : x(0), y(0)  { }
+    Vector2(double x, double y) : x(x), y(y) { }
 
-    bool operator==(const Point& rhs) const
+    bool operator==(const Vector2& rhs) const
     {
         return std::fabs(x - rhs.x) < std::numeric_limits<double>::epsilon() &&
                std::fabs(y - rhs.y) < std::numeric_limits<double>::epsilon();
     }
 
-    bool operator!=(const Point& rhs) const
+    bool operator!=(const Vector2& rhs) const
     {
         return !(*this == rhs);
     }
@@ -75,7 +75,7 @@ struct LineLinear
     double C;
 
     /// Linear line from two points on line.
-    LineLinear(const Point& p1, const Point& p2)
+    LineLinear(const Vector2& p1, const Vector2& p2)
     {
         A = p1.y - p2.y;
         B = p2.x - p1.x;
@@ -91,29 +91,29 @@ struct LineLinear
     }
 
     /// Gets collision point of two lines.
-    inline Point collide(const LineLinear& line)
+    inline Vector2 collide(const LineLinear& line)
     {
         return collide(*this, line);
     }
 
     /// <summary> Collision point of two lines. </summary>
-    inline static Point collide(const LineLinear& line1, const LineLinear& line2)
+    inline static Vector2 collide(const LineLinear& line1, const LineLinear& line2)
     {
         return collide(line1.A, line1.B, line1.C, line2.A, line2.B, line2.C);
     }
 
     /// <summary> Collision point of two lines. </summary>
-    inline static Point collide(double A1, double B1, double C1, double A2, double B2, double C2)
+    inline static Vector2 collide(double A1, double B1, double C1, double A2, double B2, double C2)
     {
         double WAB = A1*B2 - A2*B1;
         double WBC = B1*C2 - B2*C1;
         double WCA = C1*A2 - C2*A1;
 
-        return WAB == 0 ? Point() : Point(WBC / WAB, WCA / WAB);
+        return WAB == 0 ? Vector2() : Vector2(WBC / WAB, WCA / WAB);
     }
 
     /// <summary> Check whether point belongs to line. </summary>
-    inline bool contains(const Point& point) const
+    inline bool contains(const Vector2& point) const
     {
         return std::abs((point.x * A + point.y * B + C)) < 1E-8;
     }
@@ -132,16 +132,16 @@ struct Rectangle
 
     Rectangle(double xMin, double yMin, double xMax, double yMax) :
         xMin(xMin), yMin(yMin), xMax(xMax), yMax(yMax),
-        _left(Point(xMin, yMin), Point(xMin, yMax)),
-        _right(Point(xMax, yMin), Point(xMax, yMax)),
-        _bottom(Point(xMin, yMin), Point(xMax, yMin)),
-        _top(Point(xMin, yMax), Point(xMax, yMax))
+        _left(Vector2(xMin, yMin), Vector2(xMin, yMax)),
+        _right(Vector2(xMax, yMin), Vector2(xMax, yMax)),
+        _bottom(Vector2(xMin, yMin), Vector2(xMax, yMin)),
+        _top(Vector2(xMin, yMax), Vector2(xMax, yMax))
     {
     }
 
-    void expand(const std::vector<Point>& contour)
+    void expand(const std::vector<Vector2>& contour)
     {
-        for (const Point& p : contour) {
+        for (const Vector2& p : contour) {
             xMin = std::min(xMin, p.x);
             yMin = std::min(yMin, p.y);
             xMax = std::max(xMax, p.x);
@@ -149,13 +149,13 @@ struct Rectangle
         }
     }
 
-    inline bool contains(const Point& pt) const
+    inline bool contains(const Vector2& pt) const
     {
         return ((pt.x >= xMin) && (pt.x <= xMax) && (pt.y >= yMin) && (pt.y <= yMax));
     }
 
     // Checks whether point is on border of rectangle.
-    inline bool isOnBorder(const Point& point) const
+    inline bool isOnBorder(const Vector2& point) const
     {
         return _left.contains(point) || _right.contains(point) ||
                _bottom.contains(point) || _top.contains(point);
@@ -177,7 +177,7 @@ struct Mesh
     Mesh& operator=(const Mesh&) = delete;
 };
 
-using Contour = std::vector<utymap::meshing::Point>;
+using Contour = std::vector<utymap::meshing::Vector2>;
 
 }}
 

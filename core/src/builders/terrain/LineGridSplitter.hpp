@@ -15,7 +15,7 @@ namespace utymap { namespace builders {
 // Splits line to segments on axis aligned grid intersections.
 class LineGridSplitter
 {
-    typedef utymap::meshing::Point Point;
+    typedef utymap::meshing::Vector2 Point;
     typedef std::vector<Point> Points;
 
     struct sort_x

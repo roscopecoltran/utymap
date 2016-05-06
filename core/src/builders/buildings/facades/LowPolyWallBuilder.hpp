@@ -40,8 +40,8 @@ private:
     inline void addPlane(const utymap::GeoCoordinate& p1, const utymap::GeoCoordinate& p2)
     {
         meshBuilder_.addPlane(mesh_,
-            utymap::meshing::Point(p1.longitude, p1.latitude),
-            utymap::meshing::Point(p2.longitude, p2.latitude),
+            utymap::meshing::Vector2(p1.longitude, p1.latitude),
+            utymap::meshing::Vector2(p2.longitude, p2.latitude),
             minHeight_,
             minHeight_,
             options_);

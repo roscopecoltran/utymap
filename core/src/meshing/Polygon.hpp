@@ -22,22 +22,22 @@ public:
         segments.reserve(numberOfPoints * 2);
     }
 
-    void addContour(const std::vector<Point>& contour) 
+    void addContour(const std::vector<Vector2>& contour)
     { 
         addContour(contour, false); 
     }
 
-    void addHole(const std::vector<Point>& hole)
+    void addHole(const std::vector<Vector2>& hole)
     {
         addContour(hole, true);
     }
 
 private:
 
-    void addContour(const std::vector<Point>& contour, bool isHole)
+    void addContour(const std::vector<Vector2>& contour, bool isHole)
     {
         if (isHole) {
-            Point pointInside;
+            Vector2 pointInside;
             if (!findPointInPolygon(contour, pointInside)) {
                 // TODO log error
                 return;
@@ -51,8 +51,8 @@ private:
             count--;
 
         auto offset = segments.size() / 2;
-        for (size_t i = 0; i < count; ++i) {
-            Point point = contour[i];
+        for (auto i = 0; i < count; ++i) {
+            Vector2 point = contour[i];
             points.push_back(point.x);
             points.push_back(point.y);
             segments.push_back(offset + i);
@@ -61,7 +61,7 @@ private:
     }
 
     // tries to find point in polygon.
-    bool findPointInPolygon(const std::vector<Point>& contour, Point& point) const
+    bool findPointInPolygon(const std::vector<Vector2>& contour, Vector2& point) const
     {
         Rectangle bounds;
         bounds.expand(contour);
@@ -69,12 +69,12 @@ private:
         auto length = contour.size();
         int limit = 8;
 
-        Point a, b; // Current edge.
+        Vector2 a, b; // Current edge.
         double cx, cy; // Center of current edge.
         double dx, dy; // Direction perpendicular to edge.
 
         if (contour.size() == 3) {
-            point = Point((contour[0].x + contour[1].x + contour[2].x) / 3,
+            point = Vector2((contour[0].x + contour[1].x + contour[2].x) / 3,
                 (contour[0].y + contour[1].y + contour[2].y) / 3);
             return true;
         }
@@ -110,14 +110,14 @@ private:
     }
 
     // checks whether point in polygon using ray casting algorithm
-    bool isPointInPolygon(Point& point, const std::vector<Point>& poly) const
+    bool isPointInPolygon(const Vector2& point, const std::vector<Vector2>& poly) const
     {
         bool inside = false;
         double x = point.x;
         double y = point.y;
         auto count = poly.size();
 
-        for (int i = 0, j = count - 1; i < count; i++) {
+        for (std::size_t i = 0, j = count - 1; i < count; i++) {
             if (((poly[i].y < y && poly[j].y >= y) || (poly[j].y < y && poly[i].y >= y))
                 && (poly[i].x <= x || poly[j].x <= x)) {
                 inside ^= (poly[i].x + (y - poly[i].y) / (poly[j].y - poly[i].y) * (poly[j].x - poly[i].x) < x);

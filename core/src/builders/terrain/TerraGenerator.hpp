@@ -59,7 +59,7 @@ public:
                                       const std::string& prefix);
 
 private:
-    typedef std::vector<utymap::meshing::Point> Points;
+    typedef std::vector<utymap::meshing::Vector2> Points;
     typedef std::vector<Region> Regions;
     typedef std::unordered_map<std::string, Regions> Layers;
 

@@ -85,7 +85,7 @@ public:
     }
 
 
-    inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
+    inline void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const
     {
         double ele1 = eleProvider_.getElevation(p1.y, p1.x);
         double ele2 = eleProvider_.getElevation(p2.y, p2.x);
@@ -96,7 +96,7 @@ public:
         addPlane(mesh, p1, p2, ele1, ele2, options);
     }
 
-    inline void addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+    inline void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
     {
         auto color = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
         auto index = mesh.vertices.size() / 3;
@@ -130,7 +130,7 @@ public:
 
 private:
 
-    inline void addVertex(Mesh& mesh, const Point& p, double ele, std::uint32_t color, std::uint32_t triIndex) const
+    inline void addVertex(Mesh& mesh, const Vector2& p, double ele, std::uint32_t color, std::uint32_t triIndex) const
     {
         mesh.vertices.push_back(p.x);
         mesh.vertices.push_back(p.y);
@@ -141,7 +141,7 @@ private:
 
     inline void addVertex(Mesh& mesh, const Vector3& vertex, std::uint32_t color, std::uint32_t triIndex) const
     {
-        addVertex(mesh, Point(vertex.x, vertex.z), vertex.y, color, triIndex);
+        addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
 
     void fillMesh(triangulateio* io, Mesh& mesh, const MeshBuilder::Options& options) const
@@ -195,12 +195,12 @@ void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Op
     pimpl_->addPolygon(mesh, polygon, options);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, const MeshBuilder::Options& options) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const
 {
     pimpl_->addPlane(mesh, p1, p2, options);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Point& p1, const Point& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
 {
     pimpl_->addPlane(mesh, p1, p2, ele1, ele2, options);
 }

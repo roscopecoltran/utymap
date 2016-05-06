@@ -12,7 +12,7 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-typedef Point DPoint;
+typedef Vector2 DPoint;
 
 const ColorGradient colorGradient(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
 
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_RefinesCorrectly)
 
 BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_RefinesCorrectly)
 {
-    std::vector<Point> contour;
+    std::vector<Vector2> contour;
     LineGridSplitter splitter;
     int scale = 10;
     splitter.setParams(scale, 1);

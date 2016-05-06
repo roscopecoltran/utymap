@@ -6,7 +6,7 @@ using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::meshing;
 
-typedef std::vector<Point> DoublePoints;
+typedef std::vector<Vector2> DoublePoints;
 typedef std::vector<IntPoint> IntPoints;
 const double Precision = 0.1e-9;
 
