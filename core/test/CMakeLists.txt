@@ -38,6 +38,7 @@ add_executable(${TEST}
         ExportLibTest.cpp
         builders/buildings/LowPolyBuildingBuilderTest.cpp
         builders/generators/GeneratorTest.cpp
+        builders/poi/TreeBuilderTest.cpp
         builders/terrain/TerraBuilderTest.cpp
         builders/terrain/LineGridSplitterTest.cpp
         entities/ElementTest.cpp
