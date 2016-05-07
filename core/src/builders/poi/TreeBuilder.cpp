@@ -35,10 +35,13 @@ TreeGenerator TreeBuilder::createGenerator(const BuilderContext& context, Mesh& 
     double relativeSize = context.boundingBox.maxPoint.latitude - context.boundingBox.minPoint.latitude;
     GeoCoordinate relativeCoordinate = context.boundingBox.center();
 
+    double foliageRadiusInDegrees = getDimension(FoliageRadius, context.stringTable, style, relativeSize, relativeCoordinate);
+    double foliageRadiusInMeters = getDimension(FoliageRadius, context.stringTable, style, relativeSize);
+
     return TreeGenerator(mesh, context.meshBuilder, 
             context.styleProvider.getGradient(*trunkGradient),
             context.styleProvider.getGradient(*foliageGradient))
-        .setFoliageRadius(getDimension(FoliageRadius, context.stringTable, style, relativeSize, relativeCoordinate))
+        .setFoliageRadius(foliageRadiusInDegrees, foliageRadiusInMeters)
         .setTrunkRadius(getDimension(TrunkRadius, context.stringTable, style, relativeSize, relativeCoordinate))
-        .setTrunkHeight(getDimension(TrunkHeight, context.stringTable, style, relativeSize, relativeCoordinate));
+        .setTrunkHeight(getDouble(TrunkHeight, context.stringTable, style));
 }

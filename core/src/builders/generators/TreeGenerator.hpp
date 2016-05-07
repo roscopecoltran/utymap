@@ -22,7 +22,7 @@ public:
             AbstractGenerator(mesh, meshBuilder, foliageGradient), // ignored
             trunkGenerator(mesh, meshBuilder, trunkGradient),
             foliageGenerator(mesh, meshBuilder, foliageGradient),
-            trunkHeight_(0), trunkRadius_(0), foliageRadius_(0)
+            trunkHeight_(0), trunkRadius_(0), foliageRadius_(0), foliageHeight_(0)
     {
     }
 
@@ -48,9 +48,10 @@ public:
     }
 
     // Sets radius of foliage
-    TreeGenerator& setFoliageRadius(double radius)
+    TreeGenerator& setFoliageRadius(double radius, double height = 1)
     {
         foliageRadius_ = radius;
+        foliageHeight_ = height;
         return *this;
     }
 
@@ -58,30 +59,31 @@ public:
     {
         // generate trunk
         trunkGenerator
-                .setCenter(_position)
-                .setHeight(trunkHeight_)
-                .setRadius(trunkRadius_)
-                .setMaxSegmentHeight(5)
-                .setRadialSegments(7)
-                .setVertexNoiseFreq(0.1f)
-                .generate();
+            .setCenter(_position)
+            .setHeight(trunkHeight_)
+            .setRadius(trunkRadius_)
+            .setMaxSegmentHeight(5)
+            .setRadialSegments(7)
+            .setVertexNoiseFreq(0.1f)
+            .generate();
+
         // generate foliage
         foliageGenerator
-                .setCenter(utymap::meshing::Vector3(
-                        _position.x,
-                        _position.y + trunkHeight_ + foliageRadius_ * 0.9f,
-                        _position.z))
-                .setRadius(foliageRadius_)
-                .setRecursionLevel(1)
-                .setVertexNoiseFreq(0.1f)
-                .generate();
+            .setCenter(utymap::meshing::Vector3(
+                _position.x,
+                _position.y + trunkHeight_ + foliageRadius_,
+                _position.z))
+            .setRadius(foliageRadius_, foliageHeight_)
+            .setRecursionLevel(1)
+            .setVertexNoiseFreq(0.1f)
+            .generate();
     }
 
 private:
     CylinderGenerator trunkGenerator;
     IcoSphereGenerator foliageGenerator;
     meshing::Vector3 _position;
-    double trunkHeight_, trunkRadius_, foliageRadius_;
+    double trunkHeight_, trunkRadius_, foliageRadius_, foliageHeight_;
 };
 }}
 

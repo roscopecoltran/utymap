@@ -3,6 +3,6 @@ node|z16[natural=tree] {
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
     foliage-radius: 2.5m;
-    trunk-radius: 0.2m;
+    trunk-radius: 0.4m;
     trunk-height: 4m;
 }

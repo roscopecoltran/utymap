@@ -39,16 +39,14 @@ struct Vector3
     Vector3() : x(0), y(0), z(0)  { }
     Vector3(double x, double y, double z) : x(x), y(y), z(z) { }
 
-    inline Vector3& operator*(int mult)
+    inline Vector3 operator*(double mult)
     {
-        x *= mult; y *= mult; z *= mult;
-        return *this;
+        return Vector3(x * mult, y *mult, z * mult);
     }
 
-    inline Vector3& operator+(const Vector3& rhs)
+    inline Vector3 operator+(const Vector3& rhs)
     {
-        x += rhs.x; y += rhs.y; z += rhs.z;
-        return *this;
+        return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
     }
 
     inline double magnitude()

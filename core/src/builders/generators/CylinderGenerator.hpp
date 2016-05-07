@@ -24,7 +24,7 @@ public:
     // Sets center of cylinder.
     CylinderGenerator& setCenter(const utymap::meshing::Vector3& center)
     {
-        center_ = utymap::meshing::Vector3(center.x - 0.5f, center.y - 0.5f, center.z - 0.5f);
+        center_ = center;
         return *this;
     }
 
