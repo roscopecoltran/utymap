@@ -37,7 +37,7 @@ public:
         minPoint.longitude = tileXToLon(quadKey.tileX, levelOfDetail);
         maxPoint.longitude = tileXToLon(quadKey.tileX + 1, levelOfDetail);
 
-        return BoundingBox { minPoint, maxPoint };
+        return BoundingBox(minPoint, maxPoint);
     }
 
     static std::string quadKeyToString(const QuadKey& quadKey)

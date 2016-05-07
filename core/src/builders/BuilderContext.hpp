@@ -19,9 +19,9 @@ namespace utymap { namespace builders {
 struct BuilderContext
 {
     // Current quadkey.
-    const utymap::QuadKey& quadKey;
-    // Bounding box of to quad key.
-    const utymap::BoundingBox& boundingBox;
+    const utymap::QuadKey quadKey;
+    // Bounding box if the quadkey.
+    const utymap::BoundingBox boundingBox;
     // Current style provider.
     const utymap::mapcss::StyleProvider& styleProvider;
     // String table.

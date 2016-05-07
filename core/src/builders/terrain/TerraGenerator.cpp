@@ -39,10 +39,10 @@ namespace {
 
 TerraGenerator::TerraGenerator(const BuilderContext& context, const Style& style, ClipperEx& clipper) :
         context_(context), mesh_(TerrainMeshName), style_(style), clipper_(clipper),
-        rect_(context_.boundingBox.minPoint.longitude, 
-              context_.boundingBox.minPoint.latitude, 
-              context_.boundingBox.maxPoint.longitude, 
-              context_.boundingBox.maxPoint.latitude)
+        rect_(context.boundingBox.minPoint.longitude, 
+              context.boundingBox.minPoint.latitude, 
+              context.boundingBox.maxPoint.longitude, 
+              context.boundingBox.maxPoint.latitude)
 {
 }
 
