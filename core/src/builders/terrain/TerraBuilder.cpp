@@ -71,13 +71,12 @@ public:
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)), 
         clipper_(),
-        bbox_(GeoUtils::quadKeyToBoundingBox(context_.quadKey)),
-        generator_(context, bbox_, style_, clipper_)
+        generator_(context, style_, clipper_)
     {
-        tileRect_.push_back(toIntPoint(bbox_.minPoint.longitude, bbox_.minPoint.latitude));
-        tileRect_.push_back(toIntPoint(bbox_.maxPoint.longitude, bbox_.minPoint.latitude));
-        tileRect_.push_back(toIntPoint(bbox_.maxPoint.longitude, bbox_.maxPoint.latitude));
-        tileRect_.push_back(toIntPoint(bbox_.minPoint.longitude, bbox_.maxPoint.latitude));
+        tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.minPoint.latitude));
+        tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.minPoint.latitude));
+        tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.maxPoint.latitude));
+        tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.maxPoint.latitude));
 
         clipper_.AddPath(tileRect_, ptClip, true);
     }
@@ -93,7 +92,7 @@ public:
 
         // make polygon from line by offsetting it using width specified
         double width = utymap::utils::getDimension(WidthKey, context_.stringTable, style,
-            bbox_.maxPoint.latitude - bbox_.minPoint.latitude, bbox_.center());
+            context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, context_.boundingBox.center());
 
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
@@ -177,7 +176,6 @@ private:
     const Style style_;
     ClipperEx clipper_;
     ClipperOffset offset_;
-    utymap::BoundingBox bbox_;
     TerraGenerator generator_;
     ClipperLib::Path tileRect_;
 };

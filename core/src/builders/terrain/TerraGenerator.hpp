@@ -44,7 +44,6 @@ public:
     };
 
     TerraGenerator(const BuilderContext& context,
-                   const utymap::BoundingBox& bbox,
                    const utymap::mapcss::Style& style,
                    ClipperLib::ClipperEx& clipper);
 
@@ -92,7 +91,6 @@ private:
     LineGridSplitter splitter_;
     utymap::meshing::Mesh mesh_;
     Layers layers_;
-    const utymap::BoundingBox& bbox_;
     utymap::meshing::Rectangle rect_;
 };
 

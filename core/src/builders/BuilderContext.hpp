@@ -1,11 +1,13 @@
 #ifndef BUILDERS_BUILDERCONTEXT_HPP_DEFINED
 #define BUILDERS_BUILDERCONTEXT_HPP_DEFINED
 
+#include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <functional>
 #include <string>
@@ -13,11 +15,13 @@
 
 namespace utymap { namespace builders {
 
-// Provides all dependencies consumed by element builders.
+// Provides the way to access all dependencies needed by various element builders.
 struct BuilderContext
 {
     // Current quadkey.
     const utymap::QuadKey& quadKey;
+    // Bounding box of to quad key.
+    const utymap::BoundingBox& boundingBox;
     // Current style provider.
     const utymap::mapcss::StyleProvider& styleProvider;
     // String table.
@@ -38,6 +42,7 @@ struct BuilderContext
                    std::function<void(const utymap::meshing::Mesh&)> meshCallback,
                    std::function<void(const utymap::entities::Element&)> elementCallback) :
         quadKey(quadKey),
+        boundingBox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
         styleProvider(styleProvider),
         stringTable(stringTable),
         eleProvider(eleProvider),

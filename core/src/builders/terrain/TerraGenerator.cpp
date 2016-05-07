@@ -37,10 +37,12 @@ namespace {
     };
 };
 
-TerraGenerator::TerraGenerator(const BuilderContext& context, const utymap::BoundingBox& bbox, 
-                               const Style& style, ClipperEx& clipper) :
-        context_(context), mesh_(TerrainMeshName), bbox_(bbox), style_(style), clipper_(clipper),
-        rect_(bbox_.minPoint.longitude, bbox_.minPoint.latitude, bbox_.maxPoint.longitude, bbox_.maxPoint.latitude)
+TerraGenerator::TerraGenerator(const BuilderContext& context, const Style& style, ClipperEx& clipper) :
+        context_(context), mesh_(TerrainMeshName), style_(style), clipper_(clipper),
+        rect_(context_.boundingBox.minPoint.longitude, 
+              context_.boundingBox.minPoint.latitude, 
+              context_.boundingBox.maxPoint.longitude, 
+              context_.boundingBox.maxPoint.latitude)
 {
 }
 
@@ -52,7 +54,8 @@ void TerraGenerator::addRegion(const std::string& type, const Region& region)
 void TerraGenerator::generate(Path& tileRect)
 {
     double size = utymap::utils::getDimension(GridCellSize, context_.stringTable, style_,
-                                              bbox_.maxPoint.latitude - bbox_.minPoint.latitude, bbox_.center());
+        context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, 
+        context_.boundingBox.center());
     splitter_.setParams(Scale, size);
 
     buildLayers();
@@ -97,7 +100,7 @@ void TerraGenerator::buildBackground(Path& tileRect)
 
 TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& style, const std::string& prefix)
 {
-    double quadKeyWidth = bbox_.maxPoint.latitude - bbox_.minPoint.latitude;
+    double quadKeyWidth = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
     auto gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
 
     return TerraGenerator::RegionContext(style, prefix, MeshBuilder::Options(
