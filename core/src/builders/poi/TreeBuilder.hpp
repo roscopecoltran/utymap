@@ -17,6 +17,9 @@ class TreeBuilder : public utymap::builders::ElementBuilder
     static const std::string MeshName;
     static const std::string FoliageColorKey;
     static const std::string TrunkColorKey;
+    static const std::string FoliageRadius;
+    static const std::string TrunkRadius;
+    static const std::string TrunkHeight;
 public:
 
     TreeBuilder(const utymap::builders::BuilderContext& context) :

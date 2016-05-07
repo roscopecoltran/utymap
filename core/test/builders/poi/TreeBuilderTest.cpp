@@ -22,7 +22,7 @@ struct Builders_Poi_TreeBuilderFixture
     Builders_Poi_TreeBuilderFixture() :
         stringTable(new StringTable("")),
         styleProvider(MapCssUtils::createStyleProviderFromString(*stringTable,
-            "node|z16[natural=tree] { foliage-color: gradient(green) ; trunk-color:gradient(red);}")),
+        "node|z16[natural=tree] { foliage-color: gradient(green); trunk-color:gradient(red); foliage-radius:2.5m; trunk-radius:0.2m; trunk-height:4m; }")),
         eleProvider()
     {
     }

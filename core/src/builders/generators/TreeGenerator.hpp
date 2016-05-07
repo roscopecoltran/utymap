@@ -21,12 +21,13 @@ public:
                   const utymap::mapcss::ColorGradient& foliageGradient) :
             AbstractGenerator(mesh, meshBuilder, foliageGradient), // ignored
             trunkGenerator(mesh, meshBuilder, trunkGradient),
-            foliageGenerator(mesh, meshBuilder, foliageGradient)
+            foliageGenerator(mesh, meshBuilder, foliageGradient),
+            trunkHeight_(0), trunkRadius_(0), foliageRadius_(0)
     {
     }
 
     // Sets position of tree
-    TreeGenerator& setPosition(utymap::meshing::Vector3 position)
+    TreeGenerator& setPosition(const utymap::meshing::Vector3& position)
     {
         _position = position;
         return *this;

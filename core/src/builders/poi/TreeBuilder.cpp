@@ -4,10 +4,14 @@
 using namespace utymap::builders;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
+using namespace utymap::utils;
 
 const std::string TreeBuilder::MeshName = "tree";
 const std::string TreeBuilder::FoliageColorKey = "foliage-color";
 const std::string TreeBuilder::TrunkColorKey = "trunk-color";
+const std::string TreeBuilder::FoliageRadius = "foliage-radius";
+const std::string TreeBuilder::TrunkRadius = "trunk-radius";
+const std::string TreeBuilder::TrunkHeight = "trunk-height";
 
 void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
@@ -28,11 +32,13 @@ TreeGenerator TreeBuilder::createGenerator(const BuilderContext& context, Mesh& 
     auto trunkGradient = utymap::utils::getString(TrunkColorKey, context.stringTable, style);
     auto foliageGradient = utymap::utils::getString(FoliageColorKey, context.stringTable, style);
 
-    // TODO specify all properties in mapcss and read them here if necessary
+    double relativeSize = context.boundingBox.maxPoint.latitude - context.boundingBox.minPoint.latitude;
+    GeoCoordinate relativeCoordinate = context.boundingBox.center();
+
     return TreeGenerator(mesh, context.meshBuilder, 
             context.styleProvider.getGradient(*trunkGradient),
             context.styleProvider.getGradient(*foliageGradient))
-        .setFoliageRadius(2.5)
-        .setTrunkRadius(0.2)
-        .setTrunkHeight(2);
+        .setFoliageRadius(getDimension(FoliageRadius, context.stringTable, style, relativeSize, relativeCoordinate))
+        .setTrunkRadius(getDimension(TrunkRadius, context.stringTable, style, relativeSize, relativeCoordinate))
+        .setTrunkHeight(getDimension(TrunkHeight, context.stringTable, style, relativeSize, relativeCoordinate));
 }
