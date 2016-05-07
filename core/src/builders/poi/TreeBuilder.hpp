@@ -35,8 +35,8 @@ public:
     void complete() { }
 
     // Creates tree generator which can be used to produce multiple trees inside mesh.
-    static TreeGenerator createGenerator(utymap::meshing::Mesh& mesh,
-                                         const utymap::builders::BuilderContext& context,
+    static TreeGenerator createGenerator(const utymap::builders::BuilderContext& context,
+                                         utymap::meshing::Mesh& mesh,
                                          const utymap::mapcss::Style& style);
 };
 

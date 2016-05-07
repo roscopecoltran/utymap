@@ -12,7 +12,9 @@ const std::string TreeBuilder::TrunkColorKey = "trunk-color";
 void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
     Mesh mesh(MeshName);
-    TreeGenerator generator = createGenerator(mesh, context_, context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail));
+    TreeGenerator generator = createGenerator(context_, mesh, 
+        context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail));
+
     double elevation = context_.eleProvider.getElevation(node.coordinate);
     generator
         .setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
@@ -21,7 +23,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
     context_.meshCallback(mesh);
 }
 
-TreeGenerator TreeBuilder::createGenerator(Mesh& mesh, const BuilderContext& context, const Style& style)
+TreeGenerator TreeBuilder::createGenerator(const BuilderContext& context, Mesh& mesh, const Style& style)
 {
     auto trunkGradient = utymap::utils::getString(TrunkColorKey, context.stringTable, style);
     auto foliageGradient = utymap::utils::getString(FoliageColorKey, context.stringTable, style);
