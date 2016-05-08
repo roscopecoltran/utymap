@@ -29,7 +29,7 @@ public:
                       const utymap::meshing::MeshBuilder& meshBuilder,
                       const utymap::mapcss::ColorGradient& gradient):
             AbstractGenerator(mesh, meshBuilder, gradient),
-            center_(), radius_(0), doubleRadius_(0), height_(0), yCoef_(0), recursionLevel_(0), isSemiSphere_(false)
+            center_(), radius_(0), doubleRadius_(0), height_(0), recursionLevel_(0), isSemiSphere_(false)
     {
     }
 
@@ -45,11 +45,9 @@ public:
     {
         radius_ = radius * 2;
         // NOTE next variables are needed because height is specified in meters, 
-        // x and z - in degrees
+        // x and z - in degrees.
         height_ = height;
         doubleRadius_ = radius_ * 2;
-        yCoef_ = height_ / radius_;
-        halfYCoef_ = yCoef_ / 2;
         return *this;
     }
 
@@ -72,20 +70,20 @@ public:
         // create 12 vertices of a icosahedron
         double t = (1 + std::sqrt(5)) / 2;
 
-        vertexList_.push_back(scale(utymap::meshing::Vector3(-1, t, 0).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(1, t, 0).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(-1, -t, 0).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(1, -t, 0).normalized()));
+        vertexList_.push_back(utymap::meshing::Vector3(-1, t, 0).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(1, t, 0).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(-1, -t, 0).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(1, -t, 0).normalized());
 
-        vertexList_.push_back(scale(utymap::meshing::Vector3(0, -1, t).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(0, 1, t).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(0., -1, -t).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(0, 1, -t).normalized()));
+        vertexList_.push_back(utymap::meshing::Vector3(0, -1, t).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(0, 1, t).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(0., -1, -t).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(0, 1, -t).normalized());
 
-        vertexList_.push_back(scale(utymap::meshing::Vector3(t, 0, -1).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(t, 0, 1).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(-t, 0, -1).normalized()));
-        vertexList_.push_back(scale(utymap::meshing::Vector3(-t, 0, 1).normalized()));
+        vertexList_.push_back(utymap::meshing::Vector3(t, 0, -1).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(t, 0, 1).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(-t, 0, -1).normalized());
+        vertexList_.push_back(utymap::meshing::Vector3(-t, 0, 1).normalized());
 
         // create 20 triangles of the icosahedron
         std::vector<TriangleIndices> faces;
@@ -168,10 +166,16 @@ private:
         // not in cache, calculate it
         utymap::meshing::Vector3 point1 = vertexList_[p1];
         utymap::meshing::Vector3 point2 = vertexList_[p2];
+        utymap::meshing::Vector3 middle
+        (
+            (point1.x + point2.x) / 2,
+            (point1.y + point2.y) / 2,
+            (point1.z + point2.z) / 2
+        );
 
         // add vertex makes sure point is on unit sphere
         std::size_t size = vertexList_.size();
-        vertexList_.push_back(middle(point1, point2));
+        vertexList_.push_back(middle);
 
         // store it, return index
         middlePointIndexCache_.insert(std::make_pair(key, size));
@@ -183,9 +187,10 @@ private:
     {
         for (auto i = 0; i < faces.size(); ++i) {
             auto face = faces[i];
-            addTriangle(vertexList_[face.V1] + center_,
-                        vertexList_[face.V2] + center_,
-                        vertexList_[face.V3] + center_);
+            addTriangle(
+                scale(vertexList_[face.V1]) + center_,
+                scale(vertexList_[face.V2]) + center_,
+                scale(vertexList_[face.V3]) + center_);
         }
     }
 
@@ -199,28 +204,8 @@ private:
             v.z * radius_);
     }
 
-    inline utymap::meshing::Vector3 middle(const utymap::meshing::Vector3& p1, const utymap::meshing::Vector3& p2)
-    {
-        // NOTE workaround (degrees vs meters)
-        utymap::meshing::Vector3 point
-        (
-            (p1.x + p2.x) / 2,
-            (p1.y + p2.y) / 2,
-            (p1.z + p2.z) / 2
-        );
-
-        point.x *= halfYCoef_;
-        point.z *= yCoef_;
-        point = point.normalized();
-
-        return utymap::meshing::Vector3(
-            point.x * doubleRadius_,
-            point.y * height_, 
-            point.z * radius_);
-    }
-
 utymap::meshing::Vector3 center_;
-double radius_, doubleRadius_, height_, yCoef_, halfYCoef_;
+double radius_, doubleRadius_, height_;
 int recursionLevel_;
 bool isSemiSphere_;
 
