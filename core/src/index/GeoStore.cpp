@@ -92,25 +92,21 @@ public:
 
     void add(const std::string& path, const StyleProvider& styleProvider, std::function<bool(Element&)> functor)
     {
-        switch (getFormatTypeFromPath(path))
-        {
-            case FormatType::Shape:
-            {
+        switch (getFormatTypeFromPath(path)) {
+            case FormatType::Shape: {
                 ShapeParser<ShapeDataVisitor> parser;
                 ShapeDataVisitor visitor(stringTable_, functor);
                 parser.parse(path, visitor);
                 break;
             }
-            case FormatType::Xml:
-            {
+            case FormatType::Xml: {
                 OsmXmlParser<OsmDataVisitor> parser;
                 std::ifstream xmlFile(path);
                 OsmDataVisitor visitor(stringTable_, functor);
                 parser.parse(xmlFile, visitor);
                 break;
             }
-            case FormatType::Pbf:
-            {
+            case FormatType::Pbf: {
                 OsmPbfParser<OsmDataVisitor> parser;
                 std::ifstream pbfFile(path, std::ios::in | std::ios::binary);
                 OsmDataVisitor visitor(stringTable_, functor);
