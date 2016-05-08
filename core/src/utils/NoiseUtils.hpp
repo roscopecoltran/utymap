@@ -1,24 +1,14 @@
 #ifndef UTILS_NOISEUTILS_HPP_DEFINED
 #define UTILS_NOISEUTILS_HPP_DEFINED
 
+#include "meshing/MeshTypes.hpp"
+
 namespace utymap { namespace utils {
 
 // Provides noise generation functions.
 // Ported from C# code from here : http ://catlikecoding.com/unity/tutorials/noise/
 class NoiseUtils
 {
-private:
-    struct Vector3
-    {
-        double x, y, z;
-        Vector3(double x, double y, double z) : x(x), y(y), z(z) {}
-    };
-
-    struct Vector2
-    {
-        double x, y;
-        Vector2(double x, double y) : x(x), y(y) {}
-    };
 
 public:
 
@@ -30,12 +20,12 @@ public:
 
 private:
 
-    static inline double dot(const Vector3& g, double x, double y, double z)
+    static inline double dot(const utymap::meshing::Vector3& g, double x, double y, double z)
     {
         return g.x*x + g.y*y + g.z*z;
     }
 
-    static inline double dot(const Vector2& g, double x, double y)
+    static inline double dot(const utymap::meshing::Vector2& g, double x, double y)
     {
         return g.x*x + g.y*y;
     }
@@ -48,8 +38,8 @@ private:
     static const int HashMask = 255;
     static const int GradientsMask2D = 7;
     static const int GradientsMask3D = 15;
-    static const Vector2 Gradients2D[];
-    static const Vector3 Gradients3D[];
+    static const utymap::meshing::Vector2 Gradients2D[];
+    static const utymap::meshing::Vector3 Gradients3D[];
     static const int Hash[];
 };
 }}

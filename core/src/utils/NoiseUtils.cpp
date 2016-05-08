@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+using namespace utymap::meshing;
 using namespace utymap::utils;
 
 const double Sqr2 = std::sqrt(2);
@@ -42,36 +43,36 @@ const int NoiseUtils::Hash[] =
     222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 };
 
-const NoiseUtils::Vector2 NoiseUtils::Gradients2D[] =
+const Vector2 NoiseUtils::Gradients2D[] =
 {
-    { 1, 0 },
-    { -1, 0 },
-    { 0, 1 },
-    { 0, -1 },
-    { 1 / Sqr2, 1 / Sqr2 },
-    { -1 / Sqr2, 1 / Sqr2 },
-    { 1 / Sqr2, -1 / Sqr2 },
-    { -1 / Sqr2, -1 / Sqr2 }
+    Vector2(1, 0),
+    Vector2(-1, 0),
+    Vector2(0, 1),
+    Vector2(0, -1),
+    Vector2(1 / Sqr2, 1 / Sqr2),
+    Vector2(-1 / Sqr2, 1 / Sqr2),
+    Vector2(1 / Sqr2, -1 / Sqr2),
+    Vector2(-1 / Sqr2, -1 / Sqr2)
 };
 
-const NoiseUtils::Vector3 NoiseUtils::Gradients3D[] =
+const Vector3 NoiseUtils::Gradients3D[] =
 {
-    NoiseUtils::Vector3(1, 1, 0),
-    NoiseUtils::Vector3(-1, 1, 0),
-    NoiseUtils::Vector3(1, -1, 0),
-    NoiseUtils::Vector3(-1, -1, 0),
-    NoiseUtils::Vector3(1, 0, 1),
-    NoiseUtils::Vector3(-1, 0, 1),
-    NoiseUtils::Vector3(1, 0, -1),
-    NoiseUtils::Vector3(-1, 0, -1),
-    NoiseUtils::Vector3(0, 1, 1),
-    NoiseUtils::Vector3(0, -1, 1),
-    NoiseUtils::Vector3(0, 1, -1),
-    NoiseUtils::Vector3(0, -1, -1),
-    NoiseUtils::Vector3(1, 1, 0),
-    NoiseUtils::Vector3(-1, 1, 0),
-    NoiseUtils::Vector3(0, -1, 1),
-    NoiseUtils::Vector3(0, -1, -1)
+    Vector3(1, 1, 0),
+    Vector3(-1, 1, 0),
+    Vector3(1, -1, 0),
+    Vector3(-1, -1, 0),
+    Vector3(1, 0, 1),
+    Vector3(-1, 0, 1),
+    Vector3(1, 0, -1),
+    Vector3(-1, 0, -1),
+    Vector3(0, 1, 1),
+    Vector3(0, -1, 1),
+    Vector3(0, 1, -1),
+    Vector3(0, -1, -1),
+    Vector3(1, 1, 0),
+    Vector3(-1, 1, 0),
+    Vector3(0, -1, 1),
+    Vector3(0, -1, -1)
 };
 
 double NoiseUtils::perlin2D(double x, double y, double frequency)
