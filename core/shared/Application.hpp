@@ -11,6 +11,7 @@
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
+#include "entities/Element.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "heightmap/SrtmElevationProvider.hpp"
 #include "index/GeoStore.hpp"
@@ -210,6 +211,17 @@ public:
         }
     }
 
+    // Adds element to in-memory store.
+    void addInMemoryStore(const char* styleFile, const utymap::entities::Element& element, const utymap::LodRange& range, OnError* errorCallback)
+    {
+        try {
+            geoStore_.add(InMemoryStorageKey, element, range, *getStyleProvider(styleFile).get());
+        }
+        catch (std::exception& ex) {
+            errorCallback(ex.what());
+        }
+    }
+
     bool hasData(const utymap::QuadKey& quadKey)
     {
         return geoStore_.hasData(quadKey);
@@ -242,6 +254,12 @@ public:
         catch (std::exception& ex) {
             errorCallback(ex.what());
         }
+    }
+
+    // Gets id for the string.
+    inline std::uint32_t getStringId(const char* str)
+    {
+        return stringTable_.getId(str);
     }
 
 private:

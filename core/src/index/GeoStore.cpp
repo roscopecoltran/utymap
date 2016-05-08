@@ -63,6 +63,7 @@ public:
 
     void add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)
     {
+        storeMap_[storeKey]->store(element, range, styleProvider);
     }
 
     void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)

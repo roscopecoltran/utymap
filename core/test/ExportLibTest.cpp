@@ -3,6 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "test_utils/ElementUtils.hpp"
+
+using namespace utymap::entities;
+using namespace utymap::utils;
+
 // Use global variable as it is used inside lambda which is passed as function.
 bool isCalled;
 
@@ -97,6 +102,17 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturn
     ::addToInMemoryStoreInQuadKey(TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);
 
     BOOST_CHECK(!::hasData(35204, 21489, 16));
+}
+
+BOOST_AUTO_TEST_CASE(GivenElement_WhenAddInMemory_ThenItIsAdded)
+{   
+    const std::vector<double> vertices = { 5, 5, 20, 5, 20, 10, 5, 10, 5, 5 };
+    const std::vector<char*> tags = { "featurecla", "Lake", "scalerank", "0" };
+
+    ::addElementToInMemoryStore(TEST_MAPCSS_DEFAULT, 1, vertices.data(), 10, 
+        const_cast<const char**>(tags.data()), 4, 1, 1, callback);
+
+    BOOST_CHECK(::hasData(1, 0, 1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

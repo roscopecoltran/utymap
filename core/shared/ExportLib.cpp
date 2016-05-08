@@ -61,14 +61,14 @@ extern "C"
 
     // Adds data to in-memory store to specific level of details range.
     void EXPORT_API addToInMemoryStoreInBoundingBox(const char* styleFile,     // style file
-                                                   const char* path,          // path to data
-                                                   double minLat,             // minimal latitude
-                                                   double minLon,             // minimal longitude
-                                                   double maxLat,             // maximal latitude
-                                                   double maxLon,             // maximal longitude
-                                                   int startLod,              // start zoom level
-                                                   int endLod,                // end zoom level
-                                                   OnError* errorCallback)    // completion callback
+                                                    const char* path,          // path to data
+                                                    double minLat,             // minimal latitude
+                                                    double minLon,             // minimal longitude
+                                                    double maxLat,             // maximal latitude
+                                                    double maxLon,             // maximal longitude
+                                                    int startLod,              // start zoom level
+                                                    int endLod,                // end zoom level
+                                                    OnError* errorCallback)    // completion callback
     {
         utymap::BoundingBox bbox(utymap::GeoCoordinate(minLat, minLon), utymap::GeoCoordinate(maxLat,maxLon));
         utymap::LodRange lod(startLod, endLod);
@@ -84,6 +84,59 @@ extern "C"
                                                 OnError* errorCallback)    // completion callback
     {
         applicationPtr->addToInMemoryStore(styleFile, path, utymap::QuadKey{ levelOfDetail, tileX, tileY }, errorCallback);
+    }
+
+
+    // Adds element to in-memory store. NOTE: relation is not supported yet.
+    void EXPORT_API addElementToInMemoryStore(const char* styleFile,     // style file
+                                              std::uint64_t id,          // element id
+                                              const double* vertices,    // vertex array
+                                              int vertexLength,          // vertex array length,
+                                              const char** tags,          // tag array
+                                              int tagLength,             // tag array length
+                                              int startLod,              // start zoom level
+                                              int endLod,                // end zoom level
+                                              OnError* errorCallback)    // completion callback
+    {
+        utymap::LodRange lod(startLod, endLod);
+        std::vector<utymap::entities::Tag> elementTags;
+        elementTags.reserve(tagLength / 2);
+        for (int i = 0; i < tagLength; i+=2) {
+            auto keyId = applicationPtr->getStringId(tags[i]);
+            auto valueId = applicationPtr->getStringId(tags[i + 1]);
+            elementTags.push_back(utymap::entities::Tag(keyId, valueId));
+        }
+
+        // Node
+        if (vertexLength / 2 == 1) {
+            utymap::entities::Node node;
+            node.id = id;
+            node.tags = elementTags;
+            node.coordinate = utymap::GeoCoordinate(vertices[0], vertices[1]);
+            applicationPtr->addInMemoryStore(styleFile, node, lod, errorCallback);
+            return;
+        }
+
+        std::vector<utymap::GeoCoordinate> coordinates;
+        coordinates.reserve(vertexLength / 2);
+        for (int i = 0; i < vertexLength; i+=2) {
+            coordinates.push_back(utymap::GeoCoordinate(vertices[i], vertices[i + 1]));
+        }
+
+        // Way or Area
+        if (coordinates[0] == coordinates[coordinates.size() - 1]) {
+            utymap::entities::Area area;
+            area.id = id;
+            area.coordinates = coordinates;
+            area.tags = elementTags;
+            applicationPtr->addInMemoryStore(styleFile, area, lod, errorCallback);
+        } else {
+            utymap::entities::Way way;
+            way.id = id;
+            way.coordinates = coordinates;
+            way.tags = elementTags;
+            applicationPtr->addInMemoryStore(styleFile, way, lod, errorCallback);
+        }
     }
 
     // Loads quadkey.
