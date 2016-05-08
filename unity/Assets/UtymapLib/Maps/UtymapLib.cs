@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Assets.UtymapLib.Core;
 
-namespace Assets.UtymapLib.Maps.Loader
+namespace Assets.UtymapLib.Maps
 {
     /// <summary> Provides the way to build tile encapsulating Utymap implementation. </summary>
     internal static class UtymapLib
