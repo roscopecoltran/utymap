@@ -236,6 +236,8 @@
     <Compile Include="Assets\UtymapLib\Infrastructure\Reactive\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Utils\Guard.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Utils\ParallelExtensions.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Editor\IElementEditor.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Elevation\FlatElevationProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\IElevationProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\SrtmDownloader.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\SrtmElevationProvider.cs" />

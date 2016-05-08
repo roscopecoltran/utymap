@@ -7,10 +7,7 @@ using Assets.UtymapLib.Core.Positioning;
 using Assets.UtymapLib.Core.Positioning.Nmea;
 using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Infrastructure;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
-using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Loader;
@@ -44,26 +41,13 @@ namespace UtymapLib.Tests
 
         private void Initialize()
         {
-            // create default container which should not be exposed outside
-            // to avoid Service Locator pattern. 
-            IContainer container = new Container();
-
-            // create default application configuration
-            var config = ConfigBuilder.GetDefault()
-               .Build();
-
             // initialize services
-            _compositionRoot = new CompositionRoot(container, config)
-                .RegisterAction((c, _) => c.Register(Component.For<ITrace>().Use<ConsoleTrace>()))
-                .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<TestPathResolver>()))
-                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(TestHelper.DefaultMapCss)))
-                .RegisterAction((c, _) => c.Register(Component.For<IProjection>().Use<CartesianProjection>(_worldZeroPoint)))
-                .Setup();
+            _compositionRoot = TestHelper.GetCompositionRoot(_worldZeroPoint);
 
             // get local references
-            _messageBus = container.Resolve<IMessageBus>();
-            _trace = container.Resolve<ITrace>();
-            _tileController = container.Resolve<ITileController>();
+            _messageBus = _compositionRoot.GetService<IMessageBus>();
+            _trace = _compositionRoot.GetService<ITrace>();
+            _tileController = _compositionRoot.GetService<ITileController>();
 
             SetupMapData();
 

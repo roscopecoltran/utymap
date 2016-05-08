@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
 using Assets.UtymapLib.Core;
+using Assets.UtymapLib.Core.Models;
+using Assets.UtymapLib.Infrastructure.Primitives;
 
 namespace Assets.UtymapLib.Maps
 {
@@ -22,12 +25,11 @@ namespace Assets.UtymapLib.Maps
         /// </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
-        /// <param name="startLod"> Start level of details for which data should be imported. </param>
-        /// <param name="endLod"> End level of details for which data should be imported. </param>
+        /// <param name="levelOfDetails"> Specifies level of details for which data should be imported. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void AddToInMemoryStore(string stylePath, string path, int startLod, int endLod, OnError onError)
+        public static void AddToInMemoryStore(string stylePath, string path, Range<int> levelOfDetails, OnError onError)
         {
-            addToInMemoryStoreInRange(stylePath, path, startLod, endLod, onError);
+            addToInMemoryStoreInRange(stylePath, path, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
         }
 
         /// <summary>
@@ -41,6 +43,28 @@ namespace Assets.UtymapLib.Maps
         public static void AddToInMemoryStore(string stylePath, string path, QuadKey quadKey, OnError onError)
         {
             addToInMemoryStoreInQuadKey(stylePath, path, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, onError);
+        }
+
+        public static void AddElementToInMemoryStore(string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
+        {
+            double[] coordinates = new double[element.Geometry.Length*2];
+            for (int i = 0; i < element.Geometry.Length; ++i)
+            {
+                coordinates[i*2] = element.Geometry[i].Latitude;
+                coordinates[i*2 + 1] = element.Geometry[i].Longitude;
+            }
+
+            string[] tags = new string[element.Tags.Count * 2];
+            var tagKeys = element.Tags.Keys.ToArray();
+            for (int i = 0; i < tagKeys.Length; ++i)
+            {
+                tags[i*2] = tagKeys[i];
+                tags[i*2 + 1] = element.Tags[tagKeys[i]];
+            }
+
+            addElementToInMemoryStore(stylePath, element.Id,
+                coordinates, coordinates.Length,
+                tags, tags.Length, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
         }
 
         /// <summary> Registers element builder for processing. </summary>
@@ -103,6 +127,11 @@ namespace Assets.UtymapLib.Maps
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern void addToInMemoryStoreInQuadKey(string stylePath, string path, int tileX, int tileY, int lod, 
             OnError errorHandler);
+
+        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        private static extern void addElementToInMemoryStore(string stylePath, long id, 
+            double[] vertices, int vertexLength, string[] tags, int tagLength, 
+            int startLod, int endLod, OnError errorHandler);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern void registerElementBuilder(string name);

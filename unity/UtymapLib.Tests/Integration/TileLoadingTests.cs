@@ -3,10 +3,6 @@ using Assets.UtymapLib;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
-using Assets.UtymapLib.Infrastructure.Diagnostic;
-using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Loader;
@@ -28,25 +24,12 @@ namespace UtymapLib.Tests.Integration
         [TestFixtureSetUp]
         public void Setup()
         {
-            // create default container which should not be exposed outside
-            // to avoid Service Locator pattern.
-            IContainer container = new Container();
-
-            // create default application configuration
-            var config = ConfigBuilder.GetDefault()
-                .Build();
-
             // initialize services
-            _compositionRoot = new CompositionRoot(container, config)
-                .RegisterAction((c, _) => c.Register(Component.For<ITrace>().Use<ConsoleTrace>()))
-                .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<TestPathResolver>()))
-                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(TestHelper.DefaultMapCss)))
-                .RegisterAction((c, _) => c.Register(Component.For<IProjection>().Use<CartesianProjection>(_worldZeroPoint)))
-                .Setup();
+            _compositionRoot = TestHelper.GetCompositionRoot(_worldZeroPoint);
 
             // get local references
-            _mapDataLoader = container.Resolve<IMapDataLoader>();
-            _tileController = container.Resolve<ITileController>();
+            _mapDataLoader = _compositionRoot.GetService<IMapDataLoader>();
+            _tileController = _compositionRoot.GetService<ITileController>();
         }
 
         [TestFixtureTearDown]

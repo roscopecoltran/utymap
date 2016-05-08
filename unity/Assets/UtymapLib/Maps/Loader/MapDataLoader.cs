@@ -68,8 +68,8 @@ namespace Assets.UtymapLib.Maps.Loader
                 dataPathResolved, stylesheetPathResolved);
 
             string errorMsg = null;
-            UtymapLib.AddToInMemoryStore(stylesheetPathResolved, dataPathResolved,
-                levelOfDetails.Minimum, levelOfDetails.Maximum, error => errorMsg = error);
+            UtymapLib.AddToInMemoryStore(stylesheetPathResolved, dataPathResolved, levelOfDetails, 
+                error => errorMsg = error);
 
             if (errorMsg != null)
                 throw new MapDataException(errorMsg);

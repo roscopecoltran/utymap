@@ -8,6 +8,7 @@ using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
+using Assets.UtymapLib.Maps.Editor;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Geocoding;
 using Assets.UtymapLib.Maps.Imaginary;
@@ -67,6 +68,7 @@ namespace Assets.UtymapLib
 
             // core services 
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
+            _container.Register(Component.For<IElementEditor>().Use<ElementEditor>());
             _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
