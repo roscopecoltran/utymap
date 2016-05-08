@@ -20,7 +20,7 @@ namespace {
     template<typename T>
     inline PointLocation setPath(const BoundingBox& bbox, const T& t, ClipperLib::Path& shape) {
         shape.reserve(t.coordinates.size());
-        bool allInside = false;
+        bool allInside = true;
         bool allOutside = true;
         for (const GeoCoordinate& coord : t.coordinates) {
             bool contains = bbox.contains(coord);
