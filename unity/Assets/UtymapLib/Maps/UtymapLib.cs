@@ -67,13 +67,6 @@ namespace Assets.UtymapLib.Maps
                 tags, tags.Length, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
         }
 
-        /// <summary> Registers element builder for processing. </summary>
-        /// <param name="name"> Name of element builder in stylesheet. </param>
-        public static void RegisterElementBuilder(string name)
-        {
-            registerElementBuilder(name);
-        }
-
         /// <summary> Checks whether there is data for given quadkey. </summary>
         /// <returns> True if there is data for given quadkey. </returns>
         public static bool HasData(QuadKey quadKey)
@@ -132,9 +125,6 @@ namespace Assets.UtymapLib.Maps
         private static extern void addElementToInMemoryStore(string stylePath, long id, 
             double[] vertices, int vertexLength, string[] tags, int tagLength, 
             int startLod, int endLod, OnError errorHandler);
-
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
-        private static extern void registerElementBuilder(string name);
 
         [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);

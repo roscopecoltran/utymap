@@ -154,14 +154,6 @@ public:
         getStyleProvider(path);
     }
 
-    // Register element builder.
-    void registerElementBuilder(const char* name)
-    {
-        quadKeyBuilder_.registerElementBuilder(name, [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::ExternalBuilder(context));
-        });
-    }
-
     // Adds data to in-memory store.
     void addToPersistentStore(const char* styleFile, const char* path, const utymap::QuadKey& quadKey, OnError* errorCallback)
     {

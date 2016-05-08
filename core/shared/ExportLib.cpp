@@ -33,12 +33,6 @@ extern "C"
         applicationPtr->registerStylesheet(path);
     }
 
-    // Register element visitor.
-    void EXPORT_API registerElementBuilder(const char* name)
-    {
-        applicationPtr->registerElementBuilder(name);
-    }
-
     // Adds data to persistent store.
     void EXPORT_API addToPersistentStore(const char* styleFile,   // style file
                                          const char* path,        // path to data

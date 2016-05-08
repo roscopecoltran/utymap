@@ -16,7 +16,6 @@ struct ExportLibFixture {
     {
         ::configure(TEST_ASSETS_PATH, TEST_ASSETS_PATH, TEST_ELEVATION_DIRECTORY,
             [](const char* message) { BOOST_FAIL(message); });
-        ::registerElementBuilder("place");
     }
 
     void loadQuadKeys(int levelOfDetails, int startX, int endX, int startY, int endY)

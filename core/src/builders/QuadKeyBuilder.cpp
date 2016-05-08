@@ -1,5 +1,6 @@
 #include "Exceptions.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/ExternalBuilder.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Node.hpp"
@@ -65,25 +66,28 @@ private:
         while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
-            element.accept(getVisitor(name));
+            element.accept(getBuilder(name));
         }
     }
 
-    ElementVisitor& getVisitor(const std::string& name)
+    ElementBuilder& getBuilder(const std::string& name)
     {
-        auto visitorPair = builders_.find(name);
-        if (visitorPair != builders_.end()) {
-            return *visitorPair->second;
+        auto builderPair = builders_.find(name);
+        if (builderPair != builders_.end()) {
+            return *builderPair->second;
         }
 
         auto factory = builderFactoryMap_.find(name);
         if (factory == builderFactoryMap_.end()) {
-            throw std::domain_error("Unknown element visitor");
+            // use external builder by default
+            auto externalBuilder = std::shared_ptr<ElementBuilder>(new ExternalBuilder(context_));
+            builders_[name] = externalBuilder;
+            return *externalBuilder;
         }
 
-        auto visitor = factory->second(context_);
-        builders_[name] = visitor;
-        return *visitor;
+        auto builder = factory->second(context_);
+        builders_[name] = builder;
+        return *builder;
     }
 
     const BuilderContext context_;

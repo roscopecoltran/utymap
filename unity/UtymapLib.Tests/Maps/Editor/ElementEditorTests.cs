@@ -33,9 +33,7 @@ namespace UtymapLib.Tests.Maps.Editor
             _elementEditor = _compositionRoot.GetService<IElementEditor>();
             _dataLoader = _compositionRoot.GetService<IMapDataLoader>();
             _stylesheet = _compositionRoot.GetService<Stylesheet>();
-            _projection = _compositionRoot.GetService<IProjection>();
-            
-            Assets.UtymapLib.Maps.UtymapLib.RegisterElementBuilder("place");
+            _projection = _compositionRoot.GetService<IProjection>();           
         }
 
         [TestFixtureTearDown]
