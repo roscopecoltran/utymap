@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
+[![Join the chat at https://gitter.im/reinterpretcat/utymap](https://badges.gitter.im/reinterpretcat/utymap.svg)](https://gitter.im/reinterpretcat/utymap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 <h2> Description </h2>
 
 UtyMap is library for building real city environment dynamically using various data sources (mostly, OpenStreetMap and Natural Earth). It includes:
