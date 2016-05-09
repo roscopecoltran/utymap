@@ -95,8 +95,8 @@
     <Compile Include="Assets\UtymapLib\Core\Utils\ColorUtils.cs" />
     <Compile Include="Assets\UtymapLib\Core\Utils\GeoUtils.cs" />
     <Compile Include="Assets\UtymapLib\Core\Utils\MathUtils.cs" />
-    <Compile Include="Assets\UtymapLib\Explorer\Customization\CustomizationService.cs" />
     <Compile Include="Assets\UtymapLib\Exceptions.cs" />
+    <Compile Include="Assets\UtymapLib\Explorer\Customization\CustomizationService.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Config\CodeConfigSection.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Config\ConfigBuilder.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Config\IConfigSection.cs" />
@@ -236,7 +236,6 @@
     <Compile Include="Assets\UtymapLib\Infrastructure\Reactive\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Utils\Guard.cs" />
     <Compile Include="Assets\UtymapLib\Infrastructure\Utils\ParallelExtensions.cs" />
-    <Compile Include="Assets\UtymapLib\Maps\Editor\IElementEditor.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\FlatElevationProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\IElevationProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Elevation\SrtmDownloader.cs" />
@@ -245,8 +244,9 @@
     <Compile Include="Assets\UtymapLib\Maps\Geocoding\NominatimGeocoder.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Imaginary\BingImaginaryProvider.cs" />
     <Compile Include="Assets\UtymapLib\Maps\Imaginary\ImaginaryProvider.cs" />
-    <Compile Include="Assets\UtymapLib\Maps\Loader\MapDataLoader.cs" />
-    <Compile Include="Assets\UtymapLib\Maps\Loader\MapTileAdapter.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Data\ElementEditor.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Data\MapDataLoader.cs" />
+    <Compile Include="Assets\UtymapLib\Maps\Data\MapTileAdapter.cs" />
     <Compile Include="Assets\UtymapLib\Maps\UtymapLib.cs" />
     <Compile Include="Assets\UtymapLib\Strings.cs" />
     <None Include="Assets\Resources\Osm\berlin.osm.xml" />

@@ -5,7 +5,7 @@ using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Loader;
+using Assets.UtymapLib.Maps.Data;
 using NUnit.Framework;
 using UtymapLib.Tests.Helpers;
 

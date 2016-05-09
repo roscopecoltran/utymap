@@ -8,11 +8,10 @@ using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
-using Assets.UtymapLib.Maps.Editor;
+using Assets.UtymapLib.Maps.Data;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Geocoding;
 using Assets.UtymapLib.Maps.Imaginary;
-using Assets.UtymapLib.Maps.Loader;
 
 // has to be there due to Unity3d's generated project 
 [assembly: InternalsVisibleTo("UtymapLib.Tests")]

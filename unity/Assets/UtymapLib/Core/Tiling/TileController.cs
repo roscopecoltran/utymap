@@ -7,7 +7,7 @@ using Assets.UtymapLib.Core.Utils;
 using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Dependencies;
-using Assets.UtymapLib.Maps.Loader;
+using Assets.UtymapLib.Maps.Data;
 
 namespace Assets.UtymapLib.Core.Tiling
 {

@@ -8,13 +8,12 @@ using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Editor;
+using Assets.UtymapLib.Maps.Data;
 using Assets.UtymapLib.Maps.Elevation;
-using Assets.UtymapLib.Maps.Loader;
 using NUnit.Framework;
 using UtymapLib.Tests.Helpers;
 
-namespace UtymapLib.Tests.Maps.Editor
+namespace UtymapLib.Tests.Integration
 {
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
     public class ElementEditorTests

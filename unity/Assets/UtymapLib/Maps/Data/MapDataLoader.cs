@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
@@ -9,11 +8,12 @@ using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
+using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Imaginary;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
-namespace Assets.UtymapLib.Maps.Loader
+namespace Assets.UtymapLib.Maps.Data
 {
     /// <summary> Defines behavior of class responsible to mapdata processing. </summary>
     public interface IMapDataLoader

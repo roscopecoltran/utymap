@@ -10,7 +10,7 @@ using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Loader;
+using Assets.UtymapLib.Maps.Data;
 using UtymapLib.Tests.Helpers;
 
 namespace UtymapLib.Tests

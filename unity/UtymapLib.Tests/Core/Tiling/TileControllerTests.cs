@@ -6,7 +6,7 @@ using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Maps.Loader;
+using Assets.UtymapLib.Maps.Data;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;

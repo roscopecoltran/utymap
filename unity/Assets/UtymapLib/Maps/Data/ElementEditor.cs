@@ -4,7 +4,7 @@ using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Primitives;
 
-namespace Assets.UtymapLib.Maps.Editor
+namespace Assets.UtymapLib.Maps.Data
 {
     /// <summary> Specifies behavior of element editor. </summary>
     public interface IElementEditor

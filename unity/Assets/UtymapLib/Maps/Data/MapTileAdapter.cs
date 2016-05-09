@@ -9,7 +9,7 @@ using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
-namespace Assets.UtymapLib.Maps.Loader
+namespace Assets.UtymapLib.Maps.Data
 {
     /// <summary>
     /// Adapts map tile data received from utymap API to the type used by the app.
