@@ -2,6 +2,7 @@
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Infrastructure.Dependencies;
+using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 
 namespace Assets.UtymapLib.Maps.Data
@@ -26,21 +27,24 @@ namespace Assets.UtymapLib.Maps.Data
     internal class ElementEditor : IElementEditor
     {
         private readonly Stylesheet _stylesheet;
+        private readonly IPathResolver _resolver;
 
         [Dependency]
-        public ElementEditor(Stylesheet stylesheet)
+        public ElementEditor(Stylesheet stylesheet, IPathResolver resolver)
         {
             _stylesheet = stylesheet;
+            _resolver = resolver;
         }
 
         /// <inheritdoc />
         public void Add(Element element, Range<int> levelOfDetails)
         {
-            UtymapLib.AddElementToInMemoryStore(_stylesheet.Path, element, levelOfDetails, message =>
-            {
-                if (!String.IsNullOrEmpty(message))
-                    throw new MapDataException(message);
-            });
+            UtymapLib.AddElementToInMemoryStore(_resolver.Resolve(_stylesheet.Path), 
+                element, levelOfDetails, message =>
+                {
+                    if (!String.IsNullOrEmpty(message))
+                        throw new MapDataException(message);
+                });
         }
 
         /// <inheritdoc />
