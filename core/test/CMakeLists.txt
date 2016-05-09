@@ -57,6 +57,7 @@ add_executable(${TEST}
         meshing/MeshBuilderTest.cpp
         test_utils/ElementUtils.hpp
         test_utils/MapCssUtils.hpp
+        utils/GeometryUtilsTest.cpp
         utils/GeoUtilsTest.cpp
         utils/GradientUtilsTest.cpp
         utils/MapCssUtilsTest.cpp
