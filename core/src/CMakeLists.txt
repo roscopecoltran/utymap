@@ -21,6 +21,7 @@ set(HEADER_FILES
         builders/QuadKeyBuilder.hpp
         builders/buildings/LowPolyBuildingBuilder.hpp
         builders/buildings/facades/LowPolyWallBuilder.hpp
+        builders/buildings/roofs/DomeRoofBuilder.hpp
         builders/buildings/roofs/LowPolyRoofBuilder.hpp
         builders/buildings/roofs/RoofBuilder.hpp
         builders/generators/AbstractGenerator.hpp

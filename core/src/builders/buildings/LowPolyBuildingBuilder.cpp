@@ -7,8 +7,11 @@
 #include "mapcss/ColorGradient.hpp"
 #include "builders/buildings/facades/LowPolyWallBuilder.hpp"
 #include "builders/buildings/roofs/LowPolyRoofBuilder.hpp"
+#include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/MapCssUtils.hpp"
+
+#include <unordered_map>
 
 using namespace utymap;
 using namespace utymap::builders;
@@ -16,6 +19,28 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 using namespace utymap::index;
+
+namespace {
+
+    const std::string RoofTypeKey = "roof-type";
+
+    typedef std::function<std::shared_ptr<RoofBuilder>(Mesh&, const ColorGradient&, const BuilderContext&)> RoofBuilderFactory;
+    static std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap = 
+    {
+        { 
+            "flat", 
+            [](Mesh& m, const ColorGradient& c, const BuilderContext& ctx) { 
+                return std::shared_ptr<LowPolyFlatRoofBuilder>(new LowPolyFlatRoofBuilder(m, c, ctx));
+            } 
+        },
+        {
+            "dome",
+            [](Mesh& m, const ColorGradient& c, const BuilderContext& ctx) {
+                return std::shared_ptr<DomeRoofBuilder>(new DomeRoofBuilder(m, c, ctx));
+            }
+        }
+    };
+}
 
 namespace utymap { namespace builders {
 
@@ -38,15 +63,19 @@ public:
         ColorGradient gradient = context_.styleProvider.getGradient(*gradientKey);
         double height = utymap::utils::getDouble("height", context_.stringTable, style);
         double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
+        
+        auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style, "flat");
 
         Mesh mesh("building");
-        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_);
+
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
-        roofBuilder
-            .setHeight(height)
-            .setMinHeight(minHeight)
-            .build(polygon);
+
+        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(mesh, gradient, context_);
+        roofBuilder->setHeight(height);
+        roofBuilder->setMinHeight(minHeight);
+        roofBuilder->build(polygon);
+        
         // TODO add floor
 
         LowPolyWallBuilder wallBuilder(mesh, gradient, context_);
