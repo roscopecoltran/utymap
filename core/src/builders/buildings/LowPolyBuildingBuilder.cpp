@@ -23,6 +23,7 @@ using namespace utymap::index;
 namespace {
 
     const std::string RoofTypeKey = "roof-type";
+    const std::string RoofHeightKey = "roof-height";
 
     typedef std::function<std::shared_ptr<RoofBuilder>(Mesh&, const ColorGradient&, const BuilderContext&)> RoofBuilderFactory;
     static std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap = 
@@ -64,7 +65,9 @@ public:
         double height = utymap::utils::getDouble("height", context_.stringTable, style);
         double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
         
+        // roof
         auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style, "flat");
+        double roofHeight = utymap::utils::getDouble(RoofHeightKey, context_.stringTable, style, 0);
 
         Mesh mesh("building");
 
@@ -72,8 +75,8 @@ public:
         polygon.addContour(toPoints(area.coordinates));
 
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(mesh, gradient, context_);
-        roofBuilder->setHeight(height);
-        roofBuilder->setMinHeight(minHeight);
+        roofBuilder->setHeight(roofHeight);
+        roofBuilder->setMinHeight(minHeight + height);
         roofBuilder->build(polygon);
         
         // TODO add floor

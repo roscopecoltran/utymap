@@ -35,13 +35,14 @@ public:
 
         utymap::utils::getCircle(contour, center2d, radius);
 
-        utymap::meshing::Vector3 center3d(center2d.longitude, minHeight_ + height_, center2d.latitude);
+        utymap::meshing::Vector3 center3d(center2d.longitude, minHeight_, center2d.latitude);
 
         utymap::builders::IcoSphereGenerator generator(mesh_, context_.meshBuilder, gradient_);
         generator
             .setCenter(center3d)
-            .setRadius(radius, radius)
-            .setRecursionLevel(1)
+            .setRadius(radius, height_)
+            .setRecursionLevel(2)
+            .isSemiSphere(true)
             .setVertexNoiseFreq(0.1f)
             .generate();
     }
