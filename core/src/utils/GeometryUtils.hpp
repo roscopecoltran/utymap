@@ -19,8 +19,8 @@ namespace utymap { namespace utils {
     }
 
     // Gets circle parameters from geocoordinates
-    inline void getCircle(const std::vector<utymap::GeoCoordinate> coordinates, utymap::GeoCoordinate& center, double& radius) {
-
+    inline void getCircle(const std::vector<utymap::GeoCoordinate>& coordinates, utymap::GeoCoordinate& center, double& radius) 
+    {
         auto minMaxLong = std::minmax_element(coordinates.begin(), coordinates.end(),
             [](const utymap::GeoCoordinate& left, const utymap::GeoCoordinate& right) {
                 return left.longitude < right.longitude;

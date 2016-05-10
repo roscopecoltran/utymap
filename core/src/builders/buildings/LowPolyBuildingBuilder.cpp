@@ -40,7 +40,7 @@ public:
         double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
 
         Mesh mesh("building");
-        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_.meshBuilder);
+        LowPolyFlatRoofBuilder roofBuilder(mesh, gradient, context_);
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
         roofBuilder
@@ -49,7 +49,7 @@ public:
             .build(polygon);
         // TODO add floor
 
-        LowPolyWallBuilder wallBuilder(mesh, gradient, context_.meshBuilder);
+        LowPolyWallBuilder wallBuilder(mesh, gradient, context_);
         wallBuilder
             .setHeight(height)
             .setMinHeight(minHeight);

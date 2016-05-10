@@ -10,7 +10,7 @@
 
 namespace utymap { namespace meshing {
 
-// represents point in 2D space.
+// Represents vector2 which can be used as point or direction in 2d space
 struct Vector2
 {
     double x;
@@ -30,7 +30,7 @@ struct Vector2
     }
 };
 
-// Represents vector3 which can be used as point or direction in space.s
+// Represents vector3 which can be used as point or direction in 3d space
 struct Vector3
 {
     double x;

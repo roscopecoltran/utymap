@@ -2,6 +2,7 @@
 #define BUILDERS_BUILDINGS_FACADES_LOWPOLYWALLBUILDER_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "builders/BuilderContext.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "mapcss/ColorGradient.hpp"
@@ -15,8 +16,8 @@ class LowPolyWallBuilder
 public:
     LowPolyWallBuilder(utymap::meshing::Mesh& mesh,
                        const utymap::mapcss::ColorGradient& gradient,
-                       const utymap::meshing::MeshBuilder& meshBuilder) : 
-        mesh_(mesh), meshBuilder_(meshBuilder), options_(0, 0, 0, 12, gradient), minHeight_(0)
+                       const utymap::builders::BuilderContext& context) :
+        mesh_(mesh), context_(context), options_(0, 0, 0, 12, gradient), minHeight_(0)
     {
     }
 
@@ -39,7 +40,7 @@ private:
 
     inline void addPlane(const utymap::GeoCoordinate& p1, const utymap::GeoCoordinate& p2)
     {
-        meshBuilder_.addPlane(mesh_,
+        context_.meshBuilder.addPlane(mesh_,
             utymap::meshing::Vector2(p1.longitude, p1.latitude),
             utymap::meshing::Vector2(p2.longitude, p2.latitude),
             minHeight_,
@@ -48,7 +49,7 @@ private:
     }
 
     utymap::meshing::Mesh& mesh_;
-    const utymap::meshing::MeshBuilder& meshBuilder_;
+    const utymap::builders::BuilderContext& context_;
     utymap::meshing::MeshBuilder::Options options_;
     double minHeight_;
 };

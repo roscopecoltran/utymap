@@ -18,14 +18,14 @@ class LowPolyFlatRoofBuilder : public RoofBuilder
 public:
     LowPolyFlatRoofBuilder(utymap::meshing::Mesh& mesh,
                            const utymap::mapcss::ColorGradient& gradient,
-                           const utymap::meshing::MeshBuilder& meshBuilder)
-        : RoofBuilder(mesh, gradient), meshBuilder_(meshBuilder)
+                           const utymap::builders::BuilderContext& context)
+         : RoofBuilder(mesh, gradient, context)
     {
     }
 
     void build(utymap::meshing::Polygon& polygon)
     {
-        meshBuilder_.addPolygon(mesh_, polygon, utymap::meshing::MeshBuilder::Options
+        context_.meshBuilder.addPolygon(mesh_, polygon, utymap::meshing::MeshBuilder::Options
         {
             0, // area
             0, // ele noise
@@ -35,9 +35,6 @@ public:
             minHeight_
         });
     }
-
-private:
-    const utymap::meshing::MeshBuilder& meshBuilder_;
 };
 
 }}

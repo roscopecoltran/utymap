@@ -2,6 +2,7 @@
 #define SCENE_BUILDINGS_ROOFS_ROOFBUILDER_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "builders/BuilderContext.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
@@ -15,8 +16,9 @@ class RoofBuilder
 {
 public:
     RoofBuilder(utymap::meshing::Mesh& mesh, 
-                const utymap::mapcss::ColorGradient& gradient)
-                : mesh_(mesh), gradient_(gradient), height_(0), colorNoiseFreq_(0)
+                const utymap::mapcss::ColorGradient& gradient,
+                const utymap::builders::BuilderContext& context)
+                : mesh_(mesh), gradient_(gradient), context_(context), minHeight_(0), height_(0), colorNoiseFreq_(0)
     {
     }
 
@@ -35,6 +37,7 @@ public:
 protected:
     utymap::meshing::Mesh& mesh_;
     const utymap::mapcss::ColorGradient& gradient_;
+    const utymap::builders::BuilderContext& context_;
     double height_, minHeight_, colorNoiseFreq_;
 };
 
