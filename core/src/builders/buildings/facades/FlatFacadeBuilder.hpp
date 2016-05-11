@@ -29,9 +29,9 @@ public:
 
     std::int64_t last = polygon.points.size() - 2;
     for (auto i = last; i >= 0; i -=2) {
-      utymap::meshing::Vector2 p1(polygon.points[i + 1], polygon.points[i]);
+      utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
       int j = i == 0 ? last : i - 2;
-      utymap::meshing::Vector2 p2(polygon.points[j + 1], polygon.points[j]);
+      utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
 
       builderContext_.meshBuilder.addPlane(meshContext_.mesh,
                                            p1,
