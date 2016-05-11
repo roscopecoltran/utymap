@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturn
 BOOST_AUTO_TEST_CASE(GivenElement_WhenAddInMemory_ThenItIsAdded)
 {   
     const std::vector<double> vertices = { 5, 5, 20, 5, 20, 10, 5, 10, 5, 5 };
-    const std::vector<char*> tags = { "featurecla", "Lake", "scalerank", "0" };
+    const std::vector<const char*> tags = { "featurecla", "Lake", "scalerank", "0" };
 
     ::addElementToInMemoryStore(TEST_MAPCSS_DEFAULT, 1, vertices.data(), 10, 
         const_cast<const char**>(tags.data()), 4, 1, 1, callback);

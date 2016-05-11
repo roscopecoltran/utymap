@@ -39,14 +39,13 @@ struct Index_InMemoryElementStoreFixture
     ~Index_InMemoryElementStoreFixture()
     {
         delete elementStorePtr;
-        delete styleProviderPtr;
         delete stringTablePtr;
         std::remove("string.idx");
         std::remove("string.dat");
     }
 
     StringTable* stringTablePtr;
-    StyleProvider* styleProviderPtr;
+    std::shared_ptr<StyleProvider> styleProviderPtr;
     InMemoryElementStore* elementStorePtr;
 };
 

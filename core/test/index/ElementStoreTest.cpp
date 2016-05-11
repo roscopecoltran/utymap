@@ -54,8 +54,8 @@ struct Index_ElementStoreFixture
     ~Index_ElementStoreFixture()
     {
         delete elementStorePtr;
-        delete styleProviderPtr;
         delete stringTablePtr;
+
         std::remove("string.idx");
         std::remove("string.dat");
     }
@@ -67,7 +67,7 @@ struct Index_ElementStoreFixture
     }
 
     StringTable* stringTablePtr;
-    StyleProvider* styleProviderPtr;
+    std::shared_ptr<StyleProvider> styleProviderPtr;
     TestElementStore* elementStorePtr;
 };
 

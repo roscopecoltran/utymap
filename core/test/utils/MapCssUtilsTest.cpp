@@ -28,13 +28,13 @@ struct Utils_MapCssUtilsFixture
     ~Utils_MapCssUtilsFixture()
     {
         delete stringTablePtr;
-        delete styleProviderPtr;
+        
         std::remove("string.idx");
         std::remove("string.dat");
     }
 
     StringTable* stringTablePtr;
-    StyleProvider* styleProviderPtr;
+    std::shared_ptr<StyleProvider> styleProviderPtr;
 
 };
 

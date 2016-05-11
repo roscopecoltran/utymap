@@ -3,6 +3,7 @@
 
 #include "builders/ElementBuilder.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/MeshContext.hpp"
 #include "builders/generators/TreeGenerator.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -14,16 +15,10 @@ namespace utymap { namespace builders {
 // Builds single tree.
 class TreeBuilder : public utymap::builders::ElementBuilder
 {
-    static const std::string MeshName;
-    static const std::string FoliageColorKey;
-    static const std::string TrunkColorKey;
-    static const std::string FoliageRadius;
-    static const std::string TrunkRadius;
-    static const std::string TrunkHeight;
 public:
 
     TreeBuilder(const utymap::builders::BuilderContext& context) :
-            utymap::builders::ElementBuilder(context)
+                utymap::builders::ElementBuilder(context)
     {
     }
 
@@ -38,9 +33,8 @@ public:
     void complete() { }
 
     // Creates tree generator which can be used to produce multiple trees inside mesh.
-    static TreeGenerator createGenerator(const utymap::builders::BuilderContext& context,
-                                         utymap::meshing::Mesh& mesh,
-                                         const utymap::mapcss::Style& style);
+    static TreeGenerator createGenerator(const utymap::builders::BuilderContext& builderContext,
+                                         utymap::builders::MeshContext& meshContext);
 };
 
 }}

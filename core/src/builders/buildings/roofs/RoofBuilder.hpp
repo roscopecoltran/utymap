@@ -1,11 +1,12 @@
 #ifndef SCENE_BUILDINGS_ROOFS_ROOFBUILDER_HPP_DEFINED
 #define SCENE_BUILDINGS_ROOFS_ROOFBUILDER_HPP_DEFINED
 
-#include "GeoCoordinate.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/MeshContext.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
+#include "utils/MapCssUtils.hpp"
 
 #include <vector>
 
@@ -15,10 +16,10 @@ namespace utymap { namespace builders {
 class RoofBuilder
 {
 public:
-    RoofBuilder(utymap::meshing::Mesh& mesh, 
-                const utymap::mapcss::ColorGradient& gradient,
-                const utymap::builders::BuilderContext& context)
-                : mesh_(mesh), gradient_(gradient), context_(context), minHeight_(0), height_(0), colorNoiseFreq_(0)
+    RoofBuilder(const utymap::builders::BuilderContext& builderContext,
+                utymap::builders::MeshContext& meshContext):
+        builderContext_(builderContext), meshContext_(meshContext),
+        minHeight_(0), height_(0), colorNoiseFreq_(0)
     {
     }
 
@@ -31,13 +32,23 @@ public:
     // Sets color freq.
     inline RoofBuilder& setColorNoise(double freq) { colorNoiseFreq_ = freq; return *this; }
 
+    // Gets gradient.
+    inline const utymap::mapcss::ColorGradient& getColorGradient()
+    {
+        auto gradient = utymap::utils::getString(RoofColorKey,
+                                                 builderContext_.stringTable,
+                                                 meshContext_.style);
+        return builderContext_.styleProvider.getGradient(*gradient);
+    }
+
     // Builds roof from polygon.
     virtual void build(utymap::meshing::Polygon& polygon) = 0;
 
 protected:
-    utymap::meshing::Mesh& mesh_;
-    const utymap::mapcss::ColorGradient& gradient_;
-    const utymap::builders::BuilderContext& context_;
+    const std::string RoofColorKey = "roof-color";
+
+    const utymap::builders::BuilderContext& builderContext_;
+    utymap::builders::MeshContext& meshContext_;
     double height_, minHeight_, colorNoiseFreq_;
 };
 

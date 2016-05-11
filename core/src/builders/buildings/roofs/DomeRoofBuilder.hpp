@@ -14,10 +14,9 @@ namespace utymap { namespace builders {
 class DomeRoofBuilder : public RoofBuilder
 {
 public:
-    DomeRoofBuilder(utymap::meshing::Mesh& mesh,
-                    const utymap::mapcss::ColorGradient& gradient,
-                    const utymap::builders::BuilderContext& context)
-      : RoofBuilder(mesh, gradient, context)
+    DomeRoofBuilder(const utymap::builders::BuilderContext& builderContext,
+                    utymap::builders::MeshContext& meshContext)
+      : RoofBuilder(builderContext, meshContext)
     {
     }
 
@@ -37,7 +36,11 @@ public:
 
         utymap::meshing::Vector3 center3d(center2d.longitude, minHeight_, center2d.latitude);
 
-        utymap::builders::IcoSphereGenerator generator(mesh_, context_.meshBuilder, gradient_);
+        utymap::builders::IcoSphereGenerator generator(builderContext_ ,
+                                                       meshContext_,
+                                                       RoofColorKey);
+
+        // TODO calculate height_
         generator
             .setCenter(center3d)
             .setRadius(radius, height_)

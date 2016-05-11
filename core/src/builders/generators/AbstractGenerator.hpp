@@ -1,10 +1,13 @@
 #ifndef BUILDERS_ABSTRACTGENERATOR_HPP_DEFINED
 #define BUILDERS_ABSTRACTGENERATOR_HPP_DEFINED
 
+#include "builders/BuilderContext.hpp"
+#include "builders/MeshContext.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "meshing/MeshBuilder.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/NoiseUtils.hpp"
+#include "utils/GradientUtils.hpp"
+#include "utils/MapCssUtils.hpp"
 
 #include <algorithm>
 
@@ -15,10 +18,21 @@ class AbstractGenerator
 {
 public:
 
-    AbstractGenerator(utymap::meshing::Mesh& mesh,
-                      const utymap::meshing::MeshBuilder& meshBuilder_,
-                      const utymap::mapcss::ColorGradient& gradient):
-            meshBuilder_(meshBuilder_), vertNoiseFreq_(0), mesh_(mesh), options_(0, 0, 0, 0, gradient)
+    AbstractGenerator(const utymap::builders::BuilderContext& builderContext,
+                      utymap::builders::MeshContext& meshContext,
+                      const std::string& gradientKey):
+        builderContext_(builderContext),
+        meshContext_(meshContext),
+        options_(0,
+                 0,
+                 0,
+                 0,
+                 builderContext.styleProvider.getGradient(*utymap::utils::getString(gradientKey,
+                                                                                    builderContext.stringTable,
+                                                                                    meshContext.style
+        ))),
+        vertNoiseFreq_(0),
+        colorNoiseFreq(0)
     {
     }
     // Generates mesh data and updates given mesh.
@@ -38,6 +52,7 @@ public:
         return *this;
     }
 
+
 protected:
 
     // Adds triangle to mesh.
@@ -50,7 +65,7 @@ protected:
                        ? utymap::utils::NoiseUtils::perlin2D(v0.x, v0.z, vertNoiseFreq_)
                        : 0;
 
-        meshBuilder_.addTriangle(mesh_,
+        builderContext_.meshBuilder.addTriangle(meshContext_.mesh,
                                  utymap::meshing::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
                                  utymap::meshing::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
                                  utymap::meshing::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
@@ -59,10 +74,10 @@ protected:
     }
 
 private:
-    double vertNoiseFreq_;
-    utymap::meshing::Mesh& mesh_;
-    const utymap::meshing::MeshBuilder& meshBuilder_;
+    const utymap::builders::BuilderContext& builderContext_;
+    utymap::builders::MeshContext& meshContext_;
     utymap::meshing::MeshBuilder::Options options_;
+    double vertNoiseFreq_, colorNoiseFreq;
 };
 
 }}

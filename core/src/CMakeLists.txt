@@ -20,9 +20,10 @@ set(HEADER_FILES
         builders/ExternalBuilder.hpp
         builders/QuadKeyBuilder.hpp
         builders/buildings/LowPolyBuildingBuilder.hpp
-        builders/buildings/facades/LowPolyWallBuilder.hpp
+        builders/buildings/facades/FacadeBuilder.hpp
+        builders/buildings/facades/FlatFacadeBuilder.hpp
         builders/buildings/roofs/DomeRoofBuilder.hpp
-        builders/buildings/roofs/LowPolyRoofBuilder.hpp
+        builders/buildings/roofs/FlatRoofBuilder.hpp
         builders/buildings/roofs/RoofBuilder.hpp
         builders/generators/AbstractGenerator.hpp
         builders/generators/CylinderGenerator.hpp

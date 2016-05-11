@@ -25,15 +25,15 @@ struct Formats_Shape_ShapeDataVisitorFixture
     ~Formats_Shape_ShapeDataVisitorFixture()
     {
         delete stringTablePtr;
-        delete styleProviderPtr;
         delete storePtr;
+
         std::remove("string.idx");
         std::remove("string.dat");
     }
 
     std::string shapeFile;
     StringTable* stringTablePtr;
-    StyleProvider* styleProviderPtr;
+    std::shared_ptr<StyleProvider> styleProviderPtr;
     InMemoryElementStore* storePtr;
 };
 

@@ -1,15 +1,13 @@
 #include "GeoCoordinate.hpp"
+#include "builders/MeshContext.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "mapcss/ColorGradient.hpp"
-#include "builders/buildings/facades/LowPolyWallBuilder.hpp"
-#include "builders/buildings/roofs/LowPolyRoofBuilder.hpp"
+#include "builders/buildings/facades/FlatFacadeBuilder.hpp"
+#include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
-#include "utils/MapCssUtils.hpp"
 
 #include <unordered_map>
 
@@ -24,20 +22,32 @@ namespace {
 
     const std::string RoofTypeKey = "roof-type";
     const std::string RoofHeightKey = "roof-height";
+    const std::string FacadeTypeKey = "facade-type";
 
-    typedef std::function<std::shared_ptr<RoofBuilder>(Mesh&, const ColorGradient&, const BuilderContext&)> RoofBuilderFactory;
-    static std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap = 
+    typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
+    std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
     {
         { 
             "flat", 
-            [](Mesh& m, const ColorGradient& c, const BuilderContext& ctx) { 
-                return std::shared_ptr<LowPolyFlatRoofBuilder>(new LowPolyFlatRoofBuilder(m, c, ctx));
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<LowPolyFlatRoofBuilder>(new LowPolyFlatRoofBuilder(builderContext, meshContext));
             } 
         },
         {
             "dome",
-            [](Mesh& m, const ColorGradient& c, const BuilderContext& ctx) {
-                return std::shared_ptr<DomeRoofBuilder>(new DomeRoofBuilder(m, c, ctx));
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<DomeRoofBuilder>(new DomeRoofBuilder(builderContext, meshContext));
+            }
+        }
+    };
+
+    typedef std::function<std::shared_ptr<FacadeBuilder>(const BuilderContext&, MeshContext&)> FacadeBuilderFactory;
+    std::unordered_map<std::string, FacadeBuilderFactory> FacadeBuilderFactoryMap =
+    {
+        {
+            "flat",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+              return std::shared_ptr<FlatFacadeBuilder>(new FlatFacadeBuilder(builderContext, meshContext));
             }
         }
     };
@@ -60,34 +70,33 @@ public:
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-        auto gradientKey = utymap::utils::getString("color", context_.stringTable, style);
-        ColorGradient gradient = context_.styleProvider.getGradient(*gradientKey);
         double height = utymap::utils::getDouble("height", context_.stringTable, style);
         double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
+
+        // facade
+        auto facadeType = utymap::utils::getString(FacadeTypeKey, context_.stringTable, style, "flat");
         
         // roof
         auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style, "flat");
         double roofHeight = utymap::utils::getDouble(RoofHeightKey, context_.stringTable, style, 0);
 
         Mesh mesh("building");
+        MeshContext meshContext(mesh, style);
 
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
 
-        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(mesh, gradient, context_);
+        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(minHeight + height);
         roofBuilder->build(polygon);
         
-        // TODO add floor
+        auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
+        facadeBuilder->setHeight(height);
+        facadeBuilder->setMinHeight(minHeight);
+        facadeBuilder->build(polygon);
 
-        LowPolyWallBuilder wallBuilder(mesh, gradient, context_);
-        wallBuilder
-            .setHeight(height)
-            .setMinHeight(minHeight);
-        int last = area.coordinates.size() - 1;
-        for (auto i = last; i >= 0; --i) 
-            wallBuilder.build(area.coordinates[i], area.coordinates[i != 0 ? i - 1 : last]);
+        // TODO add floor
 
         context_.meshCallback(mesh);
     }

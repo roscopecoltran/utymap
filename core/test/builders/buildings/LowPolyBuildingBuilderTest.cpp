@@ -18,9 +18,9 @@ using namespace utymap::meshing;
 struct Builders_Buildings_LowPolyBuildingsBuilderFixture
 {
     Builders_Buildings_LowPolyBuildingsBuilderFixture() :
-        stringTable(new StringTable("")),
-        styleProvider(MapCssUtils::createStyleProviderFromString(*stringTable,
-            "area|z1[building=yes] { height:10; color:gradient(red);}")),
+        stringTable(""),
+        styleProvider(MapCssUtils::createStyleProviderFromString(stringTable,
+            "area|z1[building=yes] { height:10; roof-color:gradient(red); facade-color:gradient(blue); }")),
         eleProvider()
     {
     }
@@ -32,7 +32,7 @@ struct Builders_Buildings_LowPolyBuildingsBuilderFixture
     }
 
     FlatElevationProvider eleProvider;
-    std::shared_ptr<StringTable> stringTable;
+    StringTable stringTable;
     std::shared_ptr<StyleProvider> styleProvider;
 };
 
@@ -43,13 +43,13 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
     QuadKey quadKey{ 1, 1, 0 };
     bool isCalled = false;
-    BuilderContext context(quadKey, *styleProvider, *stringTable, eleProvider, [&](const Mesh& mesh) {
+    BuilderContext context(quadKey, *styleProvider, stringTable, eleProvider, [&](const Mesh& mesh) {
         isCalled = true;
         BOOST_CHECK_GT(mesh.vertices.size(), 0);
         BOOST_CHECK_GT(mesh.triangles.size(), 0);
         BOOST_CHECK_GT(mesh.colors.size(), 0);
     }, nullptr);
-    Area building = ElementUtils::createElement<Area>(*stringTable, { { "building", "yes" } }, 
+    Area building = ElementUtils::createElement<Area>(stringTable, { { "building", "yes" } },
         { { 0, 0 }, {0, 10}, {10, 10}, {10, 0} });
     LowPolyBuildingBuilder builder(context);
 

@@ -13,10 +13,10 @@ class CylinderGenerator : public AbstractGenerator
 {
 public:
 
-    CylinderGenerator(utymap::meshing::Mesh& mesh,
-                      const utymap::meshing::MeshBuilder& meshBuilder,
-                      const utymap::mapcss::ColorGradient& gradient) :
-            AbstractGenerator(mesh, meshBuilder, gradient),
+    CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
+                      utymap::builders::MeshContext& meshContext,
+                      const std::string& gradientKey) :
+            AbstractGenerator(builderContext, meshContext, gradientKey),
             center_(), radius_(0), height_(0), radialSegments_(0), maxSegmentHeight_(0)
     {
     }

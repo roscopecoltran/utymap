@@ -6,18 +6,23 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 using namespace utymap::utils;
 
-const std::string TreeBuilder::MeshName = "tree";
-const std::string TreeBuilder::FoliageColorKey = "foliage-color";
-const std::string TreeBuilder::TrunkColorKey = "trunk-color";
-const std::string TreeBuilder::FoliageRadius = "foliage-radius";
-const std::string TreeBuilder::TrunkRadius = "trunk-radius";
-const std::string TreeBuilder::TrunkHeight = "trunk-height";
+namespace {
+const std::string MeshName = "tree";
+const std::string FoliageColorKey = "foliage-color";
+const std::string TrunkColorKey = "trunk-color";
+const std::string FoliageRadius = "foliage-radius";
+const std::string TrunkRadius = "trunk-radius";
+const std::string TrunkHeight = "trunk-height";
+}
 
 void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
     Mesh mesh(MeshName);
-    TreeGenerator generator = createGenerator(context_, mesh, 
-        context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail));
+    Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
+   
+    MeshContext meshContext(mesh, style);
+
+    TreeGenerator generator = createGenerator(context_, meshContext);
 
     double elevation = context_.eleProvider.getElevation(node.coordinate);
     generator
@@ -27,21 +32,19 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
     context_.meshCallback(mesh);
 }
 
-TreeGenerator TreeBuilder::createGenerator(const BuilderContext& context, Mesh& mesh, const Style& style)
+TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext, MeshContext& meshContext)
 {
-    auto trunkGradient = utymap::utils::getString(TrunkColorKey, context.stringTable, style);
-    auto foliageGradient = utymap::utils::getString(FoliageColorKey, context.stringTable, style);
+    double relativeSize = builderContext.boundingBox.maxPoint.latitude - builderContext.boundingBox.minPoint.latitude;
+    GeoCoordinate relativeCoordinate = builderContext.boundingBox.center();
 
-    double relativeSize = context.boundingBox.maxPoint.latitude - context.boundingBox.minPoint.latitude;
-    GeoCoordinate relativeCoordinate = context.boundingBox.center();
+    double foliageRadiusInDegrees = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize, relativeCoordinate);
+    double foliageRadiusInMeters = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize);
 
-    double foliageRadiusInDegrees = getDimension(FoliageRadius, context.stringTable, style, relativeSize, relativeCoordinate);
-    double foliageRadiusInMeters = getDimension(FoliageRadius, context.stringTable, style, relativeSize);
-
-    return TreeGenerator(mesh, context.meshBuilder, 
-            context.styleProvider.getGradient(*trunkGradient),
-            context.styleProvider.getGradient(*foliageGradient))
+    return TreeGenerator(builderContext,
+                         meshContext,
+                         TrunkColorKey,
+                         FoliageColorKey)
         .setFoliageRadius(foliageRadiusInDegrees, foliageRadiusInMeters)
-        .setTrunkRadius(getDimension(TrunkRadius, context.stringTable, style, relativeSize, relativeCoordinate))
-        .setTrunkHeight(getDouble(TrunkHeight, context.stringTable, style));
+        .setTrunkRadius(getDimension(TrunkRadius, builderContext.stringTable, meshContext.style, relativeSize, relativeCoordinate))
+        .setTrunkHeight(getDouble(TrunkHeight, builderContext.stringTable, meshContext.style));
 }

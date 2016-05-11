@@ -38,7 +38,6 @@ struct Builders_Terrain_TerraBuilderFixture
     ~Builders_Terrain_TerraBuilderFixture()
     {
         delete builderPtr;
-        delete styleProviderPtr;
         delete stringTablePtr;
 
         std::remove("string.idx");
@@ -47,7 +46,7 @@ struct Builders_Terrain_TerraBuilderFixture
 
     FlatElevationProvider eleProvider;
     StringTable* stringTablePtr;
-    StyleProvider* styleProviderPtr;
+    std::shared_ptr<StyleProvider> styleProviderPtr;
     TerraBuilder* builderPtr;
 };
 

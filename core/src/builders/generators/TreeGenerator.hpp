@@ -14,22 +14,25 @@ namespace utymap { namespace builders {
 class TreeGenerator : public AbstractGenerator
 {
 public:
-
-    TreeGenerator(utymap::meshing::Mesh& mesh,
-                  const utymap::meshing::MeshBuilder& meshBuilder,
-                  const utymap::mapcss::ColorGradient& trunkGradient,
-                  const utymap::mapcss::ColorGradient& foliageGradient) :
-            AbstractGenerator(mesh, meshBuilder, foliageGradient), // ignored
-            trunkGenerator(mesh, meshBuilder, trunkGradient),
-            foliageGenerator(mesh, meshBuilder, foliageGradient),
-            trunkHeight_(0), trunkRadius_(0), foliageRadius_(0), foliageHeight_(0)
+    TreeGenerator(const utymap::builders::BuilderContext& builderContext,
+                  utymap::builders::MeshContext& meshContext,
+                  const std::string& trunkGradientKey,
+                  const std::string& foliageGradientKey) :
+            AbstractGenerator(builderContext, meshContext, trunkGradientKey), // ignored
+            trunkGenerator(builderContext, meshContext, trunkGradientKey),
+            foliageGenerator(builderContext, meshContext, foliageGradientKey),
+            position_(),
+            trunkHeight_(0),
+            trunkRadius_(0),
+            foliageRadius_(0),
+            foliageHeight_(0)
     {
     }
 
     // Sets position of tree
     TreeGenerator& setPosition(const utymap::meshing::Vector3& position)
     {
-        _position = position;
+        position_ = position;
         return *this;
     }
 
@@ -59,7 +62,7 @@ public:
     {
         // generate trunk
         trunkGenerator
-            .setCenter(_position)
+            .setCenter(position_)
             .setHeight(trunkHeight_)
             .setRadius(trunkRadius_)
             .setMaxSegmentHeight(5)
@@ -70,9 +73,9 @@ public:
         // generate foliage
         foliageGenerator
             .setCenter(utymap::meshing::Vector3(
-                _position.x,
-                _position.y + trunkHeight_ + foliageRadius_,
-                _position.z))
+                position_.x,
+                position_.y + trunkHeight_ + foliageRadius_,
+                position_.z))
             .setRadius(foliageRadius_, foliageHeight_)
             .setRecursionLevel(1)
             .setVertexNoiseFreq(0.1f)
@@ -82,7 +85,7 @@ public:
 private:
     CylinderGenerator trunkGenerator;
     IcoSphereGenerator foliageGenerator;
-    meshing::Vector3 _position;
+    meshing::Vector3 position_;
     double trunkHeight_, trunkRadius_, foliageRadius_, foliageHeight_;
 };
 }}

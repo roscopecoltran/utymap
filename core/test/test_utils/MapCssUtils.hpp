@@ -16,21 +16,21 @@ class MapCssUtils
 {
 public:
 
-    static utymap::mapcss::StyleProvider* createStyleProviderFromFile(utymap::index::StringTable& stringTable,
-                                                                      const std::string& filePath)
+    static std::shared_ptr<utymap::mapcss::StyleProvider> createStyleProviderFromFile(utymap::index::StringTable& stringTable,
+                                                                                      const std::string& filePath)
     {
         std::ifstream styleFile(filePath);
         utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        return new utymap::mapcss::StyleProvider(stylesheet, stringTable);
+        return std::shared_ptr<utymap::mapcss::StyleProvider>(new utymap::mapcss::StyleProvider(stylesheet, stringTable));
     }
 
-    static utymap::mapcss::StyleProvider* createStyleProviderFromString(utymap::index::StringTable& stringTable,
-                                                                        const std::string& str)
+    static std::shared_ptr<utymap::mapcss::StyleProvider> createStyleProviderFromString(utymap::index::StringTable& stringTable,
+                                                                                        const std::string& str)
     {
         utymap::mapcss::MapCssParser parser;
         utymap::mapcss::StyleSheet stylesheet = parser.parse(str);
-        return new utymap::mapcss::StyleProvider(stylesheet, stringTable);
+        return std::shared_ptr<utymap::mapcss::StyleProvider>(new utymap::mapcss::StyleProvider(stylesheet, stringTable));
     }
 };
 
