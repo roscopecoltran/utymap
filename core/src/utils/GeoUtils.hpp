@@ -104,6 +104,25 @@ public:
         return rad2Deg(dWidth);
     }
 
+    // Gets distance in meters for given coordinate
+    static double distance(const GeoCoordinate& p1, const GeoCoordinate& p2)
+    {
+        double dLat = deg2Rad(p1.latitude - p1.latitude);
+        double dLon = deg2Rad(p1.longitude - p1.longitude);
+
+        double lat1 = deg2Rad(p1.latitude);
+        double lat2 = deg2Rad(p2.latitude);
+
+        double a = std::sin(dLat / 2) * std::sin(dLat / 2) +
+            std::sin(dLon / 2) * std::sin(dLon / 2) * std::cos(lat1) * std::cos(lat2);
+
+        double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
+
+        double radius = wgs84EarthRadius(dLat);
+
+        return radius * c;
+    }
+
 private:
 
     inline static int lonToTileX(double lon, int levelOfDetail)
