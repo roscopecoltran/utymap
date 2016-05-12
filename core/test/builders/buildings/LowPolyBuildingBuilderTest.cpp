@@ -4,6 +4,8 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
+#include <boost/test/unit_test.hpp>
+
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 

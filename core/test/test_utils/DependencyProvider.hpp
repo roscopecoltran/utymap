@@ -3,10 +3,9 @@
 
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/StringTable.hpp"
+#include "mapcss/MapCssParser.hpp"
+#include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
-
-#include "test_utils/MapCssUtils.hpp"
-#include "MapCssUtils.hpp"
 
 #include <cstdio>
 #include <memory>
@@ -43,10 +42,12 @@ class DependencyProvider
     return eleProvider_;
   }
 
-  std::shared_ptr<StyleProvider> getStyleProvider(const std::string& declaration) 
+  std::shared_ptr<StyleProvider> getStyleProvider(const std::string& stylesheetStr) 
   {
       if (styleProvider_ == nullptr) {
-          styleProvider_ = MapCssUtils::createStyleProviderFromString(*getStringTable(), declaration);
+          utymap::mapcss::MapCssParser parser;
+          styleProvider_ = std::shared_ptr<utymap::mapcss::StyleProvider>(
+              new utymap::mapcss::StyleProvider(parser.parse(stylesheetStr), *getStringTable()));
       }
       return styleProvider_;
   }

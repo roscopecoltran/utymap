@@ -3,7 +3,6 @@
 #include "entities/Way.hpp"
 #include "entities/Relation.hpp"
 #include "mapcss/StyleProvider.hpp"
-#include "test_utils/MapCssUtils.hpp"
 #include "test_utils/ElementUtils.hpp"
 
 #include <boost/test/unit_test.hpp>

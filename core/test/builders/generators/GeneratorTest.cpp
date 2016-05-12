@@ -4,11 +4,11 @@
 #include "entities/Node.hpp"
 
 #include <boost/test/unit_test.hpp>
-#include <cstdio>
 
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
-#include "test_utils/MapCssUtils.hpp"
+
+#include <cstdio>
 
 using namespace utymap;
 using namespace utymap::builders;

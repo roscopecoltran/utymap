@@ -6,9 +6,10 @@
 #include "entities/Relation.hpp"
 #include "index/ElementStore.hpp"
 
+#include <boost/test/unit_test.hpp>
+
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
-#include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;

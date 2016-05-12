@@ -28,6 +28,7 @@ set(HEADER_FILES
         formats/osm/TestOsmDataVisitor.hpp
         formats/shape/TestShapeDataVisitor.hpp
         test_utils/DependencyProvider.hpp
+        test_utils/ElementUtils.hpp
         )
 
 set (TEST Test)
@@ -56,8 +57,6 @@ add_executable(${TEST}
         mapcss/StyleDeclarationTest.cpp
         mapcss/StyleProviderTest.cpp
         meshing/MeshBuilderTest.cpp
-        test_utils/ElementUtils.hpp
-        test_utils/MapCssUtils.hpp
         utils/GeometryUtilsTest.cpp
         utils/GeoUtilsTest.cpp
         utils/GradientUtilsTest.cpp
