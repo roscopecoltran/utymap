@@ -2,15 +2,13 @@
 #include "builders/generators/IcoSphereGenerator.hpp"
 #include "builders/generators/TreeGenerator.hpp"
 #include "entities/Node.hpp"
-#include "heightmap/FlatElevationProvider.hpp"
-#include "index/StringTable.hpp"
-#include "utils/GradientUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <cstdio>
 
-#include "test_utils/MapCssUtils.hpp"
+#include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
+#include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::builders;
@@ -21,51 +19,45 @@ using namespace utymap::meshing;
 using namespace utymap::index;
 using namespace utymap::utils;
 
+namespace {
+    const std::string stylesheet = "node|z1[natural=tree] { color:gradient(red);}";
+
+    Style getStyle(DependencyProvider provider) {
+        return provider
+            .getStyleProvider(stylesheet)
+            ->forElement(ElementUtils::createElement<Node>(*provider.getStringTable(), { { "natural", "tree" } }), 1);
+    }
+}
+
 struct Builders_GeneratorFixture
 {
-    // TODO simpify setup
     Builders_GeneratorFixture() :
-        stringTable(""),
-        styleProvider(MapCssUtils::createStyleProviderFromString(stringTable, "node|z1[natural=tree] { color:gradient(red);}")),
+        dependencyProvider(),
         mesh(""),
-        style(styleProvider->forElement(ElementUtils::createElement<Node>(stringTable, { { "natural", "tree" } }), 1)),
+        style(getStyle(dependencyProvider)),
         builderContext(
             QuadKey { 1, 1, 1 },
-            *styleProvider,
-            stringTable,
-            FlatElevationProvider(),
+            *dependencyProvider.getStyleProvider(stylesheet),
+            *dependencyProvider.getStringTable(),
+            *dependencyProvider.getElevationProvider(),
             [](const Mesh&) {},
             [](const Element&) {}),
-        meshContext(mesh, style),
-
-        icoSphereGenerator(builderContext, meshContext, "color"),
-        cylinderGenerator(builderContext, meshContext, "color"),
-        treeGenerator(builderContext, meshContext, "color", "color")
+        meshContext(mesh, style)
     {
     }
 
-    ~Builders_GeneratorFixture()
-    {
-        std::remove("string.idx");
-        std::remove("string.dat");
-    }
-
-    StringTable stringTable;
-    std::shared_ptr<StyleProvider> styleProvider;
+    DependencyProvider dependencyProvider;
     Mesh mesh;
     Style style;
     BuilderContext builderContext;
     MeshContext meshContext;
- 
-    IcoSphereGenerator icoSphereGenerator;
-    CylinderGenerator cylinderGenerator;
-    TreeGenerator treeGenerator;
 };
 
 BOOST_FIXTURE_TEST_SUITE(Builders_Generators_Generator, Builders_GeneratorFixture)
 
 BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
+    IcoSphereGenerator icoSphereGenerator(builderContext, meshContext, "color");
     icoSphereGenerator
         .setCenter(Vector3(0, 0, 0))
         .setRadius(10)
@@ -82,6 +74,7 @@ BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanG
 
 BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
+    CylinderGenerator cylinderGenerator(builderContext, meshContext, "color");
     cylinderGenerator
             .setCenter(Vector3(0, 0, 0))
             .setHeight(10)
@@ -97,6 +90,7 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
+    TreeGenerator treeGenerator(builderContext, meshContext, "color", "color");
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
             .setTrunkHeight(5)

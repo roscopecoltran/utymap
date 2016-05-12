@@ -7,46 +7,41 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
-#include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
+namespace {
+    const std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: true; }";
+}
+
 struct Index_InMemoryElementStoreFixture
 {
     Index_InMemoryElementStoreFixture() :
-        stringTablePtr(new StringTable("")),
-        styleProviderPtr(nullptr),
-        elementStorePtr()
+        dependencyProvider(),
+        elementStore(*dependencyProvider.getStringTable())
     {
         LodRange range(1, 2);
-        std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: true; }";
-        styleProviderPtr = MapCssUtils::createStyleProviderFromString(*stringTablePtr, stylesheet);
         
-        elementStorePtr = new InMemoryElementStore(*stringTablePtr);
-        elementStorePtr->store(ElementUtils::createElement<Way>(*stringTablePtr,
-            { { "any", "true" } }, { { 5, -5 }, { 5, -10 } }), range, *styleProviderPtr);
-        elementStorePtr->store(ElementUtils::createElement<Area>(*stringTablePtr,
-            { { "any", "true" } }, { { 5, -5 }, { 5, -10 }, {10, -10} }), range, *styleProviderPtr);
-        Node node = ElementUtils::createElement<Node>(*stringTablePtr, { { "any", "true" } });
+        auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
+
+        elementStore.store(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
+        { { "any", "true" } }, { { 5, -5 }, { 5, -10 } }), range, *styleProvider);
+        elementStore.store(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(),
+        { { "any", "true" } }, { { 5, -5 }, { 5, -10 }, { 10, -10 } }), range, *styleProvider);
+
+        Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
+        { { "any", "true" } });
         node.coordinate = {5, -5};
-        elementStorePtr->store(node, range, *styleProviderPtr);
+        elementStore.store(node, range, *styleProvider);
     }
 
-    ~Index_InMemoryElementStoreFixture()
-    {
-        delete elementStorePtr;
-        delete stringTablePtr;
-        std::remove("string.idx");
-        std::remove("string.dat");
-    }
-
-    StringTable* stringTablePtr;
-    std::shared_ptr<StyleProvider> styleProviderPtr;
-    InMemoryElementStore* elementStorePtr;
+    DependencyProvider dependencyProvider;
+    InMemoryElementStore elementStore;
 };
 
 struct ElementCounter : public ElementVisitor
@@ -69,7 +64,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_AllFound)
     quadKey.tileY = 0;
     ElementCounter counter;
 
-    elementStorePtr->search(quadKey, *styleProviderPtr, counter);
+    elementStore.search(quadKey, *dependencyProvider.getStyleProvider(stylesheet), counter);
 
     BOOST_CHECK_EQUAL(counter.times, 3);
 }
@@ -82,7 +77,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_AllSkipped)
     quadKey.tileY = 0;
     ElementCounter counter;
 
-    elementStorePtr->search(quadKey, *styleProviderPtr, counter);
+    elementStore.search(quadKey, *dependencyProvider.getStyleProvider(stylesheet), counter);
 
     BOOST_CHECK_EQUAL(counter.times, 0);
 }

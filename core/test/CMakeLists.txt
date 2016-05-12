@@ -27,6 +27,7 @@ set(HEADER_FILES
         config.hpp
         formats/osm/TestOsmDataVisitor.hpp
         formats/shape/TestShapeDataVisitor.hpp
+        test_utils/DependencyProvider.hpp
         )
 
 set (TEST Test)

@@ -9,65 +9,48 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
-#include "test_utils/MapCssUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
-using namespace utymap::heightmap;
-using namespace utymap::index;
-using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-const char* StyleSheetString =
-"canvas|z1 { grid-cell-size: 1%; layer-priority: water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
-            "water-ele-noise-freq: 0.05; water-color-noise-freq: 0.1; water-color:gradient(red);  water-max-area: 5%;}"
-"area|z1[natural=water] { builders:terrain; terrain-layer:water; }";
+namespace {
+    const std::string stylesheet =
+        "canvas|z1 { grid-cell-size: 1%; layer-priority: water; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
+        "water-ele-noise-freq: 0.05; water-color-noise-freq: 0.1; water-color:gradient(red);  water-max-area: 5%;}"
+        "area|z1[natural=water] { builders:terrain; terrain-layer:water; }";
 
-struct Builders_Terrain_TerraBuilderFixture
-{
-    Builders_Terrain_TerraBuilderFixture() :
-        stringTablePtr(new StringTable("")),
-        styleProviderPtr(MapCssUtils::createStyleProviderFromString(*stringTablePtr, StyleSheetString)),
-        eleProvider(),
-        builderPtr(nullptr)
+    struct Builders_Terrain_TerraBuilderFixture
     {
-    }
-
-    ~Builders_Terrain_TerraBuilderFixture()
-    {
-        delete builderPtr;
-        delete stringTablePtr;
-
-        std::remove("string.idx");
-        std::remove("string.dat");
-    }
-
-    FlatElevationProvider eleProvider;
-    StringTable* stringTablePtr;
-    std::shared_ptr<StyleProvider> styleProviderPtr;
-    TerraBuilder* builderPtr;
-};
+        DependencyProvider dependencyProvider;
+        std::shared_ptr<TerraBuilder> terraBuilder;
+    };
+}
 
 BOOST_FIXTURE_TEST_SUITE(Builders_Terrain_TerraBuilder, Builders_Terrain_TerraBuilderFixture)
 
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {
     bool isCalled = false;
-    QuadKey quadKey = {1, 0, 0};
-    BuilderContext context(quadKey, *styleProviderPtr, *stringTablePtr, eleProvider,
+    QuadKey quadKey = { 1, 0, 0 };
+    BuilderContext context(quadKey,
+        *dependencyProvider.getStyleProvider(stylesheet),
+        *dependencyProvider.getStringTable(),
+        *dependencyProvider.getElevationProvider(),
         [&](const Mesh& mesh) {
             isCalled = true;
             BOOST_CHECK_GT(mesh.vertices.size(), 0);
             BOOST_CHECK_GT(mesh.triangles.size(), 0);
-    }, nullptr);
-    builderPtr = new TerraBuilder(context);
-    ElementUtils::createElement<Area>(*stringTablePtr, 
-        { { "natural", "water" } },
-        { { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } }).accept(*builderPtr);
+        }, nullptr);
+    TerraBuilder terraBuilder(context);
+    ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(),
+    { { "natural", "water" } },
+    { { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } }).accept(terraBuilder);
 
-    builderPtr->complete();
+    terraBuilder.complete();
 
     BOOST_CHECK(isCalled);
 }
