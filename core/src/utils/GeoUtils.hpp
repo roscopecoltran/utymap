@@ -107,8 +107,8 @@ public:
     // Gets distance in meters for given coordinate
     static double distance(const GeoCoordinate& p1, const GeoCoordinate& p2)
     {
-        double dLat = deg2Rad(p1.latitude - p1.latitude);
-        double dLon = deg2Rad(p1.longitude - p1.longitude);
+        double dLat = deg2Rad(p1.latitude - p2.latitude);
+        double dLon = deg2Rad(p1.longitude - p2.longitude);
 
         double lat1 = deg2Rad(p1.latitude);
         double lat2 = deg2Rad(p2.latitude);
