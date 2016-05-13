@@ -20,11 +20,9 @@ public:
     // Converts Latitude/Longitude to quadkey
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
-        QuadKey quadKey;
-        quadKey.tileX = lonToTileX(clamp(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail);
-        quadKey.tileY = latToTileY(clamp(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail);
-        quadKey.levelOfDetail = levelOfDetail;
-        return quadKey;
+        return QuadKey(levelOfDetail,
+                       lonToTileX(clamp(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail),
+                       latToTileY(clamp(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail));
     }
 
     // Converts quadkey to bounding box

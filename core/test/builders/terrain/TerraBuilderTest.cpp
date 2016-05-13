@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Terrain_TerraBuilder, Builders_Terrain_TerraBu
 BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
 {
     bool isCalled = false;
-    QuadKey quadKey = { 1, 0, 0 };
+    QuadKey quadKey(1, 0, 0);
     BuilderContext context(quadKey,
         *dependencyProvider.getStyleProvider(stylesheet),
         *dependencyProvider.getStringTable(),

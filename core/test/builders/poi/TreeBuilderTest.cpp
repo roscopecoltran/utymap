@@ -32,7 +32,7 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Poi_TreeBuilder, Builders_Poi_TreeBuilderFixtu
 
 BOOST_AUTO_TEST_CASE(GivenTree_WhenVisitNode_ThenMeshIsBuilt)
 {
-    QuadKey quadKey{ 16, 0, 0 };
+    QuadKey quadKey(16, 0, 0);
     bool isCalled = false;
     BuilderContext context(
         quadKey, 

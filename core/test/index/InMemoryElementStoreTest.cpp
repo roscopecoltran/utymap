@@ -58,10 +58,7 @@ BOOST_FIXTURE_TEST_SUITE(Index_InMemoryElementStore, Index_InMemoryElementStoreF
 
 BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_AllFound)
 {
-    QuadKey quadKey;
-    quadKey.levelOfDetail = 1;
-    quadKey.tileX = 0;
-    quadKey.tileY = 0;
+    QuadKey quadKey(1, 0, 0);
     ElementCounter counter;
 
     elementStore.search(quadKey, *dependencyProvider.getStyleProvider(stylesheet), counter);
@@ -71,10 +68,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_AllFound)
 
 BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_AllSkipped)
 {
-    QuadKey quadKey;
-    quadKey.levelOfDetail = 2;
-    quadKey.tileX = 0;
-    quadKey.tileY = 0;
+    QuadKey quadKey(2, 0, 0);
     ElementCounter counter;
 
     elementStore.search(quadKey, *dependencyProvider.getStyleProvider(stylesheet), counter);

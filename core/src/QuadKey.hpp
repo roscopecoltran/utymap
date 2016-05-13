@@ -12,6 +12,16 @@ struct QuadKey
     int tileX;
     // Tile y at given LOD
     int tileY;
+
+    QuadKey()
+        : QuadKey(0, 0, 0)
+    {
+    }
+
+    QuadKey(int levelOfDetail, int tileX, int tileY) :
+        levelOfDetail(levelOfDetail), tileX(tileX), tileY(tileY)
+    {
+    }
 };
 
 }

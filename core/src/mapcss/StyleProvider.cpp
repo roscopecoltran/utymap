@@ -176,7 +176,7 @@ public:
 
         for (const Rule& rule : stylesheet.rules) {
             for (const Selector& selector : rule.selectors) {
-                FilterMap* filtersPtr;
+                FilterMap* filtersPtr = nullptr;
                 if (selector.name == "node") filtersPtr = &filters.nodes;
                 else if (selector.name == "way") filtersPtr = &filters.ways;
                 else if (selector.name == "area") filtersPtr = &filters.areas;
@@ -185,7 +185,7 @@ public:
                 else
                     std::domain_error("Unexpected selector name:" + selector.name);
 
-                Filter filter;
+                Filter filter = Filter();
                 filter.conditions.reserve(selector.conditions.size());
                 for (const utymap::mapcss::Condition& condition : selector.conditions) {
                     ::Condition c;

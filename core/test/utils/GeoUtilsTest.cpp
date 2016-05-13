@@ -42,10 +42,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineteenLod_WhenGetQuadKey_ThenReturnVal
 
 BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenGetBoundgingBox_ThenReturnValidBoundingBox)
 {
-    QuadKey quadKey;
-    quadKey.levelOfDetail = 19;
-    quadKey.tileX = 281640;
-    quadKey.tileY = 171914;
+    QuadKey quadKey (19, 281640, 171914);
 
     utymap::BoundingBox boundingBox = GeoUtils::quadKeyToBoundingBox(quadKey);
 
@@ -57,10 +54,7 @@ BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenGetBoundgingBox_ThenReturnVal
 
 BOOST_AUTO_TEST_CASE(GivenQuadKeyAtNineteenLod_WhenToString_ThenReturnValidCode)
 {
-    QuadKey quadKey;
-    quadKey.levelOfDetail = 19;
-    quadKey.tileX = 281640;
-    quadKey.tileY = 171914;
+    QuadKey quadKey(19 ,281640, 171914);
 
     std::string code = GeoUtils::quadKeyToString(quadKey);
 
@@ -71,17 +65,16 @@ BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsOneTile)
 {
     BoundingBox bbox(GeoCoordinate(1, 1), GeoCoordinate(2, 2));
     int count = 0;
-    QuadKey lastQuadKey;
+    std::shared_ptr<QuadKey> lastQuadKey;
 
     GeoUtils::visitTileRange(bbox, 1, [&](const QuadKey& quadKey, const BoundingBox&) {
         count++;
-        lastQuadKey.tileX = quadKey.tileX;
-        lastQuadKey.tileY = quadKey.tileY;
+        lastQuadKey = std::shared_ptr<QuadKey>(new QuadKey(quadKey));
     });
 
     BOOST_CHECK_EQUAL(1, count);
-    BOOST_CHECK_EQUAL(1, lastQuadKey.tileX);
-    BOOST_CHECK_EQUAL(0, lastQuadKey.tileY);
+    BOOST_CHECK_EQUAL(1, lastQuadKey->tileX);
+    BOOST_CHECK_EQUAL(0, lastQuadKey->tileY);
 }
 
 BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsTwoTiles)

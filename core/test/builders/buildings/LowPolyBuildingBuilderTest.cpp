@@ -27,7 +27,7 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Buildings_LowPolyBuildingsBuilder, Builders_Bu
 
 BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
-    QuadKey quadKey{ 1, 1, 0 };
+    QuadKey quadKey(1, 1, 0);
     bool isCalled = false;
     BuilderContext context(quadKey,
         *dependencyProvider.getStyleProvider(stylesheet),

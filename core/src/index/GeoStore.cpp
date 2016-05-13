@@ -11,6 +11,7 @@
 #include "utils/CoreUtils.hpp"
 
 #include <set>
+#include <memory>
 
 using namespace utymap::entities;
 using namespace utymap::formats;
@@ -58,7 +59,7 @@ public:
 
     void registerStore(const std::string& storeKey, ElementStore& store)
     {
-        storeMap_[storeKey] = &store;
+        storeMap_[storeKey] = std::shared_ptr<ElementStore>(&store);
     }
 
     void add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)
@@ -68,25 +69,25 @@ public:
 
     void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
     {
-        ElementStore* elementStorePtr = storeMap_[storeKey];
+        auto elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
-            return elementStorePtr->store(element, quadKey, styleProvider);
+            return elementStore->store(element, quadKey, styleProvider);
         });
     }
 
     void add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
     {
-        ElementStore* elementStorePtr = storeMap_[storeKey];
+        auto elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
-            return elementStorePtr->store(element, range, styleProvider);
+            return elementStore->store(element, range, styleProvider);
         });
     }
 
     void add(const std::string& storeKey, const std::string& path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
     {
-        ElementStore* elementStorePtr = storeMap_[storeKey];
+        auto elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
-            return elementStorePtr->store(element, bbox, range, styleProvider);
+            return elementStore->store(element, bbox, range, styleProvider);
         });
     }
 
@@ -142,7 +143,7 @@ public:
 
 private:
     StringTable& stringTable_;
-    std::unordered_map<std::string, ElementStore*> storeMap_;
+    std::unordered_map<std::string, std::shared_ptr<ElementStore>> storeMap_;
 
     FormatType getFormatTypeFromPath(const std::string& path)
     {

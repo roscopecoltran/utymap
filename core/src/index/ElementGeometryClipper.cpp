@@ -41,24 +41,24 @@ const double ElementGeometryClipper::Scale = 1E7;
 
 void ElementGeometryClipper::clipAndCall(const Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox)
 {
-    quadKeyPtr_ = &quadKey;
-    quadKeyBboxPtr_ = &quadKeyBbox;
+    quadKey_ = quadKey;
+    quadKeyBbox_ = quadKeyBbox;
     element.accept(*this);
 }
 
 void ElementGeometryClipper:: visitNode(const Node& node)
 {
     // here, node should be always in tile
-    callback_(node, *quadKeyPtr_);
+    callback_(node, quadKey_);
 }
 
 void ElementGeometryClipper::visitWay(const Way& way)
 {
     ClipperLib::Path wayShape;
-    PointLocation pointLocation = setPath(*quadKeyBboxPtr_, way, wayShape);
+    PointLocation pointLocation = setPath(quadKeyBbox_, way, wayShape);
     // 1. all geometry inside current quadkey: no need to truncate.
     if (pointLocation == PointLocation::AllInside) {
-        callback_(way, *quadKeyPtr_);
+        callback_(way, quadKey_);
         return;
     }
 
@@ -72,13 +72,13 @@ void ElementGeometryClipper::visitWay(const Way& way)
     clipper_.AddPath(createPathFromBoundingBox(), ClipperLib::ptClip, true);
     clipper_.Execute(ClipperLib::ctIntersection, solution);
     clipper_.Clear();
-    int count = solution.Total();
+    std::size_t count = static_cast<std::size_t>(solution.Total());
 
     // 3. way intersects border only once: store a copy with clipped geometry
     if (count == 1) {
         Way clippedWay;
         setData(clippedWay, way, solution.GetFirst()->Contour);
-        callback_(clippedWay, *quadKeyPtr_);
+        callback_(clippedWay, quadKey_);
     }
         // 4. in this case, result should be stored as relation (collection of ways)
     else {
@@ -94,17 +94,17 @@ void ElementGeometryClipper::visitWay(const Way& way)
             relation.elements.push_back(clippedWay);
             polyNode = polyNode->GetNext();
         }
-        callback_(relation, *quadKeyPtr_);
+        callback_(relation, quadKey_);
     }
 }
 
 void ElementGeometryClipper::visitArea(const Area& area)
 {
     ClipperLib::Path areaShape;
-    PointLocation pointLocation = setPath(*quadKeyBboxPtr_, area, areaShape);
+    PointLocation pointLocation = setPath(quadKeyBbox_, area, areaShape);
     // 1. all geometry inside current quadkey: no need to truncate.
     if (pointLocation == PointLocation::AllInside) {
-        callback_(area, *quadKeyPtr_);
+        callback_(area, quadKey_);
         return;
     }
 
@@ -113,7 +113,7 @@ void ElementGeometryClipper::visitArea(const Area& area)
         Area emptyArea;
         emptyArea.id = area.id;
         emptyArea.tags = area.tags;
-        callback_(emptyArea, *quadKeyPtr_);
+        callback_(emptyArea, quadKey_);
         return;
     }
 
@@ -127,7 +127,7 @@ void ElementGeometryClipper::visitArea(const Area& area)
     if (solution.size() == 1) {
         Area clippedArea;
         setData(clippedArea, area, solution[0]);
-        callback_(clippedArea, *quadKeyPtr_);
+        callback_(clippedArea, quadKey_);
     }
         // 4. in this case, result should be stored as relation (collection of areas)
     else {
@@ -141,7 +141,7 @@ void ElementGeometryClipper::visitArea(const Area& area)
             setCoordinates(*clippedArea, *it);
             relation.elements.push_back(clippedArea);
         }
-        callback_(relation, *quadKeyPtr_);
+        callback_(relation, quadKey_);
     }
 }
 
@@ -186,7 +186,7 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
         const BoundingBox& bbox_;
         ClipperLib::Clipper& clipper_;
 
-    } visitor(*quadKeyBboxPtr_, clipper_);
+    } visitor(quadKeyBbox_, clipper_);
 
     relation.accept(visitor);
 
@@ -196,20 +196,20 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
     clipper_.Execute(ClipperLib::ctIntersection, solution);
     clipper_.Clear();
 
-    int count = solution.Total();
+    std::size_t count = static_cast<size_t>(solution.Total());
     // Do not store one result as relation
     if (count == 1) {
         ClipperLib::PolyNode* node = solution.GetFirst();
         if (node->IsOpen()) {
             Way way;
             setData(way, relation, node->Contour);
-            callback_(way, *quadKeyPtr_);
+            callback_(way, quadKey_);
         }
         else {
             if (!node->IsHole()) {
                 Area area;
                 setData(area, relation, node->Contour);
-                callback_(area, *quadKeyPtr_);
+                callback_(area, quadKey_);
             }
         }
     }
@@ -233,14 +233,14 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
             }
             polyNode = polyNode->GetNext();
         }
-        callback_(newRelation, *quadKeyPtr_);
+        callback_(newRelation, quadKey_);
     }
 }
 
 ClipperLib::Path ElementGeometryClipper::createPathFromBoundingBox()
 {
-    double xMin = quadKeyBboxPtr_->minPoint.longitude, yMin = quadKeyBboxPtr_->minPoint.latitude,
-            xMax = quadKeyBboxPtr_->maxPoint.longitude, yMax = quadKeyBboxPtr_->maxPoint.latitude;
+    double xMin = quadKeyBbox_.minPoint.longitude, yMin = quadKeyBbox_.minPoint.latitude,
+            xMax = quadKeyBbox_.maxPoint.longitude, yMax = quadKeyBbox_.maxPoint.latitude;
     ClipperLib::Path rect;
     rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMin*Scale));
     rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMin*Scale));

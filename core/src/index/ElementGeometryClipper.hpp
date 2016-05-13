@@ -29,8 +29,8 @@ public:
 
     ElementGeometryClipper(Callback callback) :
             callback_(callback),
-            quadKeyPtr_(nullptr),
-            quadKeyBboxPtr_(nullptr)
+            quadKey_(),
+            quadKeyBbox_()
     {
     }
 
@@ -64,8 +64,8 @@ private:
     }
 
     Callback callback_;
-    const QuadKey* quadKeyPtr_;
-    const BoundingBox* quadKeyBboxPtr_;
+    QuadKey quadKey_;
+    BoundingBox quadKeyBbox_;
     ClipperLib::Clipper clipper_;
 };
 

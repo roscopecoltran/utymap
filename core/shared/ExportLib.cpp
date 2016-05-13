@@ -140,13 +140,13 @@ extern "C"
                                 OnElementLoaded* elementCallback,        // element callback
                                 OnError* errorCallback)                  // completion callback
     {
-        utymap::QuadKey quadKey = { levelOfDetail, tileX, tileY };
+        utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
         applicationPtr->loadQuadKey(styleFile, quadKey, meshCallback, elementCallback, errorCallback);
     }
 
     // Checks whether there is data for given quadkey
     bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail) // quadkey info
     {
-        return applicationPtr->hasData(utymap::QuadKey{ levelOfDetail, tileX, tileY });
+        return applicationPtr->hasData(utymap::QuadKey(levelOfDetail, tileX, tileY));
     }
 }
