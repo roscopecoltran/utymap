@@ -57,9 +57,9 @@ public:
     {
     }
 
-    void registerStore(const std::string& storeKey, ElementStore& store)
+    void registerStore(const std::string& storeKey, std::shared_ptr<ElementStore> store)
     {
-        storeMap_[storeKey] = std::shared_ptr<ElementStore>(&store);
+        storeMap_[storeKey] = store;
     }
 
     void add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)
@@ -166,7 +166,7 @@ GeoStore::~GeoStore()
     google::protobuf::ShutdownProtobufLibrary();
 }
 
-void utymap::index::GeoStore::registerStore(const std::string& storeKey, ElementStore& store)
+void utymap::index::GeoStore::registerStore(const std::string& storeKey, std::shared_ptr<ElementStore> store)
 {
     pimpl_->registerStore(storeKey, store);
 }

@@ -139,12 +139,15 @@ class Application
 public:
     // Composes object graph.
     Application(const char* stringPath, const char* dataPath, const char* elePath, OnError* errorCallback) :
-        stringTable_(stringPath), inMemoryStore_(stringTable_), persistentStore_(dataPath, stringTable_),
-        geoStore_(stringTable_), srtmEleProvider_(elePath), flatEleProvider_(),
+        stringTable_(stringPath), geoStore_(stringTable_), srtmEleProvider_(elePath), flatEleProvider_(),
         quadKeyBuilder_(geoStore_, stringTable_)
     {
-        geoStore_.registerStore(InMemoryStorageKey, inMemoryStore_);
-        geoStore_.registerStore(PersistentStorageKey, persistentStore_);
+        geoStore_.registerStore(InMemoryStorageKey, std::shared_ptr<utymap::index::InMemoryElementStore>(
+            new utymap::index::InMemoryElementStore(stringTable_)));
+        
+        geoStore_.registerStore(PersistentStorageKey, std::shared_ptr<utymap::index::PersistentElementStore>(
+            new utymap::index::PersistentElementStore(dataPath, stringTable_)));
+
         registerDefaultBuilders();
     }
 
@@ -290,8 +293,6 @@ private:
     }
 
     utymap::index::StringTable stringTable_;
-    utymap::index::InMemoryElementStore inMemoryStore_;
-    utymap::index::PersistentElementStore persistentStore_;
     utymap::index::GeoStore geoStore_;
     utymap::heightmap::FlatElevationProvider flatEleProvider_;
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
