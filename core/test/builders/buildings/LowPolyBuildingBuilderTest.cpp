@@ -29,20 +29,18 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
     QuadKey quadKey(1, 1, 0);
     bool isCalled = false;
-    BuilderContext context(quadKey,
-        *dependencyProvider.getStyleProvider(stylesheet),
-        *dependencyProvider.getStringTable(),
-        *dependencyProvider.getElevationProvider(),
-        [&](const Mesh& mesh) {
-        isCalled = true;
-            BOOST_CHECK_GT(mesh.vertices.size(), 0);
-            BOOST_CHECK_GT(mesh.triangles.size(), 0);
-            BOOST_CHECK_GT(mesh.colors.size(), 0);
-        },
-        nullptr);
+    auto context = dependencyProvider.createBuilderContext(
+            quadKey,
+            stylesheet,
+            [&](const Mesh& mesh) {
+            isCalled = true;
+                BOOST_CHECK_GT(mesh.vertices.size(), 0);
+                BOOST_CHECK_GT(mesh.triangles.size(), 0);
+                BOOST_CHECK_GT(mesh.colors.size(), 0);
+            });
     Area building = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), { { "building", "yes" } },
     { { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } });
-    LowPolyBuildingBuilder builder(context);
+    LowPolyBuildingBuilder builder(*context);
 
     builder.visitArea(building);
 

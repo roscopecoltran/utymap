@@ -1,6 +1,7 @@
 #ifndef TEST_DEPENDENCYPROVIDER_HPP_DEFINED
 #define TEST_DEPENDENCYPROVIDER_HPP_DEFINED
 
+#include "builders/BuilderContext.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/MapCssParser.hpp"
@@ -10,52 +11,64 @@
 #include <cstdio>
 #include <memory>
 
-using namespace utymap::heightmap;
-using namespace utymap::index;
-using namespace utymap::mapcss;
-
-class DependencyProvider 
+class DependencyProvider
 {
- public:
-  DependencyProvider() { }
+public:
+    DependencyProvider() { }
 
-  ~DependencyProvider() 
-  {
-    stringTable_.reset();
-    std::remove("string.idx");
-    std::remove("string.dat");
-  }
-
-  std::shared_ptr<StringTable> getStringTable() 
-  {
-    if (stringTable_== nullptr) {
-      stringTable_ = std::shared_ptr<StringTable>(new StringTable(""));
+    ~DependencyProvider()
+    {
+        stringTable_.reset();
+        std::remove("string.idx");
+        std::remove("string.dat");
     }
-    return stringTable_;
-  }
 
-  std::shared_ptr<FlatElevationProvider> getElevationProvider() 
-  {
-    if (eleProvider_== nullptr) {
-      eleProvider_ = std::shared_ptr<FlatElevationProvider>(new FlatElevationProvider());
+    std::shared_ptr<utymap::index::StringTable> getStringTable()
+    {
+        if (stringTable_ == nullptr) {
+            stringTable_ = std::shared_ptr<utymap::index::StringTable>(new utymap::index::StringTable(""));
+        }
+        return stringTable_;
     }
-    return eleProvider_;
-  }
 
-  std::shared_ptr<StyleProvider> getStyleProvider(const std::string& stylesheetStr) 
-  {
-      if (styleProvider_ == nullptr) {
-          utymap::mapcss::MapCssParser parser;
-          styleProvider_ = std::shared_ptr<utymap::mapcss::StyleProvider>(
-              new utymap::mapcss::StyleProvider(parser.parse(stylesheetStr), *getStringTable()));
-      }
-      return styleProvider_;
-  }
+    std::shared_ptr<utymap::heightmap::FlatElevationProvider> getElevationProvider()
+    {
+        if (eleProvider_ == nullptr) {
+            eleProvider_ = std::shared_ptr<utymap::heightmap::FlatElevationProvider>(
+                new utymap::heightmap::FlatElevationProvider());
+        }
+        return eleProvider_;
+    }
 
- private:
-  std::shared_ptr<FlatElevationProvider> eleProvider_;
-  std::shared_ptr<StringTable> stringTable_;
-  std::shared_ptr<StyleProvider> styleProvider_;
+    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& stylesheetStr)
+    {
+        if (styleProvider_ == nullptr) {
+            utymap::mapcss::MapCssParser parser;
+            styleProvider_ = std::shared_ptr<utymap::mapcss::StyleProvider>(
+                new utymap::mapcss::StyleProvider(parser.parse(stylesheetStr), *getStringTable()));
+        }
+        return styleProvider_;
+    }
+
+    std::shared_ptr<utymap::builders::BuilderContext> createBuilderContext(
+        const utymap::QuadKey& quadKey,
+        const std::string& stylesheet,
+        std::function<void(const utymap::meshing::Mesh&)> meshCallback = nullptr,
+        std::function<void(const utymap::entities::Element&)> elementCallback = nullptr)
+    {
+        return std::shared_ptr<utymap::builders::BuilderContext>(
+            new utymap::builders::BuilderContext(quadKey,
+                                                 *getStyleProvider(stylesheet),
+                                                 *getStringTable(),
+                                                 *getElevationProvider(),
+                                                 meshCallback,
+                                                 elementCallback));
+    }
+
+private:
+    std::shared_ptr<utymap::heightmap::FlatElevationProvider> eleProvider_;
+    std::shared_ptr<utymap::index::StringTable> stringTable_;
+    std::shared_ptr<utymap::mapcss::StyleProvider> styleProvider_;
 };
 
 #endif  // TEST_DEPENDENCYPROVIDER_HPP_DEFINED

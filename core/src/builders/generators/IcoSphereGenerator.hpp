@@ -29,7 +29,7 @@ public:
                        utymap::builders::MeshContext& meshContext,
                        const std::string& gradientKey):
             AbstractGenerator(builderContext, meshContext, gradientKey),
-            center_(), radius_(0), doubleRadius_(0), height_(0), recursionLevel_(0), isSemiSphere_(false)
+            center_(), radius_(0), height_(0), recursionLevel_(0), isSemiSphere_(false)
     {
     }
 
@@ -43,11 +43,8 @@ public:
     // Sets radius of icosphere.
     IcoSphereGenerator& setRadius(double radius, double height = 1)
     {
-        radius_ = radius * 2;
-        // NOTE next variables are needed because height is specified in meters, 
-        // x and z - in degrees.
-        height_ = height;
-        doubleRadius_ = radius_ * 2;
+        radius_ = radius;
+        height_ = height * 1.5;
         return *this;
     }
 
@@ -104,8 +101,7 @@ public:
         faces.push_back(TriangleIndices(7, 1, 8));
 
         // 5 faces around point 3
-        if (!isSemiSphere_)
-        {
+        if (!isSemiSphere_) {
             faces.push_back(TriangleIndices(3, 9, 4));
             faces.push_back(TriangleIndices(3, 4, 2));
             faces.push_back(TriangleIndices(3, 2, 6));
@@ -115,8 +111,7 @@ public:
 
         // 5 adjacent faces
         faces.push_back(TriangleIndices(4, 9, 5));
-        if (!isSemiSphere_)
-        {
+        if (!isSemiSphere_) {
             faces.push_back(TriangleIndices(2, 4, 11));
             faces.push_back(TriangleIndices(6, 2, 10));
         }
@@ -124,11 +119,9 @@ public:
         faces.push_back(TriangleIndices(9, 8, 1));
 
         // refine triangles
-        for (int i = 0; i < recursionLevel_; i++)
-        {
+        for (int i = 0; i < recursionLevel_; i++) {
             std::vector<TriangleIndices> faces2;
-            for (const auto& tri : faces)
-            {
+            for (const auto& tri : faces) {
                 // replace triangle by 4 triangles
                 auto a = getMiddlePoint(tri.V1, tri.V2);
                 auto b = getMiddlePoint(tri.V2, tri.V3);
@@ -175,7 +168,7 @@ private:
 
         // add vertex makes sure point is on unit sphere
         std::size_t size = vertexList_.size();
-        vertexList_.push_back(middle);
+        vertexList_.push_back(middle.normalized());
 
         // store it, return index
         middlePointIndexCache_.insert(std::make_pair(key, size));
@@ -191,21 +184,20 @@ private:
                 scale(vertexList_[face.V1]) + center_,
                 scale(vertexList_[face.V2]) + center_,
                 scale(vertexList_[face.V3]) + center_);
+
         }
     }
 
     inline utymap::meshing::Vector3 scale(const utymap::meshing::Vector3& v)
     {
-        // NOTE workaround as y is defined in meters, but x,z - in degress
-        // also scale x and z is different
         return utymap::meshing::Vector3(
-            v.x * doubleRadius_,
+            v.x * radius_ * 1.5,
             v.y * height_,
             v.z * radius_);
     }
 
 utymap::meshing::Vector3 center_;
-double radius_, doubleRadius_, height_;
+double radius_, height_;
 int recursionLevel_;
 bool isSemiSphere_;
 

@@ -38,7 +38,7 @@ TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext,
     GeoCoordinate relativeCoordinate = builderContext.boundingBox.center();
 
     double foliageRadiusInDegrees = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize, relativeCoordinate);
-    double foliageRadiusInMeters = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize);
+    double foliageRadiusInMeters = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize) / 2;
 
     return TreeGenerator(builderContext,
                          meshContext,

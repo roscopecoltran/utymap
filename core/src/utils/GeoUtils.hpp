@@ -92,14 +92,13 @@ public:
         return c;
     }
 
-    // gets offset in meters
+    // gets offset in degrees
     static double getOffset(const GeoCoordinate& point, double offsetInMeters)
     {
         double lat = deg2Rad(point.latitude);
         // Radius of Earth at given latitude
         double radius = wgs84EarthRadius(lat);
-        double dWidth = offsetInMeters / (2 * radius);
-        return rad2Deg(dWidth);
+        return rad2Deg(offsetInMeters / radius);
     }
 
     // Gets distance in meters for given coordinate

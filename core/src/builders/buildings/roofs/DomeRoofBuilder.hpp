@@ -5,6 +5,7 @@
 #include "builders/buildings/roofs/RoofBuilder.hpp"
 #include "builders/generators/IcoSphereGenerator.hpp"
 #include "utils/GeometryUtils.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <vector>
 
@@ -26,27 +27,29 @@ public:
         double radius;
 
         // need to represent as vector of geocoordinates
+        auto size = polygon.points.size() / 2;
         std::vector<utymap::GeoCoordinate> contour;
-        contour.resize(polygon.points.size() / 2);
-        for (auto i = 0; i < polygon.points.size(); i += 2) {
-            contour.push_back(utymap::GeoCoordinate(polygon.points[i * 2], polygon.points[i * 2]));
+        contour.reserve(size);
+        for (std::size_t i = 0; i < size; ++i) {
+            contour.push_back(utymap::GeoCoordinate(polygon.points[i * 2 + 1], polygon.points[i * 2]));
         }
 
         utymap::utils::getCircle(contour, center2d, radius);
-
-        utymap::meshing::Vector3 center3d(center2d.longitude, minHeight_, center2d.latitude);
 
         utymap::builders::IcoSphereGenerator generator(builderContext_ ,
                                                        meshContext_,
                                                        RoofColorKey);
 
-        // TODO calculate height_
+        double heightInMeters = utymap::utils::GeoUtils::distance(
+            center2d, 
+            utymap::GeoCoordinate(center2d.latitude, center2d.longitude + radius));
+
         generator
-            .setCenter(center3d)
-            .setRadius(radius, height_)
+            .setCenter(utymap::meshing::Vector3(center2d.longitude, minHeight_, center2d.latitude))
+            .setRadius(radius, heightInMeters)
             .setRecursionLevel(2)
             .isSemiSphere(true)
-            .setVertexNoiseFreq(0.1f)
+            .setVertexNoiseFreq(0.0)
             .generate();
     }
 

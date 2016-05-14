@@ -8,3 +8,7 @@ area|z16[building=residential] {
     roof-color: gradient(red);
     height: 12m;
 }
+
+area|z16[roof:shape=dome] {
+    roof-type: dome;
+}
