@@ -1,7 +1,7 @@
-area|z16[building=yes],
-area|z16[building=apartments],
-area|z16[building=office],
-area|z16[building=residential] {
+area|z16[building],
+area|z16[building:levels],
+area|z16[building:shape],
+area|z16[building:part] {
     clip: false;
     builders: building;
     facade-color: gradient(blue);
