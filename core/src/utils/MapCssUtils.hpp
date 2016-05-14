@@ -66,7 +66,7 @@ namespace utymap { namespace utils {
         double value = std::stod(rawValue->substr(0, rawValue->size() - 1));
 
         // defined in meters: use raw value
-        if (dimen == 'm' && coordinate.latitude != 90)
+        if (dimen == 'm')
             return coordinate.isValid() ? GeoUtils::getOffset(coordinate, value) : value;
 
         // relative to size
