@@ -30,9 +30,10 @@ BOOST_AUTO_TEST_CASE(GivenDome_WhenBuilds_ThenBuildsMesh)
     auto builderContext = dependencyProvider.createBuilderContext(QuadKey(16, 1, 0), stylesheet);
     Style style = dependencyProvider.getStyleProvider(stylesheet)->forElement(building, 16);
     Mesh mesh("");
+    MeshContext meshContext(mesh, style);
     Polygon polygon(0, 0);
     polygon.addContour({ { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } });
-    DomeRoofBuilder builder(*builderContext, MeshContext(mesh, style));
+    DomeRoofBuilder builder(*builderContext, meshContext);
     builder.setMinHeight(10);
 
     builder.build(polygon);
