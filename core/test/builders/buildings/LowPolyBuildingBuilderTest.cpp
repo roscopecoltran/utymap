@@ -15,7 +15,16 @@ using namespace utymap::entities;
 using namespace utymap::meshing;
 
 namespace {
-    const std::string stylesheet = "area|z1[building=yes] { height:10; roof-color:gradient(red); facade-color:gradient(blue); }";
+    const std::string stylesheet = "area|z1[building=yes] { " 
+                                        "builders: building;"
+                                        "facade-color: gradient(blue);"
+                                        "facade-type: flat;"
+                                        "roof-color: gradient(red);"
+                                        "roof-type: flat;"
+                                        "roof-height: 0m;"
+                                        "height: 12m;"
+                                        "min-height: 0m;"
+                                    "}";
 }
 
 struct Builders_Buildings_LowPolyBuildingsBuilderFixture

@@ -4,9 +4,42 @@ area|z16[building:shape],
 area|z16[building:part] {
     clip: false;
     builders: building;
-    facade-color: gradient(blue);
-    roof-color: gradient(red);
+
     height: 12m;
+    min-height: 0m;
+
+    facade-color: gradient(blue);
+    facade-type: flat;
+
+    roof-color: gradient(red);
+    roof-type: flat;
+    roof-height: 0m;
+}
+
+area|z16[building:levels] {
+    height: eval("tag('building:levels') * 3.2");
+    levels: eval("tag('building:levels')");
+}
+
+area|z16[height] {
+    height: eval("tag('height')");
+}
+area|z16[building:height] {
+    height: eval("tag('building:height')");
+}
+area|z16[building:height][roof:height] {
+    height: eval("tag('building:height') - tag('roof:height')");
+}
+
+area|z16[building:min_height] {
+    min-height: eval("tag('building:min_height')");
+}
+area|z16[min_height] {
+    min-height: eval("tag('min_height')");
+}
+
+area|z16[roof:height] {
+    roof-height: eval("tag('roof:height')");
 }
 
 area|z16[roof:shape=dome] {

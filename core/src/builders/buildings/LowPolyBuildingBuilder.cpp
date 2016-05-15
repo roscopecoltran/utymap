@@ -24,11 +24,16 @@ namespace {
     const std::string RoofHeightKey = "roof-height";
     const std::string FacadeTypeKey = "facade-type";
 
+    const std::string HeightKey = "height";
+    const std::string MinHeightKey = "min-height";
+
+    const std::string MeshName = "building";
+
     typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
     std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
     {
         { 
-            "flat", 
+            "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::shared_ptr<LowPolyFlatRoofBuilder>(new LowPolyFlatRoofBuilder(builderContext, meshContext));
             } 
@@ -70,30 +75,30 @@ public:
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-        double height = utymap::utils::getDouble("height", context_.stringTable, style);
-        double minHeight = context_.eleProvider.getElevation(area.coordinates[0]);
-
-        // facade
-        auto facadeType = utymap::utils::getString(FacadeTypeKey, context_.stringTable, style, "flat");
-        
-        // roof
-        auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style, "flat");
-        double roofHeight = utymap::utils::getDouble(RoofHeightKey, context_.stringTable, style, 0);
-
-        Mesh mesh("building");
+          
+        Mesh mesh(MeshName);
         MeshContext meshContext(mesh, style);
 
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
 
+        double height = utymap::utils::getDouble(HeightKey, area.tags, context_.stringTable, style);
+        double minHeight = utymap::utils::getDouble(MinHeightKey, area.tags, context_.stringTable, style);
+        double elevation = context_.eleProvider.getElevation(area.coordinates[0]) + minHeight;
+
+        // roof
+        auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style);
+        double roofHeight = utymap::utils::getDouble(RoofHeightKey, area.tags, context_.stringTable, style);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
-        roofBuilder->setMinHeight(minHeight + height);
+        roofBuilder->setMinHeight(elevation + height);
         roofBuilder->build(polygon);
         
+        // facade
+        auto facadeType = utymap::utils::getString(FacadeTypeKey, context_.stringTable, style);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
         facadeBuilder->setHeight(height);
-        facadeBuilder->setMinHeight(minHeight);
+        facadeBuilder->setMinHeight(elevation);
         facadeBuilder->build(polygon);
 
         // TODO add floor
