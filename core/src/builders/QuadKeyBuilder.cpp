@@ -62,6 +62,11 @@ private:
     void visitElement(const Element& element)
     {
         Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
+
+        // We don't know how to build it. Skip.
+        if (!style.has(builderKeyId_))
+            return;
+
         std::stringstream ss(*style.get(builderKeyId_)->value());
         while (ss.good()) {
             std::string name;
