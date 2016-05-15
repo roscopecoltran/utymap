@@ -7,7 +7,6 @@
 #include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementGeometryClipper.hpp"
-#include "utils/MapCssUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
@@ -107,7 +106,7 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
             element.accept(bboxVisitor);
             // read size if present
             if (style.has(sizeKeyId_))
-                size = utymap::utils::getDimension(sizeKeyId_, style, 1, bboxVisitor.boundingBox.center());
+                size = style.getValue(sizeKeyId_, 1, bboxVisitor.boundingBox.center());
         }
 
          utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod,

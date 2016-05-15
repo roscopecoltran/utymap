@@ -7,7 +7,6 @@
 #include "meshing/MeshTypes.hpp"
 #include "utils/NoiseUtils.hpp"
 #include "utils/GradientUtils.hpp"
-#include "utils/MapCssUtils.hpp"
 
 #include <algorithm>
 
@@ -27,10 +26,7 @@ public:
                  0,
                  0,
                  0,
-                 builderContext.styleProvider.getGradient(*utymap::utils::getString(gradientKey,
-                                                                                    builderContext.stringTable,
-                                                                                    meshContext.style
-        ))),
+                 builderContext.styleProvider.getGradient(*meshContext.style.getString(gradientKey))),
         vertNoiseFreq_(0),
         colorNoiseFreq(0)
     {

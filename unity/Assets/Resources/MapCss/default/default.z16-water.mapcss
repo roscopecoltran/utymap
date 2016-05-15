@@ -3,7 +3,7 @@ canvas|z16 {
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
     water-color: gradient(#72e4de);
-    water-height:-1m;
+    water-height-offset:-1m;
 }
 
 area|z16[natural=water],

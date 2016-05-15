@@ -57,11 +57,11 @@ add_executable(${TEST}
         mapcss/MapCssParserTest.cpp
         mapcss/StyleDeclarationTest.cpp
         mapcss/StyleProviderTest.cpp
+        mapcss/StyleTest.cpp
         meshing/MeshBuilderTest.cpp
         utils/GeometryUtilsTest.cpp
         utils/GeoUtilsTest.cpp
         utils/GradientUtilsTest.cpp
-        utils/MapCssUtilsTest.cpp
         utils/NoiseUtilsTest.cpp
         ${HEADER_FILES}
         )

@@ -5,7 +5,6 @@
 #include "builders/MeshContext.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "utils/MapCssUtils.hpp"
 
 #include <vector>
 
@@ -34,10 +33,8 @@ class FacadeBuilder
   // Gets gradient.
   inline const utymap::mapcss::ColorGradient& getColorGradient()
   {
-    auto gradient = utymap::utils::getString(FacadeColorKey,
-                                             builderContext_.stringTable,
-                                             meshContext_.style);
-    return builderContext_.styleProvider.getGradient(*gradient);
+      auto gradient = meshContext_.style.getString(FacadeColorKey);
+      return builderContext_.styleProvider.getGradient(*gradient);
   }
 
   // Builds roof from polygon.

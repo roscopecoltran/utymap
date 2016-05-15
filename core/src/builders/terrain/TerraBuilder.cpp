@@ -10,7 +10,6 @@
 #include "entities/Relation.hpp"
 
 #include "utils/GeoUtils.hpp"
-#include "utils/MapCssUtils.hpp"
 #include "utils/NoiseUtils.hpp"
 
 #include <map>
@@ -91,8 +90,9 @@ public:
         TerraGenerator::Region region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = utymap::utils::getDimension(WidthKey, context_.stringTable, style,
-            context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, context_.boundingBox.center());
+        double width = style.getValue(WidthKey, 
+            context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
+            context_.boundingBox.center());
 
         Paths solution;
         offset_.AddPaths(region.points, jtMiter, etOpenSquare);
@@ -105,7 +105,7 @@ public:
 
         region.points = solution;
         std::string type = region.isLayer 
-            ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+            ? *style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
     }
@@ -115,7 +115,7 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         TerraGenerator::Region region = createRegion(style, area.coordinates);
         std::string type = region.isLayer
-            ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style)
+            ? *style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
     }
@@ -140,7 +140,7 @@ public:
                     new TerraGenerator::RegionContext(generator_.createRegionContext(style, "")));
 
             std::string type = region.isLayer 
-                ? *utymap::utils::getString(TerrainLayerKey, context_.stringTable, style) 
+                ? *style.getString(TerrainLayerKey)
                 : "";
             generator_.addRegion(type, region);
         }

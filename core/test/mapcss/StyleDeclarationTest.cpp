@@ -52,15 +52,13 @@ BOOST_AUTO_TEST_CASE(GiveOneTagOneNumber_WhenEvaluate_ReturnValue)
     BOOST_CHECK_EQUAL(result, 15);
 }
 
-BOOST_AUTO_TEST_CASE(GiveRawValue_WhenEvaluate_ReturnValue)
+BOOST_AUTO_TEST_CASE(GiveRawValue_WhenEvaluate_ThrowsException)
 {
     StyleDeclaration styleDeclaration(0, "13");
 
-    double result = styleDeclaration.evaluate(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
-    { { "building:levels", "5" } }).tags,
-    *dependencyProvider.getStringTable());
-
-    BOOST_CHECK_EQUAL(result, 13);
+    BOOST_CHECK_THROW(styleDeclaration.evaluate(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
+    { { "building:levels", "5" } }).tags, *dependencyProvider.getStringTable()), 
+    utymap::MapCssException);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

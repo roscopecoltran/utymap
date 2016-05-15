@@ -21,12 +21,6 @@ using namespace utymap::utils;
 
 namespace {
     const std::string stylesheet = "node|z1[natural=tree] { color:gradient(red);}";
-
-    Style getStyle(DependencyProvider provider) {
-        return provider
-            .getStyleProvider(stylesheet)
-            ->forElement(ElementUtils::createElement<Node>(*provider.getStringTable(), { { "natural", "tree" } }), 1);
-    }
 }
 
 struct Builders_GeneratorFixture
@@ -34,7 +28,8 @@ struct Builders_GeneratorFixture
     Builders_GeneratorFixture() :
         dependencyProvider(),
         mesh(""),
-        style(getStyle(dependencyProvider)),
+        style(dependencyProvider.getStyleProvider(stylesheet)
+            ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), { { "natural", "tree" } }), 1)),
         builderContext(
             QuadKey { 1, 1, 1 },
             *dependencyProvider.getStyleProvider(stylesheet),

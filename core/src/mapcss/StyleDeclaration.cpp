@@ -1,3 +1,4 @@
+#include "Exceptions.hpp"
 #include "entities/Element.hpp"
 #include "mapcss/StyleDeclaration.hpp"
 #include "utils/CompatibilityUtils.hpp"
@@ -198,10 +199,12 @@ struct StyleDeclaration::StyleDeclarationImpl
 
     inline std::shared_ptr<std::string> value() const { return value_; }
 
-    double evaluate(const std::vector<Tag>& tags, StringTable& stringTable) const
+    inline bool isEval() const { return tree_ != nullptr; }
+
+    inline double evaluate(const std::vector<Tag>& tags, StringTable& stringTable) const
     {
-        if (tree_ == nullptr)
-            return std::stod(*value_);
+        if (!isEval())
+            throw utymap::MapCssException("Cannot evaluate raw value");
 
         return Evaluator(tags, stringTable)(*tree_);
     }
@@ -226,9 +229,14 @@ std::uint32_t StyleDeclaration::key() const
     return pimpl_->key();
 }
 
-std::shared_ptr<std::string> StyleDeclaration::value() const
-{
-    return pimpl_->value();
+std::shared_ptr<std::string> StyleDeclaration::value() const 
+{ 
+    return pimpl_->value(); 
+}
+
+bool StyleDeclaration::isEval() const 
+{ 
+    return pimpl_->isEval(); 
 }
 
 double StyleDeclaration::evaluate(const std::vector<Tag>& tags, StringTable& stringTable) const

@@ -72,7 +72,6 @@ set(HEADER_FILES
         utils/GeometryUtils.hpp
         utils/GeoUtils.hpp
         utils/GradientUtils.hpp
-        utils/MapCssUtils.hpp
         utils/MathUtils.hpp
         utils/NoiseUtils.hpp
         utils/SvgBuilder.hpp

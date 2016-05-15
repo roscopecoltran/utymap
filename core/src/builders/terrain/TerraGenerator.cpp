@@ -1,6 +1,5 @@
 #include "builders/terrain/TerraGenerator.hpp"
 #include "utils/GeoUtils.hpp"
-#include "utils/MapCssUtils.hpp"
 
 #include <iterator>
 
@@ -24,7 +23,7 @@ namespace {
     const static std::string EleNoiseFreqKey = "ele-noise-freq";
     const static std::string GradientKey = "color";
     const static std::string MaxAreaKey = "max-area";
-    const static std::string HeightKey = "height";
+    const static std::string HeightOffsetKey = "height-offset";
     const static std::string LayerPriorityKey = "layer-priority";
     const static std::string MeshNameKey = "mesh-name";
     const static std::string MeshExtrasKey = "mesh-extras";
@@ -53,7 +52,7 @@ void TerraGenerator::addRegion(const std::string& type, const Region& region)
 
 void TerraGenerator::generate(Path& tileRect)
 {
-    double size = utymap::utils::getDimension(GridCellSize, context_.stringTable, style_,
+    double size = style_.getValue(GridCellSize,
         context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, 
         context_.boundingBox.center());
     splitter_.setParams(Scale, size);
@@ -68,7 +67,7 @@ void TerraGenerator::generate(Path& tileRect)
 void TerraGenerator::buildLayers()
 {
     // 1. process layers: regions with shared properties.
-    std::stringstream ss(*utymap::utils::getString(LayerPriorityKey, context_.stringTable, style_));
+    std::stringstream ss(*style_.getString(LayerPriorityKey));
     while (ss.good()) {
         std::string name;
         getline(ss, name, ',');
@@ -101,14 +100,13 @@ void TerraGenerator::buildBackground(Path& tileRect)
 TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& style, const std::string& prefix)
 {
     double quadKeyWidth = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
-    auto gradientKey = utymap::utils::getString(prefix + GradientKey, context_.stringTable, style);
 
     return TerraGenerator::RegionContext(style, prefix, MeshBuilder::Options(
-        utymap::utils::getDimension(prefix + MaxAreaKey, context_.stringTable, style, quadKeyWidth * quadKeyWidth),
-        utymap::utils::getDouble(prefix + EleNoiseFreqKey, context_.stringTable, style),
-        utymap::utils::getDouble(prefix + ColorNoiseFreqKey, context_.stringTable, style),
-        utymap::utils::getDimension(prefix + HeightKey, context_.stringTable, style, quadKeyWidth, 0),
-        context_.styleProvider.getGradient(*gradientKey),
+        style.getValue(prefix + MaxAreaKey, quadKeyWidth * quadKeyWidth),
+        style.getValue(prefix + EleNoiseFreqKey, quadKeyWidth),
+        style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
+        style.getValue(prefix + HeightOffsetKey, quadKeyWidth),
+        context_.styleProvider.getGradient(*style.getString(prefix + GradientKey)),
         std::numeric_limits<double>::lowest(),
         /* no new vertices on boundaries */ 1));
 }
@@ -184,7 +182,7 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
 {
     TerraExtras::MeshContext meshContext(regionContext.style, regionContext.options);
 
-    std::string meshName = *utymap::utils::getString(regionContext.prefix + MeshNameKey, context_.stringTable, style_, "");
+    std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
     if (meshName != "") {
         Mesh polygonMesh(meshName);
 
@@ -208,7 +206,7 @@ void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
                                           TerraExtras::MeshContext& meshContext,
                                           const RegionContext& regionContext)
 {
-    std::string meshExtras = *utymap::utils::getString(regionContext.prefix + MeshExtrasKey, context_.stringTable, style_, "");
+    std::string meshExtras = *style_.getString(regionContext.prefix + MeshExtrasKey);
     if (meshExtras == "")
         return;
 

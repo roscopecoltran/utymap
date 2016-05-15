@@ -6,7 +6,6 @@
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "utils/MapCssUtils.hpp"
 
 #include <vector>
 
@@ -35,9 +34,7 @@ public:
     // Gets gradient.
     inline const utymap::mapcss::ColorGradient& getColorGradient()
     {
-        auto gradient = utymap::utils::getString(RoofColorKey,
-                                                 builderContext_.stringTable,
-                                                 meshContext_.style);
+        auto gradient = meshContext_.style.getString(RoofColorKey);
         return builderContext_.styleProvider.getGradient(*gradient);
     }
 

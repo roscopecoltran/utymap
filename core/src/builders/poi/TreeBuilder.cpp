@@ -1,5 +1,4 @@
 #include "builders/poi/TreeBuilder.hpp"
-#include "utils/MapCssUtils.hpp"
 
 using namespace utymap::builders;
 using namespace utymap::mapcss;
@@ -37,14 +36,14 @@ TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext,
     double relativeSize = builderContext.boundingBox.maxPoint.latitude - builderContext.boundingBox.minPoint.latitude;
     GeoCoordinate relativeCoordinate = builderContext.boundingBox.center();
 
-    double foliageRadiusInDegrees = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize, relativeCoordinate);
-    double foliageRadiusInMeters = getDimension(FoliageRadius, builderContext.stringTable, meshContext.style, relativeSize) / 2;
+    double foliageRadiusInDegrees = meshContext.style.getValue(FoliageRadius, relativeSize, relativeCoordinate);
+    double foliageRadiusInMeters = meshContext.style.getValue(FoliageRadius, relativeSize) / 2;
 
     return TreeGenerator(builderContext,
                          meshContext,
                          TrunkColorKey,
                          FoliageColorKey)
         .setFoliageRadius(foliageRadiusInDegrees, foliageRadiusInMeters)
-        .setTrunkRadius(getDimension(TrunkRadius, builderContext.stringTable, meshContext.style, relativeSize, relativeCoordinate))
-        .setTrunkHeight(getDouble(TrunkHeight, builderContext.stringTable, meshContext.style));
+        .setTrunkRadius(meshContext.style.getValue(TrunkRadius, relativeSize, relativeCoordinate))
+        .setTrunkHeight(meshContext.style.getValue(TrunkHeight, relativeSize));
 }

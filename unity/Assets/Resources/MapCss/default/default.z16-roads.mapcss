@@ -3,7 +3,7 @@ canvas|z16 {
     drive-color-noise-freq: 0.1;
     drive-ele-noise-freq: 0;
     drive-color: gradient(#4d4d4d);
-    drive-height:-0.2m;
+    drive-height-offset:-0.2m;
 
     pedestrian-max-area: 5%;
     pedestrian-color-noise-freq: 0.1;

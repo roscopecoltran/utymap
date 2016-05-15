@@ -24,6 +24,9 @@ struct StyleDeclaration
     // Gets declaration value.
     std::shared_ptr<std::string> value() const;
 
+    // Gets true if declaration should be evaluated
+    bool isEval() const;
+
     // Evaluates double value from tags.
     double evaluate(const std::vector<utymap::entities::Tag>& tags, 
                     utymap::index::StringTable& stringTable) const;

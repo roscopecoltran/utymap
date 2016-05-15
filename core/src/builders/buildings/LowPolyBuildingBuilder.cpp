@@ -82,20 +82,20 @@ public:
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
 
-        double height = utymap::utils::getDouble(HeightKey, area.tags, context_.stringTable, style);
-        double minHeight = utymap::utils::getDouble(MinHeightKey, area.tags, context_.stringTable, style);
+        double height = style.getValue(HeightKey, area.tags);
+        double minHeight = style.getValue(MinHeightKey, area.tags);
         double elevation = context_.eleProvider.getElevation(area.coordinates[0]) + minHeight;
 
         // roof
-        auto roofType = utymap::utils::getString(RoofTypeKey, context_.stringTable, style);
-        double roofHeight = utymap::utils::getDouble(RoofHeightKey, area.tags, context_.stringTable, style);
+        auto roofType = style.getString(RoofTypeKey);
+        double roofHeight = style.getValue(RoofHeightKey, area.tags);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
         roofBuilder->build(polygon);
         
         // facade
-        auto facadeType = utymap::utils::getString(FacadeTypeKey, context_.stringTable, style);
+        auto facadeType = style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);
