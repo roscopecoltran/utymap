@@ -34,7 +34,7 @@ namespace utymap { namespace utils {
         double centerLon = (minMaxLong.first->longitude + (minMaxLong.second->longitude - minMaxLong.first->longitude) / 2);
         double centerLat = (minMaxLat.first->latitude + (minMaxLat.second->latitude - minMaxLat.first->latitude) / 2);
 
-        radius = (minMaxLong.second->longitude - minMaxLong.first->longitude) / 2;
+        radius = (minMaxLat.second->latitude - minMaxLat.first->latitude) / 2;
         center = utymap::GeoCoordinate(centerLat, centerLon);
     }
 

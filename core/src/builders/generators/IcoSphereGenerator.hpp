@@ -44,7 +44,7 @@ public:
     IcoSphereGenerator& setRadius(double radius, double height = 1)
     {
         radius_ = radius;
-        height_ = height * 1.5;
+        height_ = height;
         return *this;
     }
 

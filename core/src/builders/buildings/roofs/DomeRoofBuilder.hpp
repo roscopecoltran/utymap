@@ -42,7 +42,7 @@ public:
 
         double heightInMeters = utymap::utils::GeoUtils::distance(
             center2d, 
-            utymap::GeoCoordinate(center2d.latitude, center2d.longitude + radius));
+            utymap::GeoCoordinate(center2d.latitude + radius, center2d.longitude));
 
         generator
             .setCenter(utymap::meshing::Vector3(center2d.longitude, minHeight_, center2d.latitude))
