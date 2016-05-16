@@ -124,7 +124,11 @@ struct Rectangle
 
     LineLinear _left, _right, _bottom, _top;
 
-    Rectangle() : Rectangle(0, 0, 0, 0)
+    Rectangle() 
+        : Rectangle(std::numeric_limits<double>::max(), 
+                    std::numeric_limits<double>::max(), 
+                    std::numeric_limits<double>::min(), 
+                    std::numeric_limits<double>::min())
     {
     }
 
