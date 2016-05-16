@@ -45,3 +45,7 @@ area|z16[roof:height] {
 area|z16[roof:shape=dome] {
     roof-type: dome;
 }
+
+area|z16[building:shape=cylinder] {
+    facade-type: cylinder;
+}

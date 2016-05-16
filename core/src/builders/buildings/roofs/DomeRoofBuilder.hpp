@@ -27,14 +27,11 @@ public:
         double radius;
         utymap::utils::getCircle(polygon.rectangle, center2d, radius);
 
-        utymap::builders::IcoSphereGenerator generator(builderContext_,
-                                                       meshContext_,
-                                                       RoofColorKey);
-
         double heightInMeters = utymap::utils::GeoUtils::distance(
             utymap::GeoCoordinate(center2d.y, center2d.x),
             utymap::GeoCoordinate(center2d.y + radius, center2d.x));
-
+        
+        utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_, RoofColorKey);
         generator
             .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
             .setRadius(radius, heightInMeters)

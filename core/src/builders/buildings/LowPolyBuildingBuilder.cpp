@@ -4,6 +4,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "builders/buildings/facades/CylinderFacadeBuilder.hpp"
 #include "builders/buildings/facades/FlatFacadeBuilder.hpp"
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
@@ -53,6 +54,12 @@ namespace {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
               return std::shared_ptr<FlatFacadeBuilder>(new FlatFacadeBuilder(builderContext, meshContext));
+            }
+        },
+        {
+            "cylinder",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<CylinderFacadeBuilder>(new CylinderFacadeBuilder(builderContext, meshContext));
             }
         }
     };
