@@ -15,6 +15,8 @@ public:
     std::vector<double> holes;
     std::vector<int> segments;
 
+    Rectangle rectangle;
+
     Polygon(size_t numberOfPoints, size_t numberOfHoles = 1)
     {
         points.reserve(numberOfPoints * 2);
@@ -53,6 +55,7 @@ private:
         auto offset = segments.size() / 2;
         for (auto i = 0; i < count; ++i) {
             Vector2 point = contour[i];
+            rectangle.expand(point);
             points.push_back(point.x);
             points.push_back(point.y);
             segments.push_back(offset + i);

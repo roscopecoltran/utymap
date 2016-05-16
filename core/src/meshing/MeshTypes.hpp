@@ -144,11 +144,16 @@ struct Rectangle
     void expand(const std::vector<Vector2>& contour)
     {
         for (const Vector2& p : contour) {
-            xMin = std::min(xMin, p.x);
-            yMin = std::min(yMin, p.y);
-            xMax = std::max(xMax, p.x);
-            yMax = std::max(yMax, p.y);
+            expand(p);
         }
+    }
+
+    inline void expand(const Vector2& point)
+    {
+        xMin = std::min(xMin, point.x);
+        yMin = std::min(yMin, point.y);
+        xMax = std::max(xMax, point.x);
+        yMax = std::max(yMax, point.y);
     }
 
     inline bool contains(const Vector2& pt) const
