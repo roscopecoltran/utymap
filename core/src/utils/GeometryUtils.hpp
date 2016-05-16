@@ -2,6 +2,7 @@
 #define UTILS_GEOMETRYUTILS_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "meshing/MeshTypes.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -36,6 +37,19 @@ namespace utymap { namespace utils {
 
         radius = (minMaxLat.second->latitude - minMaxLat.first->latitude) / 2;
         center = utymap::GeoCoordinate(centerLat, centerLon);
+    }
+
+    // Gets circle parameters from rectangle.
+    inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshing::Vector2& center, double& radius)
+    {
+        double radiusX = (rectangle.xMax - rectangle.xMin) / 2;
+        double radiusY = (rectangle.yMax - rectangle.yMin) / 2;
+
+        double centerX = rectangle.xMin + radiusX;
+        double centerY = rectangle.yMin + radiusY;
+
+        radius = radiusY;
+        center = utymap::meshing::Vector2(centerX, centerY);
     }
 
 }}

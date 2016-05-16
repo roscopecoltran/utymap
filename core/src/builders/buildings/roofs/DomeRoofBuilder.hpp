@@ -23,29 +23,20 @@ public:
 
     void build(utymap::meshing::Polygon& polygon)
     {
-        utymap::GeoCoordinate center2d;
+        utymap::meshing::Vector2 center2d;
         double radius;
+        utymap::utils::getCircle(polygon.rectangle, center2d, radius);
 
-        // need to represent as vector of geocoordinates
-        auto size = polygon.points.size() / 2;
-        std::vector<utymap::GeoCoordinate> contour;
-        contour.reserve(size);
-        for (std::size_t i = 0; i < size; ++i) {
-            contour.push_back(utymap::GeoCoordinate(polygon.points[i * 2 + 1], polygon.points[i * 2]));
-        }
-
-        utymap::utils::getCircle(contour, center2d, radius);
-
-        utymap::builders::IcoSphereGenerator generator(builderContext_ ,
+        utymap::builders::IcoSphereGenerator generator(builderContext_,
                                                        meshContext_,
                                                        RoofColorKey);
 
         double heightInMeters = utymap::utils::GeoUtils::distance(
-            center2d, 
-            utymap::GeoCoordinate(center2d.latitude + radius, center2d.longitude));
+            utymap::GeoCoordinate(center2d.y, center2d.x),
+            utymap::GeoCoordinate(center2d.y + radius, center2d.x));
 
         generator
-            .setCenter(utymap::meshing::Vector3(center2d.longitude, minHeight_, center2d.latitude))
+            .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
             .setRadius(radius, heightInMeters)
             .setRecursionLevel(2)
             .isSemiSphere(true)
