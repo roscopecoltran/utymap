@@ -34,16 +34,29 @@ namespace {
     typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
     std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
     {
+        {
+            "none",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                class EmptyRoofBuilder : public RoofBuilder {
+                public:
+                    EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc) 
+                        : RoofBuilder(bc, mc) { }
+                    void build(utymap::meshing::Polygon&) {}
+                };
+
+                return std::shared_ptr<RoofBuilder>(new EmptyRoofBuilder(builderContext, meshContext));
+            }
+        },
         { 
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<FlatRoofBuilder>(new FlatRoofBuilder(builderContext, meshContext));
+                return std::shared_ptr<RoofBuilder>(new FlatRoofBuilder(builderContext, meshContext));
             } 
         },
         {
             "dome",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<DomeRoofBuilder>(new DomeRoofBuilder(builderContext, meshContext));
+                return std::shared_ptr<RoofBuilder>(new DomeRoofBuilder(builderContext, meshContext));
             }
         }
     };
@@ -54,13 +67,13 @@ namespace {
         {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-              return std::shared_ptr<FlatFacadeBuilder>(new FlatFacadeBuilder(builderContext, meshContext));
+              return std::shared_ptr<FacadeBuilder>(new FlatFacadeBuilder(builderContext, meshContext));
             }
         },
         {
             "cylinder",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<CylinderFacadeBuilder>(new CylinderFacadeBuilder(builderContext, meshContext));
+                return std::shared_ptr<FacadeBuilder>(new CylinderFacadeBuilder(builderContext, meshContext));
             }
         }
     };
