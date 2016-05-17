@@ -9,6 +9,7 @@
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
+#include "utils/ElementUtils.hpp"
 
 #include <unordered_map>
 
@@ -28,7 +29,7 @@ namespace {
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
 
-    const std::string MeshName = "building";
+    const std::string MeshNamePrefix = "building:";
 
     typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
     std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
@@ -83,7 +84,7 @@ public:
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
           
-        Mesh mesh(MeshName);
+        Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, area));
         MeshContext meshContext(mesh, style);
 
         Polygon polygon(area.coordinates.size(), 0);

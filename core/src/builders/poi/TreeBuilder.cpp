@@ -1,4 +1,5 @@
 #include "builders/poi/TreeBuilder.hpp"
+#include "utils/ElementUtils.hpp"
 
 using namespace utymap::builders;
 using namespace utymap::mapcss;
@@ -6,7 +7,7 @@ using namespace utymap::meshing;
 using namespace utymap::utils;
 
 namespace {
-const std::string MeshName = "tree";
+const std::string MeshNamePrefix = "tree:";
 const std::string FoliageColorKey = "foliage-color";
 const std::string TrunkColorKey = "trunk-color";
 const std::string FoliageRadius = "foliage-radius";
@@ -16,7 +17,7 @@ const std::string TrunkHeight = "trunk-height";
 
 void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
-    Mesh mesh(MeshName);
+    Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, node));
     Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
    
     MeshContext meshContext(mesh, style);

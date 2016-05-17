@@ -4,6 +4,7 @@
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/StringTable.hpp"
+#include "utils/CompatibilityUtils.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -23,6 +24,11 @@ inline void setTags(utymap::index::StringTable& stringTable,
     stringTable.flush();
     // NOTE: tags should be sorted to speed up mapcss styling
     std::sort(element.tags.begin(), element.tags.end());
+}
+
+// Gets mesh name
+inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
+    return prefix + std::to_string(element.id);
 }
 
 }}
