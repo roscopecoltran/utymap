@@ -74,13 +74,13 @@ public:
 
             // bottom cap
             addTriangle(center_,
-                        utymap::meshing::Vector3(second.x, center_.y, second.y),
-                        utymap::meshing::Vector3(first.x, center_.y, first.y));
+                        utymap::meshing::Vector3(first.x, center_.y, first.y),
+                        utymap::meshing::Vector3(second.x, center_.y, second.y));
 
             // top cap
             addTriangle(utymap::meshing::Vector3(center_.x, center_.y + height_, center_.z),
-                        utymap::meshing::Vector3(first.x, center_.y + height_, first.y),
-                        utymap::meshing::Vector3(second.x, center_.y + height_, second.y));
+                        utymap::meshing::Vector3(second.x, center_.y + height_, second.y),
+                        utymap::meshing::Vector3(first.x, center_.y + height_, first.y));
 
             for (int i = 0; i < heightSegments; i++) {
                 double bottomHeight = i * heightStep + center_.y;
