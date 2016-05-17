@@ -10,10 +10,10 @@
 namespace utymap { namespace builders {
 
 // Builds flat roof in low poly.
-class LowPolyFlatRoofBuilder : public RoofBuilder
+class FlatRoofBuilder : public RoofBuilder
 {
 public:
-    LowPolyFlatRoofBuilder(const utymap::builders::BuilderContext& builderContext,
+    FlatRoofBuilder(const utymap::builders::BuilderContext& builderContext,
                            utymap::builders::MeshContext& meshContext)
          : RoofBuilder(builderContext, meshContext)
     {

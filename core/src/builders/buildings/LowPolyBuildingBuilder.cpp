@@ -37,7 +37,7 @@ namespace {
         { 
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<LowPolyFlatRoofBuilder>(new LowPolyFlatRoofBuilder(builderContext, meshContext));
+                return std::shared_ptr<FlatRoofBuilder>(new FlatRoofBuilder(builderContext, meshContext));
             } 
         },
         {
