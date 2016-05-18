@@ -6,6 +6,7 @@
 #include "entities/Relation.hpp"
 #include "builders/buildings/facades/CylinderFacadeBuilder.hpp"
 #include "builders/buildings/facades/FlatFacadeBuilder.hpp"
+#include "builders/buildings/facades/SphereFacadeBuilder.hpp"
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
@@ -75,7 +76,14 @@ namespace {
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::shared_ptr<FacadeBuilder>(new CylinderFacadeBuilder(builderContext, meshContext));
             }
+        },
+        {
+            "sphere",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<FacadeBuilder>(new SphereFacadeBuilder(builderContext, meshContext));
+            }
         }
+
     };
 }
 

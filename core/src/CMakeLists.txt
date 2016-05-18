@@ -23,6 +23,7 @@ set(HEADER_FILES
         builders/buildings/facades/CylinderFacadeBuilder.hpp
         builders/buildings/facades/FacadeBuilder.hpp
         builders/buildings/facades/FlatFacadeBuilder.hpp
+        builders/buildings/facades/SphereFacadeBuilder.hpp
         builders/buildings/roofs/DomeRoofBuilder.hpp
         builders/buildings/roofs/FlatRoofBuilder.hpp
         builders/buildings/roofs/RoofBuilder.hpp
