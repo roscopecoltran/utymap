@@ -50,3 +50,7 @@ area|z16[building:shape=cylinder] {
     roof-type: none;
     facade-type: cylinder;
 }
+area|z16[building:shape=sphere] {
+    roof-type: none;
+    facade-type: sphere;
+}
