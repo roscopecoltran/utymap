@@ -7,8 +7,9 @@
 #include "builders/buildings/facades/CylinderFacadeBuilder.hpp"
 #include "builders/buildings/facades/FlatFacadeBuilder.hpp"
 #include "builders/buildings/facades/SphereFacadeBuilder.hpp"
-#include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
+#include "builders/buildings/roofs/FlatRoofBuilder.hpp"
+#include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/ElementUtils.hpp"
 
@@ -58,6 +59,12 @@ namespace {
             "dome",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::shared_ptr<RoofBuilder>(new DomeRoofBuilder(builderContext, meshContext));
+            }
+        },
+        {
+            "pyramidal",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<RoofBuilder>(new PyramidalRoofBuilder(builderContext, meshContext));
             }
         }
     };

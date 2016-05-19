@@ -3,6 +3,7 @@
 
 #include "GeoCoordinate.hpp"
 #include "meshing/MeshTypes.hpp"
+#include "meshing/Polygon.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -50,6 +51,24 @@ namespace utymap { namespace utils {
 
         radius = radiusY;
         center = utymap::meshing::Vector2(centerX, centerY);
+    }
+
+    // Gets centroid.
+    inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& polygon)
+    {
+        double centroidX = 0.0;
+        double centroidY = 0.0;
+
+        for (std::size_t i = 0; i < polygon.points.size(); i+=2) {
+            centroidX += polygon.points[i];
+            centroidY += polygon.points[i+1];
+        }
+
+        auto count = polygon.points.size() / 2;
+        centroidX /= count;
+        centroidY /= count;
+
+        return utymap::meshing::Vector2(centroidX, centroidY);
     }
 
 }}
