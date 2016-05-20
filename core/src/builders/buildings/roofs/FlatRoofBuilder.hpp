@@ -14,12 +14,13 @@ class FlatRoofBuilder : public RoofBuilder
 {
 public:
     FlatRoofBuilder(const utymap::builders::BuilderContext& builderContext,
-                           utymap::builders::MeshContext& meshContext)
+                    utymap::builders::MeshContext& meshContext)
          : RoofBuilder(builderContext, meshContext)
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) {
+    void build(utymap::meshing::Polygon& polygon)
+    {
         builderContext_.meshBuilder
                        .addPolygon(meshContext_.mesh,
                                    polygon,
