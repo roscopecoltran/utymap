@@ -10,6 +10,7 @@
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
+#include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/ElementUtils.hpp"
 
@@ -65,6 +66,12 @@ namespace {
             "pyramidal",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::shared_ptr<RoofBuilder>(new PyramidalRoofBuilder(builderContext, meshContext));
+            }
+        },
+        {
+            "mansard",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return std::shared_ptr<RoofBuilder>(new MansardRoofBuilder(builderContext, meshContext));
             }
         }
     };

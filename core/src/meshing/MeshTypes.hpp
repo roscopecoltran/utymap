@@ -28,6 +28,13 @@ struct Vector2
     {
         return !(*this == rhs);
     }
+
+    static double distance(const Vector2& v1, const Vector2& v2)
+    {
+        double dx = v1.x - v2.x;
+        double dy = v1.y - v2.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
 };
 
 // Represents vector3 which can be used as point or direction in 3d space

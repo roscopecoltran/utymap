@@ -1,6 +1,7 @@
 #include "GeoCoordinate.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
+#include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
@@ -49,6 +50,21 @@ BOOST_AUTO_TEST_CASE(GivenDome_WhenBuilds_ThenBuildsMesh)
     builder.setMinHeight(10);
     Polygon polygon(0, 0);
     polygon.addContour({ { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } });
+
+    builder.build(polygon);
+
+    BOOST_CHECK_GT(mesh->vertices.size(), 0);
+    BOOST_CHECK_GT(mesh->triangles.size(), 0);
+    BOOST_CHECK_GT(mesh->colors.size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenMansard_WhenBuilds_ThenBuildsMesh)
+{
+    auto builder = createRoofBuilder<MansardRoofBuilder>();
+    builder.setMinHeight(10);
+    builder.setHeight(5);
+    Polygon polygon(0, 0);
+    polygon.addContour({ { 13.3873453, 52.5316191 }, { 13.3871987, 52.5317429 }, { 13.3876304, 52.5317804 }, { 13.3876814, 52.5316476 } });
 
     builder.build(polygon);
 
