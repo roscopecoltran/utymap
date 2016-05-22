@@ -42,6 +42,7 @@ add_executable(${TEST}
         builders/buildings/RoofBuildersTest.cpp
         builders/generators/GeneratorTest.cpp
         builders/poi/TreeBuilderTest.cpp
+        builders/misc/BarrierBuilderTest.cpp
         builders/terrain/TerraBuilderTest.cpp
         builders/terrain/LineGridSplitterTest.cpp
         entities/ElementTest.cpp

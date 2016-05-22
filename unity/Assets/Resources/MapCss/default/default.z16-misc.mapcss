@@ -1,0 +1,10 @@
+way|z16[barrier] {
+    builders: barrier;
+
+    facade-color: gradient(blue);
+    roof-color: gradient(red);
+
+    height: 3m;
+    min-height: 0m;
+    offset: 0.2m;
+}

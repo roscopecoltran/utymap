@@ -11,7 +11,7 @@ class FlatFacadeBuilder : public FacadeBuilder
 {
 public:
     FlatFacadeBuilder(const utymap::builders::BuilderContext& builderContext,
-                       utymap::builders::MeshContext& meshContext)
+                      utymap::builders::MeshContext& meshContext)
         : FacadeBuilder(builderContext, meshContext)
     {
     }

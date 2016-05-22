@@ -9,6 +9,7 @@
 #include "builders/ExternalBuilder.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
+#include "builders/misc/BarrierBuilder.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Element.hpp"
@@ -289,6 +290,10 @@ private:
 
         quadKeyBuilder_.registerElementBuilder("tree", [&](const utymap::builders::BuilderContext& context) {
             return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::TreeBuilder(context));
+        });
+
+        quadKeyBuilder_.registerElementBuilder("barrier", [&](const utymap::builders::BuilderContext& context) {
+            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::BarrierBuilder(context));
         });
     }
 
