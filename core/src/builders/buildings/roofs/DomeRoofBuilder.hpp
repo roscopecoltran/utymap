@@ -1,5 +1,5 @@
-#ifndef SCENE_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED
-#define SCENE_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED
+#ifndef BUILDERS_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED
+#define BUILDERS_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
 #include "builders/buildings/roofs/RoofBuilder.hpp"
@@ -30,7 +30,7 @@ public:
         double heightInMeters = utymap::utils::GeoUtils::distance(
             utymap::GeoCoordinate(center2d.y, center2d.x),
             utymap::GeoCoordinate(center2d.y + radius, center2d.x));
-        
+
         utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_, RoofColorKey);
         generator
             .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
@@ -47,4 +47,4 @@ private:
 
 }}
 
-#endif // SCENE_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED
+#endif // BUILDERS_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED

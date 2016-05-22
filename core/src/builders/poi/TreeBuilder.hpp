@@ -1,5 +1,5 @@
-#ifndef BUILDERS_TREEBUILDER_HPP_DEFINED
-#define BUILDERS_TREEBUILDER_HPP_DEFINED
+#ifndef BUILDERS_POI_TREEBUILDER_HPP_DEFINED
+#define BUILDERS_POI_TREEBUILDER_HPP_DEFINED
 
 #include "builders/ElementBuilder.hpp"
 #include "builders/BuilderContext.hpp"
@@ -39,4 +39,4 @@ public:
 
 }}
 
-#endif // BUILDERS_TREEBUILDER_HPP_DEFINED
+#endif // BUILDERS_POI_TREEBUILDER_HPP_DEFINED

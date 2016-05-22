@@ -1,5 +1,5 @@
-#ifndef BUILDERS_TREEGENERATOR_HPP_DEFINED
-#define BUILDERS_TREEGENERATOR_HPP_DEFINED
+#ifndef BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED
+#define BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED
 
 #include "builders/generators/AbstractGenerator.hpp"
 #include "builders/generators/CylinderGenerator.hpp"
@@ -90,4 +90,4 @@ private:
 };
 }}
 
-#endif // BUILDERS_TREEGENERATOR_HPP_DEFINED
+#endif // BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED
