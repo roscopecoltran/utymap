@@ -235,4 +235,30 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
     BOOST_CHECK_EQUAL(7, relation.elements.size());
 }
 
+// Reproducing crash.
+BOOST_AUTO_TEST_CASE(GivenSpecificFourOuter_WhenProcess_ThenDoesNotCrash)
+{
+    RelationMembers relationMembers = createRelationMembers({
+        std::make_tuple(1, "way", "outer"),
+        std::make_tuple(2, "way", "outer"),
+        std::make_tuple(3, "way", "outer"),
+        std::make_tuple(4, "way", "outer")
+    });
+    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
+    wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
+    {}, { { 55.754873400000001, 37.620234000000004 }, { 55.754922700000002, 37.620224499999999 } })));
+    wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 
+    {}, { { 55.754873400000001, 37.620234000000004 }, { 55.754846999999998, 37.620192099999997 } })));
+    wayMap[3] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 
+    {}, { { 55.754846999999998, 37.620192099999997 }, { 55.754846100000002, 37.620103100000001 } })));
+    wayMap[4] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 
+    {}, { { 55.754846100000002, 37.620103100000001 }, { 55.754922700000002, 37.620224499999999 } })));
+    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), areaMap, wayMap);
+
+    Relation relation = processor.process();
+
+    BOOST_CHECK_EQUAL(1, relation.elements.size());
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation.elements[0]).coordinates.size());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

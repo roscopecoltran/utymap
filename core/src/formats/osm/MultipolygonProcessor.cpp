@@ -43,6 +43,7 @@ struct MultipolygonProcessor::CoordinateSequence
         if (last() == other.last()) {
             coordinates.pop_back();
             other.reverse();
+            addAll(other.coordinates);
             mergeTags(other.tags);
             return true;
         }
@@ -85,6 +86,8 @@ private:
     inline void addToBegin(const Coords& other) { coordinates.insert(coordinates.begin(), other.begin(), other.end()); }
 
     inline void addToEnd(const Coords& other) { coordinates.insert(coordinates.end(), other.begin(), other.end()); }
+
+    inline void addAll(const Coords& other) { coordinates.insert(coordinates.end(), other.begin(), other.end()); }
 
     inline void reverse() { std::reverse(coordinates.begin(), coordinates.end()); }
 
