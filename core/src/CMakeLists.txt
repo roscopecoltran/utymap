@@ -46,6 +46,7 @@ set(HEADER_FILES
         entities/Way.hpp
         entities/Area.hpp
         formats/FormatTypes.hpp
+        formats/osm/BuildingProcessor.hpp
         formats/osm/MultipolygonProcessor.hpp
         formats/osm/OsmDataVisitor.hpp
         formats/osm/pbf/OsmPbfParser.hpp
@@ -98,6 +99,7 @@ add_library(${LIBRARY_NAME}
         builders/terrain/TerraGenerator.cpp
         builders/QuadKeyBuilder.cpp
         builders/buildings/LowPolyBuildingBuilder.cpp
+        formats/osm/BuildingProcessor.cpp
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
         index/ElementGeometryClipper.cpp
