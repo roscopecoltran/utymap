@@ -33,8 +33,6 @@ public:
 
 private:
 
-    ElementTags convertTags(const utymap::formats::Tags& tags) const;
-
     ElementTags getTags(const CoordinateSequence& outer) const;
 
     void simpleCase(utymap::entities::Relation& relation,

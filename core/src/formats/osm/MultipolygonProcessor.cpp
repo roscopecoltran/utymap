@@ -3,6 +3,8 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
+
+#include "utils/ElementUtils.hpp"
 #include "utils/GeoUtils.hpp"
 
 #include <deque>
@@ -159,22 +161,10 @@ Relation MultipolygonProcessor::process()
     return std::move(relation);
 }
 
-std::vector<utymap::entities::Tag> MultipolygonProcessor::convertTags(const utymap::formats::Tags& tags) const
-{
-    std::vector<utymap::entities::Tag> convertedTags(tags.size());
-    std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::formats::Tag& tag) {
-        return utymap::entities::Tag{
-            stringTable_.getId(tag.key),
-            stringTable_.getId(tag.value)
-        };
-    });
-    return std::move(convertedTags);
-}
-
 std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const
 {
     // TODO investigate case of empty tags
-    auto tags = tags_.size() > 1 ? convertTags(tags_) : outer.tags;
+    auto tags = tags_.size() > 1 ? utymap::utils::convertTags(stringTable_, tags_) : outer.tags;
     std::sort(tags.begin(), tags.end());
     return std::move(tags);
 }

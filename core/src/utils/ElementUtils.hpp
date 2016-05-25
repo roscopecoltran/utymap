@@ -26,6 +26,16 @@ inline void setTags(utymap::index::StringTable& stringTable,
     std::sort(element.tags.begin(), element.tags.end());
 }
 
+// Convert format specific tags to entity ones.
+inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable& stringTable, const utymap::formats::Tags& tags)
+{
+    std::vector<utymap::entities::Tag> convertedTags(tags.size());
+    std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::formats::Tag& tag) {
+        return utymap::entities::Tag(stringTable.getId(tag.key), stringTable.getId(tag.value));
+    });
+    return std::move(convertedTags);
+}
+
 // Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
     return prefix + std::to_string(element.id);
