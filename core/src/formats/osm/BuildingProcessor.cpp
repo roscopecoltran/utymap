@@ -24,5 +24,7 @@ BuildingProcessor::BuildingProcessor(
 
 utymap::entities::Relation BuildingProcessor::process()
 {
+    Relation relation;
 
+    return std::move(relation);
 }
