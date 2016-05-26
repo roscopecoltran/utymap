@@ -51,8 +51,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
                     { { 2, 0 }, { 3, 2 }, { 5, 1 }, { 4, -1 }, { 2, 0 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(2, relation->elements.size());
 
     BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
@@ -79,8 +80,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrec
                     { { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(3, relation->elements.size());
 
     BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
@@ -108,8 +110,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosed_WhenProcess_ThenReturnCorrectResult)
                     { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(1, relation->elements.size());
     BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
     std::vector<GeoCoordinate> expected = { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 }, { 3, 5 }, { 7, 3 } };
@@ -129,8 +132,9 @@ BOOST_AUTO_TEST_CASE(GivenTwoOuterClosed_WhenProcess_ThenReturnCorrectResult)
                     { { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(2, relation->elements.size());
     BOOST_CHECK(context.areaMap[1]->coordinates == reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
     BOOST_CHECK(context.areaMap[2]->coordinates == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
@@ -155,8 +159,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
                     { { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(3, relation->elements.size());
 
     BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
@@ -229,8 +234,9 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
     context.areaMap[20] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, { { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(7, relation->elements.size());
 }
 
@@ -254,8 +260,9 @@ BOOST_AUTO_TEST_CASE(GivenSpecificFourOuter_WhenProcess_ThenDoesNotCrash)
     {}, { { 55.754846100000002, 37.620103100000001 }, { 55.754922700000002, 37.620224499999999 } })));
     MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
 
-    auto relation = processor.process();
+    processor.process();
 
+    auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(1, relation->elements.size());
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
 }

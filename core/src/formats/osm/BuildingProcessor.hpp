@@ -21,7 +21,7 @@ public:
                       utymap::index::StringTable& stringTable,
                       utymap::formats::OsmDataContext context);
 
-    std::shared_ptr<utymap::entities::Relation> process();
+    void process();
 
 private:
 

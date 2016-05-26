@@ -30,7 +30,7 @@ public:
                           OsmDataContext context);
 
     // Builds relation from multipolygon relation.
-    std::shared_ptr<utymap::entities::Relation> process();
+    void process();
 
 private:
 

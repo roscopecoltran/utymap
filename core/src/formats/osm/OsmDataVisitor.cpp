@@ -98,15 +98,15 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
 {
     if (hasTag("type", "multipolygon", tags)) {
         MultipolygonProcessor processor(id, members, tags, stringTable_, context_);
-        context_.relationMap[id] = processor.process();
+        processor.process();
     }
     else if (hasTag("type", "building", tags)) {
         BuildingProcessor processor(id, members, tags, stringTable_, context_);
-        context_.relationMap[id] = processor.process();
+        processor.process();
     }
     else {
         RelationProcessor processor(id, members, tags, stringTable_, context_);
-        context_.relationMap[id] = processor.process();
+        processor.process();
     }
 }
 

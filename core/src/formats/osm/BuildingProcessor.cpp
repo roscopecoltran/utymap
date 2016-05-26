@@ -21,7 +21,7 @@ BuildingProcessor::BuildingProcessor(
 {
 }
 
-std::shared_ptr<Relation> BuildingProcessor::process()
+void BuildingProcessor::process()
 {
     std::shared_ptr<Relation> relation(new Relation());
     relation->id = id_;
@@ -30,7 +30,7 @@ std::shared_ptr<Relation> BuildingProcessor::process()
     // TODO
 
     removeBuildingParts();
-    return relation;
+    context_.relationMap[id_] = relation;
 }
 
 void BuildingProcessor::removeBuildingParts()

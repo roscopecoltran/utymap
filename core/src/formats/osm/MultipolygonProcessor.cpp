@@ -105,7 +105,7 @@ MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& 
 }
 
 // see http://wiki.openstreetmap.org/wiki/Relation:multipolygon/Algorithm
-std::shared_ptr<Relation> MultipolygonProcessor::process()
+void MultipolygonProcessor::process()
 {
     std::shared_ptr<Relation> relation(new Relation());
     relation->id = id_;
@@ -134,7 +134,7 @@ std::shared_ptr<Relation> MultipolygonProcessor::process()
             }
             else {
                 //  NOTE cannot fill relation: incomplete data
-                return relation;
+                return;
             }
         }
 
@@ -158,7 +158,7 @@ std::shared_ptr<Relation> MultipolygonProcessor::process()
     else
         complexCase(*relation, sequences);
 
-    return relation;
+    context_.relationMap[id_] = relation;
 }
 
 std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const

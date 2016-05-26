@@ -24,7 +24,7 @@ public:
     {
     }
 
-    std::shared_ptr<utymap::entities::Relation> process()
+    void process()
     {
         relation_ = std::shared_ptr<utymap::entities::Relation>(new utymap::entities::Relation());
         relation_->id = id_;
@@ -33,7 +33,7 @@ public:
 
         utymap::utils::visitRelationMembers(context_, members_, *this);
 
-        return relation_;
+        context_.relationMap[id_] = relation_;
     }
 
     void visit(OsmDataContext::NodeMapType::const_iterator node) 
