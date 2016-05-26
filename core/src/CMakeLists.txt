@@ -101,7 +101,6 @@ add_library(${LIBRARY_NAME}
         builders/terrain/TerraGenerator.cpp
         builders/QuadKeyBuilder.cpp
         builders/buildings/LowPolyBuildingBuilder.cpp
-        formats/osm/BuildingProcessor.cpp
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
         index/ElementGeometryClipper.cpp
