@@ -95,6 +95,8 @@ struct ShapeDataVisitor
             relations++;
     }
 
+    void complete() { }
+
 private:
     utymap::index::StringTable& stringTable_;
     std::function<bool(utymap::entities::Element&)> functor_;

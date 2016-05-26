@@ -48,6 +48,7 @@ set(HEADER_FILES
         formats/FormatTypes.hpp
         formats/osm/BuildingProcessor.hpp
         formats/osm/MultipolygonProcessor.hpp
+        formats/osm/OsmDataContext.hpp
         formats/osm/OsmDataVisitor.hpp
         formats/osm/pbf/OsmPbfParser.hpp
         formats/osm/xml/OsmXmlParser.hpp

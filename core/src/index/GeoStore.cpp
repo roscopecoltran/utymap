@@ -98,6 +98,7 @@ public:
                 ShapeParser<ShapeDataVisitor> parser;
                 ShapeDataVisitor visitor(stringTable_, functor);
                 parser.parse(path, visitor);
+                visitor.complete();
                 break;
             }
             case FormatType::Xml: {
@@ -105,6 +106,7 @@ public:
                 std::ifstream xmlFile(path);
                 OsmDataVisitor visitor(stringTable_, functor);
                 parser.parse(xmlFile, visitor);
+                visitor.complete();
                 break;
             }
             case FormatType::Pbf: {

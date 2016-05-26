@@ -14,17 +14,31 @@ BuildingProcessor::BuildingProcessor(
         RelationMembers& members,
         const Tags& tags,
         StringTable& stringTable,
-        std::unordered_map<std::uint64_t, std::shared_ptr<Relation>>& relationMap,
-        std::unordered_map<std::uint64_t, std::shared_ptr<Area>>& areaMap,
-        std::unordered_map<std::uint64_t, std::shared_ptr<Way>>& wayMap)
-    : id_(id), members_(members), tags_(tags), stringTable_(stringTable),
-      relationMap_(relationMap), areaMap_(areaMap), wayMap_(wayMap)
+        OsmDataContext context)
+    : id_(id), members_(members), tags_(tags),
+      stringTable_(stringTable), context_(context)
 {
 }
 
-utymap::entities::Relation BuildingProcessor::process()
+std::shared_ptr<Relation> BuildingProcessor::process()
 {
-    Relation relation;
+    std::shared_ptr<Relation> relation(new Relation());
 
-    return std::move(relation);
+    // TODO
+
+    removeBuildingParts();
+    return relation;
+}
+
+void BuildingProcessor::removeBuildingParts()
+{
+    // NOTE Remove member references from other collections as
+    // they will be processed as part of single relation.
+    for (const auto& member : members_) {
+        if (member.type == "area") {
+            context_.areaMap.erase(member.refId);
+        } else if (member.type == "relation") {
+            context_.relationMap.erase(member.refId);
+        }
+    }
 }

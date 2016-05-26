@@ -97,18 +97,18 @@ private:
 };
 
 
-MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members, const Tags& tags, StringTable& stringTable,
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap,
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap) :
-    id_(id), members_(members), tags_(tags), stringTable_(stringTable), areaMap_(areaMap), wayMap_(wayMap)
+MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members,
+                                             const Tags& tags, StringTable& stringTable,
+                                             OsmDataContext context) :
+    id_(id), members_(members), tags_(tags), stringTable_(stringTable), context_(context)
 {
 }
 
 // see http://wiki.openstreetmap.org/wiki/Relation:multipolygon/Algorithm
-Relation MultipolygonProcessor::process()
+std::shared_ptr<Relation> MultipolygonProcessor::process()
 {
-    Relation relation;
-    relation.id = id_;
+    std::shared_ptr<Relation> relation(new Relation());
+    relation->id = id_;
 
     bool allClosed = true;
 
@@ -121,14 +121,14 @@ Relation MultipolygonProcessor::process()
 
         Coordinates coordinates;
         ElementTags tags;
-        auto wayPair = wayMap_.find(member.refId);
-        if (wayPair != wayMap_.end()) {
+        auto wayPair = context_.wayMap.find(member.refId);
+        if (wayPair != context_.wayMap.end()) {
             coordinates = wayPair->second->coordinates;
             tags = wayPair->second->tags;
         }
         else {
-            auto areaPair = areaMap_.find(member.refId);
-            if (areaPair != areaMap_.end()) {
+            auto areaPair = context_.areaMap.find(member.refId);
+            if (areaPair != context_.areaMap.end()) {
                 coordinates = areaPair->second->coordinates;
                 tags = areaPair->second->tags;
             }
@@ -154,11 +154,11 @@ Relation MultipolygonProcessor::process()
     }
 
     if (outerIndecies.size() == 1 && allClosed)
-        simpleCase(relation, sequences, outerIndecies, innerIndecies);
+        simpleCase(*relation, sequences, outerIndecies, innerIndecies);
     else
-        complexCase(relation, sequences);
+        complexCase(*relation, sequences);
 
-    return std::move(relation);
+    return relation;
 }
 
 std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const

@@ -4,8 +4,10 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
+#include "formats/osm/OsmDataContext.hpp"
 #include "index/StringTable.hpp"
 
+#include <memory>
 #include <unordered_map>
 
 namespace utymap { namespace formats {
@@ -22,14 +24,13 @@ private:
 
 public:
     MultipolygonProcessor(std::uint64_t id,
-        utymap::formats::RelationMembers& members,
-        const utymap::formats::Tags& tags,
-        utymap::index::StringTable& stringTable,
-        std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap,
-        std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap);
+                          utymap::formats::RelationMembers& members,
+                          const utymap::formats::Tags& tags,
+                          utymap::index::StringTable& stringTable,
+                          OsmDataContext context);
 
     // Builds relation from multipolygon relation.
-    utymap::entities::Relation process();
+    std::shared_ptr<utymap::entities::Relation> process();
 
 private:
 
@@ -50,8 +51,7 @@ private:
     utymap::formats::RelationMembers& members_;
     const utymap::formats::Tags& tags_;
     utymap::index::StringTable& stringTable_;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>>& areaMap_;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>>& wayMap_;
+    utymap::formats::OsmDataContext context_;
 };
 }}
 

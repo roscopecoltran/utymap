@@ -2,6 +2,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "formats/osm/BuildingProcessor.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
 #include "formats/osm/OsmDataVisitor.hpp"
 #include "utils/GeometryUtils.hpp"
@@ -48,22 +49,15 @@ std::unordered_set<std::string> OsmDataVisitor::FalseKeys
 
 void OsmDataVisitor::visitBounds(BoundingBox bbox)
 {
-    statistics.bounds++;
 }
 
 void OsmDataVisitor::visitNode(std::uint64_t id, GeoCoordinate& coordinate, utymap::formats::Tags& tags)
 {
-    nodeMap_[id] = coordinate;
-
     std::shared_ptr<Node> node(new Node());
     node->id = id;
     node->coordinate = coordinate;
     utymap::utils::setTags(stringTable_, *node, tags);
-
-    if (functor_(*node))
-        statistics.nodes++;
-    else
-        statistics.skipNodes++;
+    context_.nodeMap[id] = node;
 }
 
 void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& nodeIds, utymap::formats::Tags& tags)
@@ -71,7 +65,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
     std::vector<GeoCoordinate> coordinates;
     coordinates.reserve(nodeIds.size());
     for (auto nodeId : nodeIds) {
-        coordinates.push_back(nodeMap_[nodeId]);
+        coordinates.push_back(context_.nodeMap[nodeId]->coordinate);
     }
 
     if (coordinates.size() > 2 && isArea(tags)) {
@@ -83,61 +77,57 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
         }
         area->coordinates = std::move(coordinates);
         utymap::utils::setTags(stringTable_, *area, tags);
-        areaMap_[id] = area;
-        if (functor_(*area))
-            statistics.areas++;
-        return;
-    } 
+        context_.areaMap[id] = area;
 
-    std::shared_ptr<Way> way(new Way());
-    way->id = id;
-    way->coordinates = std::move(coordinates);
-    utymap::utils::setTags(stringTable_, *way, tags);
-    wayMap_[id] = way;
-    if (functor_(*way))
-        statistics.ways++;
-    else
-        statistics.skipWays++;
+    } else {
+        std::shared_ptr<Way> way(new Way());
+        way->id = id;
+        way->coordinates = std::move(coordinates);
+        utymap::utils::setTags(stringTable_, *way, tags);
+        context_.wayMap[id] = way;
+    }
 }
 
 void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, utymap::formats::Tags& tags)
 {
     if (hasTag("type", "multipolygon", tags)) {
-        MultipolygonProcessor processor(id, members, tags, stringTable_, areaMap_, wayMap_);
-        Relation relation = processor.process();
-        if (!functor_(relation)) {
-            statistics.skipRelations++;
-            return;
-        }
+        MultipolygonProcessor processor(id, members, tags, stringTable_, context_);
+        context_.relationMap[id] = processor.process();
+    }
+    else if (hasTag("type", "building", tags)) {
+        BuildingProcessor processor(id, members, tags, stringTable_, context_);
+        context_.relationMap[id] = processor.process();
     }
     else {
-        std::vector<std::shared_ptr<Element>> elements;
-        elements.reserve(members.size());
+        std::shared_ptr<Relation> relation(new Relation());
+        relation->id = id;
+        relation->tags = utymap::utils::convertTags(stringTable_, tags);
+        relation->elements.reserve(members.size());
+
         for (const auto& member : members) {
             if (member.type == "node") {
-                std::shared_ptr<Node> node(new Node());
-                node->coordinate = nodeMap_[member.refId];
-                elements.push_back(node);
+                auto nodePair = context_.nodeMap.find(member.refId);
+                if (nodePair != context_.nodeMap.end()) {
+                    relation->elements.push_back(nodePair->second);
+                }               
             }
             else if (member.type == "way") {
-                auto areaPair = areaMap_.find(member.refId);
-                if (areaPair != areaMap_.end()){
-                    elements.push_back(areaPair->second);
+                auto areaPair = context_.areaMap.find(member.refId);
+                if (areaPair != context_.areaMap.end()) {
+                    relation->elements.push_back(areaPair->second);
                     continue;
                 }
-                auto wayPair = wayMap_.find(member.refId);
-                if (wayPair != wayMap_.end())
-                    elements.push_back(wayPair->second);
+                auto wayPair = context_.wayMap.find(member.refId);
+                if (wayPair != context_.wayMap.end())
+                    relation->elements.push_back(wayPair->second);
             }
             else {
                 // not supported so far.
-                statistics.skipRelations++;
                 return;
             }
         }
+        context_.relationMap[id] = relation;
     }
-
-    statistics.relations++;
 }
 
 bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
@@ -160,7 +150,26 @@ bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, co
     return false;
 }
 
-OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
-    stringTable_(stringTable), functor_(functor)
+void OsmDataVisitor::complete()
+{
+    for (const auto& pair : context_.nodeMap) {
+        add_(*pair.second);
+    }
+
+    for (const auto& pair : context_.wayMap) {
+        add_(*pair.second);
+    }
+
+    for (const auto& pair : context_.areaMap) {
+        add_(*pair.second);
+    }
+
+    for (const auto& pair : context_.relationMap) {
+        add_(*pair.second);
+    }
+}
+
+OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(utymap::entities::Element&)> add) :
+stringTable_(stringTable), add_(add), context_()
 {
 }
