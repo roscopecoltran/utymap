@@ -3,6 +3,7 @@
 
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
+#include "formats/osm/OsmDataContext.hpp"
 #include "index/StringTable.hpp"
 #include "utils/CompatibilityUtils.hpp"
 
@@ -39,6 +40,36 @@ inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable
 // Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
     return prefix + std::to_string(element.id);
+}
+
+template <typename T>
+static void visitRelationMembers(const utymap::formats::OsmDataContext& context,
+                                 const utymap::formats::RelationMembers& members,
+                                 T& visitor)
+{
+    for (const auto& member : members) {
+        if (member.type == "node") {
+            auto nodePair = context.nodeMap.find(member.refId);
+            if (nodePair != context.nodeMap.end())
+                visitor.visit(nodePair);
+        }
+        else if (member.type == "way") {
+            auto areaPair = context.areaMap.find(member.refId);
+            if (areaPair != context.areaMap.end()) {
+                visitor.visit(areaPair);
+            }
+            else {
+                auto wayPair = context.wayMap.find(member.refId);
+                if (wayPair != context.wayMap.end())
+                    visitor.visit(wayPair);
+            }
+        }
+        else {
+            auto relationPair = context.relationMap.find(member.refId);
+            if (relationPair != context.relationMap.end())
+                visitor.visit(relationPair);
+        }
+    }
 }
 
 }}

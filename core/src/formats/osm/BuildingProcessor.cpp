@@ -3,6 +3,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "formats/osm/BuildingProcessor.hpp"
+#include "utils/ElementUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
@@ -23,7 +24,9 @@ BuildingProcessor::BuildingProcessor(
 std::shared_ptr<Relation> BuildingProcessor::process()
 {
     std::shared_ptr<Relation> relation(new Relation());
-
+    relation->id = id_;
+    relation->tags = utymap::utils::convertTags(stringTable_, tags_);
+    
     // TODO
 
     removeBuildingParts();

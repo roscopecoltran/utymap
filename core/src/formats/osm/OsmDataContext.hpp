@@ -11,10 +11,15 @@ namespace utymap { namespace formats {
 // Specifies visitor context which stores elements.
 struct OsmDataContext
 {
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Node>> nodeMap;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> wayMap;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>> areaMap;
-    std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Relation>> relationMap;
+    typedef std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Node>> NodeMapType;
+    typedef std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Way>> WayMapType;
+    typedef std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Area>> AreaMapType;
+    typedef std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Relation>>  RelationMapType;
+
+    NodeMapType nodeMap;
+    WayMapType wayMap;
+    AreaMapType areaMap;
+    RelationMapType relationMap;
 };
 
 }}

@@ -4,7 +4,9 @@
 #include "entities/Relation.hpp"
 #include "formats/osm/BuildingProcessor.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
+#include "formats/osm/RelationProcessor.hpp"
 #include "formats/osm/OsmDataVisitor.hpp"
+#include "utils/ElementUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 
 #include <algorithm>
@@ -15,37 +17,41 @@ using namespace utymap::formats;
 using namespace utymap::entities;
 using namespace utymap::index;
 
-std::unordered_set<std::string> OsmDataVisitor::AreaKeys
-{
-    "building",
-    "building:part",
-    "landuse",
-    "amenity",
-    "harbour",
-    "historic",
-    "leisure",
-    "man_made",
-    "military",
-    "natural",
-    "office",
-    "place",
-    "power",
-    "public_transport",
-    "shop",
-    "sport",
-    "tourism",
-    "waterway",
-    "wetland",
-    "water",
-    "aeroway",
-    "addr:housenumber",
-    "addr:housename"
-};
+namespace {
 
-std::unordered_set<std::string> OsmDataVisitor::FalseKeys
-{
-    "no", "No", "NO", "false", "False", "FALSE", "0"
-};
+    std::unordered_set<std::string> AreaKeys
+    {
+        "building",
+        "building:part",
+        "landuse",
+        "amenity",
+        "harbour",
+        "historic",
+        "leisure",
+        "man_made",
+        "military",
+        "natural",
+        "office",
+        "place",
+        "power",
+        "public_transport",
+        "shop",
+        "sport",
+        "tourism",
+        "waterway",
+        "wetland",
+        "water",
+        "aeroway",
+        "addr:housenumber",
+        "addr:housename"
+    };
+
+    std::unordered_set<std::string> FalseKeys
+    {
+        "no", "No", "NO", "false", "False", "FALSE", "0"
+    };
+}
+
 
 void OsmDataVisitor::visitBounds(BoundingBox bbox)
 {
@@ -99,34 +105,8 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
         context_.relationMap[id] = processor.process();
     }
     else {
-        std::shared_ptr<Relation> relation(new Relation());
-        relation->id = id;
-        relation->tags = utymap::utils::convertTags(stringTable_, tags);
-        relation->elements.reserve(members.size());
-
-        for (const auto& member : members) {
-            if (member.type == "node") {
-                auto nodePair = context_.nodeMap.find(member.refId);
-                if (nodePair != context_.nodeMap.end()) {
-                    relation->elements.push_back(nodePair->second);
-                }               
-            }
-            else if (member.type == "way") {
-                auto areaPair = context_.areaMap.find(member.refId);
-                if (areaPair != context_.areaMap.end()) {
-                    relation->elements.push_back(areaPair->second);
-                    continue;
-                }
-                auto wayPair = context_.wayMap.find(member.refId);
-                if (wayPair != context_.wayMap.end())
-                    relation->elements.push_back(wayPair->second);
-            }
-            else {
-                // not supported so far.
-                return;
-            }
-        }
-        context_.relationMap[id] = relation;
+        RelationProcessor processor(id, members, tags, stringTable_, context_);
+        context_.relationMap[id] = processor.process();
     }
 }
 

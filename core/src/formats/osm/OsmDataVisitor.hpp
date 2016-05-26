@@ -20,9 +20,6 @@ namespace utymap { namespace formats {
 
 class OsmDataVisitor
 {
-    static std::unordered_set<std::string> AreaKeys;
-    static std::unordered_set<std::string> FalseKeys;
-
 public:
 
     OsmDataVisitor(utymap::index::StringTable& stringTable,

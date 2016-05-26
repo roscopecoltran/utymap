@@ -50,6 +50,7 @@ set(HEADER_FILES
         formats/osm/MultipolygonProcessor.hpp
         formats/osm/OsmDataContext.hpp
         formats/osm/OsmDataVisitor.hpp
+        formats/osm/RelationProcessor.hpp
         formats/osm/pbf/OsmPbfParser.hpp
         formats/osm/xml/OsmXmlParser.hpp
         formats/shape/ShapeParser.hpp
