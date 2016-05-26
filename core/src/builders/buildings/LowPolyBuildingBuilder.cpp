@@ -107,7 +107,7 @@ class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public ElementBuilder
 {
 public:
     LowPolyBuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
-        ElementBuilder(context)
+                              ElementBuilder(context), mesh_()
     {
     }
 
@@ -117,8 +117,10 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
+        ensureMesh(area);
+
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-          
+         
         Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, area));
         MeshContext meshContext(mesh, style);
 
@@ -146,16 +148,18 @@ public:
 
         // TODO add floor
 
-        context_.meshCallback(mesh);
+        
     }
 
-    void visitRelation(const utymap::entities::Relation&)
+    void visitRelation(const utymap::entities::Relation& relation)
     {
-        // TODO
+        ensureMesh(relation);
+        relation.accept(*this);
     }
 
     void complete()
     {
+        context_.meshCallback(*mesh_);
     }
 
 private:
@@ -170,6 +174,14 @@ private:
 
         return std::move(points);
     }
+
+    inline void ensureMesh(const utymap::entities::Element& element)
+    {
+        if (mesh_ == nullptr)
+            mesh_ = std::shared_ptr<Mesh>(new Mesh(utymap::utils::getMeshName(MeshNamePrefix, element)));
+    }
+
+    std::shared_ptr<Mesh> mesh_;
 };
 
 LowPolyBuildingBuilder::LowPolyBuildingBuilder(const utymap::builders::BuilderContext& context) :
