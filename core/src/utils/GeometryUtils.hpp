@@ -11,7 +11,8 @@
 namespace utymap { namespace utils {
 
     // Checks whether geocoordinates are in clockwise oreder
-    inline bool isClockwise(const std::vector<utymap::GeoCoordinate>& coordinates)
+    template <typename T>
+    inline bool isClockwise(const T& coordinates)
     {
         auto size = coordinates.size();
         double area = 0.0;

@@ -6,8 +6,7 @@
 
 #include "utils/ElementUtils.hpp"
 #include "utils/GeoUtils.hpp"
-
-#include <deque>
+#include "utils/GeometryUtils.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
@@ -182,7 +181,8 @@ void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSeque
     std::shared_ptr<Area> outerArea(new Area());
     outerArea->id = outer->id;
     outerArea->tags = relation.tags;
-    outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
+    insertCoordinates(outer->coordinates, outerArea->coordinates);
+    
     relation.elements.push_back(outerArea);
 
     // inner
@@ -228,8 +228,7 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
         }
 
         // check whether the ring under construction is closed
-        if (currentRing != nullptr && currentRing->isClosed())
-        {
+        if (currentRing != nullptr && currentRing->isClosed()) {
             // TODO check that it isn't self-intersecting!
             closedRings.push_back(std::shared_ptr<CoordinateSequence>(new CoordinateSequence(*currentRing)));
             currentRing = nullptr;
@@ -285,14 +284,24 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
         std::shared_ptr<Area> outerArea(new Area());
         outerArea->id = outer->id;
         outerArea->tags = relation.tags;
-        outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
+        insertCoordinates(outer->coordinates, outerArea->coordinates);
+
         relation.elements.push_back(outerArea);
 
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
             std::shared_ptr<Area> innerArea(new Area());
+            // TODO ensure hole orientation
             innerArea->coordinates.insert(innerArea->coordinates.end(), innerRing->coordinates.rbegin(), innerRing->coordinates.rend());
             relation.elements.push_back(innerArea);
         }
     }
+}
+
+void MultipolygonProcessor::insertCoordinates(const std::deque<GeoCoordinate>& source, std::vector<GeoCoordinate>& destination) const
+{
+    if (utymap::utils::isClockwise(source))
+        destination.insert(destination.end(), source.begin(), source.end());
+    else
+        destination.insert(destination.end(), source.rbegin(), source.rend());
 }

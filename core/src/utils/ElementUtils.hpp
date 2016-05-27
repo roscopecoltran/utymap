@@ -67,7 +67,7 @@ static void visitRelationMembers(const utymap::formats::OsmDataContext& context,
         else {
             auto relationPair = context.relationMap.find(member.refId);
             if (relationPair != context.relationMap.end())
-                visitor.visit(relationPair);
+                visitor.visit(relationPair, member.role);
         }
     }
 }

@@ -7,6 +7,7 @@
 #include "formats/osm/OsmDataContext.hpp"
 #include "index/StringTable.hpp"
 
+#include <deque>
 #include <memory>
 #include <unordered_map>
 
@@ -46,6 +47,8 @@ private:
     CoordinateSequences createRings(CoordinateSequences& sequences);
 
     void fillRelation(utymap::entities::Relation& relation, CoordinateSequences& rings);
+
+    void insertCoordinates(const std::deque<GeoCoordinate>& source, std::vector<GeoCoordinate>& destination) const;
 
     std::uint64_t id_;
     utymap::formats::RelationMembers& members_;

@@ -51,7 +51,7 @@ public:
         relation_->elements.push_back(area->second);
     }
 
-    void visit(OsmDataContext::RelationMapType::const_iterator rel) 
+    void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     { 
         relation_->elements.push_back(rel->second);
     }

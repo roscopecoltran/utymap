@@ -55,9 +55,11 @@ public:
         context_.areaMap.erase(area->first);
     }
 
-    void visit(OsmDataContext::RelationMapType::const_iterator rel)
+    void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     {
-        relation_->elements.push_back(rel->second);
+        if (role != "outline")
+            relation_->elements.push_back(rel->second);
+
         context_.relationMap.erase(rel->first);
     }
 
