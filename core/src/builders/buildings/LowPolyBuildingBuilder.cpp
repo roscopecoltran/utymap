@@ -153,8 +153,9 @@ public:
     void visitRelation(const utymap::entities::Relation& relation)
     {
         bool justCreated = ensureMesh(relation);
-        
-        relation.accept(*this);
+
+        for (const auto& element : relation.elements) 
+            element->accept(*this);
 
         runMeshCallbackIfNecessary(justCreated);
     }
