@@ -176,42 +176,44 @@ public:
 
         for (const Rule& rule : stylesheet.rules) {
             for (const Selector& selector : rule.selectors) {
-                FilterMap* filtersPtr = nullptr;
-                if (selector.name == "node") filtersPtr = &filters.nodes;
-                else if (selector.name == "way") filtersPtr = &filters.ways;
-                else if (selector.name == "area") filtersPtr = &filters.areas;
-                else if (selector.name == "relation") filtersPtr = &filters.relations;
-                else if (selector.name == "canvas") filtersPtr = &filters.canvases;
-                else
-                    std::domain_error("Unexpected selector name:" + selector.name);
-
-                Filter filter = Filter();
-                filter.conditions.reserve(selector.conditions.size());
-                for (const utymap::mapcss::Condition& condition : selector.conditions) {
-                    ::Condition c;
-                    if (condition.operation == "") c.type = OpType::Exists;
-                    else if (condition.operation == "=") c.type = OpType::Equals;
-                    else if (condition.operation == "!=") c.type = OpType::NotEquals;
+                for (const std::string& name : selector.names) {
+                    FilterMap* filtersPtr = nullptr;
+                    if (name == "node") filtersPtr = &filters.nodes;
+                    else if (name == "way") filtersPtr = &filters.ways;
+                    else if (name == "area") filtersPtr = &filters.areas;
+                    else if (name == "relation") filtersPtr = &filters.relations;
+                    else if (name == "canvas") filtersPtr = &filters.canvases;
                     else
-                        std::domain_error("Unexpected condition operation:" + condition.operation);
+                        std::domain_error("Unexpected selector name:" + name);
 
-                    c.key = stringTable.getId(condition.key);
-                    c.value = stringTable.getId(condition.value);
-                    filter.conditions.push_back(c);
-                }
+                    Filter filter = Filter();
+                    filter.conditions.reserve(selector.conditions.size());
+                    for (const utymap::mapcss::Condition& condition : selector.conditions) {
+                        ::Condition c;
+                        if (condition.operation == "") c.type = OpType::Exists;
+                        else if (condition.operation == "=") c.type = OpType::Equals;
+                        else if (condition.operation == "!=") c.type = OpType::NotEquals;
+                        else
+                            std::domain_error("Unexpected condition operation:" + condition.operation);
 
-                filter.declarations.reserve(rule.declarations.size());
-                for (auto i = 0; i < rule.declarations.size(); ++i) {
-                    Declaration declaration = rule.declarations[i];
-                    uint32_t key = stringTable.getId(declaration.key);
-                    filter.declarations[key] = Style::value_type(
-                        new utymap::mapcss::StyleDeclaration(key, declaration.value));
-                }
+                        c.key = stringTable.getId(condition.key);
+                        c.value = stringTable.getId(condition.value);
+                        filter.conditions.push_back(c);
+                    }
 
-                std::sort(filter.conditions.begin(), filter.conditions.end(),
-                    [](const ::Condition& c1, const ::Condition& c2) { return c1.key > c2.key; });
-                for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
-                    (*filtersPtr)[i].push_back(filter);
+                    filter.declarations.reserve(rule.declarations.size());
+                    for (auto i = 0; i < rule.declarations.size(); ++i) {
+                        Declaration declaration = rule.declarations[i];
+                        uint32_t key = stringTable.getId(declaration.key);
+                        filter.declarations[key] = Style::value_type(
+                            new utymap::mapcss::StyleDeclaration(key, declaration.value));
+                    }
+
+                    std::sort(filter.conditions.begin(), filter.conditions.end(),
+                        [](const ::Condition& c1, const ::Condition& c2) { return c1.key > c2.key; });
+                    for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
+                        (*filtersPtr)[i].push_back(filter);
+                    }
                 }
             }
         }

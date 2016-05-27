@@ -25,7 +25,7 @@ struct Zoom
 // Represents selector.
 struct Selector
 {
-    std::string name;
+    std::vector<std::string> names;
     Zoom zoom;
     std::vector<Condition> conditions;
 };

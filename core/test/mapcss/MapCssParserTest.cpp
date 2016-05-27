@@ -124,7 +124,8 @@ BOOST_AUTO_TEST_CASE( GivenSingleSelector_WhenParse_ThenNameAndConditionsAreSet 
     bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
     BOOST_CHECK(success);
-    BOOST_CHECK_EQUAL(selector.name, "way");
+    BOOST_CHECK_EQUAL(selector.names.size(), 1);
+    BOOST_CHECK_EQUAL(selector.names[0], "way");
     BOOST_CHECK_EQUAL(selector.conditions.size(), 1);
     BOOST_CHECK_EQUAL(selector.conditions[0].key, "highway");
 }
@@ -136,10 +137,26 @@ BOOST_AUTO_TEST_CASE( GivenTwoSelectors_WhenParse_ThenNameAndConditionsAreSet )
     bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
 
     BOOST_CHECK(success);
-    BOOST_CHECK_EQUAL(selector.name, "way");
+    BOOST_CHECK_EQUAL(selector.names.size(), 1);
+    BOOST_CHECK_EQUAL(selector.names[0], "way");
     BOOST_CHECK_EQUAL(selector.conditions.size(), 2);
     BOOST_CHECK_EQUAL(selector.conditions[0].key, "highway");
     BOOST_CHECK_EQUAL(selector.conditions[1].key, "landuse");
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoSelectorNames_WhenParse_ThenNamesAndConditionsAreSet)
+{
+    std::string str = "area,relation|z1[building][part]";
+
+    bool success = phrase_parse(str.cbegin(), str.cend(), selectorGrammar, skipper, selector);
+
+    BOOST_CHECK(success);
+    BOOST_CHECK_EQUAL(selector.names.size(), 2);
+    BOOST_CHECK_EQUAL(selector.names[0], "area");
+    BOOST_CHECK_EQUAL(selector.names[1], "relation");
+    BOOST_CHECK_EQUAL(selector.conditions.size(), 2);
+    BOOST_CHECK_EQUAL(selector.conditions[0].key, "building");
+    BOOST_CHECK_EQUAL(selector.conditions[1].key, "part");
 }
 
 /* Declaration */
@@ -189,8 +206,10 @@ BOOST_AUTO_TEST_CASE( GivenComplexRule_WhenParse_ThenSelectorAndDeclarationAreSe
     BOOST_CHECK(success);
     BOOST_CHECK_EQUAL(rule.selectors.size(), 2);
     BOOST_CHECK_EQUAL(rule.declarations.size(), 2);
-    BOOST_CHECK_EQUAL(rule.selectors[0].name,"way");
-    BOOST_CHECK_EQUAL(rule.selectors[1].name, "area");
+    BOOST_CHECK_EQUAL(rule.selectors[0].names.size(), 1);
+    BOOST_CHECK_EQUAL(rule.selectors[0].names[0], "way");
+    BOOST_CHECK_EQUAL(rule.selectors[1].names.size(), 1);
+    BOOST_CHECK_EQUAL(rule.selectors[1].names[0], "area");
     BOOST_CHECK_EQUAL(rule.selectors[0].conditions[0].key, "highway");
     BOOST_CHECK_EQUAL(rule.selectors[1].conditions[0].key, "landuse");
     BOOST_CHECK_EQUAL(rule.declarations[0].key,"key1");

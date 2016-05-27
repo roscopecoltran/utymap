@@ -20,11 +20,12 @@ struct Index_StyleProviderFixture
         stylesheet->rules.push_back(Rule());
     }
 
-    void setSingleSelector(const std::string& name, int zoomStart, int zoomEnd,
+    void setSingleSelector(int zoomStart, int zoomEnd,
+        const std::initializer_list<std::string>& names,
         const std::initializer_list<utymap::mapcss::Condition>& conditions)
     {
         Selector selector;
-        selector.name = name;
+        selector.names.insert(selector.names.begin(), names.begin(), names.end());
         selector.zoom.start = zoomStart;
         selector.zoom.end = zoomEnd;
         for (const auto& condition : conditions) {
@@ -44,7 +45,7 @@ BOOST_FIXTURE_TEST_SUITE(Index_StyleProvider, Index_StyleProviderFixture)
 BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenHasStyle_ThenReturnTrue)
 {
     int zoomLevel = 1;
-    setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { { "amenity", "=", "biergarten" } });
     Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
     { 
         std::make_pair("amenity", "biergarten") 
@@ -53,10 +54,22 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenHasStyle_ThenReturnTrue)
     BOOST_CHECK(styleProvider->hasStyle(node, zoomLevel));
 }
 
+BOOST_AUTO_TEST_CASE(GivenTwoNamesAndSimpleEqualsCondition_WhenHasStyleForSecondName_ThenReturnTrue)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "way", "node" }, { { "amenity", "=", "biergarten" } });
+    Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
+    {
+        std::make_pair("amenity", "biergarten")
+    });
+
+    BOOST_CHECK(styleProvider->hasStyle(node, zoomLevel));
+}
+
 BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenHasStyle_ThenReturnFalse)
 {
     int zoomLevel = 1;
-    setSingleSelector("node", zoomLevel, zoomLevel, {{"amenity", "=", "biergarten"}});
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { { "amenity", "=", "biergarten" } });
     Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(),
     { 
         std::make_pair("amenity", "biergarten") 
@@ -68,7 +81,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsConditionButDifferentZoomLevel_WhenHasStyl
 BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenHasStyle_ThenReturnTrue)
 {
     int zoomLevel = 1;
-    setSingleSelector("node", zoomLevel, zoomLevel,
+    setSingleSelector(zoomLevel, zoomLevel, { "node" },
         {
             {"amenity", "=", "biergarten"},
             {"address", "=", "Invalidstr."}
@@ -85,7 +98,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoEqualsConditions_WhenHasStyle_ThenReturnTrue)
 BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenHasStyle_ThenReturnFalse)
 {
     int zoomLevel = 1;
-    setSingleSelector("node", zoomLevel, zoomLevel,
+    setSingleSelector(zoomLevel, zoomLevel, { "node" },
         {
             {"amenity", "=", "biergarten"},
             {"address", "!=", "Invalidstr."}

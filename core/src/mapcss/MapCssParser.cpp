@@ -39,7 +39,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
     Selector,
-    (std::string, name)
+    (std::vector<std::string>, names)
     (Zoom, zoom)
     (std::vector<Condition>, conditions)
 )
@@ -134,25 +134,23 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
 {
     SelectorGrammar() : SelectorGrammar::base_type(start, "selector")
     {
-        start =
-            (
-                (
-                    ascii::string("node")
-                  | ascii::string("way")
-                  | ascii::string("area")
-                  | ascii::string("relation")
-                )
-                > zoom
-                > +condition
-            )
-            | ascii::string("canvas")
-              > zoom
+        name = ascii::string("node")
+            |  ascii::string("way")
+            |  ascii::string("area")
+            |  ascii::string("relation")
         ;
+
+        start =
+              (name % ',' >> zoom >> +condition) 
+            | (+ascii::string("canvas") > zoom )
+        ;
+
         start.name("selector");
     }
     qi::rule<Iterator, Selector(), CommentSkipper<Iterator> > start;
     ZoomGrammar<Iterator> zoom;
     ConditionGrammar<Iterator> condition;
+    qi::rule<Iterator, std::string()> name;
 };
 
 template <typename Iterator>
@@ -166,6 +164,7 @@ struct DeclarationGrammar : qi::grammar < Iterator, Declaration(), CommentSkippe
             > qi::lexeme[+(ascii::char_ - ';')]
             > ';'
         ;
+
         start.name("declaration");
     }
     qi::rule<Iterator, Declaration(), CommentSkipper<Iterator>> start;
