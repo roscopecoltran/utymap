@@ -122,8 +122,7 @@ public:
 
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
          
-        Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, area));
-        MeshContext meshContext(mesh, style);
+        MeshContext meshContext(*mesh_, style);
 
         Polygon polygon(area.coordinates.size(), 0);
         polygon.addContour(toPoints(area.coordinates));
@@ -154,8 +153,14 @@ public:
     {
         bool justCreated = ensureMesh(relation);
 
-        for (const auto& element : relation.elements) 
+        for (const auto& element : relation.elements)  {
+
+            // TODO holes are not supported yet (inner ring).
+            if (element->tags.empty())
+                continue;
+
             element->accept(*this);
+        }
 
         runMeshCallbackIfNecessary(justCreated);
     }

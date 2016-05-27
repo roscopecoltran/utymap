@@ -181,6 +181,7 @@ void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSeque
     // outer
     std::shared_ptr<Area> outerArea(new Area());
     outerArea->id = outer->id;
+    outerArea->tags = relation.tags;
     outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
     relation.elements.push_back(outerArea);
 
@@ -283,6 +284,7 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
         // outer
         std::shared_ptr<Area> outerArea(new Area());
         outerArea->id = outer->id;
+        outerArea->tags = relation.tags;
         outerArea->coordinates.insert(outerArea->coordinates.end(), outer->coordinates.begin(), outer->coordinates.end());
         relation.elements.push_back(outerArea);
 
