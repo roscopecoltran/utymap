@@ -93,6 +93,7 @@ namespace {
         },
         {
             "sphere",
+
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::shared_ptr<FacadeBuilder>(new SphereFacadeBuilder(builderContext, meshContext));
             }
@@ -188,8 +189,10 @@ private:
     inline void runMeshCallbackIfNecessary(bool justCreated)
     {
         // NOTE should be called once when building is created.
-        if (justCreated)
+        if (justCreated) {
             context_.meshCallback(*mesh_);
+            mesh_.reset();
+        }
     }
 
     std::shared_ptr<Mesh> mesh_;
