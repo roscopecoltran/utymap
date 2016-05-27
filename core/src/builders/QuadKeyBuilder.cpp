@@ -25,10 +25,10 @@ private:
 
     typedef std::unordered_map<std::string, ElementBuilderFactory> BuilderFactoryMap;
 
-class AggregateElemenVisitor : public ElementVisitor
+class AggregateElementVisitor : public ElementVisitor
 {
 public:
-    AggregateElemenVisitor(const QuadKey& quadKey,
+    AggregateElementVisitor(const QuadKey& quadKey,
                            const StyleProvider& styleProvider,
                            StringTable& stringTable,
                            const ElevationProvider& eleProvider,
@@ -122,7 +122,7 @@ public:
                const MeshCallback& meshFunc,
                const ElementCallback& elementFunc)
     {
-        AggregateElemenVisitor elementVisitor(quadKey, styleProvider, stringTable_,
+        AggregateElementVisitor elementVisitor(quadKey, styleProvider, stringTable_,
             eleProvider, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
         geoStore_.search(quadKey, styleProvider, elementVisitor);
