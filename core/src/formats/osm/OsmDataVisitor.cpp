@@ -96,17 +96,12 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
 void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, utymap::formats::Tags& tags)
 {
-    if (hasTag("type", "multipolygon", tags)) {
-        MultipolygonProcessor processor(id, members, tags, stringTable_, context_);
-        processor.process();
-    }
-    else if (hasTag("type", "building", tags)) {
-        BuildingProcessor processor(id, members, tags, stringTable_, context_);
-        processor.process();
-    }
+    if (hasTag("type", "multipolygon", tags)) 
+        MultipolygonProcessor(id, members, tags, stringTable_, context_).process();
+    else if (hasTag("type", "building", tags))
+        BuildingProcessor(id, members, tags, stringTable_, context_).process();
     else {
-        RelationProcessor processor(id, members, tags, stringTable_, context_);
-        processor.process();
+        RelationProcessor(id, members, tags, stringTable_, context_).process();
     }
 }
 

@@ -20,41 +20,44 @@ public:
                       utymap::formats::RelationMembers& members,
                       const utymap::formats::Tags& tags,
                       utymap::index::StringTable& stringTable,
-                      utymap::formats::OsmDataContext context) 
+                      utymap::formats::OsmDataContext& context)
         : id_(id), members_(members), tags_(tags),
-          stringTable_(stringTable), context_(context)
+        stringTable_(stringTable), context_(context), relation_()
     {
     }
 
-    void BuildingProcessor::process()
+    void process()
     {
-        std::shared_ptr<utymap::entities::Relation> relation(new utymap::entities::Relation());
-        relation->id = id_;
-        relation->tags = utymap::utils::convertTags(stringTable_, tags_);
+        relation_ = std::shared_ptr<utymap::entities::Relation>(new utymap::entities::Relation());
+        relation_->id = id_;
+        relation_->tags = utymap::utils::convertTags(stringTable_, tags_);
 
-        // remove children references
         utymap::utils::visitRelationMembers(context_, members_, *this);
 
-        context_.relationMap[id_] = relation;
+        context_.relationMap[id_] = relation_;
     }
 
     void visit(OsmDataContext::NodeMapType::const_iterator node)
     {
+        relation_->elements.push_back(node->second);
         context_.nodeMap.erase(node->first);
     }
 
     void visit(OsmDataContext::WayMapType::const_iterator way)
     {
+        relation_->elements.push_back(way->second);
         context_.wayMap.erase(way->first);
     }
 
     void visit(OsmDataContext::AreaMapType::const_iterator area)
     {
+        relation_->elements.push_back(area->second);
         context_.areaMap.erase(area->first);
     }
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel)
     {
+        relation_->elements.push_back(rel->second);
         context_.relationMap.erase(rel->first);
     }
 
@@ -64,7 +67,8 @@ private:
     utymap::formats::RelationMembers& members_;
     const utymap::formats::Tags& tags_;
     utymap::index::StringTable& stringTable_;
-    utymap::formats::OsmDataContext context_;
+    utymap::formats::OsmDataContext& context_;
+    std::shared_ptr<utymap::entities::Relation> relation_;
 };
 
 }}

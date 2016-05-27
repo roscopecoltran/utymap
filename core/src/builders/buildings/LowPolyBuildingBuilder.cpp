@@ -117,7 +117,7 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
-        ensureMesh(area);
+        bool justCreated = ensureMesh(area);
 
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
          
@@ -144,22 +144,22 @@ public:
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);
-        facadeBuilder->build(polygon);
+        facadeBuilder->build(polygon);       
 
-        // TODO add floor
-
-        
+        runMeshCallbackIfNecessary(justCreated);
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
     {
-        ensureMesh(relation);
+        bool justCreated = ensureMesh(relation);
+        
         relation.accept(*this);
+
+        runMeshCallbackIfNecessary(justCreated);
     }
 
     void complete()
     {
-        context_.meshCallback(*mesh_);
     }
 
 private:
@@ -175,10 +175,21 @@ private:
         return std::move(points);
     }
 
-    inline void ensureMesh(const utymap::entities::Element& element)
+    inline bool ensureMesh(const utymap::entities::Element& element)
     {
-        if (mesh_ == nullptr)
+        if (mesh_ == nullptr) {
             mesh_ = std::shared_ptr<Mesh>(new Mesh(utymap::utils::getMeshName(MeshNamePrefix, element)));
+            return true;
+        }
+
+        return false;
+    }
+
+    inline void runMeshCallbackIfNecessary(bool justCreated)
+    {
+        // NOTE should be called once when building is created.
+        if (justCreated)
+            context_.meshCallback(*mesh_);
     }
 
     std::shared_ptr<Mesh> mesh_;

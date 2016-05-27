@@ -27,7 +27,7 @@ public:
                           utymap::formats::RelationMembers& members,
                           const utymap::formats::Tags& tags,
                           utymap::index::StringTable& stringTable,
-                          OsmDataContext context);
+                          OsmDataContext& context);
 
     // Builds relation from multipolygon relation.
     void process();
@@ -51,7 +51,7 @@ private:
     utymap::formats::RelationMembers& members_;
     const utymap::formats::Tags& tags_;
     utymap::index::StringTable& stringTable_;
-    utymap::formats::OsmDataContext context_;
+    utymap::formats::OsmDataContext& context_;
 };
 }}
 

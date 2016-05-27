@@ -18,7 +18,7 @@ public:
                       utymap::formats::RelationMembers& members,
                       const utymap::formats::Tags& tags,
                       utymap::index::StringTable& stringTable,
-                      utymap::formats::OsmDataContext context)
+                      utymap::formats::OsmDataContext& context)
         : id_(id), members_(members), tags_(tags),
         stringTable_(stringTable), context_(context), relation_()
     {
@@ -62,7 +62,7 @@ private:
     utymap::formats::RelationMembers& members_;
     const utymap::formats::Tags& tags_;
     utymap::index::StringTable& stringTable_;
-    utymap::formats::OsmDataContext context_;
+    utymap::formats::OsmDataContext& context_;
     std::shared_ptr<utymap::entities::Relation> relation_;
 
 };

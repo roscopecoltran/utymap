@@ -99,7 +99,7 @@ private:
 
 MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members,
                                              const Tags& tags, StringTable& stringTable,
-                                             OsmDataContext context) :
+                                             OsmDataContext& context) :
     id_(id), members_(members), tags_(tags), stringTable_(stringTable), context_(context)
 {
 }
