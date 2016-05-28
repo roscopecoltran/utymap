@@ -131,6 +131,8 @@ public:
         double minHeight = style.getValue(MinHeightKey, area.tags);
         double elevation = context_.eleProvider.getElevation(area.coordinates[0]) + minHeight;
 
+        height -= minHeight;
+
         // roof
         auto roofType = style.getString(RoofTypeKey);
         double roofHeight = style.getValue(RoofHeightKey, area.tags);
