@@ -18,7 +18,7 @@ namespace {
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
     const std::string OffsetKey = "offset";
-    const std::string MeshNamePrefix = "barrier";
+    const std::string MeshNamePrefix = "barrier:";
 }
 
 void BarrierBuilder::visitWay(const Way& way)
