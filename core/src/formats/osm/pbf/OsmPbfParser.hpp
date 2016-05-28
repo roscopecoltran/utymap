@@ -39,18 +39,14 @@ public:
     {
         finished_ = false;
 
-        while (!stream.eof() && !finished_)
-        {
+        while (!stream.eof() && !finished_) {
             OSMPBF::BlobHeader header = readHeader(stream);
-            if (!finished_)
-            {
+            if (!finished_) {
                 int32_t sz = readBlob(header, stream);
-                if (header.type() == "OSMData")
-                {
+                if (header.type() == "OSMData") {
                     parsePrimitiveBlock(sz, visitor);
                 }
-                else if (header.type() == "OSMHeader")
-                {
+                else if (header.type() == "OSMHeader") {
                     // used to be skipped
                 }
             }
@@ -69,8 +65,7 @@ private:
         OSMPBF::BlobHeader result;
 
         // read size of blob-header
-        if (!stream.read((char*)&sz, 4))
-        {
+        if (!stream.read((char*)&sz, 4)) {
             finished_ = true;
             return result;
         }
@@ -107,15 +102,13 @@ private:
             throw std::domain_error("Unable to parse blob");
 
         // uncompressed
-        if (blob.has_raw())
-        {
+        if (blob.has_raw()) {
             sz = blob.raw().size();
             memcpy(unpack_buffer_, buffer_, sz);
             return sz;
         }
 
-        if (blob.has_zlib_data())
-        {
+        if (blob.has_zlib_data()) {
             sz = blob.zlib_data().size();
 
             z_stream z;
@@ -152,13 +145,11 @@ private:
         if (!primblock.ParseFromArray(unpack_buffer_, sz))
             throw std::domain_error("Unable to parse primitive block");
 
-        for (int i = 0, l = primblock.primitivegroup_size(); i < l; i++)
-        {
+        for (int i = 0, l = primblock.primitivegroup_size(); i < l; i++) {
             OSMPBF::PrimitiveGroup pg = primblock.primitivegroup(i);
 
             // simple nodes
-            for (int i = 0; i < pg.nodes_size(); ++i)
-            {
+            for (int i = 0; i < pg.nodes_size(); ++i) {
                 OSMPBF::Node n = pg.nodes(i);
                 GeoCoordinate coordinate;
                 coordinate.latitude = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
@@ -170,8 +161,7 @@ private:
             }
 
             // dense nodes
-            if (pg.has_dense())
-            {
+            if (pg.has_dense()) {
                 OSMPBF::DenseNodes dn = pg.dense();
                 uint64_t id = 0;
                 double lon = 0;
@@ -179,16 +169,14 @@ private:
 
                 int current_kv = 0;
 
-                for (int i = 0; i < dn.id_size(); ++i)
-                {
+                for (int i = 0; i < dn.id_size(); ++i) {
                     id += dn.id(i);
                     lat += 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * dn.lat(i)));
                     lon += 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * dn.lon(i)));
 
                     Tags tags;
                     tags.reserve(2);
-                    while (current_kv < dn.keys_vals_size() && dn.keys_vals(current_kv) != 0)
-                    {
+                    while (current_kv < dn.keys_vals_size() && dn.keys_vals(current_kv) != 0) {
                         uint64_t key = dn.keys_vals(current_kv);
                         uint64_t val = dn.keys_vals(current_kv + 1);
                         Tag tag;
@@ -203,15 +191,13 @@ private:
                 }
             }
 
-            for (int i = 0; i < pg.ways_size(); ++i)
-            {
+            for (int i = 0; i < pg.ways_size(); ++i) {
                 OSMPBF::Way w = pg.ways(i);
 
                 uint64_t ref = 0;
                 std::vector<uint64_t> nodeIds;
                 nodeIds.reserve(w.refs_size());
-                for (int j = 0; j < w.refs_size(); ++j)
-                {
+                for (int j = 0; j < w.refs_size(); ++j) {
                     ref += w.refs(j);
                     nodeIds.push_back(ref);
                 }
@@ -221,13 +207,12 @@ private:
                 visitor.visitWay(id, nodeIds, tags);
             }
 
-            for (int i = 0; i < pg.relations_size(); ++i)
-            {
+            for (int i = 0; i < pg.relations_size(); ++i) {
                 OSMPBF::Relation rel = pg.relations(i);
                 uint64_t id = 0;
                 RelationMembers refs;
                 refs.reserve(rel.memids_size());
-                for (int l = 0; l < rel.memids_size(); ++l){
+                for (int l = 0; l < rel.memids_size(); ++l) {
                     id += rel.memids(l);
                     RelationMember member;
                     member.refId = id;
@@ -248,8 +233,7 @@ private:
     void setTags(T object, const OSMPBF::PrimitiveBlock& primblock, Tags& tags)
     {
         tags.reserve(object.keys_size());
-        for (int i = 0; i < object.keys_size(); ++i)
-        {
+        for (int i = 0; i < object.keys_size(); ++i) {
             Tag tag;
             uint64_t key = object.keys(i);
             uint64_t val = object.vals(i);
