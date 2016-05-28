@@ -29,7 +29,7 @@ public:
                                        0, // area
                                        0, // ele noise
                                        colorNoiseFreq_,
-                                       height_,
+                                       0,
                                        getColorGradient(),
                                        minHeight_
                                    });
