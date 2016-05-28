@@ -3,17 +3,17 @@ relation|z16[type=building] {
     builders: building;
 }
 
-area|z16[building],
-area|z16[building:levels],
-area|z16[building:shape],
-area|z16[building:part] {
+area,relation|z16[building],
+area,relation|z16[building:levels],
+area,relation|z16[building:shape],
+area,relation|z16[building:part] {
     clip: false;
     builders: building;
 
     height: 12m;
     min-height: 0m;
 
-    facade-color: gradient(blue);
+    facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     facade-type: flat;
 
     roof-color: gradient(red);
@@ -21,47 +21,47 @@ area|z16[building:part] {
     roof-height: 0m;
 }
 
-area|z16[building:levels] {
+area,relation|z16[building:levels] {
     height: eval("tag('building:levels') * 3.2");
     levels: eval("tag('building:levels')");
 }
 
-area|z16[height] {
+area,relation|z16[height] {
     height: eval("tag('height')");
 }
-area|z16[building:height] {
+area,relation|z16[building:height] {
     height: eval("tag('building:height')");
 }
-area|z16[building:height][roof:height] {
+area,relation|z16[building:height][roof:height] {
     height: eval("tag('building:height') - tag('roof:height')");
 }
 
-area|z16[building:min_height] {
+area,relation|z16[building:min_height] {
     min-height: eval("tag('building:min_height')");
 }
-area|z16[min_height] {
+area,relation|z16[min_height] {
     min-height: eval("tag('min_height')");
 }
 
-area|z16[roof:height] {
+area,relation|z16[roof:height] {
     roof-height: eval("tag('roof:height')");
 }
 
-area|z16[roof:shape=dome] {
+area,relation|z16[roof:shape=dome] {
     roof-type: dome;
 }
-area|z16[roof:shape=pyramidal] {
+area,relation|z16[roof:shape=pyramidal] {
     roof-type: pyramidal;
 }
-area|z16[roof:shape=mansard] {
+area,relation|z16[roof:shape=mansard] {
     roof-type: mansard;
 }
 
-area|z16[building:shape=cylinder] {
+area,relation|z16[building:shape=cylinder] {
     roof-type: none;
     facade-type: cylinder;
 }
-area|z16[building:shape=sphere] {
+area,relation|z16[building:shape=sphere] {
     roof-type: none;
     facade-type: sphere;
 }
