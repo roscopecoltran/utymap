@@ -143,7 +143,9 @@ void OsmDataVisitor::complete()
 {
     // All relations are visited can start to resolve them
     for (auto& membersPair : relationMembers_) {
-        resolve(*context_.relationMap[membersPair.first]);
+        auto relationPair = context_.relationMap.find(membersPair.first);
+        if (relationPair != context_.relationMap.end())
+            resolve(*relationPair->second);
     }
 
     for (const auto& pair : context_.relationMap) {
