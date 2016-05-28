@@ -52,7 +52,6 @@ namespace {
     };
 }
 
-
 void OsmDataVisitor::visitBounds(BoundingBox bbox)
 {
 }
@@ -96,13 +95,14 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
 void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, utymap::formats::Tags& tags)
 {
-    if (hasTag("type", "multipolygon", tags)) 
-        MultipolygonProcessor(id, members, tags, stringTable_, context_).process();
-    else if (hasTag("type", "building", tags))
-        BuildingProcessor(id, members, tags, stringTable_, context_).process();
-    else {
-        RelationProcessor(id, members, tags, stringTable_, context_).process();
-    }
+    std::shared_ptr<utymap::entities::Relation> relation(new utymap::entities::Relation());
+    relation->id = id;
+    relation->tags = utymap::utils::convertTags(stringTable_, tags);
+
+    // NOTE Assume, relation may refer to another relations which are not yet processed.
+    // So, store all relation members to resolve them once all relations are visited.
+    relationMembers_[id] = members;
+    context_.relationMap[id] = relation;
 }
 
 bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
@@ -116,17 +116,40 @@ bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
     return false;
 }
 
-bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags) const
+bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, const std::vector<utymap::entities::Tag>& tags) const
 {
-    for (const auto& tag : tags) {
-        if (tag.key == key && tag.value == value)
-            return true;
+    return utymap::utils::hasTag(stringTable_.getId(key), stringTable_.getId(value), tags);
+}
+
+void OsmDataVisitor::resolve(Relation& relation)
+{
+    auto membersPair = relationMembers_.find(relation.id);
+    // already resolved
+    if (relation.elements.size() == membersPair->second.size())
+        return;
+
+    auto resolveFunc = std::bind(&OsmDataVisitor::resolve, this, std::placeholders::_1);
+
+    if (hasTag("type", "multipolygon", relation.tags))
+        MultipolygonProcessor(relation, membersPair->second, context_, resolveFunc).process();
+    else if (hasTag("type", "building", relation.tags))
+        BuildingProcessor(relation, membersPair->second, context_, resolveFunc).process();
+    else {
+        RelationProcessor(relation, membersPair->second, context_, resolveFunc).process();
     }
-    return false;
 }
 
 void OsmDataVisitor::complete()
 {
+    // All relations are visited can start to resolve them
+    for (auto& membersPair : relationMembers_) {
+        resolve(*context_.relationMap[membersPair.first]);
+    }
+
+    for (const auto& pair : context_.relationMap) {
+        add_(*pair.second);
+    }
+
     for (const auto& pair : context_.nodeMap) {
         add_(*pair.second);
     }
@@ -138,13 +161,10 @@ void OsmDataVisitor::complete()
     for (const auto& pair : context_.areaMap) {
         add_(*pair.second);
     }
-
-    for (const auto& pair : context_.relationMap) {
-        add_(*pair.second);
-    }
+  
 }
 
-OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(utymap::entities::Element&)> add) :
-stringTable_(stringTable), add_(add), context_()
+OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(Element&)> add) 
+    : stringTable_(stringTable), add_(add), context_()
 {
 }

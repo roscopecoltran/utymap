@@ -38,11 +38,13 @@ public:
 private:
 
     bool isArea(const utymap::formats::Tags& tags) const;
-    bool hasTag(const std::string& key, const std::string& value, const utymap::formats::Tags& tags) const;
+    bool hasTag(const std::string& key, const std::string& value, const std::vector<utymap::entities::Tag>& tags) const;
+    void resolve(utymap::entities::Relation& relation);
     
     utymap::index::StringTable& stringTable_;
     std::function<bool(utymap::entities::Element&)> add_;
     utymap::formats::OsmDataContext context_;
+    std::unordered_map<std::uint64_t, utymap::formats::RelationMembers> relationMembers_;
 };
 
 }}

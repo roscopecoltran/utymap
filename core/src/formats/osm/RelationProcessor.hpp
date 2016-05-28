@@ -6,6 +6,7 @@
 #include "utils/ElementUtils.hpp"
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 
 namespace utymap { namespace formats {
@@ -14,57 +15,46 @@ class RelationProcessor
 {
 public:
 
-    RelationProcessor(std::uint64_t id,
-                      utymap::formats::RelationMembers& members,
-                      const utymap::formats::Tags& tags,
-                      utymap::index::StringTable& stringTable,
-                      utymap::formats::OsmDataContext& context)
-        : id_(id), members_(members), tags_(tags),
-        stringTable_(stringTable), context_(context), relation_()
+    RelationProcessor(utymap::entities::Relation& relation,
+                      const utymap::formats::RelationMembers& members,
+                      utymap::formats::OsmDataContext& context,
+                      std::function<void(utymap::entities::Relation&)> resolve)
+    : relation_(relation), members_(members), context_(context), resolve_(resolve)
     {
     }
 
     void process()
     {
-        relation_ = std::shared_ptr<utymap::entities::Relation>(new utymap::entities::Relation());
-        relation_->id = id_;
-        relation_->tags = utymap::utils::convertTags(stringTable_, tags_);
-        relation_->elements.reserve(members_.size());
-
         utymap::utils::visitRelationMembers(context_, members_, *this);
-
-        context_.relationMap[id_] = relation_;
     }
 
-    void visit(OsmDataContext::NodeMapType::const_iterator node) 
-    { 
-        relation_->elements.push_back(node->second); 
+    void visit(OsmDataContext::NodeMapType::const_iterator node)
+    {
+        relation_.elements.push_back(node->second);
     }
 
-    void visit(OsmDataContext::WayMapType::const_iterator way) 
-    { 
-        relation_->elements.push_back(way->second);
+    void visit(OsmDataContext::WayMapType::const_iterator way)
+    {
+        relation_.elements.push_back(way->second);
     }
 
-    void visit(OsmDataContext::AreaMapType::const_iterator area) 
-    { 
-        relation_->elements.push_back(area->second);
+    void visit(OsmDataContext::AreaMapType::const_iterator area)
+    {
+        relation_.elements.push_back(area->second);
     }
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
-    { 
-        relation_->elements.push_back(rel->second);
+    {
+        resolve_(*rel->second);
+        relation_.elements.push_back(rel->second);
     }
 
 private:
 
-    std::uint64_t id_;
-    utymap::formats::RelationMembers& members_;
-    const utymap::formats::Tags& tags_;
-    utymap::index::StringTable& stringTable_;
+    utymap::entities::Relation& relation_;
+    const utymap::formats::RelationMembers& members_;
     utymap::formats::OsmDataContext& context_;
-    std::shared_ptr<utymap::entities::Relation> relation_;
-
+    std::function<void(utymap::entities::Relation&)> resolve_;
 };
 
 }}

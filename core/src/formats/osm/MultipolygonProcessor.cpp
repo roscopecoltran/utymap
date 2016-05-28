@@ -96,27 +96,26 @@ private:
 };
 
 
-MultipolygonProcessor::MultipolygonProcessor(std::uint64_t id, RelationMembers& members,
-                                             const Tags& tags, StringTable& stringTable,
-                                             OsmDataContext& context) :
-    id_(id), members_(members), tags_(tags), stringTable_(stringTable), context_(context)
+MultipolygonProcessor::MultipolygonProcessor(Relation& relation,
+                                             const RelationMembers& members,
+                                             OsmDataContext& context,
+                                             std::function<void(Relation&)> resolve)
+    : relation_(relation), members_(members), context_(context), resolve_(resolve)
 {
 }
 
 // see http://wiki.openstreetmap.org/wiki/Relation:multipolygon/Algorithm
 void MultipolygonProcessor::process()
 {
-    std::shared_ptr<Relation> relation(new Relation());
-    relation->id = id_;
-
     bool allClosed = true;
 
     Ints outerIndecies;
     Ints innerIndecies;
     CoordinateSequences sequences;
-    for (const auto& member : members_)
-    {
-        if (member.type != "way") continue;
+    for (const auto& member : members_) {
+
+        if (member.type != "way") 
+            continue;
 
         Coordinates coordinates;
         ElementTags tags;
@@ -132,12 +131,16 @@ void MultipolygonProcessor::process()
                 tags = areaPair->second->tags;
             }
             else {
-                //  NOTE cannot fill relation: incomplete data
-                return;
+                auto relationPair = context_.relationMap.find(member.refId);
+                if (relationPair == context_.relationMap.end())
+                    return; //  NOTE cannot fill relation: incomplete data
+
+                resolve_(*relationPair->second);
             }
         }
 
-        if (coordinates.empty()) continue;
+        if (coordinates.empty()) 
+            continue;
 
         if (member.role == "outer")
             outerIndecies.push_back(sequences.size());
@@ -147,43 +150,31 @@ void MultipolygonProcessor::process()
             continue;
 
         // TODO what should be used as Id?
-        std::shared_ptr<CoordinateSequence> sequence(new CoordinateSequence(id_, coordinates, tags));
-        if (!sequence->isClosed()) allClosed = false;
+        std::shared_ptr<CoordinateSequence> sequence(new CoordinateSequence(relation_.id, coordinates, tags));
+        if (!sequence->isClosed()) 
+            allClosed = false;
+
         sequences.push_back(sequence);
     }
 
     if (outerIndecies.size() == 1 && allClosed)
-        simpleCase(*relation, sequences, outerIndecies, innerIndecies);
+        simpleCase(sequences, outerIndecies, innerIndecies);
     else
-        complexCase(*relation, sequences);
-
-    context_.relationMap[id_] = relation;
+        complexCase(sequences);
 }
 
-std::vector<utymap::entities::Tag> MultipolygonProcessor::getTags(const CoordinateSequence& outer) const
-{
-    // TODO investigate case of empty tags
-    auto tags = tags_.size() > 1 ? utymap::utils::convertTags(stringTable_, tags_) : outer.tags;
-    std::sort(tags.begin(), tags.end());
-    return std::move(tags);
-}
-
-void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSequences& sequences, const Ints& outerIndecies, const Ints& innerIndecies)
+void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, const Ints& outerIndecies, const Ints& innerIndecies)
 {
     // TODO set correct tags!
     auto outer = sequences[outerIndecies[0]];
 
-    // TODO investigate case of empty tags
-    relation.tags = getTags(*outer);
-    if (relation.tags.empty()) return;
-
     // outer
     std::shared_ptr<Area> outerArea(new Area());
     outerArea->id = outer->id;
-    outerArea->tags = relation.tags;
+    outerArea->tags = relation_.tags;
     insertCoordinates(outer->coordinates, outerArea->coordinates);
     
-    relation.elements.push_back(outerArea);
+    relation_.elements.push_back(outerArea);
 
     // inner
     for (int i : innerIndecies) {
@@ -191,16 +182,16 @@ void MultipolygonProcessor::simpleCase(Relation& relation, const CoordinateSeque
         std::shared_ptr<Area> innerArea(new Area());
         // TODO ensure hole orientation
         innerArea->coordinates.insert(innerArea->coordinates.end(), coords.rbegin(), coords.rend());
-        relation.elements.push_back(innerArea);
+        relation_.elements.push_back(innerArea);
     }
 }
 
-void MultipolygonProcessor::complexCase(Relation& relation, CoordinateSequences& sequences)
+void MultipolygonProcessor::complexCase(CoordinateSequences& sequences)
 {
     CoordinateSequences rings = createRings(sequences);
     if (rings.empty()) return;
 
-    fillRelation(relation, rings);
+    fillRelation(rings);
 }
 
 std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> MultipolygonProcessor::createRings(CoordinateSequences& sequences)
@@ -224,7 +215,8 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
                 break;
             }
 
-            if (!isFound) return CoordinateSequences();
+            if (!isFound) 
+                return CoordinateSequences();
         }
 
         // check whether the ring under construction is closed
@@ -238,7 +230,7 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
     return std::move(closedRings);
 }
 
-void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences& rings)
+void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
 {
     while (!rings.empty()) {
         // find an outer ring
@@ -277,23 +269,20 @@ void MultipolygonProcessor::fillRelation(Relation& relation, CoordinateSequences
             ++ring;
         }
 
-        relation.tags = getTags(*outer);
-        if (relation.tags.empty()) return;
-
         // outer
         std::shared_ptr<Area> outerArea(new Area());
         outerArea->id = outer->id;
-        outerArea->tags = relation.tags;
+        outerArea->tags = relation_.tags;
         insertCoordinates(outer->coordinates, outerArea->coordinates);
 
-        relation.elements.push_back(outerArea);
+        relation_.elements.push_back(outerArea);
 
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
             std::shared_ptr<Area> innerArea(new Area());
             // TODO ensure hole orientation
             innerArea->coordinates.insert(innerArea->coordinates.end(), innerRing->coordinates.rbegin(), innerRing->coordinates.rend());
-            relation.elements.push_back(innerArea);
+            relation_.elements.push_back(innerArea);
         }
     }
 }

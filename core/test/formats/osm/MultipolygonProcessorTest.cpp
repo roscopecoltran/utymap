@@ -9,6 +9,7 @@
 #include "test_utils/DependencyProvider.hpp"
 
 #include <cstdio>
+#include <functional>
 
 using namespace utymap;
 using namespace utymap::entities;
@@ -22,6 +23,14 @@ struct Formats_Osm_MultipolygonProcessorFixture
     {
     }
 
+    std::shared_ptr<Relation> createRelation()
+    {
+        std::shared_ptr<Relation> relation(new Relation());
+        relation->id = 0;
+        context.relationMap[0] = relation;
+        return relation;
+    }
+
     RelationMembers createRelationMembers(const std::initializer_list<std::tuple<std::uint64_t, std::string, std::string>>& membersInfo)
     {
         RelationMembers members;
@@ -30,6 +39,10 @@ struct Formats_Osm_MultipolygonProcessorFixture
             members.push_back(RelationMember{ std::get<0>(info), std::get<1>(info), std::get<2>(info) });
         }
         return std::move(members);
+    }
+
+    void resolve(Relation& relation)
+    {
     }
 
     DependencyProvider dependencyProvider;
@@ -44,12 +57,12 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
         std::make_tuple(1, "way", "outer"),
         std::make_tuple(2, "way", "inner")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.areaMap[1] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 0, 0 }, { 3, 5 }, {7, 3}, {8, -1}, {3, -4}, {0, 0} })));
     context.areaMap[2] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 2, 0 }, { 3, 2 }, { 5, 1 }, { 4, -1 }, { 2, 0 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 
@@ -71,15 +84,15 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrec
         std::make_tuple(2, "way", "inner"),
         std::make_tuple(3, "way", "inner"),
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.areaMap[1] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
     context.areaMap[2] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 }, { 2, 1 } })));
     context.areaMap[3] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
-
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
+    
     processor.process();
 
     auto relation = context.relationMap[0];
@@ -103,12 +116,12 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosed_WhenProcess_ThenReturnCorrectResult)
         std::make_tuple(1, "way", "outer"),
         std::make_tuple(2, "way", "outer")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {},
                     { { 0, 0 }, { 3, 5 }, { 7, 3 } })));
     context.wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {},
                     { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 
@@ -125,12 +138,12 @@ BOOST_AUTO_TEST_CASE(GivenTwoOuterClosed_WhenProcess_ThenReturnCorrectResult)
         std::make_tuple(1, "way", "outer"),
         std::make_tuple(2, "way", "outer")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.areaMap[1] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } })));
     context.areaMap[2] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 
@@ -148,7 +161,6 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
         std::make_tuple(3, "way", "inner"),
         std::make_tuple(4, "way", "inner")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {},
                     { { 0, 0 }, { 3, 5 }, { 7, 3 } })));
     context.wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {},
@@ -157,7 +169,8 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
                     { { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 }, { 2, 1 } })));
     context.areaMap[4] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
                     { { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 
@@ -207,7 +220,6 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
 
         std::make_tuple(20, "way", "outer")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {}, { { 1, 5 }, { 8, 4 } })));
     context.wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {}, { { 8, 4 }, { 9, -1 } })));
     context.wayMap[3] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {}, { { 9, -1 }, { 8, -6 }, { 2, -5 } })));
@@ -232,7 +244,8 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
     context.wayMap[19] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), {}, { { 12, 2 }, { 11, 4 } })));
 
     context.areaMap[20] = std::shared_ptr<Area>(new Area(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, { { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 
@@ -249,7 +262,6 @@ BOOST_AUTO_TEST_CASE(GivenSpecificFourOuter_WhenProcess_ThenDoesNotCrash)
         std::make_tuple(3, "way", "outer"),
         std::make_tuple(4, "way", "outer")
     });
-    Tags tags = { utymap::formats::Tag{ "type", "multipolygon" }, utymap::formats::Tag{ "tag", "tags" } };
     context.wayMap[1] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
     {}, { { 55.754873400000001, 37.620234000000004 }, { 55.754922700000002, 37.620224499999999 } })));
     context.wayMap[2] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
@@ -258,7 +270,9 @@ BOOST_AUTO_TEST_CASE(GivenSpecificFourOuter_WhenProcess_ThenDoesNotCrash)
     {}, { { 55.754846999999998, 37.620192099999997 }, { 55.754846100000002, 37.620103100000001 } })));
     context.wayMap[4] = std::shared_ptr<Way>(new Way(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
     {}, { { 55.754846100000002, 37.620103100000001 }, { 55.754922700000002, 37.620224499999999 } })));
-    MultipolygonProcessor processor(0, relationMembers, tags, *dependencyProvider.getStringTable(), context);
+
+    MultipolygonProcessor processor(*createRelation(), relationMembers, context,
+        std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
     processor.process();
 

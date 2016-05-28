@@ -14,8 +14,8 @@ namespace utymap { namespace utils {
 
 // Sets tags to element.
 inline void setTags(utymap::index::StringTable& stringTable,
-             utymap::entities::Element& element,
-             const utymap::formats::Tags& tags)
+                    utymap::entities::Element& element,
+                    const utymap::formats::Tags& tags)
 {
     for (const auto& tag : tags) {
         std::uint32_t key = stringTable.getId(tag.key);
@@ -28,13 +28,37 @@ inline void setTags(utymap::index::StringTable& stringTable,
 }
 
 // Convert format specific tags to entity ones.
-inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable& stringTable, const utymap::formats::Tags& tags)
+inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable& stringTable, 
+                                                      const utymap::formats::Tags& tags)
 {
     std::vector<utymap::entities::Tag> convertedTags(tags.size());
     std::transform(tags.begin(), tags.end(), convertedTags.begin(), [&](const utymap::formats::Tag& tag) {
         return utymap::entities::Tag(stringTable.getId(tag.key), stringTable.getId(tag.value));
     });
+
+    std::sort(convertedTags.begin(), convertedTags.end());
+
     return std::move(convertedTags);
+}
+
+inline bool hasTag(std::uint32_t key,
+                   std::uint32_t value,
+                   const std::vector<utymap::entities::Tag>& tags)
+{
+    auto begin = tags.begin();
+    auto end = tags.end();
+
+    while (begin < end)
+    {
+        const auto middle = begin + (std::distance(begin, end) / 2);
+        if (middle->key == key)
+            return middle->value == value;
+        else if (middle->key > key)
+            end = middle;
+        else
+            begin = middle + 1;
+    }
+    return false;
 }
 
 // Gets mesh name
