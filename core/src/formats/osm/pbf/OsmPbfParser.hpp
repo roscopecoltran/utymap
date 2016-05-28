@@ -216,8 +216,8 @@ private:
                     id += rel.memids(l);
                     RelationMember member;
                     member.refId = id;
+                    member.type = parseType(rel, l);
                     member.role = primblock.stringtable().s(rel.roles_sid(l));
-                    member.type = rel.types(l);
                     refs.push_back(member);
                 }
 
@@ -226,6 +226,19 @@ private:
                 setTags(rel, primblock, tags);
                 visitor.visitRelation(rel_id, refs, tags);
             }
+        }
+    }
+
+    inline std::string parseType(OSMPBF::Relation& rel, int index)
+    {
+        switch (rel.types(index)) {
+        case OSMPBF::Relation::NODE:
+            return "node";
+        case OSMPBF::Relation::WAY:
+            return "way";
+        case OSMPBF::Relation::RELATION:
+        default:
+            return "relation";
         }
     }
 
