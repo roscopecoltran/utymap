@@ -114,6 +114,7 @@ public:
                 std::ifstream pbfFile(path, std::ios::in | std::ios::binary);
                 OsmDataVisitor visitor(stringTable_, functor);
                 parser.parse(pbfFile, visitor);
+                visitor.complete();
                 break;
             }
             default:
