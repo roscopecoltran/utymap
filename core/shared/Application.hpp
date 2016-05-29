@@ -239,10 +239,13 @@ public:
             QuadKeyElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
             quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
-                meshCallback(mesh.name.data(),
-                    mesh.vertices.data(), mesh.vertices.size(),
-                    mesh.triangles.data(), mesh.triangles.size(),
-                    mesh.colors.data(), mesh.colors.size());
+                // NOTE do not notify if mesh is empty.
+                if (!mesh.vertices.empty()) {
+                    meshCallback(mesh.name.data(),
+                        mesh.vertices.data(), mesh.vertices.size(),
+                        mesh.triangles.data(), mesh.triangles.size(),
+                        mesh.colors.data(), mesh.colors.size());
+                }
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);
             });
