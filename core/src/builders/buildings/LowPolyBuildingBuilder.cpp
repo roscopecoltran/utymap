@@ -18,6 +18,7 @@
 
 using namespace utymap;
 using namespace utymap::builders;
+using namespace utymap::entities;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
@@ -31,6 +32,9 @@ namespace {
 
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
+    
+    const std::string BuilderKey = "builders";
+    const std::string BuilderName = "building";
 
     const std::string MeshNamePrefix = "building:";
 
@@ -121,6 +125,10 @@ public:
         bool justCreated = ensureMesh(area);
 
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
+
+        // We're processing relation and this is not a building part.
+        if (!justCreated && !isBuilding(style))
+            return;
          
         MeshContext meshContext(*mesh_, style);
 
@@ -184,7 +192,7 @@ private:
         return std::move(points);
     }
 
-    inline bool ensureMesh(const utymap::entities::Element& element)
+    inline bool ensureMesh(const Element& element)
     {
         if (mesh_ == nullptr) {
             mesh_ = std::shared_ptr<Mesh>(new Mesh(utymap::utils::getMeshName(MeshNamePrefix, element)));
@@ -203,22 +211,26 @@ private:
         }
     }
 
+    inline bool isBuilding(const Style& style)
+    {
+        return style.getString(BuilderKey, "")->find(BuilderName) != std::string::npos;
+    }
+
     std::shared_ptr<Mesh> mesh_;
 };
 
-LowPolyBuildingBuilder::LowPolyBuildingBuilder(const utymap::builders::BuilderContext& context) :
-    utymap::builders::ElementBuilder(context),
-    pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(context))
+LowPolyBuildingBuilder::LowPolyBuildingBuilder(const BuilderContext& context) 
+    : ElementBuilder(context), pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(context))
 {
 }
 
 LowPolyBuildingBuilder::~LowPolyBuildingBuilder() { }
 
-void LowPolyBuildingBuilder::visitNode(const utymap::entities::Node&) { }
+void LowPolyBuildingBuilder::visitNode(const Node&) { }
 
-void LowPolyBuildingBuilder::visitWay(const utymap::entities::Way&) { }
+void LowPolyBuildingBuilder::visitWay(const Way&) { }
 
-void LowPolyBuildingBuilder::visitArea(const utymap::entities::Area& area)
+void LowPolyBuildingBuilder::visitArea(const Area& area)
 {
     area.accept(*pimpl_);
 }
