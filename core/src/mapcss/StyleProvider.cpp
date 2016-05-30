@@ -11,10 +11,14 @@ using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
+namespace {
+
+const std::string GradientPrefix = "gradient(";
+
 // Contains operation types supported by mapcss parser.
 enum OpType { Exists, Equals, NotEquals };
 
-struct Condition
+struct ConditionType
 {
     uint32_t key;
     uint32_t value;
@@ -23,7 +27,7 @@ struct Condition
 
 struct Filter
 {
-    std::vector<::Condition> conditions;
+    std::vector<ConditionType> conditions;
     std::unordered_map<uint32_t, Style::value_type> declarations;
 };
 
@@ -45,12 +49,11 @@ class StyleBuilder : public ElementVisitor
 public:
 
     StyleBuilder(StringTable& stringTable, const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
-        filters_(filters),
-        levelOfDetails_(levelOfDetails),
-        onlyCheck_(onlyCheck),
-        canBuild_(false),
-        style_(stringTable)
-    {
+            filters_(filters),
+            levelOfDetails_(levelOfDetails),
+            onlyCheck_(onlyCheck),
+            canBuild_(false),
+            style_(stringTable) {
     }
 
     void visitNode(const Node& node) { checkOrBuild(node.tags, filters_.nodes); }
@@ -82,22 +85,23 @@ private:
     }
 
     // checks tag's value assuming that the key is already checked.
-    inline bool match_tag(const Tag& tag, const ::Condition& condition)
+    inline bool match_tag(const Tag& tag, const ConditionType& condition)
     {
-        switch (condition.type)
-        {
-            case OpType::Exists: return true;
-            case OpType::Equals: return tag.value == condition.value;
-            case OpType::NotEquals: return tag.value != condition.value;
+        switch (condition.type) {
+            case OpType::Exists:
+                return true;
+            case OpType::Equals:
+                return tag.value == condition.value;
+            case OpType::NotEquals:
+                return tag.value != condition.value;
         }
         return false;
     }
 
     // tries to find tag which satisfy condition using binary search.
-    bool match_tags(TagIterator begin, TagIterator end, const ::Condition& condition)
+    bool match_tags(TagIterator begin, TagIterator end, const ConditionType& condition)
     {
-        while (begin < end)
-        {
+        while (begin < end) {
             const TagIterator middle = begin + (std::distance(begin, end) / 2);
             if (middle->key == condition.key)
                 return match_tag(*middle, condition);
@@ -114,7 +118,7 @@ private:
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
         if (iter != filters.end()) {
-            for (const Filter &filter : iter->second) {
+            for (const Filter& filter : iter->second) {
                 bool isMatched = true;
                 for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
                     isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
@@ -122,7 +126,7 @@ private:
                 // merge declarations to style
                 if (isMatched) {
                     canBuild_ = true;
-                    for (const auto &d : filter.declarations) {
+                    for (const auto& d : filter.declarations) {
                         style_.put(d.second);
                     }
                 }
@@ -148,12 +152,14 @@ private:
         }
     }
 
-    const FilterCollection& filters_;
+    const FilterCollection &filters_;
     int levelOfDetails_;
     bool onlyCheck_;
     bool canBuild_;
     Style style_;
 };
+
+}
 
 // Converts mapcss stylesheet to index optimized representation to speed search query up.
 class StyleProvider::StyleProviderImpl
@@ -162,11 +168,12 @@ public:
 
     FilterCollection filters;
     StringTable& stringTable;
+    std::unordered_map<std::string, ColorGradient> gradients;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         stringTable(stringTable),
         filters(),
-        gradients_()
+        gradients()
     {
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
@@ -188,8 +195,8 @@ public:
 
                     Filter filter = Filter();
                     filter.conditions.reserve(selector.conditions.size());
-                    for (const utymap::mapcss::Condition& condition : selector.conditions) {
-                        ::Condition c;
+                    for (const Condition& condition : selector.conditions) {
+                        ConditionType c;
                         if (condition.operation == "") c.type = OpType::Exists;
                         else if (condition.operation == "=") c.type = OpType::Equals;
                         else if (condition.operation == "!=") c.type = OpType::NotEquals;
@@ -205,12 +212,15 @@ public:
                     for (auto i = 0; i < rule.declarations.size(); ++i) {
                         Declaration declaration = rule.declarations[i];
                         uint32_t key = stringTable.getId(declaration.key);
-                        filter.declarations[key] = Style::value_type(
-                            new utymap::mapcss::StyleDeclaration(key, declaration.value));
+
+                        if (isGradient(declaration.value))
+                            addGradient(declaration.value);
+
+                        filter.declarations[key] = Style::value_type(new StyleDeclaration(key, declaration.value));
                     }
 
                     std::sort(filter.conditions.begin(), filter.conditions.end(),
-                        [](const ::Condition& c1, const ::Condition& c2) { return c1.key > c2.key; });
+                        [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
                     for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
                         (*filtersPtr)[i].push_back(filter);
                     }
@@ -219,18 +229,27 @@ public:
         }
     }
 
-    const ColorGradient& getGradient(const std::string& key)
+    inline bool isGradient(const std::string& key)
     {
-        // TODO make thread safe
-        if (gradients_.find(key) == gradients_.end()) {
-            gradients_[key] = utymap::utils::GradientUtils::parseGradient(key);
-        }
-
-        return gradients_[key];
+        return GradientPrefix.length() <= key.length() &&
+               std::equal(GradientPrefix.begin(), GradientPrefix.end(), key.begin());
     }
 
-private:
-    std::unordered_map<std::string, ColorGradient> gradients_;
+    inline void addGradient(const std::string& key)
+    {
+        if (gradients.find(key) == gradients.end())
+            gradients[key] = utymap::utils::GradientUtils::parseGradient(key);
+    }
+
+    inline const ColorGradient& getGradient(const std::string& key)
+    {
+        if (gradients.find(key) == gradients.end()) {
+            throw MapCssException("Cannot find gradient: " + key);
+        }
+
+        return gradients[key];
+    }
+
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
