@@ -37,22 +37,22 @@ public:
 
     void visitNode(const utymap::entities::Node& node)
     {
-        elementsMap_[currentQuadKey].push_back(std::shared_ptr<Node>(new Node(node)));
+        elementsMap_[currentQuadKey].push_back(std::make_shared<Node>(node));
     }
 
     void visitWay(const utymap::entities::Way& way)
     {
-        elementsMap_[currentQuadKey].push_back(std::shared_ptr<Way>(new Way(way)));
+        elementsMap_[currentQuadKey].push_back(std::make_shared<Way>(way));
     }
 
     void visitArea(const utymap::entities::Area& area)
     {
-        elementsMap_[currentQuadKey].push_back(std::shared_ptr<Area>(new Area(area)));
+        elementsMap_[currentQuadKey].push_back(std::make_shared<Area>(area));
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
     {
-        elementsMap_[currentQuadKey].push_back(std::shared_ptr<Relation>(new Relation(relation)));
+        elementsMap_[currentQuadKey].push_back(std::make_shared<Relation>(relation));
     }
 
     ElementMap::const_iterator begin()

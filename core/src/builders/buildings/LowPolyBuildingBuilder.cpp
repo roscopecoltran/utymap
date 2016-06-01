@@ -38,44 +38,45 @@ namespace {
 
     const std::string MeshNamePrefix = "building:";
 
+    // Defines roof builder which does nothing.
+    class EmptyRoofBuilder : public RoofBuilder {
+    public:
+        EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc)
+            : RoofBuilder(bc, mc) { }
+        void build(utymap::meshing::Polygon&) {}
+    };
+
     typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
     std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
     {
         {
             "none",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                class EmptyRoofBuilder : public RoofBuilder {
-                public:
-                    EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc) 
-                        : RoofBuilder(bc, mc) { }
-                    void build(utymap::meshing::Polygon&) {}
-                };
-
-                return std::shared_ptr<RoofBuilder>(new EmptyRoofBuilder(builderContext, meshContext));
+                return std::make_shared<EmptyRoofBuilder>(builderContext, meshContext);
             }
         },
         { 
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<RoofBuilder>(new FlatRoofBuilder(builderContext, meshContext));
+                return std::make_shared<FlatRoofBuilder>(builderContext, meshContext);
             } 
         },
         {
             "dome",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<RoofBuilder>(new DomeRoofBuilder(builderContext, meshContext));
+                return std::make_shared<DomeRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "pyramidal",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<RoofBuilder>(new PyramidalRoofBuilder(builderContext, meshContext));
+                return std::make_shared<PyramidalRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "mansard",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<RoofBuilder>(new MansardRoofBuilder(builderContext, meshContext));
+                return std::make_shared<MansardRoofBuilder>(builderContext, meshContext);
             }
         }
     };
@@ -86,20 +87,20 @@ namespace {
         {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-              return std::shared_ptr<FacadeBuilder>(new FlatFacadeBuilder(builderContext, meshContext));
+                return std::make_shared<FlatFacadeBuilder>(builderContext, meshContext);
             }
         },
         {
             "cylinder",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<FacadeBuilder>(new CylinderFacadeBuilder(builderContext, meshContext));
+                return std::make_shared<CylinderFacadeBuilder>(builderContext, meshContext);
             }
         },
         {
             "sphere",
 
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::shared_ptr<FacadeBuilder>(new SphereFacadeBuilder(builderContext, meshContext));
+                return std::make_shared<SphereFacadeBuilder>(builderContext, meshContext);
             }
         }
 
@@ -195,7 +196,7 @@ private:
     inline bool ensureMesh(const Element& element)
     {
         if (mesh_ == nullptr) {
-            mesh_ = std::shared_ptr<Mesh>(new Mesh(utymap::utils::getMeshName(MeshNamePrefix, element)));
+            mesh_ = std::make_shared<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
             return true;
         }
 

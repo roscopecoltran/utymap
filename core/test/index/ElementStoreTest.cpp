@@ -232,8 +232,8 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_AreaIsReturnedWith
     { { 10, 5 }, { 15, 5 }, { 15, -5 }, { 10, -5 } });
     Relation relation;
     relation.tags = std::vector<Tag>{ ElementUtils::createTag(*dependencyProvider.getStringTable(), "test", "Foo") };
-    relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
-    relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
+    relation.elements.push_back(std::make_shared<Area>(inner));
+    relation.elements.push_back(std::make_shared<Area>(outer));
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
@@ -265,8 +265,8 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
     { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
     Relation relation;
     relation.tags = std::vector<Tag>{ ElementUtils::createTag(*dependencyProvider.getStringTable(), "test", "Foo") };
-    relation.elements.push_back(std::shared_ptr<Area>(new Area(inner)));
-    relation.elements.push_back(std::shared_ptr<Area>(new Area(outer)));
+    relation.elements.push_back(std::make_shared<Area>(inner));
+    relation.elements.push_back(std::make_shared<Area>(outer));
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {

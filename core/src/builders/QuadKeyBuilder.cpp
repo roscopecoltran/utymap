@@ -85,7 +85,7 @@ private:
         auto factory = builderFactoryMap_.find(name);
         if (factory == builderFactoryMap_.end()) {
             // use external builder by default
-            auto externalBuilder = std::shared_ptr<ElementBuilder>(new ExternalBuilder(context_));
+            auto externalBuilder = std::make_shared<ExternalBuilder>(context_);
             builders_[name] = externalBuilder;
             return *externalBuilder;
         }

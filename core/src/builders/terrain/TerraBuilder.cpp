@@ -136,8 +136,7 @@ public:
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
             region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
             if (!region.isLayer)
-                region.context = std::shared_ptr<TerraGenerator::RegionContext>(
-                    new TerraGenerator::RegionContext(generator_.createRegionContext(style, "")));
+                region.context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
             std::string type = region.isLayer 
                 ? *style.getString(TerrainLayerKey)
@@ -167,8 +166,7 @@ private:
 
         region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region.isLayer)
-            region.context = std::shared_ptr<TerraGenerator::RegionContext>(
-                new TerraGenerator::RegionContext(generator_.createRegionContext(style, "")));
+            region.context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
         return std::move(region);
     }

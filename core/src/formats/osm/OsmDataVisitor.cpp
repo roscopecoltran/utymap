@@ -58,7 +58,7 @@ void OsmDataVisitor::visitBounds(BoundingBox bbox)
 
 void OsmDataVisitor::visitNode(std::uint64_t id, GeoCoordinate& coordinate, utymap::formats::Tags& tags)
 {
-    std::shared_ptr<Node> node(new Node());
+    auto node = std::make_shared<Node>();
     node->id = id;
     node->coordinate = coordinate;
     utymap::utils::setTags(stringTable_, *node, tags);
@@ -75,7 +75,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
     if (coordinates.size() > 2 && isArea(tags)) {
         coordinates.pop_back();
-        std::shared_ptr<Area> area(new Area());
+        auto area = std::make_shared<Area>();
         area->id = id;
         if (!utymap::utils::isClockwise(coordinates)) {
             std::reverse(coordinates.begin(), coordinates.end());
@@ -85,7 +85,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
         context_.areaMap[id] = area;
 
     } else {
-        std::shared_ptr<Way> way(new Way());
+        auto way = std::make_shared<Way>();
         way->id = id;
         way->coordinates = std::move(coordinates);
         utymap::utils::setTags(stringTable_, *way, tags);
@@ -95,7 +95,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
 void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, utymap::formats::Tags& tags)
 {
-    std::shared_ptr<utymap::entities::Relation> relation(new utymap::entities::Relation());
+    auto relation = std::make_shared<Relation>();
     relation->id = id;
     relation->tags = utymap::utils::convertTags(stringTable_, tags);
 

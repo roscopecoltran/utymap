@@ -34,9 +34,9 @@ struct Builders_Buildings_RoofBuildersFixture
     {
         builderContext = dependencyProvider.createBuilderContext(QuadKey(16, 1, 0), stylesheet);
         Area building = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), { { "building", "yes" } }, {});
-        style = std::shared_ptr<Style>(new Style(dependencyProvider.getStyleProvider(stylesheet)->forElement(building, 16)));
-        mesh = std::shared_ptr<Mesh>(new Mesh(""));
-        meshContext = std::shared_ptr<MeshContext>(new MeshContext(*mesh, *style));
+        style = std::make_shared<Style>(dependencyProvider.getStyleProvider(stylesheet)->forElement(building, 16));
+        mesh = std::make_shared<Mesh>("");
+        meshContext = std::make_shared<MeshContext>(*mesh, *style);
 
         return T(*builderContext, *meshContext);
     }

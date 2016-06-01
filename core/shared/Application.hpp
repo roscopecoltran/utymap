@@ -143,11 +143,11 @@ public:
         stringTable_(stringPath), geoStore_(stringTable_), srtmEleProvider_(elePath), flatEleProvider_(),
         quadKeyBuilder_(geoStore_, stringTable_)
     {
-        geoStore_.registerStore(InMemoryStorageKey, std::shared_ptr<utymap::index::InMemoryElementStore>(
-            new utymap::index::InMemoryElementStore(stringTable_)));
+        geoStore_.registerStore(InMemoryStorageKey, 
+            std::make_shared<utymap::index::InMemoryElementStore>(stringTable_));
         
-        geoStore_.registerStore(PersistentStorageKey, std::shared_ptr<utymap::index::PersistentElementStore>(
-            new utymap::index::PersistentElementStore(dataPath, stringTable_)));
+        geoStore_.registerStore(PersistentStorageKey, 
+            std::make_shared<utymap::index::PersistentElementStore>(dataPath, stringTable_));
 
         registerDefaultBuilders();
     }
@@ -276,27 +276,26 @@ private:
         std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
         utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        styleProviders_[filePath] = std::shared_ptr<utymap::mapcss::StyleProvider>(
-            new utymap::mapcss::StyleProvider(stylesheet, stringTable_));
+        styleProviders_[filePath] = std::make_shared<utymap::mapcss::StyleProvider>(stylesheet, stringTable_);
         return styleProviders_[filePath];
     }
 
     void registerDefaultBuilders()
     {
         quadKeyBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::TerraBuilder(context));
+            return std::make_shared<utymap::builders::TerraBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::LowPolyBuildingBuilder(context));
+            return std::make_shared<utymap::builders::LowPolyBuildingBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("tree", [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::TreeBuilder(context));
+            return std::make_shared<utymap::builders::TreeBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("barrier", [&](const utymap::builders::BuilderContext& context) {
-            return std::shared_ptr<utymap::builders::ElementBuilder>(new utymap::builders::BarrierBuilder(context));
+            return std::make_shared<utymap::builders::BarrierBuilder>(context);
         });
     }
 

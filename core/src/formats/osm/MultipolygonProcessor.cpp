@@ -150,7 +150,7 @@ void MultipolygonProcessor::process()
             continue;
 
         // TODO what should be used as Id?
-        std::shared_ptr<CoordinateSequence> sequence(new CoordinateSequence(relation_.id, coordinates, tags));
+        auto sequence = std::make_shared<CoordinateSequence>(relation_.id, coordinates, tags);
         if (!sequence->isClosed()) 
             allClosed = false;
 
@@ -169,7 +169,7 @@ void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, con
     auto outer = sequences[outerIndecies[0]];
 
     // outer
-    std::shared_ptr<Area> outerArea(new Area());
+    auto outerArea = std::make_shared<Area>();
     outerArea->id = outer->id;
     outerArea->tags = relation_.tags;
     insertCoordinates(outer->coordinates, outerArea->coordinates);
@@ -179,7 +179,7 @@ void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, con
     // inner
     for (int i : innerIndecies) {
         auto coords = sequences[i]->coordinates;
-        std::shared_ptr<Area> innerArea(new Area());
+        auto innerArea = std::make_shared<Area>();
         // TODO ensure hole orientation
         innerArea->coordinates.insert(innerArea->coordinates.end(), coords.rbegin(), coords.rend());
         relation_.elements.push_back(innerArea);
@@ -222,7 +222,7 @@ std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> Multipol
         // check whether the ring under construction is closed
         if (currentRing != nullptr && currentRing->isClosed()) {
             // TODO check that it isn't self-intersecting!
-            closedRings.push_back(std::shared_ptr<CoordinateSequence>(new CoordinateSequence(*currentRing)));
+            closedRings.push_back(std::make_shared<CoordinateSequence>(*currentRing));
             currentRing = nullptr;
         }
     }
@@ -270,7 +270,7 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
         }
 
         // outer
-        std::shared_ptr<Area> outerArea(new Area());
+        auto outerArea = std::make_shared<Area>();
         outerArea->id = outer->id;
         outerArea->tags = relation_.tags;
         insertCoordinates(outer->coordinates, outerArea->coordinates);
@@ -279,7 +279,7 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
 
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
-            std::shared_ptr<Area> innerArea(new Area());
+            auto innerArea = std::make_shared<Area>();
             // TODO ensure hole orientation
             innerArea->coordinates.insert(innerArea->coordinates.end(), innerRing->coordinates.rbegin(), innerRing->coordinates.rend());
             relation_.elements.push_back(innerArea);

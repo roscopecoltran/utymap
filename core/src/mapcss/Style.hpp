@@ -67,7 +67,7 @@ struct Style
         key_type keyId = stringTable_.getId(key);
         return has(keyId)
             ? get(keyId)->value()
-            : std::shared_ptr<std::string>(new std::string(defaultValue));
+            : std::make_shared<std::string>(defaultValue);
     }
 
     // Gets double value. Evaluate if necessary.

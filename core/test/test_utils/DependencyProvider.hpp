@@ -26,7 +26,7 @@ public:
     std::shared_ptr<utymap::index::StringTable> getStringTable()
     {
         if (stringTable_ == nullptr) {
-            stringTable_ = std::shared_ptr<utymap::index::StringTable>(new utymap::index::StringTable(""));
+            stringTable_ = std::make_shared<utymap::index::StringTable>("");
         }
         return stringTable_;
     }
@@ -34,8 +34,7 @@ public:
     std::shared_ptr<utymap::heightmap::FlatElevationProvider> getElevationProvider()
     {
         if (eleProvider_ == nullptr) {
-            eleProvider_ = std::shared_ptr<utymap::heightmap::FlatElevationProvider>(
-                new utymap::heightmap::FlatElevationProvider());
+            eleProvider_ = std::make_shared<utymap::heightmap::FlatElevationProvider>();
         }
         return eleProvider_;
     }
@@ -44,8 +43,7 @@ public:
     {
         if (styleProvider_ == nullptr) {
             utymap::mapcss::MapCssParser parser;
-            styleProvider_ = std::shared_ptr<utymap::mapcss::StyleProvider>(
-                new utymap::mapcss::StyleProvider(parser.parse(stylesheetStr), *getStringTable()));
+            styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(parser.parse(stylesheetStr), *getStringTable());
         }
         return styleProvider_;
     }
@@ -56,13 +54,12 @@ public:
         std::function<void(const utymap::meshing::Mesh&)> meshCallback = nullptr,
         std::function<void(const utymap::entities::Element&)> elementCallback = nullptr)
     {
-        return std::shared_ptr<utymap::builders::BuilderContext>(
-            new utymap::builders::BuilderContext(quadKey,
-                                                 *getStyleProvider(stylesheet),
-                                                 *getStringTable(),
-                                                 *getElevationProvider(),
-                                                 meshCallback,
-                                                 elementCallback));
+        return std::make_shared<utymap::builders::BuilderContext>(quadKey,
+                                                                 *getStyleProvider(stylesheet),
+                                                                 *getStringTable(),
+                                                                 *getElevationProvider(),
+                                                                 meshCallback,
+                                                                 elementCallback);
     }
 
 private:

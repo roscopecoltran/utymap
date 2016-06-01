@@ -73,19 +73,19 @@ struct ShapeDataVisitor
         utymap::utils::setTags(stringTable_, relation, tags);
         for (const auto& member : members) {
             if (member.coordinates.size() == 1) {
-                std::shared_ptr<utymap::entities::Node> node(new utymap::entities::Node());
+                auto node = std::make_shared<utymap::entities::Node>();
                 node->id = 0;
                 node->coordinate = member.coordinates[0];
                 relation.elements.push_back(node);
             }
             else if (member.isRing) {
-                std::shared_ptr<utymap::entities::Area> area(new utymap::entities::Area());
+                auto area = std::make_shared<utymap::entities::Area>();
                 area->id = 0;
                 area->coordinates = std::move(member.coordinates);
                 relation.elements.push_back(area);
             }
             else {
-                std::shared_ptr<utymap::entities::Way> way(new utymap::entities::Way());
+                auto way = std::make_shared<utymap::entities::Way>();
                 way->id = 0;
                 way->coordinates = std::move(member.coordinates);
                 relation.elements.push_back(way);

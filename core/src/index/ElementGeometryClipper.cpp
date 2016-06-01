@@ -88,7 +88,7 @@ void ElementGeometryClipper::visitWay(const Way& way)
         relation.elements.reserve(count);
         ClipperLib::PolyNode* polyNode = solution.GetFirst();
         while (polyNode) {
-            std::shared_ptr<Way> clippedWay(new Way());
+            auto clippedWay = std::make_shared<Way>();
             clippedWay->id = way.id;
             setCoordinates(*clippedWay, polyNode->Contour);
             relation.elements.push_back(clippedWay);
@@ -136,7 +136,7 @@ void ElementGeometryClipper::visitArea(const Area& area)
         relation.tags = area.tags;
         relation.elements.reserve(solution.size());
         for (auto it = solution.begin(); it != solution.end(); ++it) {
-            std::shared_ptr<Area> clippedArea(new Area());
+            auto clippedArea = std::make_shared<Area> ();
             clippedArea->id = area.id;
             setCoordinates(*clippedArea, *it);
             relation.elements.push_back(clippedArea);
@@ -157,7 +157,7 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
         void visitNode(const Node& node)
         {
             if (bbox_.contains(node.coordinate)) {
-                data.elements.push_back(std::shared_ptr<Node>(new Node(node)));
+                data.elements.push_back(std::make_shared<Node>(node));
             }
         }
 
@@ -222,12 +222,12 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
         ClipperLib::PolyNode* polyNode = solution.GetFirst();
         while (polyNode) {
             if (polyNode->IsOpen()) {
-                std::shared_ptr<Way> way(new Way());
+                auto way = std::make_shared<Way>();
                 setCoordinates(*way, polyNode->Contour);
                 newRelation.elements.push_back(way);
             }
             else {
-                std::shared_ptr<Area> area(new Area());
+                auto area = std::make_shared<Area>();
                 setCoordinates(*area, polyNode->Contour);
                 newRelation.elements.push_back(area);
             }

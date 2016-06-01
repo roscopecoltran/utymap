@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(GivenBboxAtLodOne_WhenVisitTileRange_VisitsOneTile)
 
     GeoUtils::visitTileRange(bbox, 1, [&](const QuadKey& quadKey, const BoundingBox&) {
         count++;
-        lastQuadKey = std::shared_ptr<QuadKey>(new QuadKey(quadKey));
+        lastQuadKey = std::make_shared<QuadKey>(quadKey);
     });
 
     BOOST_CHECK_EQUAL(1, count);

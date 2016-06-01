@@ -26,7 +26,7 @@ struct Formats_Osm_MultipolygonProcessorFixture
 
     std::shared_ptr<Relation> createRelation()
     {
-        std::shared_ptr<Relation> relation(new Relation());
+        auto relation = std::make_shared<Relation>();
         relation->id = 0;
         context.relationMap[0] = relation;
         return relation;
@@ -61,7 +61,7 @@ struct Formats_Osm_MultipolygonProcessorFixture
     template<typename T>
     std::shared_ptr<T> createElement(std::initializer_list<std::pair<double, double>> geometry)
     {
-        return std::shared_ptr<T>(new T(ElementUtils::createElement<T>(*dependencyProvider.getStringTable(), {}, geometry)));
+        return std::make_shared<T>(ElementUtils::createElement<T>(*dependencyProvider.getStringTable(), {}, geometry));
     }
 
     DependencyProvider dependencyProvider;
