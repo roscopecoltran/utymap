@@ -171,8 +171,7 @@ void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, con
     // outer
     auto outerArea = std::make_shared<Area>();
     outerArea->id = outer->id;
-    outerArea->tags = relation_.tags;
-    insertCoordinates(outer->coordinates, outerArea->coordinates);
+    insertCoordinates(outer->coordinates, outerArea->coordinates, true);
     
     relation_.elements.push_back(outerArea);
 
@@ -180,8 +179,7 @@ void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, con
     for (int i : innerIndecies) {
         auto coords = sequences[i]->coordinates;
         auto innerArea = std::make_shared<Area>();
-        // TODO ensure hole orientation
-        innerArea->coordinates.insert(innerArea->coordinates.end(), coords.rbegin(), coords.rend());
+        insertCoordinates(coords, innerArea->coordinates, false);
         relation_.elements.push_back(innerArea);
     }
 }
@@ -272,24 +270,23 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
         // outer
         auto outerArea = std::make_shared<Area>();
         outerArea->id = outer->id;
-        outerArea->tags = relation_.tags;
-        insertCoordinates(outer->coordinates, outerArea->coordinates);
+        insertCoordinates(outer->coordinates, outerArea->coordinates, true);
 
         relation_.elements.push_back(outerArea);
 
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
             auto innerArea = std::make_shared<Area>();
-            // TODO ensure hole orientation
-            innerArea->coordinates.insert(innerArea->coordinates.end(), innerRing->coordinates.rbegin(), innerRing->coordinates.rend());
+            insertCoordinates(innerRing->coordinates, innerArea->coordinates, false);
             relation_.elements.push_back(innerArea);
         }
     }
 }
 
-void MultipolygonProcessor::insertCoordinates(const std::deque<GeoCoordinate>& source, std::vector<GeoCoordinate>& destination) const
+void MultipolygonProcessor::insertCoordinates(const std::deque<GeoCoordinate>& source, std::vector<GeoCoordinate>& destination, bool isOuter) const
 {
-    if (utymap::utils::isClockwise(source))
+    bool isClockwise = utymap::utils::isClockwise(source);
+    if ((isOuter && isClockwise) || (!isOuter && !isClockwise))
         destination.insert(destination.end(), source.begin(), source.end());
     else
         destination.insert(destination.end(), source.rbegin(), source.rend());

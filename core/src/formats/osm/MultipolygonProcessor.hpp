@@ -44,7 +44,8 @@ private:
     void fillRelation(CoordinateSequences& rings);
 
     void insertCoordinates(const std::deque<GeoCoordinate>& source, 
-                           std::vector<GeoCoordinate>& destination) const;
+                           std::vector<GeoCoordinate>& destination, 
+                           bool isOuter) const;
 
     utymap::entities::Relation& relation_;
     const utymap::formats::RelationMembers& members_;

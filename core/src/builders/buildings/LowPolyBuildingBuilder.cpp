@@ -13,6 +13,7 @@
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/ElementUtils.hpp"
+#include "utils/GeometryUtils.hpp"
 
 #include <unordered_map>
 
@@ -32,9 +33,6 @@ namespace {
 
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
-    
-    const std::string BuilderKey = "builders";
-    const std::string BuilderName = "building";
 
     const std::string MeshNamePrefix = "building:";
 
@@ -98,12 +96,10 @@ namespace {
         },
         {
             "sphere",
-
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::make_shared<SphereFacadeBuilder>(builderContext, meshContext);
             }
         }
-
     };
 }
 
@@ -113,7 +109,7 @@ class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public ElementBuilder
 {
 public:
     LowPolyBuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
-                              ElementBuilder(context), mesh_()
+        ElementBuilder(context)
     {
     }
 
@@ -123,57 +119,35 @@ public:
 
     void visitArea(const utymap::entities::Area& area)
     {
-        bool justCreated = ensureMesh(area);
-
-        Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-
-        // We're processing relation and this is not a building part.
-        if (!justCreated && !isBuilding(style))
+        // We're processing relation which specifies polygon with holes
+        if (area.tags.empty()) {
+            if (utymap::utils::isClockwise(area.coordinates))
+                polygon_->addContour(toPoints(area.coordinates));
+            else
+                polygon_->addHole(toPoints(area.coordinates));
             return;
-         
-        MeshContext meshContext(*mesh_, style);
+        }
+      
+        // Simple polygon
+        bool justCreated = ensureContext(area);
+        polygon_->addContour(toPoints(area.coordinates));
+        build(area);
 
-        Polygon polygon(area.coordinates.size(), 0);
-        polygon.addContour(toPoints(area.coordinates));
-
-        double height = style.getValue(HeightKey, area.tags);
-        double minHeight = style.getValue(MinHeightKey, area.tags);
-        double elevation = context_.eleProvider.getElevation(area.coordinates[0]) + minHeight;
-
-        height -= minHeight;
-
-        // roof
-        auto roofType = style.getString(RoofTypeKey);
-        double roofHeight = style.getValue(RoofHeightKey, area.tags);
-        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
-        roofBuilder->setHeight(roofHeight);
-        roofBuilder->setMinHeight(elevation + height);
-        roofBuilder->build(polygon);
-        
-        // facade
-        auto facadeType = style.getString(FacadeTypeKey);
-        auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
-        facadeBuilder->setHeight(height);
-        facadeBuilder->setMinHeight(elevation);
-        facadeBuilder->build(polygon);       
-
-        runMeshCallbackIfNecessary(justCreated);
+        completeIfNecessary(justCreated);
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
     {
-        bool justCreated = ensureMesh(relation);
+        bool justCreated = ensureContext(relation);
 
-        for (const auto& element : relation.elements)  {
-
-            // TODO holes are not supported yet (inner ring).
-            if (element->tags.empty())
-                continue;
-
+        for (const auto& element : relation.elements)
             element->accept(*this);
-        }
 
-        runMeshCallbackIfNecessary(justCreated);
+        // We were processing polygon with holes
+        if (polygon_ != nullptr)
+            build(relation);
+
+        completeIfNecessary(justCreated);
     }
 
     void complete()
@@ -181,6 +155,27 @@ public:
     }
 
 private:
+
+    inline bool ensureContext(const Element& element)
+    {
+        if (polygon_ == nullptr)
+            polygon_ = std::make_shared<Polygon>(1, 0);
+
+        if (mesh_ == nullptr) {
+            mesh_ = std::make_shared<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
+            return true;
+        }
+
+        return false;
+    }
+
+    inline void completeIfNecessary(bool justCreated)
+    {
+        if (justCreated) {
+            context_.meshCallback(*mesh_);
+            mesh_.reset();
+        }
+    }
 
     inline std::vector<Vector2> toPoints(const std::vector<GeoCoordinate>& coordinates) const
     {
@@ -193,30 +188,39 @@ private:
         return std::move(points);
     }
 
-    inline bool ensureMesh(const Element& element)
+    void build(const Element& element)
     {
-        if (mesh_ == nullptr) {
-            mesh_ = std::make_shared<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
-            return true;
-        }
+        Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
 
-        return false;
+        MeshContext meshContext(*mesh_, style);
+
+        auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);
+
+        double height = style.getValue(HeightKey, element.tags);
+        double minHeight = style.getValue(MinHeightKey, element.tags);
+        double elevation = context_.eleProvider.getElevation(geoCoordinate) + minHeight;
+
+        height -= minHeight;
+
+        // roof
+        auto roofType = style.getString(RoofTypeKey);
+        double roofHeight = style.getValue(RoofHeightKey, element.tags);
+        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
+        roofBuilder->setHeight(roofHeight);
+        roofBuilder->setMinHeight(elevation + height);
+        roofBuilder->build(*polygon_);
+
+        // facade
+        auto facadeType = style.getString(FacadeTypeKey);
+        auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
+        facadeBuilder->setHeight(height);
+        facadeBuilder->setMinHeight(elevation);
+        facadeBuilder->build(*polygon_);
+
+        polygon_.reset();
     }
 
-    inline void runMeshCallbackIfNecessary(bool justCreated)
-    {
-        // NOTE should be called once when building is created.
-        if (justCreated) {
-            context_.meshCallback(*mesh_);
-            mesh_.reset();
-        }
-    }
-
-    inline bool isBuilding(const Style& style)
-    {
-        return style.getString(BuilderKey, "")->find(BuilderName) != std::string::npos;
-    }
-
+    std::shared_ptr<Polygon> polygon_;
     std::shared_ptr<Mesh> mesh_;
 };
 

@@ -7,13 +7,19 @@
 
 namespace utymap { namespace meshing {
 
-// Represents polygon in 2D space
+// Represents polygon in 2D space.
+// NOTE this class is designed to work with Triangle library
 class Polygon
 {
 public:
     std::vector<double> points;
     std::vector<double> holes;
     std::vector<int> segments;
+
+    // defines outer shape
+    std::vector<std::pair<std::size_t, std::size_t>> outer;
+    // defines inner shape (holes)
+    std::vector<std::pair<std::size_t, std::size_t>> inner;
 
     Rectangle rectangle;
 
@@ -38,6 +44,10 @@ private:
 
     void addContour(const std::vector<Vector2>& contour, bool isHole)
     {
+        auto count = contour.size();
+        auto startIndex = points.size();
+        auto endIndex = points.size() + count - 1;
+
         if (isHole) {
             Vector2 pointInside;
             if (!findPointInPolygon(contour, pointInside)) {
@@ -46,9 +56,11 @@ private:
             }
             holes.push_back(pointInside.x);
             holes.push_back(pointInside.y);
+            inner.push_back(std::make_pair(startIndex, endIndex));
+        } else {
+            outer.push_back(std::make_pair(startIndex, endIndex));
         }
 
-        auto count = contour.size();
         if (contour[0] == contour[count - 1])
             count--;
 
