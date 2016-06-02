@@ -12,9 +12,11 @@
 #include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
+#include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 
+#include <exception>
 #include <unordered_map>
 
 using namespace utymap;
@@ -101,6 +103,48 @@ namespace {
             }
         }
     };
+
+    // Creates points for polygon
+    std::vector<Vector2> toPoints(const std::vector<GeoCoordinate>& coordinates)
+    {
+        std::vector<Vector2> points;
+        points.reserve(coordinates.size());
+        for (const auto& coordinate : coordinates) {
+            points.push_back(Vector2(coordinate.longitude, coordinate.latitude));
+        }
+
+        return std::move(points);
+    }
+
+    // Responsible for processing multipolygon relation.
+    class MultiPolygonVisitor : public ElementVisitor
+    {
+    public:
+
+        MultiPolygonVisitor(std::shared_ptr<Polygon> polygon) 
+            : polygon_(polygon) {}
+
+        void visitNode(const utymap::entities::Node& node) { fail(node); }
+
+        void visitWay(const utymap::entities::Way& way) { fail(way); }
+
+        void visitRelation(const utymap::entities::Relation& relation) { fail(relation); }
+
+        void visitArea(const utymap::entities::Area& area)
+        {
+            if (utymap::utils::isClockwise(area.coordinates))
+                polygon_->addContour(toPoints(area.coordinates));
+            else
+                polygon_->addHole(toPoints(area.coordinates));
+        }
+
+    private:
+        inline void fail(const utymap::entities::Element& element)
+        {
+            throw std::domain_error("Unexpected element in multipolygon: " + utymap::utils::toString(element.id));
+        }
+        std::shared_ptr<Polygon> polygon_;
+    };
 }
 
 namespace utymap { namespace builders {
@@ -118,34 +162,42 @@ public:
     void visitWay(const utymap::entities::Way&) { }
 
     void visitArea(const utymap::entities::Area& area)
-    {
-        // We're processing relation which specifies polygon with holes
-        if (area.tags.empty()) {
-            if (utymap::utils::isClockwise(area.coordinates))
-                polygon_->addContour(toPoints(area.coordinates));
-            else
-                polygon_->addHole(toPoints(area.coordinates));
+    {     
+        Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
+
+        // NOTE this might happen if relation contains not a building
+        // TODO this should be somehow handled in building processor
+        if (!isBuilding(style))
             return;
-        }
-      
-        // Simple polygon
+
         bool justCreated = ensureContext(area);
         polygon_->addContour(toPoints(area.coordinates));
-        build(area);
+        build(area, style);
 
         completeIfNecessary(justCreated);
     }
 
     void visitRelation(const utymap::entities::Relation& relation)
     {
+        if (relation.elements.empty())
+            return;
+
         bool justCreated = ensureContext(relation);
 
-        for (const auto& element : relation.elements)
-            element->accept(*this);
+        Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
 
-        // We were processing polygon with holes
-        if (polygon_ != nullptr)
-            build(relation);
+        if (isMultipolygon(style)) {
+            MultiPolygonVisitor visitor(polygon_);
+
+            for (const auto& element : relation.elements)
+                element->accept(visitor);
+
+            build(relation, style);
+        }
+        else {
+            for (const auto& element : relation.elements) 
+                element->accept(*this);
+        }
 
         completeIfNecessary(justCreated);
     }
@@ -177,21 +229,18 @@ private:
         }
     }
 
-    inline std::vector<Vector2> toPoints(const std::vector<GeoCoordinate>& coordinates) const
+    inline bool isBuilding(const Style& style) const
     {
-        std::vector<Vector2> points;
-        points.reserve(coordinates.size());
-        for (const auto& coordinate : coordinates) {
-            points.push_back(Vector2(coordinate.longitude, coordinate.latitude));
-        }
-
-        return std::move(points);
+        return *style.getString("building", "") == "true";
     }
 
-    void build(const Element& element)
+    inline bool isMultipolygon(const Style& style) const
     {
-        Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
+        return *style.getString("multipolygon", "") == "true";
+    }
 
+    void build(const Element& element, const Style& style)
+    {
         MeshContext meshContext(*mesh_, style);
 
         auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);

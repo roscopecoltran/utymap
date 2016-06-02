@@ -20,6 +20,7 @@ private:
     // Helper class which provides the way to handle coordinate sequences.
     struct CoordinateSequence;
     typedef std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> CoordinateSequences;
+    typedef utymap::entities::Tag ElementTag;
     typedef std::vector<utymap::entities::Tag> ElementTags;
 
 public:
@@ -46,6 +47,8 @@ private:
     void insertCoordinates(const std::deque<GeoCoordinate>& source, 
                            std::vector<GeoCoordinate>& destination, 
                            bool isOuter) const;
+
+    void mergeTags(const ElementTags& tags);
 
     utymap::entities::Relation& relation_;
     const utymap::formats::RelationMembers& members_;

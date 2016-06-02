@@ -8,6 +8,8 @@
 #include "utils/GeoUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 
+#include <algorithm>
+
 using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::formats;
@@ -21,10 +23,9 @@ struct MultipolygonProcessor::CoordinateSequence
 {
     std::uint64_t id;
     Coords coordinates;
-    ElementTags tags;
 
-    CoordinateSequence(std::uint64_t id, const Coordinates& coordinates, const ElementTags& tags) :
-        id(id), coordinates(coordinates.begin(), coordinates.end()), tags(tags)
+    CoordinateSequence(std::uint64_t id, const Coordinates& coordinates) :
+        id(id), coordinates(coordinates.begin(), coordinates.end())
     {
     }
 
@@ -37,7 +38,6 @@ struct MultipolygonProcessor::CoordinateSequence
         if (last() == other.first()) {
             coordinates.pop_back();
             addToEnd(other.coordinates);
-            mergeTags(other.tags);
             return true;
         }
         //add the sequence backwards at the end
@@ -45,14 +45,12 @@ struct MultipolygonProcessor::CoordinateSequence
             coordinates.pop_back();
             other.reverse();
             addAll(other.coordinates);
-            mergeTags(other.tags);
             return true;
         }
         //add the sequence at the beginning
         if (first() == other.last()) {
             coordinates.pop_front();
             addToBegin(other.coordinates);
-            mergeTags(other.tags);
             return true;
         }
         //add the sequence backwards at the beginning
@@ -60,7 +58,6 @@ struct MultipolygonProcessor::CoordinateSequence
             coordinates.pop_front();
             other.reverse();
             addToBegin(other.coordinates);
-            mergeTags(other.tags);
             return true;
         }
         return false;
@@ -91,8 +88,6 @@ private:
     inline void addAll(const Coords& other) { coordinates.insert(coordinates.end(), other.begin(), other.end()); }
 
     inline void reverse() { std::reverse(coordinates.begin(), coordinates.end()); }
-
-    inline void mergeTags(const ElementTags& other) { tags.insert(tags.end(), other.begin(), other.end()); }
 };
 
 
@@ -118,17 +113,17 @@ void MultipolygonProcessor::process()
             continue;
 
         Coordinates coordinates;
-        ElementTags tags;
         auto wayPair = context_.wayMap.find(member.refId);
         if (wayPair != context_.wayMap.end()) {
             coordinates = wayPair->second->coordinates;
-            tags = wayPair->second->tags;
         }
         else {
             auto areaPair = context_.areaMap.find(member.refId);
             if (areaPair != context_.areaMap.end()) {
                 coordinates = areaPair->second->coordinates;
-                tags = areaPair->second->tags;
+                // NOTE merge tags to relation
+                if (member.role == "outer")
+                    mergeTags(areaPair->second->tags);
             }
             else {
                 auto relationPair = context_.relationMap.find(member.refId);
@@ -149,8 +144,7 @@ void MultipolygonProcessor::process()
         else
             continue;
 
-        // TODO what should be used as Id?
-        auto sequence = std::make_shared<CoordinateSequence>(relation_.id, coordinates, tags);
+        auto sequence = std::make_shared<CoordinateSequence>(member.refId, coordinates);
         if (!sequence->isClosed()) 
             allClosed = false;
 
@@ -172,7 +166,7 @@ void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, con
     auto outerArea = std::make_shared<Area>();
     outerArea->id = outer->id;
     insertCoordinates(outer->coordinates, outerArea->coordinates, true);
-    
+
     relation_.elements.push_back(outerArea);
 
     // inner
@@ -271,7 +265,6 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
         auto outerArea = std::make_shared<Area>();
         outerArea->id = outer->id;
         insertCoordinates(outer->coordinates, outerArea->coordinates, true);
-
         relation_.elements.push_back(outerArea);
 
         // inner: create a new area and remove the used rings
@@ -290,4 +283,17 @@ void MultipolygonProcessor::insertCoordinates(const std::deque<GeoCoordinate>& s
         destination.insert(destination.end(), source.begin(), source.end());
     else
         destination.insert(destination.end(), source.rbegin(), source.rend());
+}
+
+void MultipolygonProcessor::mergeTags(const ElementTags& tags)  {
+
+    auto& dest = relation_.tags;
+
+    dest.insert(dest.end(), tags.cbegin(), tags.cend());
+
+    std::sort(dest.begin(), dest.end());
+
+    dest.erase(std::unique(dest.begin(), dest.end(), [](const ElementTag& l, const ElementTag& r) {
+            return l.key == r.key;
+    }), dest.end());
 }

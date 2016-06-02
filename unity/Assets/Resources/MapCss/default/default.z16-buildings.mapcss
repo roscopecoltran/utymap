@@ -1,13 +1,18 @@
 relation|z16[type=building] {
     clip: false;
+    building: true;
     builders: building;
 }
 
+area,relation|z16[man_made=bridge],
+area,relation|z16[man_made=tower],
+area,relation|z16[construction=building],
 area,relation|z16[building],
 area,relation|z16[building:levels],
 area,relation|z16[building:shape],
 area,relation|z16[building:part] {
     clip: false;
+    building: true;
     builders: building;
 
     height: 12m;
@@ -64,4 +69,10 @@ area,relation|z16[building:shape=cylinder] {
 area,relation|z16[building:shape=sphere] {
     roof-type: none;
     facade-type: sphere;
+}
+
+area,relation|z16[man_made=bridge] {
+    height: 0.2m;
+    min-height: -0.2m;
+    roof-color: gradient(#4d4d4d);
 }
