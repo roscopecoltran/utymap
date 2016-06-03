@@ -74,7 +74,7 @@ namespace utymap { namespace utils {
 
     // Iterates through polygon outers and call visitor with rectangle of this outer
     template <typename Visitor>
-    inline void outerRectangles(const utymap::meshing::Polygon& polygon, Visitor& visitor)
+    inline void outerRectangles(const utymap::meshing::Polygon& polygon, const Visitor& visitor)
     {
         if (polygon.outers.size() == 1) {
             visitor(polygon.rectangle);
