@@ -46,11 +46,12 @@ struct Formats_Osm_MultipolygonProcessorFixture
     {
     }
 
-    std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate> source)
+    std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate> source, bool isOuter = true)
     {
         std::vector<GeoCoordinate> destination;
         destination.reserve(source.size());
-        if (utymap::utils::isClockwise(source))
+        bool isClockwise = utymap::utils::isClockwise(source);
+        if ((isClockwise && isOuter) || (!isClockwise && !isOuter))
             destination.insert(destination.end(), source.begin(), source.end());
         else
             destination.insert(destination.end(), source.rbegin(), source.rend());
@@ -91,7 +92,7 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
         reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates) == 
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) ==
         reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 }
 
@@ -118,11 +119,11 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrec
         reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates) == 
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) ==
         reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates) == 
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) ==
         reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
 }
 
@@ -194,11 +195,11 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
         reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates) == 
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) ==
         reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
 
     BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[4]->coordinates) == 
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[4]->coordinates, false) ==
         reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 }
 
