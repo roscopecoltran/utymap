@@ -72,6 +72,23 @@ namespace utymap { namespace utils {
         return utymap::meshing::Vector2(centroidX, centroidY);
     }
 
+    // Iterates through polygon outers and call visitor with rectangle of this outer
+    template <typename Visitor>
+    inline void outerRectangles(const utymap::meshing::Polygon& polygon, Visitor& visitor)
+    {
+        if (polygon.outers.size() == 1) {
+            visitor(polygon.rectangle);
+            return;
+        }
+
+        for (const auto& outer : polygon.outers) {
+            auto rectangle = utymap::meshing::Rectangle();
+            for (auto i = outer.first; i < outer.second; i += 2) {
+                rectangle.expand(utymap::meshing::Vector2(polygon.points[i], polygon.points[i + 1]));
+            }
+            visitor(rectangle);
+        }
+    }
 }}
 
 #endif // UTILS_GEOMETRYUTILS_HPP_DEFINED

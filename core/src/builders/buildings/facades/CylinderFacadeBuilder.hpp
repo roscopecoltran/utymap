@@ -20,18 +20,20 @@ public:
 
     void build(utymap::meshing::Polygon& polygon)
     {
-        utymap::meshing::Vector2 center2d;
-        double radius;
-        utymap::utils::getCircle(polygon.rectangle, center2d, radius);
+        utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
+            utymap::meshing::Vector2 center2d;
+            double radius;
+            utymap::utils::getCircle(rectangle, center2d, radius);
 
-        CylinderGenerator cylinderGenerator(builderContext_, meshContext_, FacadeColorKey);
-        cylinderGenerator
-            .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
-            .setHeight(height_)
-            .setMaxSegmentHeight(5)
-            .setRadialSegments(7)
-            .setRadius(radius)
-            .generate();
+            CylinderGenerator cylinderGenerator(builderContext_, meshContext_, FacadeColorKey);
+            cylinderGenerator
+                .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
+                .setHeight(height_)
+                .setMaxSegmentHeight(5)
+                .setRadialSegments(7)
+                .setRadius(radius)
+                .generate();
+        });
     }
 };
 

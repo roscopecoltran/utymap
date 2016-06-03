@@ -44,7 +44,7 @@ private:
         std::int64_t last = range.second - 2;
         for (std::int64_t i = last; i >= first; i -= 2) {
             utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
-            int j = i == first ? last : i - 2;
+            auto j = i == first ? last : i - 2;
             utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
 
             builderContext_.meshBuilder.addPlane(meshContext_.mesh,
