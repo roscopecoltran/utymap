@@ -1,3 +1,7 @@
+relation|z16[type=multipolygon] {
+    multipolygon: true;
+}
+
 way|z16[barrier] {
     builders: barrier;
 
