@@ -12,14 +12,16 @@ namespace utymap { namespace meshing {
 class Polygon
 {
 public:
+    typedef std::pair<std::size_t, std::size_t> Range;
+
     std::vector<double> points;
     std::vector<double> holes;
     std::vector<int> segments;
 
     // defines outer shape
-    std::vector<std::pair<std::size_t, std::size_t>> outer;
+    std::vector<Range> outers;
     // defines inner shape (holes)
-    std::vector<std::pair<std::size_t, std::size_t>> inner;
+    std::vector<Range> inners;
 
     Rectangle rectangle;
 
@@ -45,8 +47,11 @@ private:
     void addContour(const std::vector<Vector2>& contour, bool isHole)
     {
         auto count = contour.size();
+        if (contour[0] == contour[count - 1])
+            count--;
+
         auto startIndex = points.size();
-        auto endIndex = points.size() + count - 1;
+        auto endIndex = startIndex + count * 2;
 
         if (isHole) {
             Vector2 pointInside;
@@ -56,13 +61,10 @@ private:
             }
             holes.push_back(pointInside.x);
             holes.push_back(pointInside.y);
-            inner.push_back(std::make_pair(startIndex, endIndex));
+            inners.push_back(std::make_pair(startIndex, endIndex));
         } else {
-            outer.push_back(std::make_pair(startIndex, endIndex));
-        }
-
-        if (contour[0] == contour[count - 1])
-            count--;
+            outers.push_back(std::make_pair(startIndex, endIndex));
+        }      
 
         auto offset = segments.size() / 2;
         for (auto i = 0; i < count; ++i) {

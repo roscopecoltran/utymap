@@ -166,7 +166,6 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
 
         // NOTE this might happen if relation contains not a building
-        // TODO this should be somehow handled in building processor
         if (!isBuilding(style))
             return;
 

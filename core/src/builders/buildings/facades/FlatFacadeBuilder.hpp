@@ -27,20 +27,34 @@ public:
         minHeight_
     );
 
-    std::int64_t last = polygon.points.size() - 2;
-    for (auto i = last; i >= 0; i -=2) {
-      utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
-      int j = i == 0 ? last : i - 2;
-      utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
+    for (const auto& outer : polygon.outers)
+        buildRange(polygon, outer, options);
 
-      builderContext_.meshBuilder.addPlane(meshContext_.mesh,
-                                           p1,
-                                           p2,
-                                           minHeight_,
-                                           minHeight_,
-                                           options);
-    }
+    for (const auto& inner : polygon.inners)
+        buildRange(polygon, inner, options);
   }
+
+private:
+
+    inline void buildRange(const utymap::meshing::Polygon& polygon,
+                           const utymap::meshing::Polygon::Range& range, 
+                           const utymap::meshing::MeshBuilder::Options& options)
+    {
+        std::int64_t first = range.first;
+        std::int64_t last = range.second - 2;
+        for (std::int64_t i = last; i >= first; i -= 2) {
+            utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
+            int j = i == first ? last : i - 2;
+            utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
+
+            builderContext_.meshBuilder.addPlane(meshContext_.mesh,
+                p1,
+                p2,
+                minHeight_,
+                minHeight_,
+                options);
+        }
+    }
 };
 
 }}
