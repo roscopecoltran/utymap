@@ -17,6 +17,7 @@ using namespace utymap::meshing;
 namespace {
     const std::string stylesheet = "area,relation|z1[building=yes] { " 
                                         "builders: building;"
+                                        "building: true;"
                                         "facade-color: gradient(blue);"
                                         "facade-type: flat;"
                                         "roof-color: gradient(red);"
@@ -24,7 +25,10 @@ namespace {
                                         "roof-height: 0m;"
                                         "height: 12m;"
                                         "min-height: 0m;"
-                                    "}";
+                                    "}"
+                                   "relation|z1[type=multipolygon] {"
+                                        "multipolygon: true;"
+                                    "};";
 }
 
 struct Builders_Buildings_LowPolyBuildingsBuilderFixture
@@ -70,14 +74,16 @@ BOOST_AUTO_TEST_CASE(GivenRelationWithHole_WhenBuilds_ThenBuildsMesh)
             BOOST_CHECK_GT(mesh.colors.size(), 0);
     });
     Relation relation;
-    relation.tags = { ElementUtils::createTag(*dependencyProvider.getStringTable(), "building", "yes") };
+    relation.tags = {
+            ElementUtils::createTag(*dependencyProvider.getStringTable(), "building", "yes"),
+            ElementUtils::createTag(*dependencyProvider.getStringTable(), "type", "multipolygon"),
+    };
     auto outer = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, 
         { { 10, 0 }, { 10, 10 }, { 0, 10 }, { 0, 0 } }));
     auto inner = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, 
         { { 2, 2 }, { 2, 8 }, { 8, 8 }, { 8, 2 } }));
     relation.elements.push_back(outer);
     relation.elements.push_back(inner);
-
     LowPolyBuildingBuilder builder(*context);
 
     builder.visitRelation(relation);
