@@ -4,6 +4,7 @@
 #include "clipper/clipper.hpp"
 #include "entities/Way.hpp"
 #include "utils/ElementUtils.hpp"
+#include "utils/GeometryUtils.hpp"
 #include "utils/GeoUtils.hpp"
 
 using namespace ClipperLib;
@@ -33,20 +34,30 @@ void BarrierBuilder::visitWay(const Way& way)
         path.push_back(IntPoint(coord.longitude * Scale, coord.latitude * Scale));
     }
 
+    if (path[0] == path[path.size() - 1])
+        path.pop_back();
+
     offset.AddPath(path, JoinType::jtMiter, EndType::etOpenSquare);
 
     Paths solution;
     double offsetInMeters = style.getValue(OffsetKey, way.tags);
     double offsetInGrads = GeoUtils::getOffset(way.coordinates[0], offsetInMeters);
     offset.Execute(solution, offsetInGrads * Scale);
+    auto& shape = solution[0];
+
+    // NOTE ensure proper orientation which is required by facade builder
+    // used below
+    if (ClipperLib::Orientation(shape))
+        std::reverse(shape.begin(), shape.end());
 
     // get polygon
-    Polygon polygon(solution.size(), 0);
+    Polygon polygon(shape.size(), 0);
     std::vector<Vector2> vertices;
-    vertices.reserve(solution[0].size());
-    for (const auto& p : solution[0]) {
+    vertices.reserve(shape.size());
+    for (const auto& p : shape) {
         vertices.push_back(Vector2(p.X / Scale, p.Y / Scale));
     }
+
     polygon.addContour(vertices);
 
     buildFromPolygon(way, style, polygon);
