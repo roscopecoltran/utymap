@@ -189,7 +189,7 @@ public:
 
         Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
 
-        if (isMultipolygon(style)) {
+        if (isMultipolygon(style) && isBuilding(style)) {
             MultiPolygonVisitor visitor(polygon_);
 
             for (const auto& element : relation.elements)
