@@ -14,7 +14,7 @@
 #include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
-#include "utils/GeometryUtils.hpp"
+#include "utils/GradientUtils.hpp"
 
 #include <exception>
 #include <unordered_map>
@@ -26,12 +26,16 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 using namespace utymap::index;
+using namespace utymap::utils;
 
 namespace {
 
     const std::string RoofTypeKey = "roof-type";
     const std::string RoofHeightKey = "roof-height";
+    const std::string RoofColorKey = "roof-color";
+
     const std::string FacadeTypeKey = "facade-type";
+    const std::string FacadeColorKey = "facade-color";
 
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
@@ -253,16 +257,20 @@ private:
         // roof
         auto roofType = style.getString(RoofTypeKey);
         double roofHeight = style.getValue(RoofHeightKey, element.tags);
+        auto roofGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, element.tags, RoofColorKey);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
+        roofBuilder->setColor(roofGradient, 0);
         roofBuilder->build(*polygon_);
 
         // facade
         auto facadeType = style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
+        auto facadeGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, element.tags, FacadeColorKey);
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);
+        facadeBuilder->setColor(facadeGradient, 0);
         facadeBuilder->build(*polygon_);
 
         polygon_.reset();

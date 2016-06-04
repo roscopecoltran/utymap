@@ -32,13 +32,14 @@ public:
                 utymap::GeoCoordinate(center2d.y, center2d.x),
                 utymap::GeoCoordinate(center2d.y + radius, center2d.x));
 
-            utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_, RoofColorKey);
+            utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_);
             generator
                 .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
                 .setRadius(radius, heightInMeters)
                 .setRecursionLevel(2)
                 .isSemiSphere(true)
                 .setVertexNoiseFreq(0.0)
+                .setColor(gradient_, 0)
                 .generate();
         });
     }

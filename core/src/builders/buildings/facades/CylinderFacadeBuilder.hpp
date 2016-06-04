@@ -25,13 +25,14 @@ public:
             double radius;
             utymap::utils::getCircle(rectangle, center2d, radius);
 
-            CylinderGenerator cylinderGenerator(builderContext_, meshContext_, FacadeColorKey);
+            CylinderGenerator cylinderGenerator(builderContext_, meshContext_);
             cylinderGenerator
                 .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
                 .setHeight(height_)
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
                 .setRadius(radius)
+                .setColor(gradient_, 0)
                 .generate();
         });
     }

@@ -168,7 +168,7 @@ public:
 
     FilterCollection filters;
     StringTable& stringTable;
-    std::unordered_map<std::string, ColorGradient> gradients;
+    std::unordered_map<std::string, std::shared_ptr<const ColorGradient>> gradients;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         stringTable(stringTable),
@@ -241,10 +241,14 @@ public:
             gradients[key] = utymap::utils::GradientUtils::parseGradient(key);
     }
 
-    inline const ColorGradient& getGradient(const std::string& key)
+    inline std::shared_ptr<const ColorGradient> getGradient(const std::string& key)
     {
         if (gradients.find(key) == gradients.end()) {
-            throw MapCssException("Cannot find gradient: " + key);
+            if (!isGradient(key))
+                throw MapCssException("Invalid gradient: " + key);
+
+            // TODO store it in map in thread safe way
+            return utymap::utils::GradientUtils::parseGradient(key);
         }
 
         return gradients[key];
@@ -286,7 +290,7 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
     return std::move(style);
 }
 
-const ColorGradient& StyleProvider::getGradient(const std::string& key) const
+std::shared_ptr<const ColorGradient> StyleProvider::getGradient(const std::string& key) const
 {
     return pimpl_->getGradient(key);
 }

@@ -12,9 +12,11 @@ using namespace utymap::heightmap;
 using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
-typedef Vector2 DPoint;
+namespace {
 
-const ColorGradient colorGradient(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
+    typedef Vector2 DPoint;
+    auto colorGradient = std::make_shared<const ColorGradient>(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
+}
 
 struct Meshing_MeshingFixture 
 {
@@ -41,13 +43,13 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_RefinesCorrectly)
     });
 
     builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    {
+    (
         /* area=*/ 5,
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
         /* color gradient */ colorGradient
-    });
+    ));
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
     BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 34);
@@ -73,13 +75,13 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_RefinesCorrectly)
     });
 
     builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    { 
+    (
         /* area=*/ 1, 
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
         /* color gradient */ colorGradient
-    });
+    ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -110,13 +112,13 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_RefinesC
 
     Mesh mesh("");
     builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    {
+    (
         /* area=*/ 1. / scale,
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
         /* color gradient */ colorGradient
-    });
+    ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -130,13 +132,13 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_RefinesCorrectly)
     Mesh mesh("");
 
     builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    {
+    (
         /* area=*/ 1. / 1.,
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
         /* color gradient */ colorGradient
-    });
+    ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
 }

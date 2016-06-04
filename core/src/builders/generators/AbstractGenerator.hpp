@@ -6,7 +6,6 @@
 #include "mapcss/ColorGradient.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/NoiseUtils.hpp"
-#include "utils/GradientUtils.hpp"
 
 #include <algorithm>
 
@@ -18,15 +17,10 @@ class AbstractGenerator
 public:
 
     AbstractGenerator(const utymap::builders::BuilderContext& builderContext,
-                      utymap::builders::MeshContext& meshContext,
-                      const std::string& gradientKey):
+                      utymap::builders::MeshContext& meshContext):
         builderContext_(builderContext),
         meshContext_(meshContext),
-        options_(0,
-                 0,
-                 0,
-                 0,
-                 builderContext.styleProvider.getGradient(*meshContext.style.getString(gradientKey))),
+        options_(0, 0,  0, 0, nullptr),
         vertNoiseFreq_(0),
         colorNoiseFreq(0)
     {
@@ -41,13 +35,14 @@ public:
         return *this;
     }
 
-    // Sets color noise frequency
-    AbstractGenerator& setColorNoiseFreq(float colorNoiseFreq)
+    // Sets color
+    AbstractGenerator& setColor(std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
+                                float noiseFreq)
     {
+        options_.gradient = gradient;
         options_.colorNoiseFreq = colorNoiseFreq;
         return *this;
     }
-
 
 protected:
 

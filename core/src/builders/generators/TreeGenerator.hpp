@@ -15,12 +15,10 @@ class TreeGenerator : public AbstractGenerator
 {
 public:
     TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  utymap::builders::MeshContext& meshContext,
-                  const std::string& trunkGradientKey,
-                  const std::string& foliageGradientKey) :
-            AbstractGenerator(builderContext, meshContext, trunkGradientKey), // ignored
-            trunkGenerator(builderContext, meshContext, trunkGradientKey),
-            foliageGenerator(builderContext, meshContext, foliageGradientKey),
+                  utymap::builders::MeshContext& meshContext) :
+            AbstractGenerator(builderContext, meshContext), // ignored
+            trunkGenerator(builderContext, meshContext),
+            foliageGenerator(builderContext, meshContext),
             position_(),
             trunkHeight_(0),
             trunkRadius_(0),
@@ -55,6 +53,20 @@ public:
     {
         foliageRadius_ = radius;
         foliageHeight_ = height;
+        return *this;
+    }
+
+    // Sets trunk color.
+    TreeGenerator& setTrunkColor(std::shared_ptr<const utymap::mapcss::ColorGradient> gradient, float noiseFreq)
+    {
+        trunkGenerator.setColor(gradient, noiseFreq);
+        return *this;
+    }
+
+    // Sets foliage color.
+    TreeGenerator& setFoliageColor(std::shared_ptr<const utymap::mapcss::ColorGradient> gradient, float noiseFreq)
+    {
+        foliageGenerator.setColor(gradient, noiseFreq);
         return *this;
     }
 

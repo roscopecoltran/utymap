@@ -29,7 +29,7 @@ public:
         // Fixed elevation.
         double elevation;
         // Gradient data
-        const utymap::mapcss::ColorGradient& gradient;
+        std::shared_ptr<const utymap::mapcss::ColorGradient> gradient;
 
         // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
@@ -41,7 +41,7 @@ public:
                 double eleNoiseFreq,
                 double colorNoiseFreq,
                 double heightOffset,
-                const utymap::mapcss::ColorGradient& gradient,
+                std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
                 double elevation = std::numeric_limits<double>::lowest(),
                 int segmentSplit = 0) :
             area(area), 

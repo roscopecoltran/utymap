@@ -4,9 +4,7 @@ relation|z16[type=multipolygon] {
 
 way|z16[barrier] {
     builders: barrier;
-
-    facade-color: gradient(blue);
-    roof-color: gradient(red);
+    color: gradient(blue);
 
     height: 3m;
     min-height: 0m;

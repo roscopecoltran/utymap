@@ -14,9 +14,8 @@ class CylinderGenerator : public AbstractGenerator
 public:
 
     CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
-                      utymap::builders::MeshContext& meshContext,
-                      const std::string& gradientKey) :
-            AbstractGenerator(builderContext, meshContext, gradientKey),
+                      utymap::builders::MeshContext& meshContext) :
+            AbstractGenerator(builderContext, meshContext),
             center_(), radius_(0), height_(0), radialSegments_(0), maxSegmentHeight_(0)
     {
     }
@@ -54,7 +53,8 @@ public:
         return *this;
     }
 
-    void generate() {
+    void generate()
+    {
         int heightSegments = (int) std::ceil(height_ / maxSegmentHeight_);
 
         double heightStep = height_ / heightSegments;
@@ -64,11 +64,11 @@ public:
             double firstAngle = j * angleStep;
             double secondAngle = (j == radialSegments_ - 1 ? 0 : j + 1) * angleStep;
 
-            utymap::meshing::Vector2 first(
+            auto first = utymap::meshing::Vector2(
                     radius_ * std::cos(firstAngle) + center_.x,
                     radius_ * std::sin(firstAngle) + center_.z);
 
-            utymap::meshing::Vector2 second(
+            auto second = utymap::meshing::Vector2(
                     radius_ * std::cos(secondAngle) + center_.x,
                     radius_ * std::sin(secondAngle) + center_.z);
 

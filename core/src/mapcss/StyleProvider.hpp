@@ -31,7 +31,7 @@ public:
     utymap::mapcss::Style forCanvas(int levelOfDetails) const;
 
     // Returns color gradient for given key.
-    const utymap::mapcss::ColorGradient& getGradient(const std::string& key) const;
+    std::shared_ptr<const ColorGradient> getGradient(const std::string& key) const;
 
 private:
     class StyleProviderImpl;

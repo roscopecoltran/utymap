@@ -5,7 +5,7 @@
 #include "entities/Way.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GeometryUtils.hpp"
-#include "utils/GeoUtils.hpp"
+#include "utils/GradientUtils.hpp"
 
 using namespace ClipperLib;
 using namespace utymap::builders;
@@ -18,6 +18,7 @@ namespace {
     const double Scale = 1E7;
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
+    const std::string ColorKey = "color";
     const std::string OffsetKey = "offset";
     const std::string MeshNamePrefix = "barrier:";
 }
@@ -72,17 +73,21 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
     MeshContext meshContext(mesh, style);
 
+    auto gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, way.tags, ColorKey);
+
     // NOTE: Reuse building builders.
 
-    FlatRoofBuilder roofBuilder(context_, meshContext);
-    roofBuilder.setHeight(0);
-    roofBuilder.setMinHeight(elevation + height);
-    roofBuilder.build(polygon);
+    FlatRoofBuilder(context_, meshContext)
+        .setHeight(0)
+        .setMinHeight(elevation + height)
+        .setColor(gradient, 0)
+        .build(polygon);
 
-    FlatFacadeBuilder facadeBuilder(context_, meshContext);
-    facadeBuilder.setHeight(height);
-    facadeBuilder.setMinHeight(elevation);
-    facadeBuilder.build(polygon);
+    FlatFacadeBuilder(context_, meshContext)
+        .setHeight(height)
+        .setMinHeight(elevation)
+        .setColor(gradient, 0)
+        .build(polygon);
 
     context_.meshCallback(mesh);
 }

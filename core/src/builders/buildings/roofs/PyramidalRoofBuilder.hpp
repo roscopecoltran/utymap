@@ -22,15 +22,14 @@ public:
     void build(utymap::meshing::Polygon& polygon)
     {
         auto center = utymap::utils::getCentroid(polygon);
-        auto options = utymap::meshing::MeshBuilder::Options
-        {
+        auto options = utymap::meshing::MeshBuilder::Options(
             0, // area
             0, // ele noise
             colorNoiseFreq_,
             0,
-            getColorGradient(),
+            gradient_,
             0
-        };
+        );
 
         auto lastPointIndex = polygon.points.size() - 2;
 

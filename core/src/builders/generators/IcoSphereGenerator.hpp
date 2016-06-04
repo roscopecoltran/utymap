@@ -26,9 +26,8 @@ class IcoSphereGenerator : public AbstractGenerator
 public:
 
     IcoSphereGenerator(const utymap::builders::BuilderContext& builderContext,
-                       utymap::builders::MeshContext& meshContext,
-                       const std::string& gradientKey):
-            AbstractGenerator(builderContext, meshContext, gradientKey),
+                       utymap::builders::MeshContext& meshContext):
+            AbstractGenerator(builderContext, meshContext),
             center_(), radius_(0), height_(0), recursionLevel_(0), isSemiSphere_(false)
     {
     }

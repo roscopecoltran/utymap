@@ -23,7 +23,7 @@ public:
         0, // ele noise
         colorNoiseFreq_,
         height_,
-        getColorGradient(),
+        gradient_,
         minHeight_
     );
 

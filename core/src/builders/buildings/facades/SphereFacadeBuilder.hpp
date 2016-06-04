@@ -28,12 +28,13 @@ public:
                 utymap::GeoCoordinate(center2d.y, center2d.x),
                 utymap::GeoCoordinate(center2d.y + radius, center2d.x));
 
-        IcoSphereGenerator icoSphereGenerator(builderContext_, meshContext_, FacadeColorKey);
+        IcoSphereGenerator icoSphereGenerator(builderContext_, meshContext_);
         icoSphereGenerator
                 .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
                 .setRadius(radius, heightInMeters)
                 .setRecursionLevel(2)
                 .isSemiSphere(false)
+                .setColor(gradient_, 0)
                 .generate();
     }
 };

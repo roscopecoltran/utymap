@@ -13,8 +13,7 @@ using namespace utymap::meshing;
 namespace {
     const std::string stylesheet = "way|z16[barrier] {" 
                                         "height:2m; min-height:0m;"
-                                        "roof-color:gradient(red);"
-                                        "facade-color:gradient(red);"
+                                        "color:gradient(red);"
                                         "offset:0.2m;"
                                     "}";
     struct Builders_Misc_BarrierBuilderFixture

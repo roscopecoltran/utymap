@@ -6,6 +6,7 @@
 #include "meshing/Polygon.hpp"
 #include "mapcss/ColorGradient.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace utymap { namespace builders {
@@ -17,7 +18,7 @@ class FacadeBuilder
   FacadeBuilder(const utymap::builders::BuilderContext& builderContext,
                 utymap::builders::MeshContext& meshContext)
       : builderContext_(builderContext), meshContext_(meshContext),
-        minHeight_(0), height_(0), colorNoiseFreq_(0)
+        gradient_(), minHeight_(0), height_(0), colorNoiseFreq_(0)
   {
   }
 
@@ -27,24 +28,22 @@ class FacadeBuilder
   // Sets height above ground level.
   inline FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
 
-  // Sets color freq.
-  inline FacadeBuilder& setColorNoise(double freq) { colorNoiseFreq_ = freq; return *this; }
-
-  // Gets gradient.
-  inline const utymap::mapcss::ColorGradient& getColorGradient()
+  // Sets color.
+  inline FacadeBuilder& setColor(std::shared_ptr<const utymap::mapcss::ColorGradient> gradient, double noiseFreq)
   {
-      auto gradient = meshContext_.style.getString(FacadeColorKey);
-      return builderContext_.styleProvider.getGradient(*gradient);
+      gradient_ = gradient;
+      colorNoiseFreq_ = noiseFreq;
+      return *this;
   }
 
   // Builds roof from polygon.
   virtual void build(utymap::meshing::Polygon& polygon) = 0;
 
  protected:
-  const std::string FacadeColorKey = "facade-color";
 
   const utymap::builders::BuilderContext& builderContext_;
   utymap::builders::MeshContext& meshContext_;
+  std::shared_ptr<const utymap::mapcss::ColorGradient> gradient_;
   double height_, minHeight_, colorNoiseFreq_;
 };
 
