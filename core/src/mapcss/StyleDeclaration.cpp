@@ -2,6 +2,7 @@
 #include "entities/Element.hpp"
 #include "mapcss/StyleDeclaration.hpp"
 #include "utils/CompatibilityUtils.hpp"
+#include "utils/ElementUtils.hpp"
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -77,23 +78,7 @@ namespace {
         double operator()(const std::string& tagKey) const
         {
             auto keyId = stringTable_.getId(tagKey);
-
-            auto begin = tags_.begin();
-            auto end = tags_.end();
-            while (begin < end) {
-                const auto middle = begin + (std::distance(begin, end) / 2);
-                if (middle->key == keyId) {
-                    // TODO sanitize value
-                    std::string value = stringTable_.getString(middle->value);
-                    return std::stod(value);
-                }
-                else if (middle->key > keyId)
-                    end = middle;
-                else
-                    begin = middle + 1;
-            }
-            // TODO write to log as tag is not specified.
-            return 0;
+            return std::stod(utymap::utils::getTagValue(keyId, tags_, stringTable_));
         }
 
         double operator()(const Signed& s) const

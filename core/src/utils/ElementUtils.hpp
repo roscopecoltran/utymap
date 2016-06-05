@@ -48,8 +48,7 @@ inline bool hasTag(std::uint32_t key,
     auto begin = tags.begin();
     auto end = tags.end();
 
-    while (begin < end)
-    {
+    while (begin < end) {
         const auto middle = begin + (std::distance(begin, end) / 2);
         if (middle->key == key)
             return middle->value == value;
@@ -59,6 +58,25 @@ inline bool hasTag(std::uint32_t key,
             begin = middle + 1;
     }
     return false;
+}
+
+inline std::string getTagValue(std::uint32_t key, 
+                               const std::vector<utymap::entities::Tag>& tags,
+                               utymap::index::StringTable& stringTable)
+{
+    auto begin = tags.begin();
+    auto end = tags.end();
+    while (begin < end) {
+        const auto middle = begin + (std::distance(begin, end) / 2);
+        if (middle->key == key) 
+            return stringTable.getString(middle->value);
+        else if (middle->key > key)
+            end = middle;
+        else
+            begin = middle + 1;
+    }
+
+    throw std::domain_error("Cannot find tag:" + stringTable.getString(key));
 }
 
 // Gets mesh name
