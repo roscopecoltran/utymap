@@ -79,7 +79,7 @@ struct Style
         auto declaration = get(keyId);
 
         return declaration->isEval()
-                ? declaration->evaluate(tags, stringTable_)
+                ? declaration->evaluate<double>(tags, stringTable_)
                 : getValue(declaration);
     }
 

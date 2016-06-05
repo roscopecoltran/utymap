@@ -69,6 +69,7 @@ set(HEADER_FILES
         mapcss/MapCssParser.hpp
         mapcss/StyleSheet.hpp
         mapcss/Style.hpp
+        mapcss/StyleEvaluator.hpp
         mapcss/StyleDeclaration.hpp
         mapcss/StyleProvider.hpp
         meshing/MeshBuilder.hpp
@@ -110,7 +111,7 @@ add_library(${LIBRARY_NAME}
         index/PersistentElementStore.cpp
         index/StringTable.cpp
         mapcss/MapCssParser.cpp
-        mapcss/StyleDeclaration.cpp
+        mapcss/StyleEvaluator.cpp
         mapcss/StyleProvider.cpp
         mapcss/StyleSheet.cpp
         meshing/MeshBuilder.cpp
