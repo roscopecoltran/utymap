@@ -1,6 +1,6 @@
 #include "GeoCoordinate.hpp"
 #include "builders/BuilderContext.hpp"
-#include "builders/buildings/LowPolyBuildingBuilder.hpp"
+#include "builders/buildings/BuildingBuilder.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
@@ -15,7 +15,7 @@ using namespace utymap::entities;
 using namespace utymap::meshing;
 
 namespace {
-    const std::string stylesheet = "area,relation|z1[building=yes] { " 
+    const std::string stylesheet = "area,relation|z1[building=yes] { "
                                         "builders: building;"
                                         "building: true;"
                                         "facade-color: gradient(blue);"
@@ -31,12 +31,12 @@ namespace {
                                     "};";
 }
 
-struct Builders_Buildings_LowPolyBuildingsBuilderFixture
+struct Builders_Buildings_BuildingsBuilderFixture
 {
     DependencyProvider dependencyProvider;
 };
 
-BOOST_FIXTURE_TEST_SUITE(Builders_Buildings_LowPolyBuildingsBuilder, Builders_Buildings_LowPolyBuildingsBuilderFixture)
+BOOST_FIXTURE_TEST_SUITE(Builders_Buildings_BuildingsBuilder, Builders_Buildings_BuildingsBuilderFixture)
 
 BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
 {
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenBuilds_ThenBuildsMesh)
             });
     Area building = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), { { "building", "yes" } },
         { { 10, 0 }, { 10, 10 }, { 0, 10 }, { 0, 0 } });
-    LowPolyBuildingBuilder builder(*context);
+    BuildingBuilder builder(*context);
 
     builder.visitArea(building);
 
@@ -78,13 +78,13 @@ BOOST_AUTO_TEST_CASE(GivenRelationWithHole_WhenBuilds_ThenBuildsMesh)
             ElementUtils::createTag(*dependencyProvider.getStringTable(), "building", "yes"),
             ElementUtils::createTag(*dependencyProvider.getStringTable(), "type", "multipolygon"),
     };
-    auto outer = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, 
+    auto outer = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
         { { 10, 0 }, { 10, 10 }, { 0, 10 }, { 0, 0 } }));
-    auto inner = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {}, 
+    auto inner = std::make_shared<Area>(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), {},
         { { 2, 2 }, { 2, 8 }, { 8, 8 }, { 8, 2 } }));
     relation.elements.push_back(outer);
     relation.elements.push_back(inner);
-    LowPolyBuildingBuilder builder(*context);
+    BuildingBuilder builder(*context);
 
     builder.visitRelation(relation);
 

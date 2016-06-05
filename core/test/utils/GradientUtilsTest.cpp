@@ -39,7 +39,9 @@ BOOST_AUTO_TEST_CASE(GivenNamedColorString_WhenParse_ThenReturnColor)
 BOOST_AUTO_TEST_CASE(GivenNonStandardNamedColorStrings_WhenEvaluate_ThenReturnCorrectColor)
 {
     std::string gradientKey = "gradient(activeborder, bisque 25%, darkturquoise 50%, papayawhip)";
+
     auto gradient = GradientUtils::parseGradient(gradientKey);
+
     BOOST_CHECK_EQUAL(gradient->evaluate(0), 0xB4B4B4FF);
     BOOST_CHECK_EQUAL(gradient->evaluate(0.25), 0xFFE4C4FF);
     BOOST_CHECK_EQUAL(gradient->evaluate(0.5), 0x00CED1FF);

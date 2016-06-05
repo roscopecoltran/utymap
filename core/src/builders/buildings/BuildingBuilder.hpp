@@ -1,5 +1,5 @@
-#ifndef BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
-#define BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED
+#ifndef BUILDERS_BUILDINGS_BUILDINGBUILDER_HPP_DEFINED
+#define BUILDERS_BUILDINGS_BUILDINGBUILDER_HPP_DEFINED
 
 #include "builders/BuilderContext.hpp"
 #include "builders/ElementBuilder.hpp"
@@ -9,12 +9,12 @@
 namespace utymap { namespace builders {
 
 // Responsible for building generation.
-class LowPolyBuildingBuilder : public utymap::builders::ElementBuilder
+class BuildingBuilder : public utymap::builders::ElementBuilder
 {
 public:
-    LowPolyBuildingBuilder(const utymap::builders::BuilderContext&);
+    BuildingBuilder(const utymap::builders::BuilderContext&);
 
-    ~LowPolyBuildingBuilder();
+    ~BuildingBuilder();
 
     void visitNode(const utymap::entities::Node&);
 
@@ -27,8 +27,8 @@ public:
     void complete();
 
 private:
-    class LowPolyBuildingBuilderImpl;
-    std::unique_ptr<LowPolyBuildingBuilderImpl> pimpl_;
+    class BuildingBuilderImpl;
+    std::unique_ptr<BuildingBuilderImpl> pimpl_;
 };
 
 }}

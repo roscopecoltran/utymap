@@ -4,6 +4,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "builders/buildings/BuildingBuilder.hpp"
 #include "builders/buildings/facades/CylinderFacadeBuilder.hpp"
 #include "builders/buildings/facades/FlatFacadeBuilder.hpp"
 #include "builders/buildings/facades/SphereFacadeBuilder.hpp"
@@ -11,7 +12,6 @@
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
-#include "builders/buildings/LowPolyBuildingBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GradientUtils.hpp"
@@ -59,11 +59,11 @@ namespace {
                 return std::make_shared<EmptyRoofBuilder>(builderContext, meshContext);
             }
         },
-        { 
+        {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return std::make_shared<FlatRoofBuilder>(builderContext, meshContext);
-            } 
+            }
         },
         {
             "dome",
@@ -125,7 +125,7 @@ namespace {
     {
     public:
 
-        MultiPolygonVisitor(std::shared_ptr<Polygon> polygon) 
+        MultiPolygonVisitor(std::shared_ptr<Polygon> polygon)
             : polygon_(polygon) {}
 
         void visitNode(const utymap::entities::Node& node) { fail(node); }
@@ -153,10 +153,10 @@ namespace {
 
 namespace utymap { namespace builders {
 
-class LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl : public ElementBuilder
+class BuildingBuilder::BuildingBuilderImpl : public ElementBuilder
 {
 public:
-    LowPolyBuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
+    BuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
         ElementBuilder(context)
     {
     }
@@ -166,7 +166,7 @@ public:
     void visitWay(const utymap::entities::Way&) { }
 
     void visitArea(const utymap::entities::Area& area)
-    {     
+    {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
 
         // NOTE this might happen if relation contains not a building
@@ -198,7 +198,7 @@ public:
             build(relation, style);
         }
         else {
-            for (const auto& element : relation.elements) 
+            for (const auto& element : relation.elements)
                 element->accept(*this);
         }
 
@@ -280,28 +280,28 @@ private:
     std::shared_ptr<Mesh> mesh_;
 };
 
-LowPolyBuildingBuilder::LowPolyBuildingBuilder(const BuilderContext& context) 
-    : ElementBuilder(context), pimpl_(new LowPolyBuildingBuilder::LowPolyBuildingBuilderImpl(context))
+BuildingBuilder::BuildingBuilder(const BuilderContext& context)
+    : ElementBuilder(context), pimpl_(new BuildingBuilder::BuildingBuilderImpl(context))
 {
 }
 
-LowPolyBuildingBuilder::~LowPolyBuildingBuilder() { }
+BuildingBuilder::~BuildingBuilder() { }
 
-void LowPolyBuildingBuilder::visitNode(const Node&) { }
+void BuildingBuilder::visitNode(const Node&) { }
 
-void LowPolyBuildingBuilder::visitWay(const Way&) { }
+void BuildingBuilder::visitWay(const Way&) { }
 
-void LowPolyBuildingBuilder::visitArea(const Area& area)
+void BuildingBuilder::visitArea(const Area& area)
 {
     area.accept(*pimpl_);
 }
 
-void LowPolyBuildingBuilder::complete()
+void BuildingBuilder::complete()
 {
     pimpl_->complete();
 }
 
-void LowPolyBuildingBuilder::visitRelation(const utymap::entities::Relation& relation)
+void BuildingBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
     relation.accept(*pimpl_);
 }

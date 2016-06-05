@@ -19,7 +19,7 @@ set(HEADER_FILES
         builders/ElementBuilder.hpp
         builders/ExternalBuilder.hpp
         builders/QuadKeyBuilder.hpp
-        builders/buildings/LowPolyBuildingBuilder.hpp
+        builders/buildings/BuildingBuilder.hpp
         builders/buildings/facades/CylinderFacadeBuilder.hpp
         builders/buildings/facades/FacadeBuilder.hpp
         builders/buildings/facades/FlatFacadeBuilder.hpp
@@ -100,7 +100,7 @@ add_library(${LIBRARY_NAME}
         builders/terrain/TerraExtras.cpp
         builders/terrain/TerraGenerator.cpp
         builders/QuadKeyBuilder.cpp
-        builders/buildings/LowPolyBuildingBuilder.cpp
+        builders/buildings/BuildingBuilder.cpp
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
         index/ElementGeometryClipper.cpp
