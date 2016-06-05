@@ -11,7 +11,9 @@
 
 #include <cstdint>
 #include <string>
+#include <list>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 namespace utymap { namespace mapcss {
@@ -44,7 +46,7 @@ struct StyleEvaluator
     };
 
     // Parses expression into AST.
-    static std::shared_ptr<Tree> StyleEvaluator::parse(const std::string& expression);
+    static std::shared_ptr<Tree> parse(const std::string& expression);
 
     // Evaluates expression using tags.
     template <typename T>
@@ -52,7 +54,7 @@ struct StyleEvaluator
                       const std::vector<utymap::entities::Tag>& tags,
                       utymap::index::StringTable& stringTable)
     {
-        typedef std::conditional<std::is_same<T, std::string>::value, StringEvaluator, DoubleEvaluator>::type EvaluatorType;
+        typedef typename std::conditional<std::is_same<T, std::string>::value, StringEvaluator, DoubleEvaluator>::type EvaluatorType;
         return EvaluatorType(tags, stringTable)(tree);
     }
 

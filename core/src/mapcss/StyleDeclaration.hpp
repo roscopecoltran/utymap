@@ -1,6 +1,7 @@
 #ifndef MAPCSS_STYLEDECLARATION_HPP_INCLUDED
 #define MAPCSS_STYLEDECLARATION_HPP_INCLUDED
 
+#include "Exceptions.hpp"
 #include "entities/Element.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/StyleEvaluator.hpp"
