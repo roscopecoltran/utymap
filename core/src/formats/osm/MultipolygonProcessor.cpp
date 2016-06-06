@@ -138,9 +138,9 @@ void MultipolygonProcessor::process()
             continue;
 
         if (member.role == "outer")
-            outerIndecies.push_back(sequences.size());
+            outerIndecies.push_back(static_cast<int>(sequences.size()));
         else if (member.role == "inner")
-            innerIndecies.push_back(sequences.size());
+            innerIndecies.push_back(static_cast<int>(sequences.size()));
         else
             continue;
 

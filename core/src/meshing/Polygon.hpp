@@ -67,13 +67,13 @@ private:
         }      
 
         auto offset = segments.size() / 2;
-        for (auto i = 0; i < count; ++i) {
+        for (std::size_t i = 0; i < count; ++i) {
             Vector2 point = contour[i];
             rectangle.expand(point);
             points.push_back(point.x);
             points.push_back(point.y);
-            segments.push_back(offset + i);
-            segments.push_back(offset + ((i + 1) % count));
+            segments.push_back(static_cast<int>(offset + i));
+            segments.push_back(static_cast<int>(offset + ((i + 1) % count)));
         }
     }
 

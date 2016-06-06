@@ -42,7 +42,10 @@ struct Color
 
     Color operator*(double f) const
     {
-        return Color(r * f, g * f, b * f, a * f);
+        return Color(static_cast<int>(r * f), 
+                     static_cast<int>(g * f), 
+                     static_cast<int>(b * f), 
+                     static_cast<int>(a * f));
     }
 };
 

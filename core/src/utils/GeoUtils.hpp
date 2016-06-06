@@ -41,7 +41,7 @@ public:
     static std::string quadKeyToString(const QuadKey& quadKey)
     {
         std::string code;
-        code.reserve(quadKey.levelOfDetail);
+        code.reserve(static_cast<std::size_t>(quadKey.levelOfDetail));
         for (int i = quadKey.levelOfDetail; i > 0; --i)
         {
             char digit = '0';

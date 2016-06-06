@@ -141,9 +141,9 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
 
     bool hasHeightOffset = std::abs(regionContext.options.heightOffset) > 1E-8;
     // calculate approximate size of overall points
-    size_t size = 0;
+    std::size_t size = 0;
     for (auto i = 0; i < paths.size(); ++i)
-        size += paths[i].size() * 1.5;
+        size += static_cast<std::size_t>(paths[i].size() * 1.5);
 
     Polygon polygon(size);
     for (const Path& path : paths) {

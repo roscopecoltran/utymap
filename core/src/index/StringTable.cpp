@@ -32,7 +32,7 @@ public:
         map_(),
         offsets_()
     {
-        nextId_ = indexFile_.tellg() / (sizeof(std::uint32_t) * 2);
+        nextId_ = static_cast<std::uint32_t>(indexFile_.tellg() / (sizeof(std::uint32_t) * 2));
         if (nextId_ > 0)
         {
             int32_t count = nextId_;
@@ -58,7 +58,7 @@ public:
     std::uint32_t getId(const std::string& str)
     {
         std::uint32_t hash;
-        MurmurHash3_x86_32(str.c_str(), str.size(), seed_, &hash);
+        MurmurHash3_x86_32(str.c_str(), static_cast<int>(str.size()), seed_, &hash);
 
         HashIdMap::iterator hashLookupResult = map_.find(hash);
         if (hashLookupResult != map_.end())
@@ -106,7 +106,7 @@ private:
     {
         // get offset as file size
         dataFile_.seekg(0, ios::end);
-        std::uint32_t offset = dataFile_.tellg();
+        std::uint32_t offset = static_cast<std::uint32_t>(dataFile_.tellg());
 
         // write string
         dataFile_.seekp(0, ios::end);

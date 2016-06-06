@@ -41,7 +41,8 @@ public:
 
             min = std::min(min, utymap::meshing::Vector2::distance(v1, v2));
 
-            path.push_back(ClipperLib::IntPoint(v1.x * Scale, v1.y * Scale));
+            path.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(v1.x * Scale), 
+                                                static_cast<ClipperLib::cInt>(v1.y * Scale)));
         }
 
         offset.AddPath(path, ClipperLib::JoinType::jtMiter, ClipperLib::EndType::etClosedPolygon);

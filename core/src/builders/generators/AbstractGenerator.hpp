@@ -29,7 +29,7 @@ public:
     virtual void generate() = 0;
 
     // Sets vertex noise frequency
-    AbstractGenerator& setVertexNoiseFreq(float vertNoiseFreq)
+    AbstractGenerator& setVertexNoiseFreq(double vertNoiseFreq)
     {
         vertNoiseFreq_ = vertNoiseFreq;
         return *this;
@@ -37,7 +37,7 @@ public:
 
     // Sets color
     AbstractGenerator& setColor(std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
-                                float noiseFreq)
+                                double noiseFreq)
     {
         options_.gradient = gradient;
         options_.colorNoiseFreq = colorNoiseFreq;

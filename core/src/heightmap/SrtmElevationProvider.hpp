@@ -36,9 +36,9 @@ class SrtmElevationProvider : public ElevationProvider
         int totalPx, secondsPerPx;
         int offset;
         char* data;
-        int size;
+        std::size_t size;
        
-        HgtCell(int totalPx, int secondsPerPx, char* data, int size) :
+        HgtCell(int totalPx, int secondsPerPx, char* data, std::size_t size) :
             totalPx(totalPx), secondsPerPx(secondsPerPx), 
             offset((totalPx * totalPx - totalPx) * 2), data(data), size(size)
         {

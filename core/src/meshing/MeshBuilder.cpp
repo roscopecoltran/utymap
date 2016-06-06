@@ -20,11 +20,11 @@ public:
     {
         triangulateio in, mid;
 
-        in.numberofpoints = polygon.points.size() / 2;
-        in.numberofholes = polygon.holes.size() / 2;
+        in.numberofpoints = static_cast<int>(polygon.points.size() / 2);
+        in.numberofholes = static_cast<int>(polygon.holes.size() / 2);
         in.numberofpointattributes = 0;
         in.numberofregions = 0;
-        in.numberofsegments = polygon.segments.size() / 2;
+        in.numberofsegments = static_cast<int>(polygon.segments.size() / 2);
 
         in.pointlist = polygon.points.data();
         in.holelist = polygon.holes.data();
@@ -114,7 +114,7 @@ public:
     inline void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
     {
         auto color = options.gradient->evaluate((NoiseUtils::perlin2D(v0.x, v0.z, options.colorNoiseFreq) + 1) / 2);
-        auto startIndex = mesh.vertices.size() / 3;
+        int startIndex = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, v0, color, startIndex);
         addVertex(mesh, v1, color, ++startIndex);
@@ -130,7 +130,7 @@ public:
 
 private:
 
-    inline void addVertex(Mesh& mesh, const Vector2& p, double ele, std::uint32_t color, std::uint32_t triIndex) const
+    inline void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex) const
     {
         mesh.vertices.push_back(p.x);
         mesh.vertices.push_back(p.y);
@@ -139,7 +139,7 @@ private:
         mesh.triangles.push_back(triIndex);
     }
 
-    inline void addVertex(Mesh& mesh, const Vector3& vertex, std::uint32_t color, std::uint32_t triIndex) const
+    inline void addVertex(Mesh& mesh, const Vector3& vertex, int color, int triIndex) const
     {
         addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }

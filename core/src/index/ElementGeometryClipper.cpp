@@ -26,8 +26,10 @@ namespace {
             bool contains = bbox.contains(coord);
             allInside &= contains;
             allOutside &= !contains;
-            shape.push_back(ClipperLib::IntPoint(coord.longitude * utymap::index::ElementGeometryClipper::Scale,
-                                                 coord.latitude * utymap::index::ElementGeometryClipper::Scale));
+
+            auto x = static_cast<ClipperLib::cInt>(coord.longitude * utymap::index::ElementGeometryClipper::Scale);
+            auto y = static_cast<ClipperLib::cInt>(coord.latitude * utymap::index::ElementGeometryClipper::Scale);
+            shape.push_back(ClipperLib::IntPoint(x, y));
         }
 
         return allInside ? PointLocation::AllInside :
@@ -242,10 +244,17 @@ ClipperLib::Path ElementGeometryClipper::createPathFromBoundingBox()
     double xMin = quadKeyBbox_.minPoint.longitude, yMin = quadKeyBbox_.minPoint.latitude,
             xMax = quadKeyBbox_.maxPoint.longitude, yMax = quadKeyBbox_.maxPoint.latitude;
     ClipperLib::Path rect;
-    rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMin*Scale));
-    rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMin*Scale));
-    rect.push_back(ClipperLib::IntPoint(xMax*Scale, yMax*Scale));
-    rect.push_back(ClipperLib::IntPoint(xMin*Scale, yMax*Scale));
+    rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMin*Scale), 
+                                        static_cast<ClipperLib::cInt>(yMin*Scale)));
+
+    rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMax*Scale), 
+                                        static_cast<ClipperLib::cInt>(yMin*Scale)));
+
+    rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMax*Scale), 
+                                        static_cast<ClipperLib::cInt>(yMax*Scale)));
+
+    rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMin*Scale),
+                                        static_cast<ClipperLib::cInt>(yMax*Scale)));
     return std::move(rect);
 }
 

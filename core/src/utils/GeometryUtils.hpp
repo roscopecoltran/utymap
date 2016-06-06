@@ -65,7 +65,7 @@ namespace utymap { namespace utils {
             centroidY += polygon.points[i+1];
         }
 
-        auto count = polygon.points.size() / 2;
+        auto count = static_cast<double>(polygon.points.size() / 2);
         centroidX /= count;
         centroidY /= count;
 

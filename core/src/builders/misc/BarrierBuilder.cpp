@@ -32,7 +32,8 @@ void BarrierBuilder::visitWay(const Way& way)
     path.reserve(way.coordinates.size());
 
     for (const auto& coord : way.coordinates) {
-        path.push_back(IntPoint(coord.longitude * Scale, coord.latitude * Scale));
+        path.push_back(IntPoint(static_cast<ClipperLib::cInt>(coord.longitude * Scale), 
+                                static_cast<ClipperLib::cInt>(coord.latitude * Scale)));
     }
 
     if (path[0] == path[path.size() - 1])

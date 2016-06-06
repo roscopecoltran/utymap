@@ -124,8 +124,11 @@ class Application
                 cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
             }
 
-            elementCallback_(element.id, ctags.data(), ctags.size(),
-                coords.data(), coords.size(), cstyles.data(), cstyles.size());
+            elementCallback_(element.id, 
+                ctags.data(), static_cast<int>(ctags.size()),
+                coords.data(), static_cast<int>(coords.size()), 
+                cstyles.data(), static_cast<int>(cstyles.size()));
+
             tagStrings_.clear();
             styleStrings_.clear();
         }
@@ -242,9 +245,9 @@ public:
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
                     meshCallback(mesh.name.data(),
-                        mesh.vertices.data(), mesh.vertices.size(),
-                        mesh.triangles.data(), mesh.triangles.size(),
-                        mesh.colors.data(), mesh.colors.size());
+                        mesh.vertices.data(), static_cast<int>(mesh.vertices.size()),
+                        mesh.triangles.data(), static_cast<int>(mesh.triangles.size()),
+                        mesh.colors.data(), static_cast<int>(mesh.colors.size()));
                 }
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);

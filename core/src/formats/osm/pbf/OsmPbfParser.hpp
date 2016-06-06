@@ -42,7 +42,7 @@ public:
         while (!stream.eof() && !finished_) {
             OSMPBF::BlobHeader header = readHeader(stream);
             if (!finished_) {
-                int32_t sz = readBlob(header, stream);
+                std::int32_t sz = readBlob(header, stream);
                 if (header.type() == "OSMData") {
                     parsePrimitiveBlock(sz, visitor);
                 }
@@ -61,7 +61,7 @@ private:
 
     OSMPBF::BlobHeader readHeader(std::istream& stream)
     {
-        int32_t sz;
+        std::int32_t sz;
         OSMPBF::BlobHeader result;
 
         // read size of blob-header
@@ -86,11 +86,11 @@ private:
         return result;
     }
 
-    int32_t readBlob(const OSMPBF::BlobHeader& header, std::istream& stream)
+    std::int32_t readBlob(const OSMPBF::BlobHeader& header, std::istream& stream)
     {
         OSMPBF::Blob blob;
 
-        int32_t sz = header.datasize();
+        std::int32_t sz = header.datasize();
 
         if (sz > MAX_UNCOMPRESSED_BLOB_SIZE)
             throw std::domain_error("Blob size is bigger then allowed");
@@ -103,13 +103,13 @@ private:
 
         // uncompressed
         if (blob.has_raw()) {
-            sz = blob.raw().size();
+            sz = static_cast<std::int32_t>(blob.raw().size());
             memcpy(unpack_buffer_, buffer_, sz);
             return sz;
         }
 
         if (blob.has_zlib_data()) {
-            sz = blob.zlib_data().size();
+            sz = static_cast<std::int32_t>(blob.zlib_data().size());
 
             z_stream z;
             z.next_in = (unsigned char*) blob.zlib_data().c_str();
@@ -177,8 +177,8 @@ private:
                     Tags tags;
                     tags.reserve(2);
                     while (current_kv < dn.keys_vals_size() && dn.keys_vals(current_kv) != 0) {
-                        uint64_t key = dn.keys_vals(current_kv);
-                        uint64_t val = dn.keys_vals(current_kv + 1);
+                        auto key = dn.keys_vals(current_kv);
+                        auto val = dn.keys_vals(current_kv + 1);
                         Tag tag;
                         tag.key = primblock.stringtable().s(key);
                         tag.value = primblock.stringtable().s(val);
@@ -248,8 +248,8 @@ private:
         tags.reserve(object.keys_size());
         for (int i = 0; i < object.keys_size(); ++i) {
             Tag tag;
-            uint64_t key = object.keys(i);
-            uint64_t val = object.vals(i);
+            auto key = object.keys(i);
+            auto val = object.vals(i);
             tag.key = primblock.stringtable().s(key);
             tag.value = primblock.stringtable().s(val);
             tags.push_back(tag);
