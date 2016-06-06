@@ -23,9 +23,9 @@ struct Style
 
     std::unordered_map<key_type, value_type> declarations;
 
-    Style(utymap::index::StringTable& stringTable) 
-        : stringTable_(stringTable),
-          declarations()
+    Style(const std::vector<utymap::entities::Tag>& tags,
+          utymap::index::StringTable& stringTable)
+        : tags_(tags), stringTable_(stringTable), declarations()
     {
     }
 
@@ -54,84 +54,44 @@ struct Style
         return it->second;
     }
 
-    // Has key.
-    inline bool hasKey(const std::string& key)
+    // Gets string by given key. Empty string by default
+    inline std::shared_ptr<std::string> getString(const std::string& key) const
     {
-        return has(stringTable_.getId(key));
+        key_type keyId = stringTable_.getId(key);
+        return getString(keyId);
     }
     
-    // Gets string by given key.
-    inline std::shared_ptr<std::string> getString(const std::string& key,
-                                                  const std::string& defaultValue = "") const
+    // Gets string by given key. Empty string by default
+    inline std::shared_ptr<std::string> getString(key_type keyId) const
     {
-        key_type keyId = stringTable_.getId(key);
-        return has(keyId)
-            ? get(keyId)->value()
-            : std::make_shared<std::string>(defaultValue);
-    }
-
-    // Gets double value. Evaluate if necessary.
-    inline double getValue(const std::string& key,
-                           const std::vector<utymap::entities::Tag>& tags) const
-    {
-        key_type keyId = stringTable_.getId(key);
+        if (!has(keyId))
+            return std::make_shared<std::string>("");
 
         auto declaration = get(keyId);
 
         return declaration->isEval()
-                ? declaration->evaluate<double>(tags, stringTable_)
-                : getValue(declaration);
+               ? std::make_shared<std::string>(declaration->evaluate<std::string>(tags_, stringTable_))
+               : declaration->value();
     }
 
-    // Gets double value. Evaluate is not supported.
-    inline double getValue(const std::string& key, 
-                           double size, 
-                           double defaultValue = 0) const
-    {
-        return getValue(key, size, GeoCoordinate(), defaultValue);
-    }
-
-    // Gets double value. Evaluate is not supported.
+    // Gets double value or zero.
     inline double getValue(const std::string& key,
-                           const utymap::GeoCoordinate& coordinate,
-                           double defaultValue = 0) const
-    {
-        return getValue(key, 1, coordinate, defaultValue);
-    }
-
-    // Gets double value. Evaluate is not supported.
-    inline double getValue(const std::string& key,
-                           double size,
-                           const utymap::GeoCoordinate& coordinate,
-                           double defaultValue = 0) const
-    {
-        key_type keyId = stringTable_.getId(key);
-
-        return getValue(keyId, size, coordinate, defaultValue);
-    }
-
-    // Gets double value. Evaluate is not supported.
-    inline double getValue(key_type keyId,
-                           double size,
-                           const utymap::GeoCoordinate& coordinate,
-                           double defaultValue = 0) const
-    {
-        if (!has(keyId))
-            return defaultValue;
-
-        auto declaration = get(keyId);
-        if (declaration->isEval())
-            throw MapCssException(std::string("Cannot get value: it should be evaluated! Key: ") + stringTable_.getString(keyId));
-
-        return getValue(declaration, size, coordinate);
-    }
-
-private:
-
-    inline double getValue(const value_type& declaration,
                            double size = 1,
                            const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
     {
+        key_type keyId = stringTable_.getId(key);
+        return getValue(keyId, size, coordinate);
+    }
+
+    // Gets double value or zero.
+    inline double getValue(key_type keyId,
+                           double size = 1,
+                           const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
+    {
+        if (!has(keyId))
+            return 0;
+
+        auto declaration = get(keyId);
         auto rawValue = declaration->value();
         char dimen = (*rawValue)[rawValue->size() - 1];
 
@@ -147,10 +107,14 @@ private:
             return size * value * 0.01;
         }
 
-        return std::stod(*rawValue);
+        return  declaration->isEval()
+                ? declaration->evaluate<double>(tags_, stringTable_)
+                : std::stod(*rawValue);
     }
 
+private:
     utymap::index::StringTable& stringTable_;
+    const std::vector<utymap::entities::Tag> tags_;
 };
 
 }}

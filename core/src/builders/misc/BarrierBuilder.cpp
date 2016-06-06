@@ -41,7 +41,7 @@ void BarrierBuilder::visitWay(const Way& way)
     offset.AddPath(path, JoinType::jtMiter, EndType::etOpenSquare);
 
     Paths solution;
-    double offsetInMeters = style.getValue(OffsetKey, way.tags);
+    double offsetInMeters = style.getValue(OffsetKey);
     double offsetInGrads = GeoUtils::getOffset(way.coordinates[0], offsetInMeters);
     offset.Execute(solution, offsetInGrads * Scale);
     auto& shape = solution[0];
@@ -66,8 +66,8 @@ void BarrierBuilder::visitWay(const Way& way)
 
 void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygon& polygon)
 {
-    double height = style.getValue(HeightKey, way.tags);
-    double minHeight = style.getValue(MinHeightKey, way.tags);
+    double height = style.getValue(HeightKey);
+    double minHeight = style.getValue(MinHeightKey);
     double elevation = context_.eleProvider.getElevation(way.coordinates[0]) + minHeight;
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));

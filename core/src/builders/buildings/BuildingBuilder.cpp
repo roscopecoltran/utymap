@@ -234,12 +234,12 @@ private:
 
     inline bool isBuilding(const Style& style) const
     {
-        return *style.getString("building", "") == "true";
+        return *style.getString("building") == "true";
     }
 
     inline bool isMultipolygon(const Style& style) const
     {
-        return *style.getString("multipolygon", "") == "true";
+        return *style.getString("multipolygon") == "true";
     }
 
     void build(const Element& element, const Style& style)
@@ -248,15 +248,15 @@ private:
 
         auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);
 
-        double height = style.getValue(HeightKey, element.tags);
-        double minHeight = style.getValue(MinHeightKey, element.tags);
+        double height = style.getValue(HeightKey);
+        double minHeight = style.getValue(MinHeightKey);
         double elevation = context_.eleProvider.getElevation(geoCoordinate) + minHeight;
 
         height -= minHeight;
 
         // roof
         auto roofType = style.getString(RoofTypeKey);
-        double roofHeight = style.getValue(RoofHeightKey, element.tags);
+        double roofHeight = style.getValue(RoofHeightKey);
         auto roofGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, element.tags, RoofColorKey);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);

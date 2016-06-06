@@ -48,12 +48,14 @@ class StyleBuilder : public ElementVisitor
     typedef std::vector<Tag>::const_iterator TagIterator;
 public:
 
-    StyleBuilder(StringTable& stringTable, const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
+    StyleBuilder(std::vector<Tag> tags, StringTable& stringTable,
+                 const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
             filters_(filters),
             levelOfDetails_(levelOfDetails),
             onlyCheck_(onlyCheck),
             canBuild_(false),
-            style_(stringTable) {
+            style_(tags, stringTable)
+    {
     }
 
     void visitNode(const Node& node) { checkOrBuild(node.tags, filters_.nodes); }
@@ -267,21 +269,21 @@ StyleProvider::~StyleProvider()
 
 bool StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
 {
-    StyleBuilder builder(pimpl_->stringTable, pimpl_->filters, levelOfDetails, true);
+    StyleBuilder builder(element.tags, pimpl_->stringTable, pimpl_->filters, levelOfDetails, true);
     element.accept(builder);
     return builder.canBuild();
 }
 
 Style StyleProvider::forElement(const Element& element, int levelOfDetails) const
 {
-    StyleBuilder builder(pimpl_->stringTable, pimpl_->filters, levelOfDetails);
+    StyleBuilder builder(element.tags, pimpl_->stringTable, pimpl_->filters, levelOfDetails);
     element.accept(builder);
     return std::move(builder.build());
 }
 
 Style StyleProvider::forCanvas(int levelOfDetails) const
 {
-    Style style(pimpl_->stringTable);
+    Style style({}, pimpl_->stringTable);
     for (const auto &filter : pimpl_->filters.canvases[levelOfDetails]) {
         for (const auto &declaration : filter.declarations) {
             style.put(declaration.second);
