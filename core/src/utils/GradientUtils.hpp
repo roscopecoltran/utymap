@@ -23,6 +23,9 @@ public:
     // Parses color from string.
     static utymap::mapcss::Color parseColor(const std::string& colorStr);
 
+    // Checks whether string is gradient.
+    static bool isGradient(const std::string& gradientStr);
+
     // Parses color gradient from string.
     static std::shared_ptr<const utymap::mapcss::ColorGradient> parseGradient(const std::string& gradientStr);
 

@@ -213,7 +213,8 @@ public:
                         Declaration declaration = rule.declarations[i];
                         uint32_t key = stringTable.getId(declaration.key);
 
-                        addIfGradient(declaration.value);
+                        if (utymap::utils::GradientUtils::isGradient(declaration.value))
+                            addGradient(declaration.value);
 
                         filter.declarations[key] = Style::value_type(new StyleDeclaration(key, declaration.value));
                     }
@@ -228,7 +229,7 @@ public:
         }
     }
 
-    inline void addIfGradient(const std::string& key)
+    inline void addGradient(const std::string& key)
     {
         if (gradients.find(key) == gradients.end()) {
             auto gradient = utymap::utils::GradientUtils::parseGradient(key);
@@ -244,9 +245,8 @@ public:
             if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
             // TODO store it in map in thread safe way
-                        return gradient;
+            return gradient;
         }
-
         return gradients[key];
     }
 };

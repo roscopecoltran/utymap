@@ -275,6 +275,12 @@ std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
     return std::make_shared<ColorGradient>(data);
 }
 
+bool GradientUtils::isGradient(const std::string& gradientStr)
+{
+    // NOTE we don't check all hex codes
+    return gradientStr[0] == '#' || colorMap.find(gradientStr) != colorMap.end();
+}
+
 Color GradientUtils::parseColor(const std::string& colorStr)
 {
     return colorStr[0] == '#' ? fromHex(colorStr) : fromName(colorStr);
