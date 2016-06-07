@@ -40,6 +40,9 @@ public:
         return interpolate(pairA.second, pairB.second, mu);
     }
 
+    // Returns true if there is no color specified.
+    inline bool empty() const { return colors_.empty(); }
+
 private:
 
     // So far, use linear interpolation algorithm as the fastest.

@@ -13,8 +13,6 @@ using namespace utymap::mapcss;
 
 namespace {
 
-const std::string GradientPrefix = "gradient(";
-
 // Contains operation types supported by mapcss parser.
 enum OpType { Exists, Equals, NotEquals };
 
@@ -215,8 +213,7 @@ public:
                         Declaration declaration = rule.declarations[i];
                         uint32_t key = stringTable.getId(declaration.key);
 
-                        if (isGradient(declaration.value))
-                            addGradient(declaration.value);
+                        addIfGradient(declaration.value);
 
                         filter.declarations[key] = Style::value_type(new StyleDeclaration(key, declaration.value));
                     }
@@ -231,31 +228,27 @@ public:
         }
     }
 
-    inline bool isGradient(const std::string& key)
+    inline void addIfGradient(const std::string& key)
     {
-        return GradientPrefix.length() <= key.length() &&
-               std::equal(GradientPrefix.begin(), GradientPrefix.end(), key.begin());
-    }
-
-    inline void addGradient(const std::string& key)
-    {
-        if (gradients.find(key) == gradients.end())
-            gradients[key] = utymap::utils::GradientUtils::parseGradient(key);
+        if (gradients.find(key) == gradients.end()) {
+            auto gradient = utymap::utils::GradientUtils::parseGradient(key);
+            if (!gradient->empty())
+                gradients[key] = gradient;
+        }
     }
 
     inline std::shared_ptr<const ColorGradient> getGradient(const std::string& key)
     {
         if (gradients.find(key) == gradients.end()) {
-            if (!isGradient(key))
+            auto gradient = utymap::utils::GradientUtils::parseGradient(key);
+            if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
-
             // TODO store it in map in thread safe way
-            return utymap::utils::GradientUtils::parseGradient(key);
+                        return gradient;
         }
 
         return gradients[key];
     }
-
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :

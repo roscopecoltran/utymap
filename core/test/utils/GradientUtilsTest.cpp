@@ -48,4 +48,14 @@ BOOST_AUTO_TEST_CASE(GivenNonStandardNamedColorStrings_WhenEvaluate_ThenReturnCo
     BOOST_CHECK_EQUAL(gradient->evaluate(1), 0xFFEFD5FF);
 }
 
+
+BOOST_AUTO_TEST_CASE(GivenColorString_WhenParseGradient_ThenReturnValid)
+{
+    std::string gradientKey = "#ec8859";
+
+    auto gradient = GradientUtils::parseGradient(gradientKey);
+
+    BOOST_CHECK_EQUAL(gradient->evaluate(0), 0xEC8859FF);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
