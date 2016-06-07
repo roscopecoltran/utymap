@@ -225,8 +225,10 @@ namespace
 
     inline Color fromName(const std::string& colorStr)
     {
-        // TODO check existence
-        return colorMap.find(colorStr)->second;
+        auto color = colorMap.find(colorStr);
+        return color != colorMap.end()
+            ? color->second
+            : colorMap.find("grey")->second;
     }
 
     // Gets integer representation of color from color string.
