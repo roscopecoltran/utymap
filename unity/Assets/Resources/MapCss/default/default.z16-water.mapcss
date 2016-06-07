@@ -6,10 +6,10 @@ canvas|z16 {
     water-height-offset:-1m;
 }
 
-area|z16[natural=water],
-area|z16[landuse=basin],
-area|z16[waterway=riverbank],
-area|z16[waterway=dock] {
+area,relation|z16[natural=water],
+area,relation|z16[landuse=basin],
+area,relation|z16[waterway=riverbank],
+area,relation|z16[waterway=dock] {
     clip:true;
     builders: terrain;
     terrain-layer: water;
