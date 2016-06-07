@@ -71,6 +71,167 @@ area,relation|z16[building:shape=sphere] {
     facade-type: sphere;
 }
 
+area,relation|z16[building:material=brick],
+area,relation|z16[building:facade:material=brick],
+area,relation|z16[building:cladding=brick] {
+    facade-color: gradient(#0fff96, #0cc775 50%, #066139);
+}
+area,relation|z16[building:roof:material=brick],
+area,relation|z16[roof:material=brick] {
+    roof-color: gradient(#0fff96, #0cc775 50%, #066139);
+}
+area,relation|z16[building:material=bronze],
+area,relation|z16[building:facade:material=bronze],
+area,relation|z16[building:cladding=bronze] {
+    facade-color: gradient(#0fffed, #0ffeec 50%, #09988d);
+}
+area,relation|z16[building:roof:material=bronze],
+area,relation|z16[roof:material=bronze] {
+    roof-color: gradient(#0fffed, #0ffeec 50%, #09988d);
+}
+area,relation|z16[building:material=canvas],
+area,relation|z16[building:facade:material=canvas],
+area,relation|z16[building:cladding=canvas] {
+    facade-color: gradient(#0fff8f, #0fff8f 50%, #099956);
+}
+area,relation|z16[building:roof:material=canvas],
+area,relation|z16[roof:material=canvas] {
+    roof-color: gradient(#0fff8f, #0fff8f 50%, #099956);
+}
+area,relation|z16[building:material=concrete],
+area,relation|z16[building:facade:material=concrete],
+area,relation|z16[building:cladding=concrete] {
+    facade-color: gradient(#15c0c0, #0a5a5a 50%, #000000);
+}
+area,relation|z16[building:roof:material=concrete],
+area,relation|z16[roof:material=concrete] {
+    roof-color: gradient(#15c0c0, #0a5a5a 50%, #000000);
+}
+area,relation|z16[building:material=copper],
+area,relation|z16[building:facade:material=copper],
+area,relation|z16[building:cladding=copper] {
+    facade-color: gradient(#53746c, #0a0e0d 50%, #000000);
+}
+area,relation|z16[building:roof:material=copper],
+area,relation|z16[roof:material=copper] {
+    roof-color: gradient(#53746c, #0a0e0d 50%, #000000);
+}
+area,relation|z16[building:material=glass],
+area,relation|z16[building:facade:material=glass],
+area,relation|z16[building:cladding=glass] {
+    facade-color: gradient(#18f5f5, #0e8f8f 50%, #042929);
+}
+area,relation|z16[building:roof:material=glass],
+area,relation|z16[roof:material=glass] {
+    roof-color: gradient(#18f5f5, #0e8f8f 50%, #042929);
+}
+area,relation|z16[building:material=gold],
+area,relation|z16[building:facade:material=gold],
+area,relation|z16[building:cladding=gold] {
+    facade-color: gradient(#0fffc2, #0ffcc0 50%, #099672);
+}
+area,relation|z16[building:roof:material=gold],
+area,relation|z16[roof:material=gold] {
+    roof-color: gradient(#0fffc2, #0ffcc0 50%, #099672);
+}
+area,relation|z16[building:material=plants],
+area,relation|z16[building:facade:material=plants],
+area,relation|z16[building:cladding=plants] {
+    facade-color: gradient(#000ff9, #000993 50%, #00032d);
+}
+area,relation|z16[building:roof:material=plants],
+area,relation|z16[roof:material=plants] {
+    roof-color: gradient(#000ff9, #000993 50%, #00032d);
+}
+area,relation|z16[building:material=metal],
+area,relation|z16[building:facade:material=metal],
+area,relation|z16[building:cladding=metal] {
+    facade-color: gradient(#0fffff, #0aaaaa 50%, #044444);
+}
+area,relation|z16[building:roof:material=metal],
+area,relation|z16[roof:material=metal] {
+    roof-color: gradient(#0fffff, #0aaaaa 50%, #044444);
+}
+area,relation|z16[building:material=panel],
+area,relation|z16[building:facade:material=panel],
+area,relation|z16[building:cladding=panel] {
+    facade-color: gradient(#0fff8f, #0fff8f 50%, #099956);
+}
+area,relation|z16[building:roof:material=panel],
+area,relation|z16[roof:material=panel] {
+    roof-color: gradient(#0fff8f, #0fff8f 50%, #099956);
+}
+area,relation|z16[building:material=plaster],
+area,relation|z16[building:facade:material=plaster],
+area,relation|z16[building:cladding=plaster] {
+    facade-color: gradient(#0fffff, #099999 50%, #033333);
+}
+area,relation|z16[building:roof:material=plaster],
+area,relation|z16[roof:material=plaster] {
+    roof-color: gradient(#0fffff, #099999 50%, #033333);
+}
+area,relation|z16[building:material=roof_tiles],
+area,relation|z16[building:facade:material=roof_tiles],
+area,relation|z16[building:cladding=roof_tiles] {
+    facade-color: gradient(#753e2f, #0f0806 50%, #000000);
+}
+area,relation|z16[building:roof:material=roof_tiles],
+area,relation|z16[roof:material=roof_tiles] {
+    roof-color: gradient(#753e2f, #0f0806 50%, #000000);
+}
+area,relation|z16[building:material=silver],
+area,relation|z16[building:facade:material=silver],
+area,relation|z16[building:cladding=silver] {
+    facade-color: gradient(#0fffff, #0ccccc 50%, #066666);
+}
+area,relation|z16[building:roof:material=silver],
+area,relation|z16[roof:material=silver] {
+    roof-color: gradient(#0fffff, #0ccccc 50%, #066666);
+}
+area,relation|z16[building:material=slate],
+area,relation|z16[building:facade:material=slate],
+area,relation|z16[building:cladding=slate] {
+    facade-color: gradient(#0ccccc, #066666 50%, #000000);
+}
+area,relation|z16[building:roof:material=slate],
+area,relation|z16[roof:material=slate] {
+    roof-color: gradient(#0ccccc, #066666 50%, #000000);
+}
+area,relation|z16[building:material=stone],
+area,relation|z16[building:facade:material=stone],
+area,relation|z16[building:cladding=stone] {
+    facade-color: gradient(#0ffcab, #099666 50%, #033021);
+}
+area,relation|z16[building:roof:material=stone],
+area,relation|z16[roof:material=stone] {
+    roof-color: gradient(#0ffcab, #099666 50%, #033021);
+}
+area,relation|z16[building:material=tar_paper],
+area,relation|z16[building:facade:material=tar_paper],
+area,relation|z16[building:cladding=tar_paper] {
+    facade-color: gradient(#099999, #033333 50%, #000000);
+}
+area,relation|z16[building:roof:material=tar_paper],
+area,relation|z16[roof:material=tar_paper] {
+    roof-color: gradient(#099999, #033333 50%, #000000);
+}
+area,relation|z16[building:material=wood],
+area,relation|z16[building:facade:material=wood],
+area,relation|z16[building:cladding=wood] {
+    facade-color: gradient(#0eff94, #0deb88 50%, #07854d);
+}
+area,relation|z16[building:roof:material=wood],
+area,relation|z16[roof:material=wood] {
+    roof-color: gradient(#0eff94, #0deb88 50%, #07854d);
+}
+
+area,relation|z16[building:colour] {
+    facade-color: eval("tag('building:colour')");
+}
+area,relation|z16[building:color] {
+    facade-color: eval("tag('building:color')");
+}
+
 area,relation|z16[man_made=bridge] {
     height: 0.2m;
     min-height: -0.2m;
