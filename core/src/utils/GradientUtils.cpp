@@ -8,6 +8,8 @@ using namespace utymap::utils;
 
 namespace
 {
+    const std::string GradientPrefix = "gradient(";
+
     const std::unordered_map<std::string, Color> colorMap =
     {
         { "activeborder", Color(180, 180, 180, 255) },
@@ -279,8 +281,10 @@ std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
 
 bool GradientUtils::isGradient(const std::string& gradientStr)
 {
-    // NOTE we don't check all hex codes
-    return gradientStr[0] == '#' || colorMap.find(gradientStr) != colorMap.end();
+    return (GradientPrefix.length() <= gradientStr.length() &&
+            std::equal(GradientPrefix.begin(), GradientPrefix.end(), gradientStr.begin())) ||
+            gradientStr[0] == '#' || // NOTE we don't check all hex codes
+            colorMap.find(gradientStr) != colorMap.end();
 }
 
 Color GradientUtils::parseColor(const std::string& colorStr)
