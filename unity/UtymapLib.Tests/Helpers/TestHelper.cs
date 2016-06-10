@@ -2,9 +2,10 @@
 using Assets.UtymapLib;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
+using UtyDepend;
+using UtyDepend.Config;
 
 namespace UtymapLib.Tests.Helpers
 {
@@ -24,12 +25,6 @@ namespace UtymapLib.Tests.Helpers
         public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
 
         #endregion
-
-        public static JsonConfigSection GetJsonConfig(string configPath)
-        {
-            return new JsonConfigSection
-                (new FileSystemService(new PathResolver(), new DefaultTrace()).ReadText(configPath));
-        }
 
         public static CompositionRoot GetCompositionRoot(GeoCoordinate worldZeroPoint)
         {

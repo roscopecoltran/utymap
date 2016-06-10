@@ -14,9 +14,10 @@ using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Data;
-using IContainer = Assets.UtymapLib.Infrastructure.Dependencies.IContainer;
-using Container = Assets.UtymapLib.Infrastructure.Dependencies.Container;
-using Component = Assets.UtymapLib.Infrastructure.Dependencies.Component;
+using UtyRx;
+using IContainer = UtyDepend.IContainer;
+using Container = UtyDepend.Container;
+using Component = UtyDepend.Component;
 
 namespace Assets.Scripts
 {
@@ -54,9 +55,6 @@ namespace Assets.Scripts
 
         public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction)
         {
-            // setup main thread scheduler
-            Scheduler.MainThread = UnityMainThreadScheduler.MainThread;
-
             // create default container which should not be exposed outside
             // to avoid Service Locator pattern.
             _container = new Container();
@@ -65,7 +63,7 @@ namespace Assets.Scripts
             _trace = new DebugConsoleTrace();
 
             // subscribe to unhandled exceptions in RX
-            UnityMainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
+            MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
                 _trace.Error(FatalCategoryName, ex, "Unhandled exception"));
 
             // console is way to debug/investigate app behavior on real devices when
@@ -141,7 +139,7 @@ namespace Assets.Scripts
 
                 GetService<IMessageBus>()
                     .AsObservable<TileLoadStartMessage>()
-                    .ObserveOnMainThread()
+                    .ObserveOn(Scheduler.MainThread)
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
 
                 // NOTE this is just example: you can load your regions into memory once

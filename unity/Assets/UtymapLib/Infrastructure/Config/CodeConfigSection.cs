@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UtyDepend.Config;
 
 namespace Assets.UtymapLib.Infrastructure.Config
 {

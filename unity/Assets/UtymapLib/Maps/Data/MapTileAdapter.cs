@@ -5,8 +5,8 @@ using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Core.Utils;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.Primitives;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
+using UtyRx;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace Assets.UtymapLib.Maps.Data

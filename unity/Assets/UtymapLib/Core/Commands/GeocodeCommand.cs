@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Maps.Geocoding;
+using UtyDepend;
+using UtyRx;
 
 namespace Assets.UtymapLib.Core.Commands
 {

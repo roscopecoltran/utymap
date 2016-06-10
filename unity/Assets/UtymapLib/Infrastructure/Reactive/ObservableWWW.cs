@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UtyRx;
 
 namespace Assets.UtymapLib.Infrastructure.Reactive
 {

@@ -4,12 +4,12 @@ using System.Linq;
 using UnityEngine;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Utils;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.IO.Compression;
-using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyDepend;
+using UtyDepend.Config;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Elevation
 {
@@ -98,8 +98,7 @@ namespace Assets.UtymapLib.Maps.Elevation
         private IObservable<Unit> Download(GeoCoordinate coordinate)
         {
             _trace.Info(TraceCategory, "downloading data for {0}", coordinate.ToString());
-            return _downloader.Download(coordinate)
-                .SelectMany(bytes =>
+            return _downloader.Download(coordinate).SelectMany(bytes =>
                 {
                     _trace.Info(TraceCategory, "downloaded {0} bytes", bytes.Length.ToString());
                     _hgtData = CompressionUtils.Unzip(bytes).Single().Value;

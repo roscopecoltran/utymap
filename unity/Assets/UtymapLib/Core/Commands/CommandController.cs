@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Assets.UtymapLib.Infrastructure.Dependencies;
+using UtyDepend;
 
 namespace Assets.UtymapLib.Core.Commands
 {

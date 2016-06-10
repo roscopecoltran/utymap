@@ -8,6 +8,7 @@ using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Data;
 using NUnit.Framework;
 using UtymapLib.Tests.Helpers;
+using UtyRx;
 
 namespace UtymapLib.Tests.Integration
 {
@@ -38,7 +39,7 @@ namespace UtymapLib.Tests.Integration
             _compositionRoot.Dispose();
         }
 
-        [Test(Description = "This test loads 100 tiles from osm file to ensure that there are no unexpected crashes at least at test region.")]
+        [Test(Description = "This test loads 64 tiles from osm file to ensure that there are no unexpected crashes at least at test region.")]
         public void CanLoadMultipleTiles()
         {
             // ARRANGE
@@ -54,10 +55,9 @@ namespace UtymapLib.Tests.Integration
                     var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
                     _mapDataLoader
                         .Load(tile)
-                        .SubscribeOn(Scheduler.ThreadPool)
-                        .ObserveOn(Scheduler.ThreadPool)
-                        .Do(AssertData)
-                        .Wait(TimeSpan.FromSeconds(5));
+                        .SubscribeOn(Scheduler.CurrentThread)
+                        .ObserveOn(Scheduler.CurrentThread)
+                        .Subscribe(AssertData);
                 }
         }
 

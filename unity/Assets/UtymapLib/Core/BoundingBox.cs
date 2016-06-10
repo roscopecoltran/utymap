@@ -43,6 +43,13 @@ namespace Assets.UtymapLib.Core
                 Math.Max(MaxPoint.Longitude, coordinate.Longitude));
         }
 
+        public GeoCoordinate Center()
+        {
+            return new GeoCoordinate(
+                MinPoint.Latitude + (MaxPoint.Latitude - MinPoint.Latitude) / 2,
+                MinPoint.Longitude + (MaxPoint.Longitude - MinPoint.Longitude) / 2);
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {

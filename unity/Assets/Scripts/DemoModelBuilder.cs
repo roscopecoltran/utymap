@@ -1,8 +1,8 @@
 ﻿using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Explorer.Customization;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using UnityEngine;
+using UtyDepend;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace Assets.Scripts

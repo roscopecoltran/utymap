@@ -12,6 +12,7 @@ using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Data;
 using UtymapLib.Tests.Helpers;
+using UtyRx;
 
 namespace UtymapLib.Tests
 {
@@ -32,8 +33,6 @@ namespace UtymapLib.Tests
 
         private static void Main(string[] args)
         {
-            Scheduler.MainThread = Scheduler.CurrentThread;
-
             var program = new Program();
             program.Initialize();
             program.RunMocker();

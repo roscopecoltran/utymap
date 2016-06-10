@@ -6,10 +6,9 @@ using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Geocoding;
-
-using Component = Assets.UtymapLib.Infrastructure.Dependencies.Component;
+using UtyRx;
+using Component = UtyDepend.Component;
 
 namespace Assets.Scripts.Character
 {
@@ -78,7 +77,7 @@ namespace Assets.Scripts.Character
             // restore gravity and adjust character y-position once first tile is loaded
             AppManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
                 .Take(1)
-                .ObserveOnMainThread()
+                .ObserveOn(Scheduler.MainThread)
                 .Subscribe(_ =>
                 {
                     // TODO expose elevation logic from native or use old managed implementation?
@@ -97,7 +96,7 @@ namespace Assets.Scripts.Character
         void OnEnable()
         {
             // utymap is better to start on non-UI thread
-            Observable.Start(() => AppManager.RunGame(), Scheduler.ThreadPool);
+            Observable.Start(() => AppManager.RunGame(), Scheduler.ThreadPool).Subscribe();
         }
 
         /// <summary> Listens for position changes to notify library. </summary>

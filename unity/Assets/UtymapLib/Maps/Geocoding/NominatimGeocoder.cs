@@ -2,10 +2,11 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Core;
-using Assets.UtymapLib.Infrastructure.Config;
 using Assets.UtymapLib.Infrastructure.Formats;
+using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyDepend.Config;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Geocoding
 {

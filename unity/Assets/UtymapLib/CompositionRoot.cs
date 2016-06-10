@@ -4,14 +4,15 @@ using System.Runtime.CompilerServices;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
 using Assets.UtymapLib.Infrastructure;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
+using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Data;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Geocoding;
 using Assets.UtymapLib.Maps.Imaginary;
+using UtyDepend;
+using UtyDepend.Config;
 
 // has to be there due to Unity3d's generated project 
 [assembly: InternalsVisibleTo("UtymapLib.Tests")]
@@ -35,6 +36,8 @@ namespace Assets.UtymapLib
         /// <param name="configSection"> Application configuration. </param>
         public CompositionRoot(IContainer container, IConfigSection configSection)
         {
+            UnityScheduler.SetDefaultForUnity();
+
             _container = container;
             _configSection = configSection;
             _bootstrapperActions = new List<Action<IContainer, IConfigSection>>();

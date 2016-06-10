@@ -1,9 +1,9 @@
 ﻿using System;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
+using UtyDepend;
 
 namespace Assets.UtymapLib.Maps.Data
 {

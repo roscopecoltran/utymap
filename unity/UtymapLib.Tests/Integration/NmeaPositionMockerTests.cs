@@ -7,6 +7,7 @@ using Assets.UtymapLib.Infrastructure;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using NUnit.Framework;
 using UtymapLib.Tests.Helpers;
+using UtyRx;
 
 namespace UtymapLib.Tests.Integration
 {

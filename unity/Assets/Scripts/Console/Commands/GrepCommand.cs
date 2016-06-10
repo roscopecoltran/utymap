@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Assets.Scripts.Console.Utils;
 using Assets.UtymapLib.Core.Commands;
-using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyRx;
 
 namespace Assets.Scripts.Console.Commands
 {

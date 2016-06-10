@@ -1,5 +1,5 @@
-﻿using Assets.UtymapLib.Infrastructure.Reactive;
-using Assets.UtymapLib.Core;
+﻿using Assets.UtymapLib.Core;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Geocoding
 {

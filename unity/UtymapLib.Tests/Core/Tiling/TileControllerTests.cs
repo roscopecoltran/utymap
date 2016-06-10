@@ -10,7 +10,9 @@ using Assets.UtymapLib.Maps.Data;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
+using UtyDepend.Config;
 using UtymapLib.Tests.Helpers;
+using UtyRx;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace UtymapLib.Tests.Core.Tiling

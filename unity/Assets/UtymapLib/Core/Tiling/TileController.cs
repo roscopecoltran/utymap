@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Utils;
 using Assets.UtymapLib.Infrastructure;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Maps.Data;
+using UtyDepend;
+using UtyDepend.Config;
+using UtyRx;
 
 namespace Assets.UtymapLib.Core.Tiling
 {
@@ -131,8 +131,8 @@ namespace Assets.UtymapLib.Core.Tiling
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _moveSensitivity = configSection.GetFloat("sensitivity", 50);
-            _offsetRatio = configSection.GetFloat("offset", 5); // percentage of tile size
+            _moveSensitivity = configSection.GetFloat("sensitivity", 30);
+            _offsetRatio = configSection.GetFloat("offset", 10); // percentage of tile size
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace Assets.UtymapLib.Core.Tiling
             _tileLoader
                 .Load(tile)
                 .SubscribeOn(Scheduler.ThreadPool)
-                .ObserveOnMainThread()
+                .ObserveOn(Scheduler.MainThread)
                 .Subscribe(
                     u => u.Match(e => _modelBuilder.BuildElement(tile, e), m => _modelBuilder.BuildMesh(tile, m)),
                     () => _messageBus.Send(new TileLoadFinishMessage(tile)));

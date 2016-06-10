@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
+using UtyDepend;
 
 #if UNITY_WEBPLAYER
 using Assets.UtymapLib.Infrastructure.Reactive;

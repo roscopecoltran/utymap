@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
+using UtyRx;
 
 namespace Assets.UtymapLib.Core.Commands
 {

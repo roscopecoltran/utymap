@@ -1,6 +1,6 @@
 ﻿using Assets.UtymapLib.Core;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using UnityEngine;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Elevation
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyRx;
 
 namespace Assets.UtymapLib.Infrastructure
 {

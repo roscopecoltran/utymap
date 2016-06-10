@@ -1,4 +1,6 @@
-﻿namespace Assets.UtymapLib.Infrastructure.Config
+﻿using UtyDepend.Config;
+
+namespace Assets.UtymapLib.Infrastructure.Config
 {
     /// <summary> Represents a builder responsible for application configuration creation. </summary>
     public class ConfigBuilder

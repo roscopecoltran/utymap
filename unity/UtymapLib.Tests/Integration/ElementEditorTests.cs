@@ -5,13 +5,13 @@ using Assets.UtymapLib;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Primitives;
-using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Data;
 using Assets.UtymapLib.Maps.Elevation;
 using NUnit.Framework;
+using UtyDepend;
 using UtymapLib.Tests.Helpers;
+using UtyRx;
 
 namespace UtymapLib.Tests.Integration
 {
@@ -53,10 +53,10 @@ namespace UtymapLib.Tests.Integration
             _elementEditor.Add(node, levelOfDetails);
 
             Union<Element, Mesh> result = default(Union<Element, Mesh>);
-            Assert.AreEqual(1, _dataLoader
+            _dataLoader
                 .Load(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection))
                 .Do(u => result = u)
-                .Count());
+                .Wait();
             result.Match(
                 e => CompareElements(node, e), 
                 mesh =>

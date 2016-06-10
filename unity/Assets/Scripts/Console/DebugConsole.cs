@@ -27,8 +27,8 @@ using Assets.Scripts.Console.Utils;
 using Assets.Scripts.Console.Watchers;
 using UnityEngine;
 using Assets.UtymapLib.Core.Commands;
-using Assets.UtymapLib.Infrastructure.Dependencies;
-using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyDepend;
+using UtyRx;
 
 namespace Assets.Scripts.Console
 {
@@ -594,7 +594,7 @@ namespace Assets.Scripts.Console
             if (CommandController.Contains(cmd))
             {
                 CommandController[cmd].Execute(input.ToArray())
-                    .ObserveOnMainThread()
+                    .ObserveOn(Scheduler.MainThread)
                     .Subscribe(r => LogMessage(ConsoleMessage.Info(r)));
 
             }

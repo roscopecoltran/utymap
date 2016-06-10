@@ -3,14 +3,15 @@ using System.IO;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Models;
 using Assets.UtymapLib.Core.Tiling;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Primitives;
 using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Maps.Elevation;
 using Assets.UtymapLib.Maps.Imaginary;
+using UtyDepend;
+using UtyDepend.Config;
+using UtyRx;
 using Mesh = Assets.UtymapLib.Core.Models.Mesh;
 
 namespace Assets.UtymapLib.Maps.Data
@@ -78,9 +79,10 @@ namespace Assets.UtymapLib.Maps.Data
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            return CreateElevationSequence(tile)
+            return CreateDownloadSequence(tile)
+                //CreateElevationSequence(tile)
                 //.SelectMany(t => _imaginaryProvider.Get(t).Select(_ => t))
-                .SelectMany(t => CreateDownloadSequence(t))
+                //.SelectMany(t => CreateDownloadSequence(t))
                 .SelectMany(t => CreateLoadSequence(t));
         }
 
@@ -139,10 +141,11 @@ namespace Assets.UtymapLib.Maps.Data
             // need to download from remote server
             return Observable.Create<Tile>(observer =>
             {
+                double padding = 0.001;
                 BoundingBox query = tile.BoundingBox;
                 var queryString = String.Format(_mapDataServerQuery,
-                    query.MinPoint.Latitude, query.MinPoint.Longitude,
-                    query.MaxPoint.Latitude, query.MaxPoint.Longitude);
+                    query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
+                    query.MaxPoint.Latitude + padding, query.MaxPoint.Longitude + padding);
                 var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
                 Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
                 ObservableWWW.GetAndGetBytes(uri)
@@ -197,7 +200,7 @@ namespace Assets.UtymapLib.Maps.Data
         /// <summary> Adds tile data into in memory storage. </summary>
         private string SaveTileDataInMemory(Tile tile, string filePath)
         {
-            Trace.Info(TraceCategory, "try to save: {0} from {1}", tile.QuadKey.ToString(), filePath);
+            Trace.Info(TraceCategory, "try to save: {0} from {1}", tile.ToString(), filePath);
             string errorMsg = null;
             UtymapLib.AddToInMemoryStore(
                 _pathResolver.Resolve(tile.Stylesheet.Path),

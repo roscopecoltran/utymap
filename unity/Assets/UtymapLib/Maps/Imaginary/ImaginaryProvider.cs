@@ -1,10 +1,11 @@
 ﻿using System.IO;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Core.Tiling;
-using Assets.UtymapLib.Infrastructure.Config;
-using Assets.UtymapLib.Infrastructure.Dependencies;
 using Assets.UtymapLib.Infrastructure.IO;
 using Assets.UtymapLib.Infrastructure.Reactive;
+using UtyDepend;
+using UtyDepend.Config;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Imaginary
 {

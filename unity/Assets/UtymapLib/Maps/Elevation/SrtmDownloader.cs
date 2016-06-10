@@ -4,6 +4,7 @@ using Assets.UtymapLib.Infrastructure.Reactive;
 using Assets.UtymapLib.Core;
 using Assets.UtymapLib.Infrastructure.Diagnostic;
 using Assets.UtymapLib.Infrastructure.IO;
+using UtyRx;
 
 namespace Assets.UtymapLib.Maps.Elevation
 {
