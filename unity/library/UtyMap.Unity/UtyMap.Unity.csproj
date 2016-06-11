@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{02582431-3E96-45F0-AA47-B83F3F468738}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UtyMap.Unity</RootNamespace>
+    <AssemblyName>UtyMap.Unity</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY_EDITOR;UNITY_EDITOR_64</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\packages\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\packages\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UtyDepend">
+      <HintPath>..\packages\UtyDepend.dll</HintPath>
+    </Reference>
+    <Reference Include="UtyRx">
+      <HintPath>..\packages\UtyRx.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CompositionRoot.cs" />
+    <Compile Include="Core\BoundingBox.cs" />
+    <Compile Include="Core\Commands\Arguments.cs" />
+    <Compile Include="Core\Commands\CommandController.cs" />
+    <Compile Include="Core\Commands\GeocodeCommand.cs" />
+    <Compile Include="Core\Commands\ICommand.cs" />
+    <Compile Include="Core\Commands\SysCommand.cs" />
+    <Compile Include="Core\GeoCoordinate.cs" />
+    <Compile Include="Core\IProjection.cs" />
+    <Compile Include="Core\Models\Element.cs" />
+    <Compile Include="Core\Models\Mesh.cs" />
+    <Compile Include="Core\Models\ModelBuilder.cs" />
+    <Compile Include="Core\Positioning\GeoPosition.cs" />
+    <Compile Include="Core\Positioning\Nmea\ActualNmeaValueType.cs" />
+    <Compile Include="Core\Positioning\Nmea\Error.cs" />
+    <Compile Include="Core\Positioning\Nmea\GGA.cs" />
+    <Compile Include="Core\Positioning\Nmea\GLL.cs" />
+    <Compile Include="Core\Positioning\Nmea\GSA.cs" />
+    <Compile Include="Core\Positioning\Nmea\GSV.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaField.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaMessage.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaMessageType.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaParser.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaPositionMocker.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaUtils.cs" />
+    <Compile Include="Core\Positioning\Nmea\NmeaValueType.cs" />
+    <Compile Include="Core\Positioning\Nmea\RMC.cs" />
+    <Compile Include="Core\QuadKey.cs" />
+    <Compile Include="Core\Stylesheet.cs" />
+    <Compile Include="Core\Tiling\Tile.cs" />
+    <Compile Include="Core\Tiling\TileController.cs" />
+    <Compile Include="Core\Tiling\TileMessages.cs" />
+    <Compile Include="Core\Utils\ColorUtils.cs" />
+    <Compile Include="Core\Utils\GeoUtils.cs" />
+    <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Explorer\Customization\CustomizationService.cs" />
+    <Compile Include="Infrastructure\Config\CodeConfigSection.cs" />
+    <Compile Include="Infrastructure\Config\ConfigBuilder.cs" />
+    <Compile Include="Infrastructure\Diagnostic\DefaultTrace.cs" />
+    <Compile Include="Infrastructure\Diagnostic\ITrace.cs" />
+    <Compile Include="Infrastructure\Formats\SimpleJSON.cs" />
+    <Compile Include="Infrastructure\IO\Compression\CompressionUtils.cs" />
+    <Compile Include="Infrastructure\IO\Compression\InflateZipStream.cs" />
+    <Compile Include="Infrastructure\IO\FileSystemService.cs" />
+    <Compile Include="Infrastructure\IO\IFileSystemService.cs" />
+    <Compile Include="Infrastructure\IO\IPathResolver.cs" />
+    <Compile Include="Infrastructure\IO\PathResolver.cs" />
+    <Compile Include="Infrastructure\MessageBus.cs" />
+    <Compile Include="Infrastructure\Primitives\Range.cs" />
+    <Compile Include="Infrastructure\Primitives\Rectangle.cs" />
+    <Compile Include="Infrastructure\Primitives\Union.cs" />
+    <Compile Include="Infrastructure\Reactive\MainThreadDispatcher.cs" />
+    <Compile Include="Infrastructure\Reactive\MainThreadScheduler.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableUnity.cs" />
+    <Compile Include="Infrastructure\Reactive\ObservableWWW.cs" />
+    <Compile Include="Infrastructure\Reactive\ScenePlaybackDetector.cs" />
+    <Compile Include="Infrastructure\Reactive\YieldInstructionCache.cs" />
+    <Compile Include="Maps\Data\ElementEditor.cs" />
+    <Compile Include="Maps\Data\MapDataLoader.cs" />
+    <Compile Include="Maps\Data\MapTileAdapter.cs" />
+    <Compile Include="Maps\Elevation\FlatElevationProvider.cs" />
+    <Compile Include="Maps\Elevation\IElevationProvider.cs" />
+    <Compile Include="Maps\Elevation\SrtmDownloader.cs" />
+    <Compile Include="Maps\Elevation\SrtmElevationProvider.cs" />
+    <Compile Include="Maps\Geocoding\IGeocoder.cs" />
+    <Compile Include="Maps\Geocoding\NominatimGeocoder.cs" />
+    <Compile Include="Maps\Imaginary\BingImaginaryProvider.cs" />
+    <Compile Include="Maps\Imaginary\ImaginaryProvider.cs" />
+    <Compile Include="Maps\CoreLibrary.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strings.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
