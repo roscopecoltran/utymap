@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtyMap.Unity", "UtyMap.Unity\UtyMap.Unity.csproj", "{02582431-3E96-45F0-AA47-B83F3F468738}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtyMapLib.Tests", "UtyMap.Unity.Tests\UtyMapLib.Tests.csproj", "{D6B35672-C5B0-40F4-B6CC-AFE012366896}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtyMap.Unity.Tests", "UtyMap.Unity.Tests\UtyMap.Unity.Tests.csproj", "{D6B35672-C5B0-40F4-B6CC-AFE012366896}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F8C3AC80-27AA-4F7D-A41C-A4FBBC8CB059}"
 	ProjectSection(SolutionItems) = preProject

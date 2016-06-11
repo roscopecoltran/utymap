@@ -17,7 +17,7 @@ namespace UtyMap.Unity.Tests.Helpers
 
         public static GeoCoordinate WorldZeroPoint = new GeoCoordinate(52.5317429, 13.3871987);
 
-        public const string TestAssetsFolder = @"../../../Assets/Resources";
+        public const string TestAssetsFolder = @"../../../demo/Assets/Resources";
         public const string ConfigTestRootFile = TestAssetsFolder + @"/Config/test.json";
         public const string BerlinXmlData = TestAssetsFolder + @"/Osm/berlin.osm.xml";
         public const string BerlinPbfData = TestAssetsFolder + @"/Osm/berlin.osm.pbf";
