@@ -110,30 +110,30 @@ namespace UtyMap.Unity.Maps
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void OnError([In] string message);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void configure(string stringPath, string dataPath, string elePath, OnError errorHandler);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void addToInMemoryStoreInRange(string stylePath, string path, int startLod, int endLod,
             OnError errorHandler);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void addToInMemoryStoreInQuadKey(string stylePath, string path, int tileX, int tileY, int lod, 
             OnError errorHandler);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void addElementToInMemoryStore(string stylePath, long id, 
             double[] vertices, int vertexLength, string[] tags, int tagLength, 
             int startLod, int endLod, OnError errorHandler);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern int loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler);
 
-        [DllImport("UtyMapLib", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void cleanup();
 
         #endregion

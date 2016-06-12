@@ -1,6 +1,6 @@
 include_directories(${MAIN_SOURCE})
 
-set(LIBRARY_NAME UtyMapLib)
+set(LIBRARY_NAME UtyMap.Shared)
 
 add_library(${LIBRARY_NAME} SHARED Application.hpp ExportLib.cpp)
 
