@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
@@ -13,17 +15,20 @@ namespace Assets.Scripts
     public class DemoModelBuilder : IModelBuilder
     {
         private readonly CustomizationService _customizationService;
+        private readonly PlaceElementBuilder _placeElementBuilder;
 
         [Dependency]
         public DemoModelBuilder(CustomizationService customizationService)
         {
             _customizationService = customizationService;
+            _placeElementBuilder = new PlaceElementBuilder(customizationService);
         }
 
         /// <inheritdoc />
         public void BuildElement(Tile tile, Element element)
         {
-            // TODO Use this method to build your objects in scene from map data
+            if (element.Styles["builders"].Contains("info"))
+                _placeElementBuilder.Build(tile, element).transform.parent = tile.GameObject.transform;
         }
 
         /// <inheritdoc />
