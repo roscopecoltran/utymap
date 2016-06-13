@@ -115,7 +115,7 @@ class Application
             // convert style
             utymap::mapcss::Style style = styleProvider_.forElement(element, levelOfDetail_);
             std::vector<const char*> cstyles;
-            tagStrings_.reserve(style.declarations.size() * 2);
+            styleStrings_.reserve(style.declarations.size() * 2);
             cstyles.reserve(style.declarations.size());
             for (const auto pair : style.declarations) {
                 styleStrings_.push_back(stringTable_.getString(pair.first));
