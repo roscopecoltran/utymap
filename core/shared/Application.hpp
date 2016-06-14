@@ -1,7 +1,6 @@
 #ifndef APPLICATION_HPP_DEFINED
 #define APPLICATION_HPP_DEFINED
 
-#include "GeoCoordinate.hpp"
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
@@ -12,18 +11,18 @@
 #include "builders/misc/BarrierBuilder.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
-#include "entities/Element.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "heightmap/SrtmElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/PersistentElementStore.hpp"
-#include "index/StringTable.hpp"
 #include "mapcss/MapCssParser.hpp"
-#include "mapcss/StyleProvider.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/GeoUtils.hpp"
+
+#include "Callbacks.hpp"
+#include "ExportElementVisitor.hpp"
 
 #include <cstdint>
 #include <exception>
@@ -33,112 +32,12 @@
 #include <vector>
 #include <unordered_map>
 
-// Called when mesh is built.
-typedef void OnMeshBuilt(const char* name,
-                         const double* vertices, int vertexCount,
-                         const int* triangles, int triCount,
-                         const int* colors, int colorCount);
-
-// Called when element is loaded.
-typedef void OnElementLoaded(uint64_t id, const char** tags, int size,
-                             const double* vertices, int vertexCount,
-                             const char** style, int styleSize);
-
-// Called when operation is completed.
-typedef void OnError(const char* errorMessage);
-
 // Exposes API for external usage.
 class Application
 {
     const std::string InMemoryStorageKey = "InMemory";
     const std::string PersistentStorageKey = "OnDisk";
     const int SrtmElevationLodStart = 12;
-
-    // Visits element in quadkey.
-    struct QuadKeyElementVisitor : public utymap::entities::ElementVisitor
-    {
-        using Tags = std::vector<utymap::formats::Tag>;
-        using Coordinates = std::vector<utymap::GeoCoordinate>;
-
-        QuadKeyElementVisitor(utymap::index::StringTable& stringTable, 
-                              utymap::mapcss::StyleProvider& styleProvider,
-                              int levelOfDetail, 
-                              OnElementLoaded* elementCallback) :
-            stringTable_(stringTable), styleProvider_(styleProvider), 
-            levelOfDetail_(levelOfDetail), elementCallback_(elementCallback)
-        {
-        }
-
-        void visitNode(const utymap::entities::Node& node)
-        {
-            visitElement(node, Coordinates{ node.coordinate });
-        }
-
-        void visitWay(const utymap::entities::Way& way)
-        {
-            visitElement(way, way.coordinates);
-        }
-
-        void visitArea(const utymap::entities::Area& area)
-        {
-            visitElement(area, area.coordinates);
-        }
-
-        void visitRelation(const utymap::entities::Relation& relation)
-        {
-            for (const auto& element : relation.elements)
-                element->accept(*this);
-        }
-    private:
-
-        void visitElement(const utymap::entities::Element& element, const Coordinates& coordinates)
-        {
-            // convert tags
-            std::vector<const char*> ctags;
-            tagStrings_.reserve(element.tags.size() * 2);
-            ctags.reserve(element.tags.size() * 2);
-            for (auto i = 0; i < element.tags.size(); ++i) {
-                const utymap::entities::Tag& tag = element.tags[i];
-                tagStrings_.push_back(stringTable_.getString(tag.key));
-                tagStrings_.push_back(stringTable_.getString(tag.value));
-                ctags.push_back(tagStrings_[tagStrings_.size() - 2].c_str());
-                ctags.push_back(tagStrings_[tagStrings_.size() - 1].c_str());
-            }
-            // convert geometry
-            std::vector<double> coords;
-            coords.reserve(coordinates.size() * 2);
-            for (auto i = 0; i < coordinates.size(); ++i) {
-                const utymap::GeoCoordinate coordinate = coordinates[i];
-                coords.push_back(coordinate.longitude);
-                coords.push_back(coordinate.latitude);
-            }
-            // convert style
-            utymap::mapcss::Style style = styleProvider_.forElement(element, levelOfDetail_);
-            std::vector<const char*> cstyles;
-            styleStrings_.reserve(style.declarations.size() * 2);
-            cstyles.reserve(style.declarations.size());
-            for (const auto pair : style.declarations) {
-                styleStrings_.push_back(stringTable_.getString(pair.first));
-                styleStrings_.push_back(*pair.second->value());
-                cstyles.push_back(styleStrings_[styleStrings_.size() - 2].c_str());
-                cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
-            }
-
-            elementCallback_(element.id, 
-                ctags.data(), static_cast<int>(ctags.size()),
-                coords.data(), static_cast<int>(coords.size()), 
-                cstyles.data(), static_cast<int>(cstyles.size()));
-
-            tagStrings_.clear();
-            styleStrings_.clear();
-        }
-        utymap::index::StringTable& stringTable_;
-        utymap::mapcss::StyleProvider& styleProvider_;
-        int levelOfDetail_;
-        OnElementLoaded* elementCallback_;
-        std::vector<std::string> tagStrings_;   // holds temporary tag strings
-        std::vector<std::string> styleStrings_; // holds temporary style strings
-    };
 
 public:
     // Composes object graph.
@@ -161,6 +60,12 @@ public:
         getStyleProvider(path);
     }
 
+    // Preload elevation data. Not thread safe.
+    void preloadElevation(const utymap::QuadKey& quadKey)
+    {
+        getElevationProvider(quadKey).preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
+    }
+
     // Adds data to in-memory store.
     void addToPersistentStore(const char* styleFile, const char* path, const utymap::QuadKey& quadKey, OnError* errorCallback)
     {
@@ -169,56 +74,41 @@ public:
     // Adds data to persistent store.
     void addToPersistentStore(const char* styleFile, const char* path, const utymap::LodRange& range, OnError* errorCallback)
     {
-        try {
+        safeExecute([&]() {
             geoStore_.add(PersistentStorageKey, path, range, *getStyleProvider(styleFile).get());
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     // Adds data to in-memory store.
     void addToInMemoryStore(const char* styleFile, const char* path, const utymap::QuadKey& quadKey, OnError* errorCallback)
     {
-        try {
+        safeExecute([&]() {
             geoStore_.add(InMemoryStorageKey, path, quadKey, *getStyleProvider(styleFile).get());
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     // Adds data to in-memory store.
     void addToInMemoryStore(const char* styleFile, const char* path, const utymap::BoundingBox& bbox, const utymap::LodRange& range, OnError* errorCallback)
     {
-        try {
+        safeExecute([&]() {
             geoStore_.add(InMemoryStorageKey, path, bbox, range, *getStyleProvider(styleFile).get());
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     // Adds data to in-memory store.
     void addToInMemoryStore(const char* styleFile, const char* path, const utymap::LodRange& range, OnError* errorCallback)
     {
-        try {
+        safeExecute([&]() {
             geoStore_.add(InMemoryStorageKey, path, range, *getStyleProvider(styleFile).get());
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     // Adds element to in-memory store.
     void addInMemoryStore(const char* styleFile, const utymap::entities::Element& element, const utymap::LodRange& range, OnError* errorCallback)
     {
-        try {
+        safeExecute([&]() {
             geoStore_.add(InMemoryStorageKey, element, range, *getStyleProvider(styleFile).get());
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     bool hasData(const utymap::QuadKey& quadKey)
@@ -228,19 +118,12 @@ public:
 
     // Loads quadKey.
     void loadQuadKey(const char* styleFile, const utymap::QuadKey& quadKey, OnMeshBuilt* meshCallback,
-                  OnElementLoaded* elementCallback, OnError* errorCallback)
+                     OnElementLoaded* elementCallback, OnError* errorCallback)
     {
-        try {
-            auto& eleProvider = quadKey.levelOfDetail <= SrtmElevationLodStart
-                ? flatEleProvider_
-                : (utymap::heightmap::ElevationProvider&) srtmEleProvider_;
-
-            // TODO: preloading is not thread safe: extract separate API function
-            eleProvider.preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
-
+        safeExecute([&]() {
             utymap::mapcss::StyleProvider& styleProvider = *getStyleProvider(styleFile);
-            QuadKeyElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-            quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
+            ExportElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
+            quadKeyBuilder_.build(quadKey, styleProvider, getElevationProvider(quadKey),
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
@@ -252,10 +135,7 @@ public:
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);
             });
-        }
-        catch (std::exception& ex) {
-            errorCallback(ex.what());
-        }
+        }, errorCallback);
     }
 
     // Gets id for the string.
@@ -265,6 +145,24 @@ public:
     }
 
 private:
+
+    void safeExecute(const std::function<void()>& action, OnError* errorCallback)
+    {
+        try {
+            action();
+        }
+        catch (std::exception& ex) {
+            errorCallback(ex.what());
+        }
+    }
+
+    utymap::heightmap::ElevationProvider& getElevationProvider(const utymap::QuadKey& quadKey)
+    {
+        return quadKey.levelOfDetail <= SrtmElevationLodStart
+            ? flatEleProvider_
+            : (utymap::heightmap::ElevationProvider&) srtmEleProvider_;
+    }
+
     std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& filePath)
     {
         auto pair = styleProviders_.find(filePath);

@@ -33,6 +33,14 @@ extern "C"
         applicationPtr->registerStylesheet(path);
     }
 
+    // Preloads elevation data.
+    void EXPORT_API preloadElevation(int tileX,        // tile x
+                                     int tileY,        // tile y
+                                     int levelOfDetail) // level of detail
+    {
+        applicationPtr->preloadElevation(utymap::QuadKey(levelOfDetail, tileX, tileY));
+    }
+
     // Adds data to persistent store.
     void EXPORT_API addToPersistentStore(const char* styleFile,   // style file
                                          const char* path,        // path to data
@@ -73,11 +81,11 @@ extern "C"
     void EXPORT_API addToInMemoryStoreInQuadKey(const char* styleFile,     // style file
                                                 const char* path,          // path to data
                                                 int tileX,                 // tile x
-                                                int tileY,                 // tile y,
+                                                int tileY,                 // tile y
                                                 int levelOfDetail,         // level of detail
                                                 OnError* errorCallback)    // completion callback
     {
-        applicationPtr->addToInMemoryStore(styleFile, path, utymap::QuadKey{ levelOfDetail, tileX, tileY }, errorCallback);
+        applicationPtr->addToInMemoryStore(styleFile, path, utymap::QuadKey(levelOfDetail, tileX, tileY), errorCallback);
     }
 
 
