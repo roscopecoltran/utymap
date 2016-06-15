@@ -61,6 +61,7 @@
     <Compile Include="Integration\NmeaPositionMockerTests.cs" />
     <Compile Include="Integration\TileLoadingTests.cs" />
     <Compile Include="Integration\ElementEditorTests.cs" />
+    <Compile Include="Maps\Data\MapTileAdapterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Tiling\TileControllerTests.cs" />
     <Compile Include="Helpers\ConsoleTrace.cs" />
