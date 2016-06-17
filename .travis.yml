@@ -40,7 +40,7 @@ script:
     - cd test
     - ctest -V
     - cd ../../../unity/library
-    - mozroots --import --sync
+    - mozroots --import --sync --url https://hg.mozilla.org/mozilla-central/raw-file/tip/security/nss/lib/ckfw/builtins/certdata.txt
     - mono --runtime=v4.0.30319 .nuget/NuGet.exe restore UtyMap.Unity.sln
     - xbuild /p:Configuration=Debug /p:DefineConstants="CONSOLE" UtyMap.Unity.sln
     - cp ../../core/build/shared/libUtyMap.Shared.so UtyMap.Unity.Tests/bin/Debug/
