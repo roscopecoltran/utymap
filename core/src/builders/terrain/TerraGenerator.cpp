@@ -90,7 +90,7 @@ void TerraGenerator::buildBackground(Path& tileRect)
 {
     clipper_.AddPath(tileRect, ptSubject, true);
     Paths background;
-    clipper_.Execute(ctDifference, background, pftPositive, pftPositive);
+    clipper_.Execute(ctDifference, background, pftNonZero, pftNonZero);
     clipper_.Clear();
 
     if (!background.empty())
@@ -128,7 +128,7 @@ void TerraGenerator::buildFromPaths(Paths& paths, const RegionContext& regionCon
 {
     clipper_.AddPaths(paths, ptSubject, true);
     paths.clear();
-    clipper_.Execute(ctDifference, paths, pftPositive, pftPositive);
+    clipper_.Execute(ctDifference, paths, pftNonZero, pftNonZero);
     clipper_.moveSubjectToClip();
 
     populateMesh(paths, regionContext);
