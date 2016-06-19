@@ -119,7 +119,7 @@ void TerraGenerator::buildFromRegions(const Regions& regions, const RegionContex
         clipper.AddPaths(region.points, ptSubject, true);
 
     Paths result;
-    clipper.Execute(ctUnion, result, pftPositive, pftPositive);
+    clipper.Execute(ctUnion, result, pftNonZero, pftNonZero);
 
     buildFromPaths(result, regionContext);
 }
