@@ -9,7 +9,6 @@
 #include <boost/test/unit_test.hpp>
 #include "test_utils/DependencyProvider.hpp"
 
-#include <cstdio>
 #include <functional>
 
 using namespace utymap;
@@ -17,57 +16,60 @@ using namespace utymap::entities;
 using namespace utymap::formats;
 using namespace utymap::index;
 
-struct Formats_Osm_MultipolygonProcessorFixture
-{
-    Formats_Osm_MultipolygonProcessorFixture()
+namespace {
+
+    struct Formats_Osm_MultipolygonProcessorFixture
+    {
+        Formats_Osm_MultipolygonProcessorFixture()
             : dependencyProvider(), context()
-    {
-    }
-
-    std::shared_ptr<Relation> createRelation()
-    {
-        auto relation = std::make_shared<Relation>();
-        relation->id = 0;
-        context.relationMap[0] = relation;
-        return relation;
-    }
-
-    RelationMembers createRelationMembers(const std::initializer_list<std::tuple<std::uint64_t, std::string, std::string>>& membersInfo)
-    {
-        RelationMembers members;
-        members.reserve(membersInfo.size());
-        for (const auto& info : membersInfo) {
-            members.push_back(RelationMember{ std::get<0>(info), std::get<1>(info), std::get<2>(info) });
+        {
         }
-        return std::move(members);
-    }
 
-    void resolve(Relation& relation)
-    {
-    }
+        std::shared_ptr<Relation> createRelation()
+        {
+            auto relation = std::make_shared<Relation>();
+            relation->id = 0;
+            context.relationMap[0] = relation;
+            return relation;
+        }
 
-    std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate> source, bool isOuter = true)
-    {
-        std::vector<GeoCoordinate> destination;
-        destination.reserve(source.size());
-        bool isClockwise = utymap::utils::isClockwise(source);
-        if ((isClockwise && isOuter) || (!isClockwise && !isOuter))
-            destination.insert(destination.end(), source.begin(), source.end());
-        else
-            destination.insert(destination.end(), source.rbegin(), source.rend());
+        RelationMembers createRelationMembers(const std::initializer_list<std::tuple<std::uint64_t, std::string, std::string>>& membersInfo)
+        {
+            RelationMembers members;
+            members.reserve(membersInfo.size());
+            for (const auto& info : membersInfo) {
+                members.push_back(RelationMember{ std::get<0>(info), std::get<1>(info), std::get<2>(info) });
+            }
+            return std::move(members);
+        }
 
-        return std::move(destination);
-    }
+        void resolve(Relation& relation)
+        {
+        }
 
-    template<typename T>
-    std::shared_ptr<T> createElement(std::initializer_list<std::pair<double, double>> geometry)
-    {
-        return std::make_shared<T>(ElementUtils::createElement<T>(*dependencyProvider.getStringTable(), {}, geometry));
-    }
+        std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate> source, bool isOuter = true)
+        {
+            std::vector<GeoCoordinate> destination;
+            destination.reserve(source.size());
+            bool isClockwise = utymap::utils::isClockwise(source);
+            if ((isClockwise && isOuter) || (!isClockwise && !isOuter))
+                destination.insert(destination.end(), source.begin(), source.end());
+            else
+                destination.insert(destination.end(), source.rbegin(), source.rend());
 
-    DependencyProvider dependencyProvider;
-    OsmDataContext context;
-};
+            return std::move(destination);
+        }
+
+        template<typename T>
+        std::shared_ptr<T> createElement(std::initializer_list<std::pair<double, double>> geometry)
+        {
+            return std::make_shared<T>(ElementUtils::createElement<T>(*dependencyProvider.getStringTable(), {}, geometry));
+        }
+
+        DependencyProvider dependencyProvider;
+        OsmDataContext context;
+    };
+}
 
 BOOST_FIXTURE_TEST_SUITE(Formats_Osm_MultipolygonProcessor, Formats_Osm_MultipolygonProcessorFixture)
 

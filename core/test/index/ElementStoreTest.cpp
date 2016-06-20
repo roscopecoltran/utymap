@@ -48,10 +48,6 @@ namespace {
 
     struct Index_ElementStoreFixture
     {
-        Index_ElementStoreFixture() :
-            dependencyProvider()
-        {
-        }
         DependencyProvider dependencyProvider;
     };
 
