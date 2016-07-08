@@ -24,7 +24,6 @@ public:
 
     // Searches for elements for given quadKey
     virtual void search(const utymap::QuadKey& quadKey,
-                        const utymap::mapcss::StyleProvider& styleProvider,
                         utymap::entities::ElementVisitor& visitor) = 0;
 
     // Checks whether there is data for given quadkey.

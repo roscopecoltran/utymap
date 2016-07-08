@@ -104,7 +104,7 @@ bool InMemoryElementStore::hasData(const utymap::QuadKey& quadKey) const
     return pimpl_->hasData(quadKey);
 }
 
-void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StyleProvider& styleProvider, utymap::entities::ElementVisitor& visitor)
+void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
 {
     auto it = pimpl_->begin(quadKey);
 
@@ -113,8 +113,7 @@ void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StylePro
         return;
 
     for (const auto& element : it->second) {
-        if (styleProvider.hasStyle(*element, quadKey.levelOfDetail))
-            element->accept(visitor);
+        element->accept(visitor);
     }
 }
 

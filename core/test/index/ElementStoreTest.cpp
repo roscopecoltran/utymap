@@ -31,7 +31,7 @@ namespace {
         {
         }
 
-        void search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor) { }
+        void search(const QuadKey& quadKey, ElementVisitor& visitor) { }
 
         bool hasData(const QuadKey& quadKey) const { return true; }
 

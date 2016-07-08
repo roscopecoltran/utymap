@@ -25,7 +25,8 @@ class GeoStore::GeoStoreImpl
     class FilterElementVisitor : public ElementVisitor
     {
     public:
-        FilterElementVisitor(ElementVisitor& visitor) : visitor_(visitor)
+        FilterElementVisitor(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor)
+                : visitor_(visitor), quadKey_(quadKey), styleProvider_(styleProvider), ids_()
         {
         }
 
@@ -40,14 +41,18 @@ class GeoStore::GeoStoreImpl
     private:
 
         inline void visitIfNecessary(const Element& element)
-        { 
-            if (element.id == 0 || ids_.find(element.id) == ids_.end()) {
+        {
+            if (element.id == 0 || ids_.find(element.id) == ids_.end() ||
+                    styleProvider_.hasStyle(element, quadKey_.levelOfDetail)) {
                 element.accept(visitor_);
                 ids_.insert(element.id);
             }
         }
 
+        const QuadKey& quadKey_;
+        const StyleProvider& styleProvider_;
         ElementVisitor& visitor_;
+
         std::set<std::uint64_t> ids_;
     };
 
@@ -130,9 +135,9 @@ public:
 
     void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
     {
-        FilterElementVisitor filter(visitor);
+        FilterElementVisitor filter(quadKey, styleProvider, visitor);
         for (const auto& pair : storeMap_) {
-            pair.second->search(quadKey, styleProvider, filter);
+            pair.second->search(quadKey, filter);
         }
     }
 
