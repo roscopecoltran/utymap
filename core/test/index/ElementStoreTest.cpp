@@ -35,6 +35,8 @@ namespace {
 
         bool hasData(const QuadKey& quadKey) const { return true; }
 
+        void commit() {}
+
     protected:
 
         void storeImpl(const Element& element, const QuadKey& quadKey)

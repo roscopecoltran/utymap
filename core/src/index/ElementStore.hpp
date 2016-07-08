@@ -46,6 +46,9 @@ public:
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
 
+    // Commits changes done in element store.
+    virtual void commit() = 0;
+
 protected:
     // Stores element in given quadkey.
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;

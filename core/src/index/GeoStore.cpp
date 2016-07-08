@@ -65,7 +65,9 @@ public:
 
     void add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)
     {
-        storeMap_[storeKey]->store(element, range, styleProvider);
+        auto elementStore = storeMap_[storeKey];
+        elementStore->store(element, range, styleProvider);
+        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
@@ -74,6 +76,7 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, quadKey, styleProvider);
         });
+        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
@@ -82,6 +85,7 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, range, styleProvider);
         });
+        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
@@ -90,6 +94,7 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, bbox, range, styleProvider);
         });
+        elementStore->commit();
     }
 
     void add(const std::string& path, const StyleProvider& styleProvider, std::function<bool(Element&)> functor)

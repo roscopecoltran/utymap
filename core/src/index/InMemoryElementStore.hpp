@@ -25,6 +25,8 @@ public:
 
     bool hasData(const utymap::QuadKey& quadKey) const;
 
+    void commit();
+
 protected:
     void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
 

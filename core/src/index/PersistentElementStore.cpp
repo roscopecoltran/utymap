@@ -58,3 +58,7 @@ bool PersistentElementStore::hasData(const utymap::QuadKey& quadKey) const
     // TODO
     return false;
 }
+
+void PersistentElementStore::commit()
+{
+}

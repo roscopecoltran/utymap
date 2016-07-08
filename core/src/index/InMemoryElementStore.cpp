@@ -117,3 +117,8 @@ void InMemoryElementStore::search(const utymap::QuadKey& quadKey, const StylePro
             element->accept(visitor);
     }
 }
+
+void InMemoryElementStore::commit()
+{
+
+}
