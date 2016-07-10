@@ -54,6 +54,7 @@ add_executable(${TEST}
         heightmap/SrtmElevationProviderTest.cpp
         index/ElementStoreTest.cpp
         index/InMemoryElementStoreTest.cpp
+        index/PersistentElementStoreTest.cpp
         index/StringTableTest.cpp
         mapcss/MapCssParserTest.cpp
         mapcss/StyleDeclarationTest.cpp

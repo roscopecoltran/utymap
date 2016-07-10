@@ -20,7 +20,7 @@ namespace {
     //------------------------------------------------------------------------------------------------------|
     //     Element      |  List of entries, each is represented by element id (8b) and file offset (4b)     |
     //------------------------------------------------------------------------------------------------------|
-    const std::string IdOffsetFileExtension = ".idf";
+    const std::string IndexFileExtension = ".idf";
 
     //                                      Data file format
     //------------------------------------------------------------------------------------------------------|
@@ -135,7 +135,7 @@ namespace {
         {
             std::uint8_t flags;
             dataFile_.read(reinterpret_cast<char*>(&flags), sizeof(flags));
-            std::uint8_t elementType = flags && 0x3;
+            std::uint8_t elementType = flags & 0x3;
 
             switch (elementType) {
             case 0:
@@ -152,8 +152,8 @@ namespace {
         std::shared_ptr<Node> readNode()
         {
             auto node = std::make_shared<Node>();
-            node->coordinate = readCoordinate();
             node->tags = readTags();
+            node->coordinate = readCoordinate();
             return node;
         }
 
@@ -241,15 +241,24 @@ public:
 
     void store(const Element& element, const QuadKey& quadKey)
     {
-        // TODO ensure dataFile_
+        ensureFiles(quadKey);
+
+        // write element data
+        std::uint32_t offset = static_cast<std::uint32_t>(dataFile_.tellg());
 
         ElementWriter visitor(dataFile_);
         element.accept(visitor);
+
+        // write element index
+        indexFile_.seekg(0, std::ios::end);
+        indexFile_.write(reinterpret_cast<const char*>(&element.id), sizeof(element.id));
+        indexFile_.write(reinterpret_cast<const char*>(&offset), sizeof(offset));
     }
 
     void search(const QuadKey& quadKey, ElementVisitor& visitor)
     {
-        // TODO ensure indexFile_ and dataFile_
+        ensureFiles(quadKey);
+
         std::uint32_t count = static_cast<std::uint32_t>(indexFile_.tellg() /
                 (sizeof(std::uint64_t) + sizeof(std::uint32_t)));
 
@@ -272,17 +281,45 @@ public:
         return file.good();
     }
 
+    void commit()
+    {
+        closeFiles();
+        currentQuadKey_ = QuadKey();
+    }
+
 private:
     // gets full file path for given quadkey
     inline std::string getFilePath(const QuadKey& quadKey, const std::string& extension) const
     {
         std::stringstream ss;
-        ss << dataPath_ << "/" << quadKey.levelOfDetail << "/" << GeoUtils::quadKeyToString(quadKey) << extension;
+        ss << dataPath_ << quadKey.levelOfDetail << "/" << GeoUtils::quadKeyToString(quadKey) << extension;
         return ss.str();
     }
 
+    // Ensures that open/close function is called on files.
+    inline void ensureFiles(const QuadKey& quadKey)
+    {
+        if (quadKey == currentQuadKey_)
+            return;
+
+        closeFiles();
+        
+        using std::ios;
+        dataFile_.open(getFilePath(quadKey, DataFileExtension), ios::in | ios::out | ios::binary | ios::app | ios::ate);
+        indexFile_.open(getFilePath(quadKey, IndexFileExtension),ios::in | ios::out | ios::binary | ios::app | ios::ate);
+
+        currentQuadKey_ = quadKey;
+    }
+
+    inline void closeFiles()
+    {
+        if (dataFile_.good()) dataFile_.close();
+        if (indexFile_.good()) indexFile_.close();
+    }
+
     const std::string dataPath_;
-    const QuadKey currentQuadKey_;
+    
+    QuadKey currentQuadKey_;
 
     std::fstream indexFile_;
     std::fstream dataFile_;
@@ -314,4 +351,5 @@ bool PersistentElementStore::hasData(const QuadKey& quadKey) const
 
 void PersistentElementStore::commit()
 {
+    pimpl_->commit();
 }
