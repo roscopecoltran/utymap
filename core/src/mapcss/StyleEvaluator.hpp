@@ -149,7 +149,6 @@ private:
         }
     };
 
-    const std::uint32_t key_;
     std::shared_ptr<std::string> value_;
     std::shared_ptr<Tree> tree_;
 };
