@@ -79,7 +79,7 @@ private:
 
     void zeroSlope(Point start, Point end, Points& points) const
     {
-        if ((start.x - end.x) < std::numeric_limits<double>::epsilon())
+        if ((start.x - end.x) == 0)
         {
             bool isBottomTop = start.y < end.y;
             if (!isBottomTop)
