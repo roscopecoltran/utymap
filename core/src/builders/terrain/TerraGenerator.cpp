@@ -185,7 +185,7 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     TerraExtras::MeshContext meshContext(regionContext.style, regionContext.options);
 
     std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
-    if (meshName.empty()) {
+    if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
 
         meshContext.startVertex = 0, meshContext.startTriangle = 0, meshContext.startColor = 0;
