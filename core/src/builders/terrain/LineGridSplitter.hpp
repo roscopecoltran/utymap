@@ -79,7 +79,7 @@ private:
 
     void zeroSlope(Point start, Point end, Points& points) const
     {
-        if ((start.x - end.x) == 0)
+        if ((start.x - end.x) < std::numeric_limits<double>::epsilon())
         {
             bool isBottomTop = start.y < end.y;
             if (!isBottomTop)
@@ -160,7 +160,7 @@ private:
 
     void mergeResults(const Points& points, Points& result) const
     {
-        for (int i = 0; i < points.size(); ++i) {
+        for (std::size_t i = 0; i < points.size(); ++i) {
             Point candidate = points[i];
             if (result.size() > 0)  {
                 Point last = result[result.size() - 1];
