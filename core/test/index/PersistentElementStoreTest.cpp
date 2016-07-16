@@ -156,16 +156,19 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     assertWayOrArea(area, *std::dynamic_pointer_cast<Area>(counter.element));
 }
 
-BOOST_AUTO_TEST_CASE(GivenRelation_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
+BOOST_AUTO_TEST_CASE(GivenRelationWithDifferentElements_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
 {
     LodRange range(1, 2);
     QuadKey quadKey(1, 0, 0);
     auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
-    Area area1 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 1, { { "w", "2" } }, { { 4, -4 }, { 5, -5 }, { 6, -6 } });
-    Area area2 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 2, { {"a", "3"} }, { { 1, -1 }, { 2, -2 }, { 3, -3 } });
-    Relation relation = ElementUtils::createElement<Relation>(*dependencyProvider.getStringTable(), 3, { { "any", "true" } });
-    relation.elements.push_back(std::make_shared<Area>(area1));
-    relation.elements.push_back(std::make_shared<Area>(area2));
+    Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 1, { { "n", "1" } });
+    node.coordinate = { 0.5, -0.5 };
+    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 2, { { "w", "2" } }, { { 1, -1 }, { 2, -2 } });
+    Area area = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 3, { { "a", "3" } }, { { 3, -3 }, { 4, -4 }, { 5, -5 } });
+    Relation relation = ElementUtils::createElement<Relation>(*dependencyProvider.getStringTable(), 4, { { "any", "true" } });
+    relation.elements.push_back(std::make_shared<Node>(node));
+    relation.elements.push_back(std::make_shared<Way>(way));
+    relation.elements.push_back(std::make_shared<Area>(area));
     ElementCounter counter;
 
     elementStore.store(relation, range, *styleProvider);
@@ -173,7 +176,26 @@ BOOST_AUTO_TEST_CASE(GivenRelation_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     elementStore.search(quadKey, counter);
 
     BOOST_CHECK_EQUAL(counter.times, 1);
-    assertElement(relation, *std::dynamic_pointer_cast<Relation>(counter.element));
+    Relation result = *std::dynamic_pointer_cast<Relation>(counter.element);
+    assertElement(relation, result);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoAreas_WhenStoreAndSearchOnce_ThenTheyStoredTwiceAndSecondReturnedLast)
+{
+    LodRange range(1, 2);
+    QuadKey quadKey(1, 0, 0);
+    auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
+    Area area1 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 1, { { "any", "true" } }, { { 4, -4 }, { 5, -5 }, { 6, -6 } });
+    Area area2 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 2, { { "any", "true"} }, { { 1, -1 }, { 2, -2 }, { 3, -3 } });
+    ElementCounter counter;
+
+    elementStore.store(area1, range, *styleProvider);
+    elementStore.store(area2, range, *styleProvider);
+    elementStore.commit();
+    elementStore.search(quadKey, counter);
+
+    BOOST_CHECK_EQUAL(counter.times, 2);
+    assertWayOrArea(area2, *std::dynamic_pointer_cast<Area>(counter.element));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

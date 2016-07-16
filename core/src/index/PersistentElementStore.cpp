@@ -82,6 +82,8 @@ namespace {
         {
             writeFlags(3);
             writeTags(relation.tags);
+            std::uint16_t elementSize = static_cast<std::uint16_t>(relation.elements.size());
+            dataFile_.write(reinterpret_cast<const char*>(&elementSize), sizeof(elementSize));
             for (const auto& element : relation.elements) {
                 dataFile_.write(reinterpret_cast<const char*>(&element->id), sizeof(element->id));
                 element->accept(*this);
@@ -182,7 +184,11 @@ namespace {
             dataFile_.read(reinterpret_cast<char*>(&elementSize), sizeof(elementSize));
 
             for (std::uint16_t i = 0; i < elementSize; ++i) {
-                relation->elements.push_back(readElement());
+                std::uint64_t id;
+                dataFile_.read(reinterpret_cast<char*>(&id), sizeof(id));
+                auto element = readElement();
+                element->id = id;
+                relation->elements.push_back(element);
             }
             return relation;
         }
