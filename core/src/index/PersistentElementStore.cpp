@@ -60,6 +60,7 @@ namespace {
             writeFlags(1);
             writeTags(way.tags);
             std::uint16_t size = static_cast<std::uint16_t>(way.coordinates.size());
+            dataFile_.write(reinterpret_cast<const char*>(&size), sizeof(size));
             for (const auto& coord : way.coordinates) {
                 writeCoordinate(coord);
             }
@@ -70,10 +71,10 @@ namespace {
             writeFlags(2);
             writeTags(area.tags);
             // NOTE do not write the last one
-            auto coordSize = area.coordinates.size() - 1;
-            std::uint16_t size = static_cast<std::uint16_t>(coordSize);
-            for (std::size_t i = 0; i < coordSize; ++i) {
-                writeCoordinate(area.coordinates[i]);
+            std::uint16_t size = static_cast<std::uint16_t>(area.coordinates.size());
+            dataFile_.write(reinterpret_cast<const char*>(&size), sizeof(size));
+            for (const auto& coord : area.coordinates) {
+                writeCoordinate(coord);
             }
         }
 
@@ -161,7 +162,7 @@ namespace {
         {
             auto way = std::make_shared<Way>();
             way->tags = readTags();
-            way->coordinates = readCoordinates(false);
+            way->coordinates = readCoordinates();
             return way;
         }
 
@@ -169,7 +170,7 @@ namespace {
         {
             auto area = std::make_shared<Area>();
             area->tags = readTags();
-            area->coordinates = readCoordinates(true);
+            area->coordinates = readCoordinates();
             return area;
         }
 
@@ -194,12 +195,10 @@ namespace {
             return coord;
         }
 
-        inline std::vector<GeoCoordinate> readCoordinates(bool hasExtraElement)
+        inline std::vector<GeoCoordinate> readCoordinates()
         {
             std::uint16_t coordSize;
             dataFile_.read(reinterpret_cast<char*>(&coordSize), sizeof(coordSize));
-            if (hasExtraElement) 
-                ++coordSize;
 
             std::vector<GeoCoordinate> coordinates;
             coordinates.reserve(coordSize);
