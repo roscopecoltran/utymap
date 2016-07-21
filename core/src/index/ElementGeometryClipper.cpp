@@ -110,8 +110,19 @@ void ElementGeometryClipper::visitArea(const Area& area)
         return;
     }
 
-    // 2. all geometry outside: skip
+    // 2. all geometry outside: use geometry of quadkey
     if (pointLocation == PointLocation::AllOutside) {
+        Area newArea;
+        newArea.id = area.id;
+        newArea.tags = area.tags;
+
+        newArea.coordinates.reserve(4);
+        newArea.coordinates.push_back(quadKeyBbox_.minPoint);
+        newArea.coordinates.push_back(GeoCoordinate(quadKeyBbox_.maxPoint.latitude, quadKeyBbox_.minPoint.longitude));
+        newArea.coordinates.push_back(quadKeyBbox_.maxPoint);
+        newArea.coordinates.push_back(GeoCoordinate(quadKeyBbox_.minPoint.latitude, quadKeyBbox_.maxPoint.longitude));
+
+        callback_(newArea, quadKey_);
         return;
     }
 
