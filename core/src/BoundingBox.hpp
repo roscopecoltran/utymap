@@ -3,6 +3,8 @@
 
 #include "GeoCoordinate.hpp"
 
+#include <algorithm>
+
 namespace utymap {
 
 // Represents geo bounding box
@@ -39,23 +41,23 @@ struct BoundingBox
     // Expands bounding box using another bounding box.
     inline void expand(const BoundingBox& rhs)
     {
-        minPoint.latitude = minPoint.latitude < rhs.minPoint.latitude ? minPoint.latitude : rhs.minPoint.latitude;
-        minPoint.longitude = minPoint.longitude < rhs.minPoint.longitude ? minPoint.longitude : rhs.minPoint.longitude;
+        minPoint.latitude = std::min(minPoint.latitude, rhs.minPoint.latitude);
+        minPoint.longitude = std::min(minPoint.longitude, rhs.minPoint.longitude);
 
-        maxPoint.latitude = maxPoint.latitude > rhs.maxPoint.latitude ? maxPoint.latitude : rhs.maxPoint.latitude;
-        maxPoint.longitude = maxPoint.longitude > rhs.maxPoint.longitude ? maxPoint.longitude : rhs.maxPoint.longitude;
+        maxPoint.latitude = std::max(maxPoint.latitude, rhs.maxPoint.latitude);
+        maxPoint.longitude = std::max(maxPoint.longitude, rhs.maxPoint.longitude);
     }
 
     // Expands bounding box using given coordinate.
     inline void expand(const GeoCoordinate& c)
     {
         minPoint = GeoCoordinate(
-            minPoint.latitude < c.latitude ? minPoint.latitude : c.latitude,
-            minPoint.longitude < c.longitude ? minPoint.longitude : c.longitude);
+            std::min(minPoint.latitude, c.latitude),
+            std::min(minPoint.longitude, c.longitude));
 
         maxPoint = GeoCoordinate(
-            maxPoint.latitude > c.latitude ? maxPoint.latitude : c.latitude,
-            maxPoint.longitude > c.longitude ? maxPoint.longitude : c.longitude);
+            std::max(maxPoint.latitude, c.latitude),
+            std::max(maxPoint.longitude, c.longitude));
     }
 
     // Expands bounging box from collection of geo data.
@@ -82,10 +84,10 @@ struct BoundingBox
     // Checks whether given bounding box intersects the current one.
     inline bool intersects(const BoundingBox& rhs) const
     {
-        double minLat = minPoint.latitude < rhs.minPoint.latitude ? rhs.minPoint.latitude : minPoint.latitude;
-        double minLon = minPoint.longitude < rhs.minPoint.longitude ? rhs.minPoint.longitude : minPoint.longitude;
-        double maxLat = maxPoint.latitude > rhs.maxPoint.latitude ? rhs.maxPoint.latitude : maxPoint.latitude;
-        double maxLon = maxPoint.longitude > rhs.maxPoint.longitude ? rhs.maxPoint.longitude : maxPoint.longitude;
+        double minLat = std::max(rhs.minPoint.latitude, minPoint.latitude);
+        double minLon = std::max(rhs.minPoint.longitude, minPoint.longitude);
+        double maxLat = std::min(rhs.maxPoint.latitude, maxPoint.latitude);
+        double maxLon = std::min(rhs.maxPoint.longitude, maxPoint.longitude);
 
         return minLat <= maxLat && minLon <= maxLon;
     }
