@@ -204,19 +204,20 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
     BOOST_CHECK_EQUAL(elementStore.times, 2);
 }
 
-BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsEmpty)
+BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsTheSameAsForTile)
 {
     Area area = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0,
     { { "test", "Foo" } },
-    { { -10, -10 }, { -10, 181 }, { 91, 181 }, { 91, -10 } });
+    { { -10, -10 }, { -10, 30 }, { -10, 181 }, { 91, 181 }, { 91, 100 }, { 91, -10 } });
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
-            BOOST_CHECK_EQUAL(reinterpret_cast<const Area&>(element).coordinates.size(), 0);
+            // TODO improve geometry check
+            BOOST_CHECK_EQUAL(reinterpret_cast<const Area&>(element).coordinates.size(), 4);
         }
     });
 
-    elementStore.store(area, LodRange(1, 1),
+    elementStore.store(area, QuadKey(1, 1, 0), 
         *dependencyProvider.getStyleProvider("area|z1[test=Foo] { key:val; clip: true;}"));
 
     BOOST_CHECK_EQUAL(elementStore.times, 1);
