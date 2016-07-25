@@ -137,7 +137,9 @@ public:
     {
         FilterElementVisitor filter(quadKey, styleProvider, visitor);
         for (const auto& pair : storeMap_) {
-            pair.second->search(quadKey, filter);
+            // Search only if store has data
+            if (pair.second->hasData(quadKey))
+                pair.second->search(quadKey, filter);
         }
     }
 
