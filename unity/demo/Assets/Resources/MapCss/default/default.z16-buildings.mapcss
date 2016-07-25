@@ -21,7 +21,7 @@ area,relation|z16[building:part] {
     facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     facade-type: flat;
 
-    roof-color: gradient(red);
+    roof-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     roof-type: flat;
     roof-height: 0m;
 }
@@ -69,6 +69,13 @@ area,relation|z16[building:shape=cylinder] {
 area,relation|z16[building:shape=sphere] {
     roof-type: none;
     facade-type: sphere;
+}
+
+area,relation|z16[building:colour] {
+    roof-color: eval("tag('building:colour')");
+}
+area,relation|z16[building:color] {
+    roof-color: eval("tag('building:color')");
 }
 
 area,relation|z16[building:material=brick],

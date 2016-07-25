@@ -2,9 +2,9 @@ relation|z16[type=multipolygon] {
     multipolygon: true;
 }
 
-way|z16[barrier] {
+way,relation|z16[barrier] {
     builders: barrier;
-    color: gradient(blue);
+    color: gradient(#15c0c0, #0a5a5a 50%, #000000);
 
     height: 3m;
     min-height: 0m;
