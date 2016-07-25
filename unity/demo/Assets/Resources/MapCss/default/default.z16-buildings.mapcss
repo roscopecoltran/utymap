@@ -244,3 +244,7 @@ area,relation|z16[man_made=bridge] {
     min-height: -0.2m;
     roof-color: gradient(#4d4d4d);
 }
+
+area,relation|z16[building:part=no] {
+    skip:true;
+}
