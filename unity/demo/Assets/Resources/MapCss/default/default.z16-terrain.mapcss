@@ -8,7 +8,7 @@ canvas|z16 {
 
 area,relation|z16[amenity],
 area,relation|z16[natural!=coastline],
-area,relation|z16[leisure],
+area,relation|z16[leisure][leisure!=track],
 area,relation|z16[historic=memorial],
 area,relation|z16[landuse] {
     clip:true;
