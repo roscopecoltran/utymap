@@ -228,11 +228,13 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
         while (polyNode) {
             if (polyNode->IsOpen()) {
                 auto way = std::make_shared<Way>();
+                way->id = 0;
                 setCoordinates(*way, polyNode->Contour);
                 newRelation.elements.push_back(way);
             }
             else {
                 auto area = std::make_shared<Area>();
+                area->id = 0;
                 setCoordinates(*area, polyNode->Contour);
                 newRelation.elements.push_back(area);
             }
