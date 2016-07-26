@@ -2,7 +2,7 @@
 [![Join the chat at https://gitter.im/reinterpretcat/utymap](https://badges.gitter.im/reinterpretcat/utymap.svg)](https://gitter.im/reinterpretcat/utymap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 <h2> Description </h2>
 
-UtyMap is a library which provides highly customizable API for procedural world generation based on real map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. 
+UtyMap is a library which provides highly customizable API for procedural world generation based on real map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. You can use it to create interactive world at different zoom levels, including globe and ground:
 
 <img src="https://cloud.githubusercontent.com/assets/1611077/17153076/0af03596-537b-11e6-8368-b047c4933210.jpg" />
 
