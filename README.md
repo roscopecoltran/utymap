@@ -4,6 +4,8 @@
 
 UtyMap is a library which provides highly customizable API for procedural world generation based on real map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. 
 
+<img src="https://cloud.githubusercontent.com/assets/1611077/17153076/0af03596-537b-11e6-8368-b047c4933210.jpg" />
+
 <h2> Project structure </h2>
 Project consists of two sub-projects:
 <ul>
