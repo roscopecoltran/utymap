@@ -17,23 +17,41 @@ using namespace utymap::mapcss;
 namespace {
     using PointLocation = utymap::index::ElementGeometryClipper::PointLocation;
 
-    template<typename T>
-    inline PointLocation setPath(const BoundingBox& bbox, const T& t, ClipperLib::Path& shape) {
-        shape.reserve(t.coordinates.size());
+    inline PointLocation checkWay(const BoundingBox& bbox, const Way& way, ClipperLib::Path& wayShape) {
+        wayShape.reserve(way.coordinates.size());
         bool allInside = true;
         bool allOutside = true;
-        for (const GeoCoordinate& coord : t.coordinates) {
+        for (const GeoCoordinate& coord : way.coordinates) {
             bool contains = bbox.contains(coord);
             allInside &= contains;
             allOutside &= !contains;
 
             auto x = static_cast<ClipperLib::cInt>(coord.longitude * utymap::index::ElementGeometryClipper::Scale);
             auto y = static_cast<ClipperLib::cInt>(coord.latitude * utymap::index::ElementGeometryClipper::Scale);
-            shape.push_back(ClipperLib::IntPoint(x, y));
+            wayShape.push_back(ClipperLib::IntPoint(x, y));
         }
 
         return allInside ? PointLocation::AllInside :
                (allOutside ? PointLocation::AllOutside : PointLocation::Mixed);
+    }
+
+    inline PointLocation checkArea(const BoundingBox& bbox, const Area& area, ClipperLib::Path& areaShape) {
+        bool allInside = true;
+        auto areaBbox = BoundingBox();
+
+        areaShape.reserve(area.coordinates.size());
+        for (const GeoCoordinate& coord : area.coordinates) {
+            bool contains = bbox.contains(coord);
+            areaBbox.expand(coord);
+            allInside &= contains;
+
+            auto x = static_cast<ClipperLib::cInt>(coord.longitude * utymap::index::ElementGeometryClipper::Scale);
+            auto y = static_cast<ClipperLib::cInt>(coord.latitude * utymap::index::ElementGeometryClipper::Scale);
+            areaShape.push_back(ClipperLib::IntPoint(x, y));
+        }
+
+        return allInside ? PointLocation::AllInside :
+             (bbox.intersects(areaBbox) ? PointLocation::Mixed : PointLocation::AllOutside);
     }
 }
 
@@ -57,7 +75,7 @@ void ElementGeometryClipper:: visitNode(const Node& node)
 void ElementGeometryClipper::visitWay(const Way& way)
 {
     ClipperLib::Path wayShape;
-    PointLocation pointLocation = setPath(quadKeyBbox_, way, wayShape);
+    PointLocation pointLocation = checkWay(quadKeyBbox_, way, wayShape);
     // 1. all geometry inside current quadkey: no need to truncate.
     if (pointLocation == PointLocation::AllInside) {
         callback_(way, quadKey_);
@@ -103,26 +121,15 @@ void ElementGeometryClipper::visitWay(const Way& way)
 void ElementGeometryClipper::visitArea(const Area& area)
 {
     ClipperLib::Path areaShape;
-    PointLocation pointLocation = setPath(quadKeyBbox_, area, areaShape);
+    PointLocation pointLocation = checkArea(quadKeyBbox_, area, areaShape);
     // 1. all geometry inside current quadkey: no need to truncate.
     if (pointLocation == PointLocation::AllInside) {
         callback_(area, quadKey_);
         return;
     }
 
-    // 2. all geometry outside: use geometry of quadkey
+    // 2. all geometry outside and no intersection: use geometry of quadkey
     if (pointLocation == PointLocation::AllOutside) {
-        Area newArea;
-        newArea.id = area.id;
-        newArea.tags = area.tags;
-
-        newArea.coordinates.reserve(4);
-        newArea.coordinates.push_back(quadKeyBbox_.minPoint);
-        newArea.coordinates.push_back(GeoCoordinate(quadKeyBbox_.maxPoint.latitude, quadKeyBbox_.minPoint.longitude));
-        newArea.coordinates.push_back(quadKeyBbox_.maxPoint);
-        newArea.coordinates.push_back(GeoCoordinate(quadKeyBbox_.minPoint.latitude, quadKeyBbox_.maxPoint.longitude));
-
-        callback_(newArea, quadKey_);
         return;
     }
 
@@ -169,14 +176,14 @@ void ElementGeometryClipper::visitRelation(const Relation& relation)
         void visitWay(const Way& way)
         {
             ClipperLib::Path wayShape;
-            setPath(bbox_, way, wayShape);
+            checkWay(bbox_, way, wayShape);
             clipper_.AddPath(wayShape, ClipperLib::ptSubject, false);
         }
 
         void visitArea(const Area& area)
         {
             ClipperLib::Path areaShape;
-            setPath(bbox_, area, areaShape);
+            checkArea(bbox_, area, areaShape);
             clipper_.AddPath(areaShape, ClipperLib::ptSubject, true);
         }
 
