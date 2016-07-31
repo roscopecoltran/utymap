@@ -30,26 +30,42 @@ public:
 
     void visit(OsmDataContext::NodeMapType::const_iterator node)
     {
-        relation_.elements.push_back(node->second);
+        if (!has(node->first))
+            relation_.elements.push_back(node->second);
     }
 
     void visit(OsmDataContext::WayMapType::const_iterator way)
     {
-        relation_.elements.push_back(way->second);
+        if (!has(way->first))
+            relation_.elements.push_back(way->second);
     }
 
     void visit(OsmDataContext::AreaMapType::const_iterator area)
     {
-        relation_.elements.push_back(area->second);
+        if (!has(area->first))
+            relation_.elements.push_back(area->second);
     }
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     {
+        if (has(rel->first))
+            return;
+
         resolve_(*rel->second);
         relation_.elements.push_back(rel->second);
     }
 
 private:
+
+    bool has(std::uint64_t id)
+    {
+        auto it = std::find_if(relation_.elements.begin(), relation_.elements.end(),
+            [&id](const std::shared_ptr<utymap::entities::Element> e) {
+            return e->id == id;
+        });
+
+        return it != relation_.elements.end();
+    }
 
     utymap::entities::Relation& relation_;
     const utymap::formats::RelationMembers& members_;
