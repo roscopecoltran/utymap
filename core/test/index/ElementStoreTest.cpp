@@ -254,6 +254,38 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
     BOOST_CHECK_EQUAL(elementStore.times, 2);
 }
 
+BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationAndAreaReturnedWithClippedGeometry)
+{
+    Area outer = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0, {},
+    { { 5, 10 }, { 20, 10 }, { 20, -10 }, { 5, -10 } });
+    Area inner = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0, {},
+    { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
+    Relation relation;
+    relation.tags = std::vector<Tag>{ ElementUtils::createTag(*dependencyProvider.getStringTable(), "test", "Foo") };
+    relation.elements.push_back(std::make_shared<Area>(inner));
+    relation.elements.push_back(std::make_shared<Area>(outer));
+    TestElementStore elementStore(*dependencyProvider.getStringTable(),
+        [&](const Element& element, const QuadKey& quadKey) {
+        if (checkQuadKey(quadKey, 1, 1, 0)) {
+            const Relation& result = reinterpret_cast<const Relation&>(element);
+            BOOST_CHECK_EQUAL(result.elements.size(), 2);
+            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[0]), { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
+            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[1]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
+        }
+        else if (checkQuadKey(quadKey, 1, 0, 0)) {
+            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
+        }
+        else {
+            BOOST_FAIL("Unexpected quadKey!");
+        }
+    });
+
+    elementStore.store(relation, LodRange(1, 1),
+        *dependencyProvider.getStyleProvider("relation|z1[test=Foo] { key:val; clip: true;}"));
+
+    BOOST_CHECK_EQUAL(elementStore.times, 2);
+}
+
 BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
 {
     Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,

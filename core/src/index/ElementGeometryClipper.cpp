@@ -250,11 +250,15 @@ namespace {
 
         if (visitor.relation == nullptr)
             return nullptr;
+        
+        std::shared_ptr<Element> element = visitor.relation->elements.size() == 1
+            ? visitor.relation->elements.at(0)
+            : visitor.relation;
 
-        visitor.relation->id = relation.id;
-        visitor.relation->tags = relation.tags;
+        element->id = relation.id;
+        element->tags = relation.tags;
 
-        return visitor.relation;
+        return element;
     }
 }
 
