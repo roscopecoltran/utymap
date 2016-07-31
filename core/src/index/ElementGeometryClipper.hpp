@@ -20,19 +20,12 @@ namespace utymap { namespace index {
 class ElementGeometryClipper : private utymap::entities::ElementVisitor
 {
 public:
-    // Max precision for Lat/Lon
-    static const double Scale;
     // Defines callback
     typedef std::function<void(const utymap::entities::Element& element, const utymap::QuadKey& quadKey)> Callback;
     // Defines polygon points location relative to current quadkey.
     enum PointLocation { AllInside, AllOutside, Mixed };
 
-    ElementGeometryClipper(Callback callback) :
-            callback_(callback),
-            quadKey_(),
-            quadKeyBbox_()
-    {
-    }
+    ElementGeometryClipper(Callback callback);
 
     void clipAndCall(const utymap::entities::Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox);
 
@@ -46,27 +39,10 @@ private:
 
     void visitRelation(const utymap::entities::Relation& relation);
 
-    ClipperLib::Path createPathFromBoundingBox();
-
-    template<typename T>
-    inline void setData(T& t, const utymap::entities::Element& element, const ClipperLib::Path& path) {
-        t.id = element.id;
-        t.tags = element.tags;
-        setCoordinates<T>(t, path);
-    }
-
-    template<typename T>
-    inline void setCoordinates(T& t, const ClipperLib::Path& path) {
-        t.coordinates.reserve(path.size());
-        for (const auto& c : path) {
-            t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
-        }
-    }
-
     Callback callback_;
     QuadKey quadKey_;
     BoundingBox quadKeyBbox_;
-    ClipperLib::Clipper clipper_;
+    ClipperLib::ClipperEx clipper_;
 };
 
 }}
