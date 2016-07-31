@@ -129,7 +129,9 @@ public:
             // if there are no tags, then this element is result of clipping
             if (element->tags.empty())
                 element->tags = rel.tags;
-            element->accept(visitor);
+
+            if (context_.styleProvider.hasStyle(rel, context_.quadKey.levelOfDetail))
+                element->accept(visitor);
         }
 
         if (!region.points.empty()) {
