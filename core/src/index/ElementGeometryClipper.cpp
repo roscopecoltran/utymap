@@ -57,18 +57,18 @@ namespace {
     }
 
     template<typename T>
-    inline void setData(T& t, const utymap::entities::Element& element, const ClipperLib::Path& path) {
-        t.id = element.id;
-        t.tags = element.tags;
-        setCoordinates<T>(t, path);
-    }
-
-    template<typename T>
     inline void setCoordinates(T& t, const ClipperLib::Path& path) {
         t.coordinates.reserve(path.size());
         for (const auto& c : path) {
             t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
         }
+    }
+
+    template<typename T>
+    inline void setData(T& t, const utymap::entities::Element& element, const ClipperLib::Path& path) {
+        t.id = element.id;
+        t.tags = element.tags;
+        setCoordinates<T>(t, path);
     }
 
     ClipperLib::Path createPathFromBoundingBox(const BoundingBox& quadKeyBbox)
