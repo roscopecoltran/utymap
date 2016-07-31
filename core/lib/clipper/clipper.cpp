@@ -4476,7 +4476,7 @@ void ClipperEx::removeSubject()
 {
     for (auto it = m_MinimaList.begin(); it != m_MinimaList.end();)
     {
-        if (it->LeftBound->PolyTyp == ptClip) {
+        if (it->LeftBound && it->LeftBound->PolyTyp == ptClip) {
             ++it;
             continue;
         }
