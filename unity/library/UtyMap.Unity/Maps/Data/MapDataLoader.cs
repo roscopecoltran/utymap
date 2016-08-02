@@ -19,7 +19,7 @@ namespace UtyMap.Unity.Maps.Data
     /// <summary> Defines behavior of class responsible to mapdata processing. </summary>
     public interface IMapDataLoader
     {
-        /// <summary> Adds mapdata to in-memory storage. </summary>
+        /// <summary> Adds mapdata to the specific storage. </summary>
         /// <param name="storage"> Storage type. </param>
         /// <param name="dataPath"> Path to mapdata. </param>
         /// <param name="stylesheet"> Stylesheet which to use during import. </param>
