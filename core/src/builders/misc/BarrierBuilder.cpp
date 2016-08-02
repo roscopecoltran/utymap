@@ -74,7 +74,7 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
     MeshContext meshContext(mesh, style);
 
-    auto gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, way.tags, ColorKey);
+    auto gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
 
     // NOTE: Reuse building builders.
 

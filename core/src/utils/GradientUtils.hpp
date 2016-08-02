@@ -32,7 +32,6 @@ public:
     // Gets gradient.
     static std::shared_ptr<const utymap::mapcss::ColorGradient> evaluateGradient(const utymap::mapcss::StyleProvider& styleProvider,
                                                                                  const utymap::mapcss::Style& style,
-                                                                                 const std::vector<utymap::entities::Tag>& tags,
                                                                                  const std::string& key);
 
     // Gets color for specific coordinate using coherent noise function

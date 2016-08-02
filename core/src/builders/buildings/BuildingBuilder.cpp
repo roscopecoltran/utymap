@@ -262,7 +262,7 @@ private:
         // roof
         auto roofType = style.getString(RoofTypeKey);
         double roofHeight = style.getValue(RoofHeightKey);
-        auto roofGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, element.tags, RoofColorKey);
+        auto roofGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
@@ -272,7 +272,7 @@ private:
         // facade
         auto facadeType = style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
-        auto facadeGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, element.tags, FacadeColorKey);
+        auto facadeGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, FacadeColorKey);
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);
         facadeBuilder->setColor(facadeGradient, 0);

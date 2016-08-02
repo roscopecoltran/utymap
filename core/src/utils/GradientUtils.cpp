@@ -293,7 +293,6 @@ Color GradientUtils::parseColor(const std::string& colorStr)
 
 std::shared_ptr<const ColorGradient> GradientUtils::evaluateGradient(const StyleProvider& styleProvider,
                                                                      const Style &style,
-                                                                     const std::vector<utymap::entities::Tag>& tags,
                                                                      const std::string &key)
 {
     // TODO evaluate gradient using tags

@@ -24,7 +24,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
    
     MeshContext meshContext(mesh, style);
 
-    TreeGenerator generator = createGenerator(context_, meshContext, node.tags);
+    TreeGenerator generator = createGenerator(context_, meshContext);
 
     double elevation = context_.eleProvider.getElevation(node.coordinate);
     generator
@@ -34,7 +34,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
     context_.meshCallback(mesh);
 }
 
-TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext, MeshContext& meshContext, const std::vector<Tag>& tags)
+TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext, MeshContext& meshContext)
 {
     double relativeSize = builderContext.boundingBox.maxPoint.latitude - builderContext.boundingBox.minPoint.latitude;
     GeoCoordinate relativeCoordinate = builderContext.boundingBox.center();
@@ -42,8 +42,8 @@ TreeGenerator TreeBuilder::createGenerator(const BuilderContext& builderContext,
     double foliageRadiusInDegrees = meshContext.style.getValue(FoliageRadius, relativeSize, relativeCoordinate);
     double foliageRadiusInMeters = meshContext.style.getValue(FoliageRadius, relativeSize);
 
-    auto foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, tags, FoliageColorKey);
-    auto trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, tags, TrunkColorKey);
+    auto foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, FoliageColorKey);
+    auto trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, TrunkColorKey);
 
     return TreeGenerator(builderContext, meshContext)
         .setFoliageColor(foliageGradient, 0)
