@@ -31,8 +31,8 @@ namespace {
 
     const static std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs = 
     {
-        { "forest", std::bind(&TerraExtras::addForest, _1, _2, _3) },
-        { "water", std::bind(&TerraExtras::addWater, _1, _2, _3) },
+        { "forest", std::bind(&TerraExtras::addForest, _1, _2) },
+        { "water", std::bind(&TerraExtras::addWater, _1, _2) },
     };
 };
 
@@ -186,23 +186,16 @@ TerraGenerator::Points TerraGenerator::restorePoints(const Path& path)
 
 void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionContext)
 {
-    TerraExtras::MeshContext meshContext(regionContext.style, regionContext.options);
-
     std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
-
-        meshContext.startVertex = 0, meshContext.startTriangle = 0, meshContext.startColor = 0;
-
+        TerraExtras::MeshContext meshContext(polygonMesh, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(polygonMesh, polygon, regionContext.options);
         addExtrasIfNecessary(polygonMesh, meshContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
-        meshContext.startVertex = mesh_.vertices.size();
-        meshContext.startTriangle = mesh_.triangles.size();
-        meshContext.startColor = mesh_.colors.size();
-
+        TerraExtras::MeshContext meshContext(mesh_, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.options);
         addExtrasIfNecessary(mesh_, meshContext, regionContext);
     }
@@ -216,11 +209,7 @@ void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
     if (meshExtras.empty())
         return;
 
-    meshContext.endVertex = mesh.vertices.size();
-    meshContext.endTriangle = mesh.triangles.size();
-    meshContext.endColor = mesh.colors.size();
-
-    ExtrasFuncs.at(meshExtras)(context_, mesh, meshContext);
+    ExtrasFuncs.at(meshExtras)(context_, meshContext);
 }
 
 void TerraGenerator::processHeightOffset(const Points& points, const RegionContext& regionContext)

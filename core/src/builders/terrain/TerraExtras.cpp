@@ -1,14 +1,13 @@
 #include "builders/terrain/TerraExtras.hpp"
 
 using namespace utymap::builders;
-using namespace utymap::meshing;
 
-void TerraExtras::addForest(const BuilderContext& builderContext, Mesh& mesh, const MeshContext& meshContext)
+void TerraExtras::addForest(const BuilderContext& builderContext, MeshContext& meshContext)
 {
-    // TODO: go through mesh triangles and insert trees
+    // TODO go through mesh triangles and insert copy of tree
 }
 
-void TerraExtras::addWater(const BuilderContext& builderContext, Mesh& mesh, const MeshContext& meshContext)
+void TerraExtras::addWater(const BuilderContext& builderContext, MeshContext& meshContext)
 {
     // TODO
 }

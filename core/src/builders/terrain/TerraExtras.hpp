@@ -15,35 +15,33 @@ public:
     // Specifies mesh region which should be used.
     struct MeshContext
     {
-        std::size_t startVertex, endVertex;
-        std::size_t startTriangle, endTriangle;
-        std::size_t startColor, endColor;
+        std::size_t startVertex;
+        std::size_t startTriangle;
+        std::size_t startColor;
 
+        utymap::meshing::Mesh& mesh;
         const utymap::mapcss::Style& style;
         const utymap::meshing::MeshBuilder::Options options;
 
-        MeshContext(const utymap::mapcss::Style& style,
+        MeshContext(utymap::meshing::Mesh& mesh,
+                    const utymap::mapcss::Style& style,
                     const utymap::meshing::MeshBuilder::Options& options) :
-            startVertex(0), endVertex(0), 
-            startTriangle(0), endTriangle(0),
-            startColor(0), endColor(0),
-            style(style), options(options)
+            startVertex(mesh.vertices.size()),
+            startTriangle(mesh.triangles.size()),
+            startColor(mesh.colors.size()),
+            mesh(mesh), style(style), options(options)
         {
         }
     };
 
     // Specifies Extras function signature.
-    typedef std::function<void(const utymap::builders::BuilderContext&, utymap::meshing::Mesh&, const MeshContext&)> ExtrasFunc;
+    typedef std::function<void(const utymap::builders::BuilderContext&, MeshContext&)> ExtrasFunc;
 
     // Extends mesh with trees.
-    static void addForest(const utymap::builders::BuilderContext& builderContext, 
-                          utymap::meshing::Mesh&, 
-                          const MeshContext& meshContext);
+    static void addForest(const utymap::builders::BuilderContext& builderContext, MeshContext& meshContext);
 
     // Extends mesh with water surface.
-    static void addWater(const utymap::builders::BuilderContext& builderContext,
-                         utymap::meshing::Mesh&,
-                         const MeshContext& meshContext);
+    static void addWater(const utymap::builders::BuilderContext& builderContext,  MeshContext& meshContext);
 };
 
 }}
