@@ -60,7 +60,7 @@ private:
     bool has(std::uint64_t id)
     {
         auto it = std::find_if(relation_.elements.begin(), relation_.elements.end(),
-            [&id](const std::shared_ptr<utymap::entities::Element> e) {
+            [&id](const std::shared_ptr<utymap::entities::Element>& e) {
             return e->id == id;
         });
 
