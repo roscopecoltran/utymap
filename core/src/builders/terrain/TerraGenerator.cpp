@@ -199,7 +199,7 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
         context_.meshCallback(polygonMesh);
     }
     else {
-        meshContext.startColor = mesh_.vertices.size();
+        meshContext.startVertex = mesh_.vertices.size();
         meshContext.startTriangle = mesh_.triangles.size();
         meshContext.startColor = mesh_.colors.size();
 
