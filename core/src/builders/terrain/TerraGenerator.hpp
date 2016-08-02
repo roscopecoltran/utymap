@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <queue>
 #include <vector>
 
 namespace utymap { namespace builders {
@@ -39,6 +40,7 @@ public:
     struct Region
     {
         bool isLayer;
+        double area;
         std::shared_ptr<RegionContext> context; // optional: might be empty if polygon is layer
         ClipperLib::Paths points;
     };
@@ -58,8 +60,16 @@ public:
                                       const std::string& prefix);
 
 private:
+    struct GreaterThanByArea
+    {
+        bool operator()(const Region& lhs, const Region& rhs) const
+        {
+            return lhs.area > rhs.area;
+        }
+    };
+
     typedef std::vector<utymap::meshing::Vector2> Points;
-    typedef std::vector<Region> Regions;
+    typedef std::priority_queue<Region, std::vector<Region>, GreaterThanByArea> Regions;
     typedef std::unordered_map<std::string, Regions> Layers;
 
     // Builds all objects for quadkey organized by layers
@@ -68,7 +78,7 @@ private:
     // Builds background as clip area of layers
     void buildBackground(ClipperLib::Path& tileRect);
 
-    void buildFromRegions(const Regions& regions, const RegionContext& regionContext);
+    void buildFromRegions(Regions& regions, const RegionContext& regionContext);
 
     void buildFromPaths(ClipperLib::Paths& paths, const RegionContext& regionContext);
 

@@ -10,6 +10,7 @@
 #include "entities/Relation.hpp"
 
 #include "utils/GeoUtils.hpp"
+#include "utils/GeometryUtils.hpp"
 #include "utils/NoiseUtils.hpp"
 
 #include <map>
@@ -169,6 +170,8 @@ private:
         region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region.isLayer)
             region.context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+
+        region.area = std::abs(utymap::utils::getArea(coordinates));
 
         return std::move(region);
     }

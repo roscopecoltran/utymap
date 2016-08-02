@@ -10,15 +10,22 @@
 
 namespace utymap { namespace utils {
 
-    // Checks whether geocoordinates are in clockwise oreder
+    // Gets area of polygon
     template <typename T>
-    inline bool isClockwise(const T& coordinates)
+    inline double getArea(const T& coordinates)
     {
         auto size = coordinates.size();
         double area = 0.0;
         for (std::size_t p = size - 1, q = 0; q < size; p = q++)
             area += coordinates[p].longitude*coordinates[q].latitude - coordinates[q].longitude*coordinates[p].latitude;
-        return area < 0;
+        return area;
+    }
+
+    // Checks whether geocoordinates are in clockwise oreder
+    template <typename T>
+    inline bool isClockwise(const T& coordinates)
+    {
+        return getArea(coordinates) < 0;
     }
 
     // Gets circle parameters from geocoordinates
