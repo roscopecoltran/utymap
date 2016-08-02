@@ -189,20 +189,20 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
-        TerraExtras::MeshContext meshContext(polygonMesh, regionContext.style, regionContext.options);
+        TerraExtras::Context meshContext(polygonMesh, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(polygonMesh, polygon, regionContext.options);
         addExtrasIfNecessary(polygonMesh, meshContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
-        TerraExtras::MeshContext meshContext(mesh_, regionContext.style, regionContext.options);
+        TerraExtras::Context meshContext(mesh_, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.options);
         addExtrasIfNecessary(mesh_, meshContext, regionContext);
     }
 }
 
 void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
-                                          TerraExtras::MeshContext& meshContext,
+                                          TerraExtras::Context& meshContext,
                                           const RegionContext& regionContext)
 {
     std::string meshExtras = *style_.getString(regionContext.prefix + MeshExtrasKey);
