@@ -128,14 +128,14 @@ void TerraGenerator::buildFromRegions(Regions& regions, const RegionContext& reg
     buildFromPaths(result, regionContext);
 }
 
-void TerraGenerator::buildFromPaths(Paths& paths, const RegionContext& regionContext)
+void TerraGenerator::buildFromPaths(const Paths& paths, const RegionContext& regionContext)
 {
+    Paths solution;
     foregroundClipper_.AddPaths(paths, ptSubject, true);
-    paths.clear();
-    foregroundClipper_.Execute(ctDifference, paths, pftNonZero, pftNonZero);
+    foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
     foregroundClipper_.moveSubjectToClip();
 
-    populateMesh(paths, regionContext);
+    populateMesh(solution, regionContext);
 }
 
 void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionContext)

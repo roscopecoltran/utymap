@@ -80,7 +80,7 @@ private:
 
     void buildFromRegions(Regions& regions, const RegionContext& regionContext);
 
-    void buildFromPaths(ClipperLib::Paths& paths, const RegionContext& regionContext);
+    void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
 
     void populateMesh(ClipperLib::Paths& paths, const RegionContext& regionContext);
 
