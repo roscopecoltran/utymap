@@ -43,8 +43,9 @@ add_executable(${TEST}
         builders/generators/GeneratorTest.cpp
         builders/poi/TreeBuilderTest.cpp
         builders/misc/BarrierBuilderTest.cpp
-        builders/terrain/TerraBuilderTest.cpp
         builders/terrain/LineGridSplitterTest.cpp
+        builders/terrain/TerraBuilderTest.cpp
+        builders/terrain/TerraExtrasTest.cpp
         entities/ElementTest.cpp
         formats/shape/ShapeParserTest.cpp
         formats/shape/ShapeDataVisitorTest.cpp
@@ -68,7 +69,7 @@ add_executable(${TEST}
         ${HEADER_FILES}
         )
 
-target_link_libraries(${TEST} UtyMap 
+target_link_libraries(${TEST} UtyMap
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                               ${Boost_FILESYSTEM_LIBRARY})
 
