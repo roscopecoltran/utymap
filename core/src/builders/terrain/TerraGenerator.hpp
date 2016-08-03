@@ -90,7 +90,7 @@ private:
 
     // Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
-                              TerraExtras::Context& context,
+                              TerraExtras::Context& extrasContext,
                               const RegionContext& regionContext);
 
     void processHeightOffset(const Points& points, const RegionContext& regionContext);

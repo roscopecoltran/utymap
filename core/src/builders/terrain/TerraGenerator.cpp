@@ -189,27 +189,27 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
-        TerraExtras::Context meshContext(polygonMesh, regionContext.style, regionContext.options);
+        TerraExtras::Context extrasContext(polygonMesh, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(polygonMesh, polygon, regionContext.options);
-        addExtrasIfNecessary(polygonMesh, meshContext, regionContext);
+        addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
-        TerraExtras::Context meshContext(mesh_, regionContext.style, regionContext.options);
+        TerraExtras::Context extrasContext(mesh_, regionContext.style, regionContext.options);
         context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.options);
-        addExtrasIfNecessary(mesh_, meshContext, regionContext);
+        addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
 }
 
 void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
-                                          TerraExtras::Context& meshContext,
+                                          TerraExtras::Context& extrasContext,
                                           const RegionContext& regionContext)
 {
     std::string meshExtras = *style_.getString(regionContext.prefix + MeshExtrasKey);
     if (meshExtras.empty())
         return;
 
-    ExtrasFuncs.at(meshExtras)(context_, meshContext);
+    ExtrasFuncs.at(meshExtras)(context_, extrasContext);
 }
 
 void TerraGenerator::processHeightOffset(const Points& points, const RegionContext& regionContext)
