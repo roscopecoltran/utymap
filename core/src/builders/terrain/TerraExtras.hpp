@@ -21,15 +21,13 @@ public:
 
         utymap::meshing::Mesh& mesh;
         const utymap::mapcss::Style& style;
-        const utymap::meshing::MeshBuilder::Options options;
 
         Context(utymap::meshing::Mesh& mesh,
-                const utymap::mapcss::Style& style,
-                const utymap::meshing::MeshBuilder::Options& options) :
+                const utymap::mapcss::Style& style) :
             startVertex(mesh.vertices.size()),
             startTriangle(mesh.triangles.size()),
             startColor(mesh.colors.size()),
-            mesh(mesh), style(style), options(options)
+            mesh(mesh), style(style)
         {
         }
     };

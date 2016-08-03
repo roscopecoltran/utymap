@@ -189,13 +189,13 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
-        TerraExtras::Context extrasContext(polygonMesh, regionContext.style, regionContext.options);
+        TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
         context_.meshBuilder.addPolygon(polygonMesh, polygon, regionContext.options);
         addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
-        TerraExtras::Context extrasContext(mesh_, regionContext.style, regionContext.options);
+        TerraExtras::Context extrasContext(mesh_, regionContext.style);
         context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.options);
         addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
