@@ -10,7 +10,8 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 {
     // generate tree mesh
     Mesh treeMesh("");
-    TreeBuilder::createGenerator(builderContext, MeshContext(treeMesh, extrasContext.style))
+    MeshContext meshContext(treeMesh, extrasContext.style);
+    TreeBuilder::createGenerator(builderContext, meshContext)
         .setPosition(Vector3(0, 0, 0)) // NOTE we will override coordinates later
         .generate();
 
