@@ -72,6 +72,11 @@ namespace UtyMap.Unity.Maps.Data
                 _tile.Register(id);
             }
 
+            if (worldPoints.Length >= 65000)
+                _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed: {1}. " +
+                                           "It should be split but this is missing functionality in UtyMap.Unity.", 
+                                           name, worldPoints.Length.ToString());
+
             Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
             _observer.OnNext(new Union<Element, Mesh>(mesh));
         }
