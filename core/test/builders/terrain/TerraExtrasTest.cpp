@@ -5,6 +5,8 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
+#include <algorithm>
+
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -27,8 +29,9 @@ namespace {
                 *dependencyProvider.getStyleProvider(stylesheet),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
-                nullptr,
-                nullptr)
+                std::bind(&Builders_Terrain_TerraExtrasFixture::verifyMesh, this, std::placeholders::_1),
+                nullptr),
+                isVerified(false)
         {
         }
 
@@ -50,8 +53,21 @@ namespace {
             return dependencyProvider.getStyleProvider(stylesheet)->forElement(area, 16);
         }
 
+        void verifyMesh(const Mesh& mesh)
+        {
+            BOOST_CHECK_GT(mesh.vertices.size(), 0);
+            BOOST_CHECK_GT(mesh.triangles.size(), 0);
+            BOOST_CHECK_GT(mesh.colors.size(), 0);
+
+            BOOST_CHECK_EQUAL(*std::max_element(mesh.triangles.begin(), mesh.triangles.end()), static_cast<int>(mesh.vertices.size() - 1) / 3);
+            BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, mesh.colors.size());
+
+            isVerified = true;
+        }
+
         DependencyProvider dependencyProvider;
         BuilderContext builderContext;
+        bool isVerified;
     };   
 }
 
@@ -64,15 +80,10 @@ BOOST_AUTO_TEST_CASE(GivenMesh_WhenAddForest_ThenTreesAreAdded)
     TerraExtras::Context extrasContext(*mesh, style);
     extrasContext.startVertex = 0, extrasContext.startTriangle = 0, 
         extrasContext.startColor = 0;
-    std::size_t vertexCount = mesh->vertices.size(),
-        triCount = mesh->triangles.size(), 
-        colorCount = mesh->colors.size();
 
     TerraExtras::addForest(builderContext, extrasContext);
 
-    BOOST_CHECK_GT(mesh->vertices.size(), vertexCount);
-    BOOST_CHECK_GT(mesh->triangles.size(), triCount);
-    BOOST_CHECK_GT(mesh->colors.size(), colorCount);
+    BOOST_CHECK(isVerified);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

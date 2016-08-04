@@ -15,36 +15,45 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
         .setPosition(Vector3(0, 0, 0)) // NOTE we will override coordinates later
         .generate();
 
-    // original mesh
-    auto& vertices = extrasContext.mesh.vertices;
-    auto& triangles = extrasContext.mesh.triangles;
-    auto& colors = extrasContext.mesh.colors;
-
-    auto endTriangle = triangles.size();
-
+    // forest mesh contains all trees
+    Mesh forestMesh("forest");
+    
     // go through mesh region triangles and insert copy of the tree
-    for (auto i = extrasContext.startTriangle; i < endTriangle; i += 3) {
-        double centroidX = (vertices[i * 3] + vertices[(i + 1) * 3] + vertices[(i + 2) * 3]) / 3;
-        double centroidY = (vertices[i * 3 + 1] + vertices[(i + 1) * 3 + 1] + vertices[(i + 2) * 3 + 1]) / 3;
+    int step = 3 * 10; // NOTE: only insert in every tenth triangle
+    for (auto i = extrasContext.startTriangle; i < extrasContext.mesh.triangles.size(); i += step) {
+
+        double centroidX = 0;
+        double centroidY = 0;
+        for (int j = 0; j < 3; j++) {
+            int index = extrasContext.mesh.triangles[i + j] * 3;
+            centroidX += extrasContext.mesh.vertices[index];
+            centroidY += extrasContext.mesh.vertices[index + 1];
+        }
+
+        centroidX /= 3;
+        centroidY /= 3;
+
         double elevation = builderContext.eleProvider.getElevation(centroidX, centroidY);
 
-        auto startIndex = static_cast<int>(vertices.size());
+        int startIndex = static_cast<int>(forestMesh.vertices.size() / 3);
 
         // copy adjusted vertices
         for (std::size_t i = 0; i < treeMesh.vertices.size();) {
-            vertices.push_back(treeMesh.vertices[i++] + centroidX);
-            vertices.push_back(treeMesh.vertices[i++] + centroidY);
-            vertices.push_back(treeMesh.vertices[i++] + elevation);
+            forestMesh.vertices.push_back(treeMesh.vertices[i++] + centroidX);
+            forestMesh.vertices.push_back(treeMesh.vertices[i++] + centroidY);
+            forestMesh.vertices.push_back(treeMesh.vertices[i++] + elevation);
         }
 
         // copy adjusted triangles
-        std::transform(treeMesh.triangles.begin(), treeMesh.triangles.end(), std::back_inserter(triangles), [&](int value) {
+        std::transform(treeMesh.triangles.begin(), treeMesh.triangles.end(), std::back_inserter(forestMesh.triangles), [&](int value) {
             return value + startIndex;
         });
 
-        // copy adjusted colors
-        std::copy(treeMesh.colors.begin(), treeMesh.colors.end(), std::back_inserter(colors));
+        // copy colors
+        std::copy(treeMesh.colors.begin(), treeMesh.colors.end(), std::back_inserter(forestMesh.colors));
     }
+
+    builderContext.meshCallback(forestMesh);
 }
 
 void TerraExtras::addWater(const BuilderContext& builderContext, TerraExtras::Context& eeshContext)

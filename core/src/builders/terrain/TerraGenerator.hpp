@@ -24,7 +24,7 @@ public:
     // Region context encapsulates information about given region.
     struct RegionContext
     {
-        const utymap::mapcss::Style& style;
+        const utymap::mapcss::Style style;
         const std::string prefix;  // Prefix in mapcss.
         const utymap::meshing::MeshBuilder::Options options;
 
@@ -39,8 +39,8 @@ public:
     // Represents terrain region.
     struct Region
     {
-        Region() : 
-            isLayer(false), area(0), context(nullptr), points()
+        Region() 
+            : isLayer(false), area(0), context(nullptr), points() 
         {
         }
 

@@ -205,7 +205,7 @@ void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
                                           TerraExtras::Context& extrasContext,
                                           const RegionContext& regionContext)
 {
-    std::string meshExtras = *style_.getString(regionContext.prefix + MeshExtrasKey);
+    std::string meshExtras = *regionContext.style.getString(regionContext.prefix + MeshExtrasKey);
     if (meshExtras.empty())
         return;
 
