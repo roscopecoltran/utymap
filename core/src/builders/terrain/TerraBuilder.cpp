@@ -57,6 +57,7 @@ namespace {
                 path.push_back(toIntPoint(c.longitude, c.latitude));
 
             region.points.push_back(path);
+            region.area += std::abs(utymap::utils::getArea(a.coordinates));
         }
 
         void visitRelation(const utymap::entities::Relation& r)  { r.accept(builder); }

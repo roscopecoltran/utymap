@@ -39,6 +39,11 @@ public:
     // Represents terrain region.
     struct Region
     {
+        Region() : 
+            isLayer(false), area(0), context(nullptr), points()
+        {
+        }
+
         bool isLayer;
         double area;
         std::shared_ptr<RegionContext> context; // optional: might be empty if polygon is layer
