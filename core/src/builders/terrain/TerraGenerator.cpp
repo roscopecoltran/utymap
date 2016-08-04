@@ -145,11 +145,11 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
 
     bool hasHeightOffset = std::abs(regionContext.options.heightOffset) > 1E-8;
     // calculate approximate size of overall points
-    std::size_t size = 0;
+    double size = 0;
     for (std::size_t i = 0; i < paths.size(); ++i)
-        size += static_cast<std::size_t>(paths[i].size() * 1.5);
+        size += paths[i].size() * 1.5;
 
-    Polygon polygon(size);
+    Polygon polygon(static_cast<std::size_t>(size));
     for (const Path& path : paths) {
         double area = ClipperLib::Area(path);
         bool isHole = area < 0;
