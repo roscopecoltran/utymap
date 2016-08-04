@@ -45,7 +45,7 @@ context_(context), mesh_(TerrainMeshName), style_(style), foregroundClipper_(for
 {
 }
 
-void TerraGenerator::addRegion(const std::string& type, const Region& region)
+void TerraGenerator::addRegion(const std::string& type, std::shared_ptr<Region>& region)
 {
     layers_[type].push(region);
 }
@@ -82,7 +82,7 @@ void TerraGenerator::buildLayers()
     for (auto& layer : layers_)
         while (!layer.second.empty()) {
             auto& region = layer.second.top();
-            buildFromPaths(region.points, *region.context);
+            buildFromPaths(region->points, *region->context);
             layer.second.pop();
         }
 }
@@ -118,7 +118,7 @@ void TerraGenerator::buildFromRegions(Regions& regions, const RegionContext& reg
     // merge all regions together
     Clipper clipper;
     while (!regions.empty()) {
-        clipper.AddPaths(regions.top().points, ptSubject, true);
+        clipper.AddPaths(regions.top()->points, ptSubject, true);
         regions.pop();
     }
 

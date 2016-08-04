@@ -55,7 +55,7 @@ public:
                    ClipperLib::ClipperEx& foregroundClipper_);
 
     // Adds region
-    void addRegion(const std::string& type, const Region& region);
+    void addRegion(const std::string& type, std::shared_ptr<Region>& region);
 
     // Generates mesh and calls callback from context.
     void generate(ClipperLib::Path& tileRect);
@@ -65,16 +65,19 @@ public:
                                       const std::string& prefix);
 
 private:
+    typedef std::shared_ptr<Region> RegionPtr;
+    typedef std::vector<utymap::meshing::Vector2> Points;
+
+
     struct GreaterThanByArea
     {
-        bool operator()(const Region& lhs, const Region& rhs) const
+        bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
         {
-            return lhs.area > rhs.area;
+            return lhs->area > rhs->area;
         }
     };
 
-    typedef std::vector<utymap::meshing::Vector2> Points;
-    typedef std::priority_queue<Region, std::vector<Region>, GreaterThanByArea> Regions;
+    typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Regions;
     typedef std::unordered_map<std::string, Regions> Layers;
 
     // Builds all objects for quadkey organized by layers

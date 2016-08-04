@@ -89,7 +89,7 @@ public:
     void visitWay(const utymap::entities::Way& way)
     {
         Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
-        TerraGenerator::Region region = createRegion(style, way.coordinates);
+        auto region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
         double width = style.getValue(WidthKey, 
@@ -97,7 +97,7 @@ public:
             context_.boundingBox.center());
 
         Paths solution;
-        offset_.AddPaths(region.points, jtMiter, etOpenSquare);
+        offset_.AddPaths(region->points, jtMiter, etOpenSquare);
         offset_.Execute(solution, width *  Scale);
         offset_.Clear();
        
@@ -105,8 +105,8 @@ public:
         clipper_.Execute(ctIntersection, solution);
         clipper_.removeSubject();
 
-        region.points = solution;
-        std::string type = region.isLayer 
+        region->points = solution;
+        std::string type = region->isLayer
             ? *style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
@@ -115,8 +115,8 @@ public:
     void visitArea(const utymap::entities::Area& area)
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
-        TerraGenerator::Region region = createRegion(style, area.coordinates);
-        std::string type = region.isLayer
+        auto region = createRegion(style, area.coordinates);
+        std::string type = region->isLayer
             ? *style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
@@ -124,8 +124,8 @@ public:
 
     void visitRelation(const utymap::entities::Relation& rel)
     {
-        TerraGenerator::Region region;
-        RelationVisitor visitor(*this, rel, region);
+        auto region = std::make_shared<TerraGenerator::Region>();
+        RelationVisitor visitor(*this, rel, *region);
 
         for (const auto& element : rel.elements) {
             // if there are no tags, then this element is result of clipping
@@ -136,13 +136,13 @@ public:
                 element->accept(visitor);
         }
 
-        if (!region.points.empty()) {
+        if (!region->points.empty()) {
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
-            region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
-            if (!region.isLayer)
-                region.context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+            region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
+            if (!region->isLayer)
+                region->context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
-            std::string type = region.isLayer 
+            std::string type = region->isLayer 
                 ? *style.getString(TerrainLayerKey)
                 : "";
             generator_.addRegion(type, region);
@@ -158,23 +158,23 @@ public:
 
 private:
 
-    TerraGenerator::Region createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
+    std::shared_ptr<TerraGenerator::Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
     {
-        TerraGenerator::Region region;
+        auto region = std::make_shared<TerraGenerator::Region>();
         Path path;
         path.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates)
             path.push_back(toIntPoint(c.longitude, c.latitude));
 
-        region.points.push_back(path);
+        region->points.push_back(path);
 
-        region.isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
-        if (!region.isLayer)
-            region.context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+        region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
+        if (!region->isLayer)
+            region->context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
-        region.area = std::abs(utymap::utils::getArea(coordinates));
+        region->area = std::abs(utymap::utils::getArea(coordinates));
 
-        return std::move(region);
+        return region;
     }
 
     const Style style_;
