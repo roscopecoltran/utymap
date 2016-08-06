@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
         IntPoint(10 * scale, 10 * scale),
         IntPoint(0 * scale, 10 * scale)
     };
-    int lastItemIndex = inputPoints.size() - 1;
-    for (int i = 0; i <= lastItemIndex; i++) {
+    std::size_t lastItemIndex = inputPoints.size() - 1;
+    for (std::size_t i = 0; i <= lastItemIndex; i++) {
         IntPoint start = inputPoints[i];
         IntPoint end = inputPoints[i == lastItemIndex ? 0 : i + 1];
         splitter.split(start, end, contour);

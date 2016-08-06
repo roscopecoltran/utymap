@@ -218,7 +218,7 @@ void TerraGenerator::processHeightOffset(const Points& points, const RegionConte
     auto newOptions = regionContext.options;
     newOptions.eleNoiseFreq = 0;
 
-    for (auto i = 0; i < points.size(); ++i) {
+    for (std::size_t i = 0; i < points.size(); ++i) {
         Vector2 p1 = points[i];
         Vector2 p2 = points[i == (points.size() - 1) ? 0 : i + 1];
 
