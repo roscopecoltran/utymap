@@ -16,11 +16,13 @@ area,relation|z16[landuse] {
     max-area: 0.05%;
     color-noise-freq: 100000;
     ele-noise-freq: 100000;
-    color: gradient(#10ff00, #0ff000 50%, #098a00);
+    color: gradient(red);
 }
 
+area,relation|z16[landuse=garages],
+area,relation|z16[landuse=barracks],
 area,relation|z16[landuse=residential] {
-    color: gradient(#a9a9a9, #a9a9a9 30%, #707070 70%, #556b2f);
+    color: gradient(#a9a9a9, #707070 70%, #556b2f);
     texture: ground;
 }
 area,relation|z16[landuse=cemetery],
@@ -42,6 +44,8 @@ area,relation|z16[landuse=retail] {
     color: gradient(#162bff, #0f1dad 50%, #060c47);
     texture: ground;
 }
+area,relation|z16[landuse=field],
+area,relation|z16[natural=field],
 area,relation|z16[landuse=brownfield],
 area,relation|z16[landuse=landfill],
 area,relation|z16[landuse=greenfield] {
@@ -52,10 +56,14 @@ area,relation|z16[landuse=construction] {
     color: gradient(#fcdd76, #f4a460 40%, #707070);
     texture: ground;
 }
-area,relation|z16[amenity=parking][parking=surface] {
+area,relation|z16[amenity=parking_space],
+area,relation|z16[amenity=parking] {
     color: gradient(#c0c0c0, #999999 40%, #707070);
     texture: asphalt;
 }
+area,relation|z16[leisure=stadium],
+area,relation|z16[leisure=playground],
+area,relation|z16[natural=sand],
 area,relation|z16[natural=beach] {
     color: gradient(#fcdd76, #f4a460);
     texture: sand;
@@ -69,12 +77,17 @@ area,relation|z16[amenity=kindergarten] {
     texture: ground;
 }
 
+area,relation|z16[landuse=government],
 area,relation|z16[landuse=industrial],
 area,relation|z16[landuse=railway] {
     color: gradient(#7d7d7d, #707070);
     texture: ground;
 }
-area,relation|z16[leisure=park] {
+area,relation|z16[leisure=track],
+area,relation|z16[leisure=pitch],
+area,relation|z16[leisure=park],
+area,relation|z16[leisure=recreation_ground],
+area,relation|z16[leisure=garden] {
     color: gradient(#98fb98, #adff2f 5%, #006400 10%, #556b2f 80%, #b8860b);
     texture: grass;
 }
@@ -97,9 +110,5 @@ area,relation|z16[landuse=village_green],
 area,relation|z16[landuse=grass],
 area,relation|z16[landuse=meadow] {
     color: gradient(#adff2f, #006400 30%, #556b2f 90%, #b8860b);
-    texture: grass;
-}
-area,relation|z16[leisure=recreation_ground] {
-    color: gradient(#0d81ff, #0b6fdb 50%, #063b75);
     texture: grass;
 }
