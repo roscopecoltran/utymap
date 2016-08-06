@@ -1,5 +1,5 @@
-#ifndef INDEX_GEOUTILS_HPP_DEFINED
-#define INDEX_GEOUTILS_HPP_DEFINED
+#ifndef UTILS_GEOUTILS_HPP_DEFINED
+#define UTILS_GEOUTILS_HPP_DEFINED
 
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
@@ -162,4 +162,4 @@ private:
 
 }}
 
-#endif // INDEX_GEOUTILS_HPP_DEFINED
+#endif // UTILS_GEOUTILS_HPP_DEFINED
