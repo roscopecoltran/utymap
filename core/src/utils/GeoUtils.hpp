@@ -120,6 +120,13 @@ public:
         return radius * c;
     }
 
+    // Returns point between two at given distance in percents.
+    static GeoCoordinate newPoint(const GeoCoordinate& p1, const GeoCoordinate& p2, double distanceInProcents)
+    {
+        return GeoCoordinate(p1.latitude + (p2.latitude - p1.latitude) * distanceInProcents,
+                             p1.longitude + (p2.longitude - p1.longitude) * distanceInProcents);
+    }
+
 private:
 
     inline static int lonToTileX(double lon, int levelOfDetail)

@@ -275,8 +275,11 @@ node|z16[man_made=water_tower]                                    { rect:455_110
 node|z16[waterway=weir]                                                { rect:520_1105_64_64;   }
 
 
+way,relation|z16[natural=tree_row],
 node|z16[natural=tree] {
     builders: tree;
+    clip: true;
+    tree-step: 10m;
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
     foliage-radius: 3m;

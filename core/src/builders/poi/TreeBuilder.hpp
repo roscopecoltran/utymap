@@ -24,11 +24,11 @@ public:
 
     void visitNode(const utymap::entities::Node& node);
 
-    void visitWay(const utymap::entities::Way& way) { }
+    void visitWay(const utymap::entities::Way& way);
 
     void visitArea(const utymap::entities::Area& area) { }
 
-    void visitRelation(const utymap::entities::Relation& relation) { }
+    void visitRelation(const utymap::entities::Relation& relation);
 
     void complete() { }
 
