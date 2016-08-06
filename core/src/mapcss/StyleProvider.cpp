@@ -5,7 +5,10 @@
 #include "entities/Relation.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleProvider.hpp"
+#include "utils/CoreUtils.hpp"
 #include "utils/GradientUtils.hpp"
+
+#include <functional>
 
 using namespace utymap::entities;
 using namespace utymap::index;
@@ -14,7 +17,7 @@ using namespace utymap::mapcss;
 namespace {
 
 // Contains operation types supported by mapcss parser.
-enum OpType { Exists, Equals, NotEquals };
+enum OpType { Exists, Equals, NotEquals, Less, Greater };
 
 struct ConditionType
 {
@@ -52,7 +55,8 @@ public:
             levelOfDetails_(levelOfDetails),
             onlyCheck_(onlyCheck),
             canBuild_(false),
-            style_(tags, stringTable)
+            style_(tags, stringTable),
+            stringTable_(stringTable)
     {
     }
 
@@ -94,8 +98,22 @@ private:
                 return tag.value == condition.value;
             case OpType::NotEquals:
                 return tag.value != condition.value;
+            case OpType::Less:
+                return compareDoubles(tag.value, condition.value, std::less<double>());
+            case OpType::Greater:
+                return compareDoubles(tag.value, condition.value, std::greater<double>());
         }
         return false;
+    }
+
+    // Compares two raw string values using double conversion.
+    template<typename Func>
+    inline bool compareDoubles(std::uint32_t left, std::uint32_t right, Func binaryOp)
+    {
+        double leftValue = utymap::utils::parseDouble(stringTable_.getString(left));
+        double rightValue = utymap::utils::parseDouble(stringTable_.getString(right));
+
+        return binaryOp(leftValue, rightValue);
     }
 
     // tries to find tag which satisfy condition using binary search.
@@ -157,6 +175,7 @@ private:
     bool onlyCheck_;
     bool canBuild_;
     Style style_;
+    StringTable& stringTable_;
 };
 
 }
@@ -200,6 +219,8 @@ public:
                         if (condition.operation == "") c.type = OpType::Exists;
                         else if (condition.operation == "=") c.type = OpType::Equals;
                         else if (condition.operation == "!=") c.type = OpType::NotEquals;
+                        else if (condition.operation == "<") c.type = OpType::Less;
+                        else if (condition.operation == ">") c.type = OpType::Greater;
                         else
                             throw std::domain_error("Unexpected condition operation:" + condition.operation);
 

@@ -56,6 +56,34 @@ BOOST_AUTO_TEST_CASE(GivenSimpleEqualsCondition_WhenHasStyle_ThenReturnTrue)
     BOOST_CHECK(styleProvider->hasStyle(node, zoomLevel));
 }
 
+BOOST_AUTO_TEST_CASE(GivenSimpleLessCondition_WhenHasStyle_ThenReturnsExpectedLogicalResult)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { { "level", "<", "0" } });
+
+    BOOST_CHECK(styleProvider->hasStyle(
+        ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "level", "-1" } }), 
+        zoomLevel));
+
+    BOOST_CHECK(!styleProvider->hasStyle(
+        ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "level", "1" } }),
+        zoomLevel));
+}
+
+BOOST_AUTO_TEST_CASE(GivenSimpleGreaterCondition_WhenHasStyle_ThenReturnsExpectedLogicalResult)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { { "level", ">", "0" } });
+
+    BOOST_CHECK(styleProvider->hasStyle(
+        ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "level", "1" } }),
+        zoomLevel));
+
+    BOOST_CHECK(!styleProvider->hasStyle(
+        ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "level", "-1" } }),
+        zoomLevel));
+}
+
 BOOST_AUTO_TEST_CASE(GivenTwoNamesAndSimpleEqualsCondition_WhenHasStyleForSecondName_ThenReturnTrue)
 {
     int zoomLevel = 1;

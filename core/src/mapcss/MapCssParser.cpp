@@ -100,6 +100,7 @@ struct ConditionGrammar : qi::grammar<Iterator, Condition(), CommentSkipper<Iter
               ascii::string("=")
             | ascii::string("!=")
             | ascii::string(">")
+            | ascii::string("<")
         ;
         start.name("condition");
         keyValue.name("keyValue");
