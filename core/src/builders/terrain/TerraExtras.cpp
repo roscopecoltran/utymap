@@ -1,5 +1,6 @@
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/poi/TreeBuilder.hpp"
+#include "utils/MeshUtils.hpp"
 
 #include <algorithm>
 
@@ -35,22 +36,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 
         double elevation = builderContext.eleProvider.getElevation(centroidX, centroidY);
 
-        int startIndex = static_cast<int>(forestMesh.vertices.size() / 3);
-
-        // copy adjusted vertices
-        for (std::size_t i = 0; i < treeMesh.vertices.size();) {
-            forestMesh.vertices.push_back(treeMesh.vertices[i++] + centroidX);
-            forestMesh.vertices.push_back(treeMesh.vertices[i++] + centroidY);
-            forestMesh.vertices.push_back(treeMesh.vertices[i++] + elevation);
-        }
-
-        // copy adjusted triangles
-        std::transform(treeMesh.triangles.begin(), treeMesh.triangles.end(), std::back_inserter(forestMesh.triangles), [&](int value) {
-            return value + startIndex;
-        });
-
-        // copy colors
-        std::copy(treeMesh.colors.begin(), treeMesh.colors.end(), std::back_inserter(forestMesh.colors));
+        utymap::utils::copyMesh(Vector3(centroidX, elevation, centroidY), treeMesh, forestMesh);
     }
 
     builderContext.meshCallback(forestMesh);

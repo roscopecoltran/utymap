@@ -81,6 +81,7 @@ set(HEADER_FILES
         utils/GeoUtils.hpp
         utils/GradientUtils.hpp
         utils/MathUtils.hpp
+        utils/MeshUtils.hpp
         utils/NoiseUtils.hpp
         utils/SvgBuilder.hpp
         )
