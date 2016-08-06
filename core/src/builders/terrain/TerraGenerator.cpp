@@ -186,7 +186,7 @@ TerraGenerator::Points TerraGenerator::restorePoints(const Path& path)
 
 void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionContext)
 {
-    std::string meshName = *style_.getString(regionContext.prefix + MeshNameKey);
+    std::string meshName = *regionContext.style.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
         TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
