@@ -48,8 +48,8 @@ private:
             utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
 
             builderContext_.meshBuilder.addPlane(meshContext_.mesh,
-                p1,
                 p2,
+                p1,
                 minHeight_,
                 minHeight_,
                 options);

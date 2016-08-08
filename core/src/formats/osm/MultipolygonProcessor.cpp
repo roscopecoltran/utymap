@@ -277,7 +277,7 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings)
 void MultipolygonProcessor::insertCoordinates(const std::deque<GeoCoordinate>& source, std::vector<GeoCoordinate>& destination, bool isOuter) const
 {
     bool isClockwise = utymap::utils::isClockwise(source);
-    if ((isOuter && isClockwise) || (!isOuter && !isClockwise))
+    if ((isOuter && !isClockwise) || (!isOuter && isClockwise))
         destination.insert(destination.end(), source.begin(), source.end());
     else
         destination.insert(destination.end(), source.rbegin(), source.rend());

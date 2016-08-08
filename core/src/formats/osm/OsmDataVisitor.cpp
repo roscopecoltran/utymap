@@ -85,7 +85,7 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
 
         auto area = std::make_shared<Area>();
         area->id = id;
-        if (!utymap::utils::isClockwise(coordinates)) {
+        if (utymap::utils::isClockwise(coordinates)) {
             std::reverse(coordinates.begin(), coordinates.end());
         }
         area->coordinates = std::move(coordinates);

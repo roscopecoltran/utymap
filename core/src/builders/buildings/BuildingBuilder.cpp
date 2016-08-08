@@ -136,7 +136,7 @@ namespace {
 
         void visitArea(const utymap::entities::Area& area)
         {
-            if (utymap::utils::isClockwise(area.coordinates))
+            if (!utymap::utils::isClockwise(area.coordinates))
                 polygon_->addContour(toPoints(area.coordinates));
             else
                 polygon_->addHole(toPoints(area.coordinates));

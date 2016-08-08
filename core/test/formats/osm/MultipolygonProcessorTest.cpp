@@ -52,7 +52,7 @@ namespace {
             std::vector<GeoCoordinate> destination;
             destination.reserve(source.size());
             bool isClockwise = utymap::utils::isClockwise(source);
-            if ((isClockwise && isOuter) || (!isClockwise && !isOuter))
+            if ((isClockwise && !isOuter) || (!isClockwise && isOuter))
                 destination.insert(destination.end(), source.begin(), source.end());
             else
                 destination.insert(destination.end(), source.rbegin(), source.rend());
