@@ -49,7 +49,7 @@ void BarrierBuilder::visitWay(const Way& way)
 
     // NOTE ensure proper orientation which is required by facade builder
     // used below
-    if (ClipperLib::Orientation(shape))
+    if (!ClipperLib::Orientation(shape))
         std::reverse(shape.begin(), shape.end());
 
     // get polygon

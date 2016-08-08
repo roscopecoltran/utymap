@@ -63,7 +63,8 @@ private:
 
     void buildMansardShape(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index)
     {
-        std::reverse(offsetShape.begin(), offsetShape.end());
+        if (!ClipperLib::Orientation(offsetShape))
+            std::reverse(offsetShape.begin(), offsetShape.end());
 
         // build top
         utymap::meshing::Polygon topShape(offsetShape.size(), 0);
@@ -92,8 +93,8 @@ private:
             auto v2 = utymap::meshing::Vector3(topShape.points[nextTopIndex], topHeight, topShape.points[nextTopIndex + 1]);
             auto v3 = utymap::meshing::Vector3(topShape.points[topIndex], topHeight, topShape.points[topIndex + 1]);
 
-            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v3, sideOptions, false);
-            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v1, sideOptions, false);
+            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v3, sideOptions, false);
+            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1, sideOptions, false);
         }
     }
 

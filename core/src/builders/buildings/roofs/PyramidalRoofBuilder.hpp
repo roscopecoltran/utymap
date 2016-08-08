@@ -41,7 +41,7 @@ public:
             utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
 
             builderContext_.meshBuilder
-                .addTriangle(meshContext_.mesh, v2, v1, v0, options, false);
+                .addTriangle(meshContext_.mesh, v0, v1, v2, options, false);
         }
     }
 
