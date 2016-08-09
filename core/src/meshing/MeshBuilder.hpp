@@ -45,7 +45,7 @@ public:
                 double heightOffset,
                 std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
                 double elevation = std::numeric_limits<double>::lowest(),
-                double flipSide = false,
+                bool flipSide = false,
                 int segmentSplit = 0) :
             area(area), 
             eleNoiseFreq(eleNoiseFreq), 
