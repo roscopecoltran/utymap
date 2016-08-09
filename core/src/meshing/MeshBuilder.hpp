@@ -26,10 +26,12 @@ public:
         double colorNoiseFreq;
         // Height offset.
         double heightOffset;
+        // Gradient data.
+        std::shared_ptr<const utymap::mapcss::ColorGradient> gradient;
         // Fixed elevation.
         double elevation;
-        // Gradient data
-        std::shared_ptr<const utymap::mapcss::ColorGradient> gradient;
+        // Flip triangle side.
+        bool flipSide;
 
         // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
@@ -43,6 +45,7 @@ public:
                 double heightOffset,
                 std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
                 double elevation = std::numeric_limits<double>::lowest(),
+                double flipSide = false,
                 int segmentSplit = 0) :
             area(area), 
             eleNoiseFreq(eleNoiseFreq), 
@@ -50,6 +53,7 @@ public:
             heightOffset(heightOffset),
             gradient(gradient),
             elevation(elevation),
+            flipSide(flipSide),
             segmentSplit(segmentSplit)
         {
         }
