@@ -259,26 +259,49 @@ private:
 
         height -= minHeight;
 
-        // roof
-        auto roofType = style.getString(RoofTypeKey);
-        double roofHeight = style.getValue(RoofHeightKey);
+        attachRoof(meshContext, elevation, height);
+
+        // NOTE so far, attach floors only for buildings with minHeight
+        if (minHeight > 0)
+            attachFloors(meshContext, elevation, height);
+
+        attachFacade(meshContext, elevation, height);
+
+        polygon_.reset();
+    }
+
+    void attachRoof(MeshContext& meshContext, double elevation, double height)
+    {
         auto roofGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
+        auto roofType = meshContext.style.getString(RoofTypeKey);
+        double roofHeight = meshContext.style.getValue(RoofHeightKey);
         auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, meshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
         roofBuilder->setColor(roofGradient, 0);
         roofBuilder->build(*polygon_);
+    }
 
-        // facade
-        auto facadeType = style.getString(FacadeTypeKey);
+    void attachFloors(MeshContext& meshContext, double elevation, double height)
+    {
+        auto gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
+
+        FlatRoofBuilder floorBuilder(context_, meshContext);
+        floorBuilder.setMinHeight(elevation);
+        floorBuilder.setColor(gradient, 0);
+        floorBuilder.flipSide();
+        floorBuilder.build(*polygon_);
+    }
+
+    void attachFacade(MeshContext& meshContext, double elevation, double height)
+    {
+        auto facadeType = meshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, meshContext);
         auto facadeGradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, FacadeColorKey);
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);
         facadeBuilder->setColor(facadeGradient, 0);
         facadeBuilder->build(*polygon_);
-
-        polygon_.reset();
     }
 
     std::shared_ptr<Polygon> polygon_;
