@@ -1,4 +1,4 @@
-find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework system filesystem REQUIRED)
 
 enable_testing ()
 
@@ -71,6 +71,7 @@ add_executable(${TEST}
 
 target_link_libraries(${TEST} UtyMap
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                              ${Boost_SYSTEM_LIBRARY}
                               ${Boost_FILESYSTEM_LIBRARY})
 
 enable_testing ()
