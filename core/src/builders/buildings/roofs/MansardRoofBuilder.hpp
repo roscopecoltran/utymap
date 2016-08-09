@@ -75,11 +75,11 @@ private:
         }
         topShape.addContour(topShapeVertices);
 
-        auto topOptions = utymap::meshing::MeshBuilder::Options{ 0, 0, colorNoiseFreq_, height_, gradient_, minHeight_ };
+        auto topOptions = utymap::meshing::MeshBuilder::Options(0, 0, colorNoiseFreq_, height_, gradient_, minHeight_);
         builderContext_.meshBuilder.addPolygon(meshContext_.mesh, topShape, topOptions);
 
         // build sides
-        auto sideOptions = utymap::meshing::MeshBuilder::Options { 0, 0, colorNoiseFreq_, 0, gradient_, 0 };
+        auto sideOptions = utymap::meshing::MeshBuilder::Options( 0, 0, colorNoiseFreq_, 0, gradient_, 0);
         double topHeight = minHeight_ + height_;
         auto size = polygon.points.size();
         for (std::size_t i = 0; i < size; i += 2) {
