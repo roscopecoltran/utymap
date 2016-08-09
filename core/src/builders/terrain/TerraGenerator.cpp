@@ -109,8 +109,9 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
         style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
         style.getValue(prefix + HeightOffsetKey, quadKeyWidth),
         context_.styleProvider.getGradient(*style.getString(prefix + GradientKey)),
-        std::numeric_limits<double>::lowest(),
-        /* no new vertices on boundaries */ 1));
+        std::numeric_limits<double>::lowest(), /* no elevation offset */ 
+        false, /* don't flip */
+        1 /* no new vertices on boundaries */));
 }
 
 void TerraGenerator::buildFromRegions(Regions& regions, const RegionContext& regionContext)
