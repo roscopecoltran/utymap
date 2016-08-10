@@ -62,17 +62,17 @@ namespace utymap { namespace utils {
     }
 
     // Gets centroid.
-    inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& polygon)
+    inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& polygon, const utymap::meshing::Polygon::Range& range)
     {
         double centroidX = 0.0;
         double centroidY = 0.0;
 
-        for (std::size_t i = 0; i < polygon.points.size(); i+=2) {
+        for (std::size_t i = range.first; i < range.second; i += 2) {
             centroidX += polygon.points[i];
             centroidY += polygon.points[i+1];
         }
 
-        auto count = static_cast<double>(polygon.points.size() / 2);
+        auto count = static_cast<double>((range.second - range.first) / 2);
         centroidX /= count;
         centroidY /= count;
 

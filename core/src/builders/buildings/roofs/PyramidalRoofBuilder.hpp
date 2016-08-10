@@ -21,28 +21,28 @@ public:
 
     void build(utymap::meshing::Polygon& polygon)
     {
-        auto center = utymap::utils::getCentroid(polygon);
-        auto options = utymap::meshing::MeshBuilder::Options(
-            0, // area
-            0, // ele noise
-            colorNoiseFreq_,
-            0,
-            gradient_,
-            0
-        );
+        for (const auto& range : polygon.outers) {
+            auto center = utymap::utils::getCentroid(polygon, range);
+            auto options = utymap::meshing::MeshBuilder::Options(
+                0, // area
+                0, // ele noise
+                colorNoiseFreq_,
+                0,
+                gradient_,
+                0);
 
-        auto lastPointIndex = polygon.points.size() - 2;
+            auto lastPointIndex = range.second - 2;
 
-        for (std::size_t i = 0; i < polygon.points.size(); i += 2) {
-            auto nextIndex = i == lastPointIndex ? 0 : i + 2;
+            for (std::size_t i = range.first; i < range.second; i += 2) {
+                auto nextIndex = i == lastPointIndex ? range.first : i + 2;
 
-            utymap::meshing::Vector3 v0(polygon.points[i], minHeight_, polygon.points[i+1]);
-            utymap::meshing::Vector3 v1(center.x, minHeight_ + height_, center.y);
-            utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
+                utymap::meshing::Vector3 v0(polygon.points[i], minHeight_, polygon.points[i + 1]);
+                utymap::meshing::Vector3 v1(center.x, minHeight_ + height_, center.y);
+                utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
 
-            builderContext_.meshBuilder
-                .addTriangle(meshContext_.mesh, v0, v1, v2, options, false);
-        }
+                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, options, false);
+            }
+        }   
     }
 
 private:
