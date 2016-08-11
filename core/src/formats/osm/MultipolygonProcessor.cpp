@@ -119,6 +119,10 @@ void MultipolygonProcessor::process()
             auto areaPair = context_.areaMap.find(member.refId);
             if (areaPair != context_.areaMap.end()) {
                 coordinates = areaPair->second->coordinates;
+
+                // NOTE make coordinates to be closed ring
+                coordinates.push_back(coordinates[0]);
+
                 // NOTE merge tags to relation
                 if (member.role == "outer")
                     mergeTags(areaPair->second->tags);
