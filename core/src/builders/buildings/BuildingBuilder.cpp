@@ -120,6 +120,18 @@ namespace {
         return std::move(points);
     }
 
+    // NOTE this method exists due to special processing of all buildings parts of the 
+    // one relation. In general, we want to have ability to render complex building 
+    // as one game object. If area/relation is already part of relation then we
+    // should avoid processing it as independent element. We cannot just delete 
+    // element from store as it might be a part of other relation.
+    inline bool shouldBeIgnored(const Element& element)
+    {
+        return hasTag(std::numeric_limits<std::uint32_t>::max(),
+                      std::numeric_limits<std::uint32_t>::max(),
+                      element.tags);
+    }
+
     // Responsible for processing multipolygon relation.
     class MultiPolygonVisitor : public ElementVisitor
     {
@@ -321,7 +333,8 @@ void BuildingBuilder::visitWay(const Way&) { }
 
 void BuildingBuilder::visitArea(const Area& area)
 {
-    area.accept(*pimpl_);
+    if (!shouldBeIgnored(area))
+        area.accept(*pimpl_);
 }
 
 void BuildingBuilder::complete()
@@ -331,7 +344,8 @@ void BuildingBuilder::complete()
 
 void BuildingBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
-    relation.accept(*pimpl_);
+    if (!shouldBeIgnored(relation))
+        relation.accept(*pimpl_);
 }
 
 }}
