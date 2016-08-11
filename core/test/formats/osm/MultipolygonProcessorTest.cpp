@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
         std::make_tuple(1, "w", "outer"),
         std::make_tuple(2, "w", "inner")
     });
-    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } });
-    context.areaMap[2] = createElement<Area>({ { 2, 0 }, { 3, 2 }, { 5, 1 }, { 4, -1 }, { 2, 0 } });
+    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 } });
+    context.areaMap[2] = createElement<Area>({ { 2, 0 }, { 3, 2 }, { 5, 1 }, { 4, -1 } });
     MultipolygonProcessor processor(*createRelation(), relationMembers, context,
         std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
@@ -89,13 +89,11 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterOneInnerAllClosed_WhenProcess_ThenReturnCorrec
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(2, relation->elements.size());
 
-    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) ==
-        reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) ==
-        reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) == reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 }
 
 BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrectResult)
@@ -105,9 +103,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrec
         std::make_tuple(2, "w", "inner"),
         std::make_tuple(3, "w", "inner"),
     });
-    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } });
-    context.areaMap[2] = createElement<Area>({ { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 }, { 2, 1 } });
-    context.areaMap[3] = createElement<Area>({ { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } });
+    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }});
+    context.areaMap[2] = createElement<Area>({ { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 } });
+    context.areaMap[3] = createElement<Area>({ { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 } });
     MultipolygonProcessor processor(*createRelation(), relationMembers, context,
         std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
     
@@ -116,17 +114,14 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterTwoInnerAllClosed_WhenProcess_ThenReturnCorrec
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(3, relation->elements.size());
 
-    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) == 
-        reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) ==
-        reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates, false) == reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) ==
-        reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) == reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
 }
 
 BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosed_WhenProcess_ThenReturnCorrectResult)
@@ -144,10 +139,9 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosed_WhenProcess_ThenReturnCorrectResult)
 
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(1, relation->elements.size());
-    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
-    std::vector<GeoCoordinate> expected = { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 }, { 3, 5 }, { 7, 3 } };
-    BOOST_CHECK(ensureExpectedOrientation(expected) == 
-        reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
+    std::vector<GeoCoordinate> expected = { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 }, { 3, 5 } };
+    BOOST_CHECK(ensureExpectedOrientation(expected) == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 }
 
 BOOST_AUTO_TEST_CASE(GivenTwoOuterClosed_WhenProcess_ThenReturnCorrectResult)
@@ -156,8 +150,8 @@ BOOST_AUTO_TEST_CASE(GivenTwoOuterClosed_WhenProcess_ThenReturnCorrectResult)
         std::make_tuple(1, "w", "outer"),
         std::make_tuple(2, "w", "outer")
     });
-    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } });
-    context.areaMap[2] = createElement<Area>({ { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } });
+    context.areaMap[1] = createElement<Area>({ { 0, 0 }, { 3, 5 }, { 7, 3 }, { 8, -1 }, { 3, -4 } });
+    context.areaMap[2] = createElement<Area>({ { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 } });
     MultipolygonProcessor processor(*createRelation(), relationMembers, context,
         std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
@@ -165,10 +159,8 @@ BOOST_AUTO_TEST_CASE(GivenTwoOuterClosed_WhenProcess_ThenReturnCorrectResult)
 
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(2, relation->elements.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) == 
-        reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates) == 
-        reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[1]->coordinates) == reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[2]->coordinates) == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 }
 
 BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenReturnCorrectResult)
@@ -181,8 +173,8 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
     });
     context.wayMap[1] = createElement<Way>({ { 0, 0 }, { 3, 5 }, { 7, 3 } });
     context.wayMap[2] = createElement<Way>({ { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 } });
-    context.areaMap[3] = createElement<Area>({ { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 }, { 2, 1 } });
-    context.areaMap[4] = createElement<Area>({ { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 }, { 3, -1 } });
+    context.areaMap[3] = createElement<Area>({ { 2, 1 }, { 3, 3 }, { 5, 2 }, { 4, 0 } });
+    context.areaMap[4] = createElement<Area>({ { 3, -1 }, { 5, -1 }, { 3, -3 }, { 2, -2 } });
     MultipolygonProcessor processor(*createRelation(), relationMembers, context,
         std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
@@ -191,18 +183,15 @@ BOOST_AUTO_TEST_CASE(GivenOneOuterNonClosedAndTwoInnerClosed_WhenProcess_ThenRet
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(3, relation->elements.size());
 
-    BOOST_CHECK_EQUAL(6, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
-    std::vector<GeoCoordinate> expected = { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 }, { 3, 5 }, { 7, 3 } };
-    BOOST_CHECK(ensureExpectedOrientation(expected) == 
-        reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
+    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
+    std::vector<GeoCoordinate> expected = { { 7, 3 }, { 8, -1 }, { 3, -4 }, { 0, 0 }, { 3, 5 } };
+    BOOST_CHECK(ensureExpectedOrientation(expected) == reinterpret_cast<const Area&>(*relation->elements[0]).coordinates);
 
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) ==
-        reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[2]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[3]->coordinates, false) == reinterpret_cast<const Area&>(*relation->elements[2]).coordinates);
 
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
-    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[4]->coordinates, false) ==
-        reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[1]).coordinates.size());
+    BOOST_CHECK(ensureExpectedOrientation(context.areaMap[4]->coordinates, false) == reinterpret_cast<const Area&>(*relation->elements[1]).coordinates);
 }
 
 BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCorrectResult)
@@ -246,7 +235,7 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
     context.wayMap[8] = createElement<Way>({ { 3, -1 }, { 4, -4 } });
     context.wayMap[9] = createElement<Way>({ { 4, -4 }, { 1, -3 } });
     context.wayMap[10] = createElement<Way>({ { 1, -3 }, { 1, -2 } });
-    context.areaMap[11] = createElement<Area>({ { 6, -3 }, { 7, -1 }, { 8, -4 }, { 6, -3 } });
+    context.areaMap[11] = createElement<Area>({ { 6, -3 }, { 7, -1 }, { 8, -4 } });
 
     context.wayMap[12] = createElement<Way>({ { 10, 5 }, { 14, 5 } });
     context.wayMap[13] = createElement<Way>({ { 14, 5 }, { 14, -1 } });
@@ -258,7 +247,7 @@ BOOST_AUTO_TEST_CASE(GivenMultiplyOuterAndMultiplyInner_WhenProcess_ThenReturnCo
     context.wayMap[18] = createElement<Way>({ { 11, 0 }, { 12, 2 } });
     context.wayMap[19] = createElement<Way>({ { 12, 2 }, { 11, 4 } });
 
-    context.areaMap[20] = createElement<Area>({ { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 }, { 10, -3 } });
+    context.areaMap[20] = createElement<Area>({ { 10, -3 }, { 14, -3 }, { 14, -6 }, { 10, -6 } });
     MultipolygonProcessor processor(*createRelation(), relationMembers, context,
         std::bind(&Formats_Osm_MultipolygonProcessorFixture::resolve, this, std::placeholders::_1));
 
@@ -289,7 +278,7 @@ BOOST_AUTO_TEST_CASE(GivenSpecificFourOuter_WhenProcess_ThenDoesNotCrash)
 
     auto relation = context.relationMap[0];
     BOOST_CHECK_EQUAL(1, relation->elements.size());
-    BOOST_CHECK_EQUAL(5, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
+    BOOST_CHECK_EQUAL(4, reinterpret_cast<const Area&>(*relation->elements[0]).coordinates.size());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
