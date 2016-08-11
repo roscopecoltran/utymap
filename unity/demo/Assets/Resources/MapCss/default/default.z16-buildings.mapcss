@@ -37,6 +37,11 @@ area,relation|z16[height] {
 area,relation|z16[building:height] {
     height: eval("tag('building:height')");
 }
+
+area,relation|z16[height][roof:height] {
+    height: eval("tag('height') - tag('roof:height')");
+}
+
 area,relation|z16[building:height][roof:height] {
     height: eval("tag('building:height') - tag('roof:height')");
 }
@@ -237,6 +242,12 @@ area,relation|z16[building:colour] {
 }
 area,relation|z16[building:color] {
     facade-color: eval("tag('building:color')");
+}
+area,relation|z16[roof:colour] {
+    roof-color: eval("tag('roof:colour')");
+}
+area,relation|z16[roof:color] {
+    roof-color: eval("tag('roof:color')");
 }
 
 area,relation|z16[man_made=bridge] {
