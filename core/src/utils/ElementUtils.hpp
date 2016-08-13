@@ -92,17 +92,17 @@ static void visitRelationMembers(const utymap::formats::OsmDataContext& context,
         if (member.type == "n") {
             auto nodePair = context.nodeMap.find(member.refId);
             if (nodePair != context.nodeMap.end())
-                visitor.visit(nodePair);
+                visitor.visit(nodePair, member.role);
         }
         else if (member.type == "w") {
             auto areaPair = context.areaMap.find(member.refId);
             if (areaPair != context.areaMap.end()) {
-                visitor.visit(areaPair);
+                visitor.visit(areaPair, member.role);
             }
             else {
                 auto wayPair = context.wayMap.find(member.refId);
                 if (wayPair != context.wayMap.end())
-                    visitor.visit(wayPair);
+                    visitor.visit(wayPair, member.role);
             }
         }
         else {

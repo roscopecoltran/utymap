@@ -30,39 +30,36 @@ public:
         utymap::utils::visitRelationMembers(context_, members_, *this);
     }
 
-    void visit(OsmDataContext::NodeMapType::const_iterator node)
+    void visit(OsmDataContext::NodeMapType::const_iterator node, const std::string& role)
     {
-        relation_.elements.push_back(node->second);
-        putMarkerTag(node->second);
+        addToRelation(node->second, role);
     }
 
-    void visit(OsmDataContext::WayMapType::const_iterator way)
+    void visit(OsmDataContext::WayMapType::const_iterator way, const std::string& role)
     {
-        relation_.elements.push_back(way->second);
-        putMarkerTag(way->second);
+        addToRelation(way->second, role);
     }
 
-    void visit(OsmDataContext::AreaMapType::const_iterator area)
+    void visit(OsmDataContext::AreaMapType::const_iterator area, const std::string& role)
     {
-        relation_.elements.push_back(area->second);
-        putMarkerTag(area->second);
+        addToRelation(area->second, role);
     }
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     {
         resolve_(*rel->second);
-
-        if (role != "outline")
-            relation_.elements.push_back(rel->second);
-
-        putMarkerTag(rel->second);
+        addToRelation(rel->second, role);
     }
 
 private:
 
-    // NOTE add specific tag to signalize that this element should not be processed separetely by building builder
-    void putMarkerTag(std::shared_ptr<utymap::entities::Element> element) 
+    void addToRelation(std::shared_ptr<utymap::entities::Element> element, const std::string& role)
     {
+        // NOTE Outline is ignored as it SHOULD BE used only for 2D renders.
+        if (role != "outline")
+            relation_.elements.push_back(element);
+
+        //NOTE add specific tag to signalize that this element should not be processed separetely by building builder
         element->tags.push_back(utymap::entities::Tag(
             std::numeric_limits<std::uint32_t>::max(),
             std::numeric_limits<std::uint32_t>::max()));

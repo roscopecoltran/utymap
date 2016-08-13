@@ -28,19 +28,19 @@ public:
         utymap::utils::visitRelationMembers(context_, members_, *this);
     }
 
-    void visit(OsmDataContext::NodeMapType::const_iterator node)
+    void visit(OsmDataContext::NodeMapType::const_iterator node, const std::string& role)
     {
         if (!has(node->first))
             relation_.elements.push_back(node->second);
     }
 
-    void visit(OsmDataContext::WayMapType::const_iterator way)
+    void visit(OsmDataContext::WayMapType::const_iterator way, const std::string& role)
     {
         if (!has(way->first))
             relation_.elements.push_back(way->second);
     }
 
-    void visit(OsmDataContext::AreaMapType::const_iterator area)
+    void visit(OsmDataContext::AreaMapType::const_iterator area, const std::string& role)
     {
         if (!has(area->first))
             relation_.elements.push_back(area->second);
