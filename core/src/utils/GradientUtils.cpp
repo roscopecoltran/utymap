@@ -275,6 +275,11 @@ std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
         data.push_back(pair);
     }
 
+    // NOTE this happens when gradientStr is invalid gradient string.
+    if (data.empty() && !gradientStr.empty()) {
+        data.push_back(std::make_pair(0., colorMap.find("red")->second));
+    }
+
     return std::make_shared<ColorGradient>(data);
 }
 
