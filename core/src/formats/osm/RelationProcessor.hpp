@@ -32,25 +32,25 @@ public:
 
     void visit(OsmDataContext::NodeMapType::const_iterator node, const std::string& role)
     {
-        if (!has(node->first))
+        if (!isAlreadyProcessed(node->first))
             relation_.elements.push_back(node->second);
     }
 
     void visit(OsmDataContext::WayMapType::const_iterator way, const std::string& role)
     {
-        if (!has(way->first))
+        if (!isAlreadyProcessed(way->first))
             relation_.elements.push_back(way->second);
     }
 
     void visit(OsmDataContext::AreaMapType::const_iterator area, const std::string& role)
     {
-        if (!has(area->first))
+        if (!isAlreadyProcessed(area->first))
             relation_.elements.push_back(area->second);
     }
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     {
-        if (has(rel->first) || hasReferenceToParent(*rel->second))
+        if (isAlreadyProcessed(rel->first) || hasReferenceToParent(*rel->second))
             return;
 
         resolve_(*rel->second);
@@ -59,7 +59,7 @@ public:
 
 private:
 
-    bool has(std::uint64_t id)
+    bool isAlreadyProcessed(std::uint64_t id)
     {
         auto it = std::find_if(relation_.elements.begin(), relation_.elements.end(),
             [&id](const std::shared_ptr<utymap::entities::Element>& e) {
