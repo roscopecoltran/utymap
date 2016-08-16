@@ -18,8 +18,10 @@ public:
     RelationProcessor(utymap::entities::Relation& relation,
                       const utymap::formats::RelationMembers& members,
                       utymap::formats::OsmDataContext& context,
+                      std::unordered_map<std::uint64_t, utymap::formats::RelationMembers>& relationMembersMap,
                       std::function<void(utymap::entities::Relation&)> resolve)
-    : relation_(relation), members_(members), context_(context), resolve_(resolve)
+        : relation_(relation), members_(members), context_(context), 
+          relationMembersMap_(relationMembersMap), resolve_(resolve)
     {
     }
 
@@ -48,7 +50,7 @@ public:
 
     void visit(OsmDataContext::RelationMapType::const_iterator rel, const std::string& role)
     {
-        if (has(rel->first))
+        if (has(rel->first) || hasReferenceToParent(*rel->second))
             return;
 
         resolve_(*rel->second);
@@ -67,9 +69,28 @@ private:
         return it != relation_.elements.end();
     }
 
+    // Checks whether relation has reference to current. If yes, it should not be 
+    // processed because of recursion. 
+    // NOTE This check finds only simple cases.
+    bool hasReferenceToParent(const utymap::entities::Relation& rel)
+    {
+        auto parentId = relation_.id;
+
+        auto members = relationMembersMap_.find(rel.id)->second;
+        auto it = std::find_if(members.begin(), members.end(), 
+            [&parentId](const utymap::formats::RelationMember& m) {
+            return m.refId == parentId;
+        });
+
+        return it != members.end();
+    }
+
     utymap::entities::Relation& relation_;
     const utymap::formats::RelationMembers& members_;
     utymap::formats::OsmDataContext& context_;
+
+    std::unordered_map<std::uint64_t, utymap::formats::RelationMembers>& relationMembersMap_;
+
     std::function<void(utymap::entities::Relation&)> resolve_;
 };
 

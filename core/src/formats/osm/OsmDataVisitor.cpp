@@ -143,7 +143,7 @@ void OsmDataVisitor::resolve(Relation& relation)
     else if (hasTag("type", "building", relation.tags))
         BuildingProcessor(relation, membersPair->second, context_, resolveFunc).process();
     else {
-        RelationProcessor(relation, membersPair->second, context_, resolveFunc).process();
+        RelationProcessor(relation, membersPair->second, context_, relationMembers_, resolveFunc).process();
     }
 }
 
