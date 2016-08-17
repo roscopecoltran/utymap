@@ -5,6 +5,7 @@
 #include "formats/FormatTypes.hpp"
 #include "formats/osm/OsmDataContext.hpp"
 #include "index/StringTable.hpp"
+#include "utils/CoreUtils.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -80,7 +81,7 @@ inline std::string getTagValue(std::uint32_t key,
 
 // Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
-    return prefix + std::to_string(element.id);
+    return prefix + utymap::utils::toString(element.id);
 }
 
 template <typename T>

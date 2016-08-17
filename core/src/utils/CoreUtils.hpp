@@ -12,9 +12,12 @@ namespace utymap { namespace utils {
 template <typename T>
 inline std::string toString(T t) 
 {
-    std::stringstream stream;
-    stream << t;
-    return stream.str();
+    return boost::lexical_cast<std::string>(t);
+}
+
+inline double toDouble(const std::string& value)
+{
+    return boost::lexical_cast<double>(value);
 }
 
 inline bool endsWith(std::string const & value, std::string const & ending)

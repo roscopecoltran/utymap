@@ -1,3 +1,4 @@
+#include "utils/CoreUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
 #include <sstream>
@@ -270,7 +271,7 @@ std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
             }
             // NOTE assume that for all intermediate colors time is always defined
             // and skipped for first and last.
-            pair.first = std::stod(partStr.substr(0, partStr.size() - 1)) / 100.;
+            pair.first = utymap::utils::toDouble(partStr.substr(0, partStr.size() - 1)) / 100.;
         }
         data.push_back(pair);
     }
