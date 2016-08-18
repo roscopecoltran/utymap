@@ -23,7 +23,7 @@ namespace UtyMap.Unity.Maps.Data
         private readonly IObserver<Union<Element, Mesh>> _observer;
         private readonly ITrace _trace;
 
-        private static Regex ElementNameRegex = new Regex("^(building|barrier):([0-9]*)", RegexOptions.Compiled);
+        private static Regex ElementNameRegex = new Regex("^(building|barrier):([0-9]*)");
 
         public MapTileAdapter(Tile tile, IObserver<Union<Element, Mesh>> observer, ITrace trace)
         {
