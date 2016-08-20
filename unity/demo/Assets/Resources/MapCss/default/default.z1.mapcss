@@ -1,19 +1,19 @@
 canvas|z1 {
     layer-priority: water,border;
-    grid-cell-size: 10%;
-    max-area: 5%;
+    grid-cell-size: 5%;
+    max-area: 0.05%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
-    color: gradient(#72e4de);
-    height-offset:-1%;
+    color: gradient(#87cefa, #1e90ff);
+    height-offset:-0.2%;
 
-    water-max-area: 5%;
+    water-max-area: 0.05%;
     water-color-noise-freq: 0.1;
     water-ele-noise-freq: 0.05;
-    water-color: gradient(#72e4de);
+    water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-0.2%;
 
-    border-max-area: 5%;
+    border-max-area: 0.05%;
     border-color-noise-freq: 0.1;
     border-ele-noise-freq: 0.05;
     border-color: gradient(red);
@@ -42,7 +42,7 @@ area|z1[featurecla=Country][scalerank=1],
 relation|z1[featurecla=Country][scalerank=1] {
     clip:true;
     builders: terrain;
-    max-area: 5%;
+    max-area: 0.05%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
@@ -60,7 +60,7 @@ area|z1[featurecla=Adm-0 scale ranks],
 relation|z1[featurecla=Adm-0 scale ranks]{
     clip:true;
     builders: terrain;
-    max-area: 5%;
+    max-area: 0.05%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
