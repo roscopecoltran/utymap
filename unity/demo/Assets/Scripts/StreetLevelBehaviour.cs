@@ -13,9 +13,9 @@ using Component = UtyDepend.Component;
 namespace Assets.Scripts
 {
     /// <summary> Performs some initialization and listens for position changes of character.  </summary>
-    class StreetLevelBehaviour : MonoBehaviour
+    sealed class StreetLevelBehaviour : MonoBehaviour
     {
-        protected ApplicationManager AppManager;
+        private ApplicationManager _appManager;
 
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
@@ -32,34 +32,19 @@ namespace Assets.Scripts
         /// <summary> Start longitude. Used if PlaceName is empty. </summary>
         public double StartLongitude = 13.38787;
 
-        #region Protected methods
-
-        /// <summary> Returns config builder initialized with user defined settings. </summary>
-        protected virtual ConfigBuilder GetConfigBuilder()
-        {
-            return ConfigBuilder.GetDefault();
-        }
-
-        /// <summary> Returns init action. </summary>
-        protected virtual Action<CompositionRoot> GetInitAction()
-        {
-            return compositionRoot =>
-            {
-                compositionRoot.RegisterAction((c, _) =>
-                    c.Register(Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
-            };
-        }
-
-        #endregion
-
         #region Unity lifecycle events
 
         /// <summary> Performs framework initialization once, before any Start() is called. </summary>
         void Awake()
         {
-            AppManager = ApplicationManager.Instance;
-            AppManager.InitializeFramework(GetConfigBuilder(), GetInitAction());
-            AppManager.SetZoomLevel(16);
+            _appManager = ApplicationManager.Instance;
+            _appManager.InitializeFramework(ConfigBuilder.GetDefault(),
+                (compositionRoot) =>
+                {
+                    compositionRoot.RegisterAction((c, _) => 
+                        c.Register(UtyDepend.Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
+                });
+            _appManager.SetZoomLevel(16);
         }
 
         void Start()
@@ -72,7 +57,7 @@ namespace Assets.Scripts
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
             // restore gravity and adjust character y-position once first tile is loaded
-            AppManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
+            _appManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
                 .Take(1)
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(_ =>
@@ -93,16 +78,16 @@ namespace Assets.Scripts
         void OnEnable()
         {
             // utymap is better to start on non-UI thread
-            Observable.Start(() => AppManager.RunGame(), Scheduler.ThreadPool).Subscribe();
+            Observable.Start(() => _appManager.RunGame(), Scheduler.ThreadPool).Subscribe();
         }
 
         /// <summary> Listens for position changes to notify library. </summary>
         void Update()
         {
-            if (AppManager.IsInitialized && _position != transform.position)
+            if (_appManager.IsInitialized && _position != transform.position)
             {
                 _position = transform.position;
-                AppManager.SetPosition(new Vector2(_position.x, _position.z));
+                _appManager.SetPosition(new Vector2(_position.x, _position.z));
             }
         }
 
@@ -121,7 +106,7 @@ namespace Assets.Scripts
             {
                 // NOTE this will freeze UI thread as we're making web request and should wait for its result
                 // TODO improve it
-                var place = AppManager.GetService<IGeocoder>().Search(PlaceName)
+                var place = _appManager.GetService<IGeocoder>().Search(PlaceName)
                     .Wait();
 
                 if (place != null)
@@ -133,7 +118,7 @@ namespace Assets.Scripts
                     return place.Coordinate;
                 }
 
-                AppManager.GetService<ITrace>()
+                _appManager.GetService<ITrace>()
                     .Warn("init", "Cannot resolve '{0}', will use default latitude/longitude", PlaceName);
             }
             return coordinate;
