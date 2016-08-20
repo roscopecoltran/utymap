@@ -11,9 +11,7 @@ using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Infrastructure.Reactive;
-using UtyMap.Unity.Maps.Data;
 using UtyRx;
 using IContainer = UtyDepend.IContainer;
 using Container = UtyDepend.Container;
@@ -28,9 +26,6 @@ namespace Assets.Scripts
         private IContainer _container;
         private DebugConsoleTrace _trace;
         private CompositionRoot _compositionRoot;
-        private ITileController _tileController;
-
-        private int _zoomLevel = 16;
 
         #region Singleton implementation
 
@@ -140,21 +135,10 @@ namespace Assets.Scripts
                 if (IsInitialized)
                     throw new InvalidOperationException("Should not call RunGame more than once.");
 
-                _tileController = GetService<ITileController>();
-
                 GetService<IMessageBus>()
                     .AsObservable<TileLoadStartMessage>()
                     .ObserveOn(Scheduler.MainThread)
                     .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
-
-                // NOTE this is just example: you can load your regions into memory once
-                // game is started. Also you can specify different zoom level if you
-                // have valid mapcss stylesheet
-                _compositionRoot.GetService<IMapDataLoader>()
-                    .AddToStore(MapStorageType.InMemory,
-                        @"Osm/berlin.osm.xml",
-                        _compositionRoot.GetService<Stylesheet>(),
-                        new Range<int>(_zoomLevel, _zoomLevel));
 
                 IsInitialized = true;
             }
@@ -163,24 +147,6 @@ namespace Assets.Scripts
                 _trace.Error("FATAL", ex, "Error running game:");
                 throw;
             }
-        }
-
-        /// <summary> Notifies utymap about position change. </summary>
-        public void SetPosition(Vector2 point)
-        {
-            Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(point, _zoomLevel));
-        }
-
-        /// <summary> Notifies utymap about coordinate change. </summary>
-        public void SetPosition(GeoCoordinate coordinate)
-        {
-            Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(coordinate, _zoomLevel));
-        }
-
-        /// <summary> Sets zoom level. </summary>
-        public void SetZoomLevel(int zoomLevel)
-        {
-            _zoomLevel = zoomLevel;
         }
 
         #endregion

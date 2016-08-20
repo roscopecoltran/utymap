@@ -5,6 +5,8 @@ using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyMap.Unity.Infrastructure.Primitives;
+using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 
@@ -17,7 +19,10 @@ namespace Assets.Scripts
     /// </summary>
     sealed class StreetLevelBehaviour : MonoBehaviour
     {
+        private const int LevelOfDetails = 16;
+
         private ApplicationManager _appManager;
+        private ITileController _tileController;
 
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
@@ -46,7 +51,8 @@ namespace Assets.Scripts
                     compositionRoot.RegisterAction((c, _) => 
                         c.Register(UtyDepend.Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
                 });
-            _appManager.SetZoomLevel(16);
+
+            _tileController = _appManager.GetService<ITileController>();
         }
 
         void Start()
@@ -80,7 +86,20 @@ namespace Assets.Scripts
         void OnEnable()
         {
             // utymap is better to start on non-UI thread
-            Observable.Start(() => _appManager.RunGame(), Scheduler.ThreadPool).Subscribe();
+            Observable.Start(() =>
+            {
+                // NOTE this is just example: you can load your regions into memory once
+                // game is started. Also you can specify different zoom level if you
+                // have valid mapcss stylesheet
+                _appManager
+                    .GetService<IMapDataLoader>()
+                    .AddToStore(MapStorageType.InMemory,
+                                @"Osm/berlin.osm.xml",
+                                _appManager.GetService<Stylesheet>(),
+                                new Range<int>(LevelOfDetails, LevelOfDetails));
+
+                _appManager.RunGame();
+            }, Scheduler.ThreadPool).Subscribe();
         }
 
         /// <summary> Listens for position changes to notify library. </summary>
@@ -89,7 +108,8 @@ namespace Assets.Scripts
             if (_appManager.IsInitialized && _position != transform.position)
             {
                 _position = transform.position;
-                _appManager.SetPosition(new Vector2(_position.x, _position.z));
+                Scheduler.ThreadPool.Schedule(() => 
+                    _tileController.OnPosition(new Vector2(_position.x, _position.z), LevelOfDetails));
             }
         }
 
