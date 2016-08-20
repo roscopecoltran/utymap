@@ -15,8 +15,6 @@ namespace UtyMap.Unity.Tests.Integration
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
     public class TileLoadingTests
     {
-        private const int LevelOfDetails = 16;
-
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;
         private CompositionRoot _compositionRoot;
         private IMapDataLoader _mapDataLoader;
@@ -40,18 +38,44 @@ namespace UtyMap.Unity.Tests.Integration
         }
 
         [Test(Description = "This test loads 64 tiles from osm file to ensure that there are no unexpected crashes at least at test region.")]
-        public void CanLoadMultipleTiles()
+        public void CanLoadMultipleTilesAtDetailedLevelOfDetails()
         {
             // ARRANGE
-            SetupMapData(TestHelper.BerlinPbfData);
+            int lod = 16;
+            SetupMapData(TestHelper.BerlinPbfData, lod);
             var count = 10;
-            var centerQuadKey = new QuadKey(35205, 21489, LevelOfDetails);
+            var centerQuadKey = new QuadKey(35205, 21489, lod);
 
             // ACT & ASSERT
             for (var y = 0; y < count; ++y)
                 for (var x = 0; x < count; ++x)
                 {
-                    var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, LevelOfDetails);
+                    var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod);
+                    var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
+                    _mapDataLoader
+                        .Load(tile)
+                        .SubscribeOn(Scheduler.CurrentThread)
+                        .ObserveOn(Scheduler.CurrentThread)
+                        .Subscribe(AssertData);
+                }
+        }
+
+        [Test(Description = "This test loads 4 tiles at zoom level 1.")]
+        public void CanLoadGlobeAtLowestLevelOfDetails()
+        {
+            // ARRANGE
+            int lod = 1;
+            SetupMapData(TestHelper.NaturalEarth110mAdmin, lod);
+            SetupMapData(TestHelper.NaturalEarth110mLakes, lod);
+            SetupMapData(TestHelper.NaturalEarth110mLand, lod);
+            SetupMapData(TestHelper.NaturalEarth110mRivers, lod);
+            var count = 2;
+
+            // ACT & ASSERT
+            for (var y = 0; y < count; ++y)
+                for (var x = 0; x < count; ++x)
+                {
+                    var quadKey = new QuadKey(x, y, lod);
                     var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
                     _mapDataLoader
                         .Load(tile)
@@ -64,9 +88,9 @@ namespace UtyMap.Unity.Tests.Integration
         #region Private members
 
         /// <summary> Setup test map data. </summary>
-        private void SetupMapData(string mapDataPath)
+        private void SetupMapData(string mapDataPath, int lod)
         {
-            var range = new Range<int>(LevelOfDetails, LevelOfDetails);
+            var range = new Range<int>(lod, lod);
             _compositionRoot
                 .GetService<IMapDataLoader>()
                 .AddToStore(MapStorageType.InMemory, mapDataPath, _tileController.Stylesheet, range);

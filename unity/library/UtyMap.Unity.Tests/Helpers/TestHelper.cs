@@ -24,6 +24,11 @@ namespace UtyMap.Unity.Tests.Helpers
         public const string NmeaFilePath = TestAssetsFolder + @"/Nmea/invalidenstrasse_borsigstrasse.nme";
         public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
 
+        public const string NaturalEarth110mAdmin = TestAssetsFolder + @"/NaturalEarth/ne_110m_admin_0_scale_rank";
+        public const string NaturalEarth110mLakes = TestAssetsFolder + @"/NaturalEarth/ne_110m_lakes";
+        public const string NaturalEarth110mLand = TestAssetsFolder + @"/NaturalEarth/ne_110m_land";
+        public const string NaturalEarth110mRivers = TestAssetsFolder + @"/NaturalEarth/ne_110m_rivers_lake_centerlines";
+
         #endregion
 
         public static CompositionRoot GetCompositionRoot(GeoCoordinate worldZeroPoint)
