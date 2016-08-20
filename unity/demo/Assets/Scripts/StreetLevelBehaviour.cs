@@ -10,10 +10,10 @@ using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 using Component = UtyDepend.Component;
 
-namespace Assets.Scripts.Character
+namespace Assets.Scripts
 {
     /// <summary> Performs some initialization and listens for position changes of character.  </summary>
-    class UtymapBehaviour : MonoBehaviour
+    class StreetLevelBehaviour : MonoBehaviour
     {
         protected ApplicationManager AppManager;
 
