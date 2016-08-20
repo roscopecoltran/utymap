@@ -48,9 +48,9 @@ namespace Assets.Scripts
                 var range = new Range<int>(LevelOfDetails, LevelOfDetails);
 
                 //_mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_admin_0_scale_rank", stylesheet, range);
-                //_mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_lakes", stylesheet, range);
+                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_lakes", stylesheet, range);
                 _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_land", stylesheet, range);
-                //_mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_rivers_lake_centerlines", stylesheet, range);
+                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_rivers_lake_centerlines", stylesheet, range);
 
                 _appManager.RunGame();
 
