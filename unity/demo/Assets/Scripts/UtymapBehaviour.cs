@@ -15,7 +15,6 @@ namespace Assets.Scripts.Character
     /// <summary> Performs some initialization and listens for position changes of character.  </summary>
     class UtymapBehaviour : MonoBehaviour
     {
-        private float _initialGravity;
         protected ApplicationManager AppManager;
 
         // Current character position.
@@ -70,10 +69,8 @@ namespace Assets.Scripts.Character
 #if !CONSOLE
             // set gravity to zero on start to prevent free fall as terrain loading takes some time.
             // restore it afterwards.
-            var thirdPersonController = gameObject.GetComponent<ThirdPersonController>();
-            _initialGravity = thirdPersonController.gravity;
-            thirdPersonController.gravity = 0;
-
+            gameObject.GetComponent<Rigidbody>().isKinematic = true;
+           
             // restore gravity and adjust character y-position once first tile is loaded
             AppManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
                 .Take(1)
@@ -87,7 +84,8 @@ namespace Assets.Scripts.Character
                     //var elevation = AppManager.GetService<IElevationProvider>()
                     //    .GetElevation(new Vector2(position.x, position.z));
                     //transform.position = new Vector3(position.x, elevation + 90, position.z);
-                    thirdPersonController.gravity = _initialGravity;
+                    //rigidBody.constraints = originalConstraints;
+                    gameObject.GetComponent<Rigidbody>().isKinematic = false;
                 });
 #endif
         }
