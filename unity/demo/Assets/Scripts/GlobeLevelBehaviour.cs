@@ -9,7 +9,7 @@ using UtyRx;
 
 namespace Assets.Scripts
 {
-    sealed class GlobeBehaviour : MonoBehaviour
+    sealed class GlobeLevelBehaviour : MonoBehaviour
     {
         public float GlobeRadius = 100;
 
