@@ -1,9 +1,9 @@
 canvas|z16 {
     water-mesh-name: water;
-    water-max-area: 5%;
-    water-color-noise-freq: 0.1;
-    water-ele-noise-freq: 0.05;
-    water-color: gradient(#72e4de);
+    water-max-area: 0.01%;
+    water-color-noise-freq: 100000;
+    water-ele-noise-freq: 100000;
+    water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-1m;
 }
 
