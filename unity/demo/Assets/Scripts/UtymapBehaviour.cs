@@ -27,10 +27,10 @@ namespace Assets.Scripts.Character
         public string PlaceName;
 
         /// <summary> Start latitude. Used if PlaceName is empty. </summary>
-        public double StartLatitude = 52.5317429;
+        public double StartLatitude = 52.53149;
 
         /// <summary> Start longitude. Used if PlaceName is empty. </summary>
-        public double StartLongitude = 13.3871987;
+        public double StartLongitude = 13.38787;
 
         #region Protected methods
 
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Character
         {
             return compositionRoot =>
             {
-                compositionRoot.RegisterAction((c, _) => 
+                compositionRoot.RegisterAction((c, _) =>
                     c.Register(Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
             };
         }
@@ -70,7 +70,7 @@ namespace Assets.Scripts.Character
             // set gravity to zero on start to prevent free fall as terrain loading takes some time.
             // restore it afterwards.
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
-           
+
             // restore gravity and adjust character y-position once first tile is loaded
             AppManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
                 .Take(1)
