@@ -17,7 +17,7 @@ area,relation|z16[landuse] {
     color-noise-freq: 100000;
     ele-noise-freq: 100000;
     color: gradient(red);
-    mesh-name: terra_generic;
+    mesh-name: terrain_generic;
 }
 
 area,relation|z16[landuse=garages],
@@ -95,7 +95,7 @@ area,relation|z16[leisure=garden] {
 area,relation|z16[natural=wood],
 area,relation|z16[landuse=forest] {
     mesh-extras: forest;
-    mesh-name: forest;
+    mesh-name: terrain_forest;
     color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
     trunk-color: gradient(#f4a460, #614126 50%, #302013);

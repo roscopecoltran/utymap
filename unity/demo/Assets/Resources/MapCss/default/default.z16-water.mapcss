@@ -1,5 +1,5 @@
 canvas|z16 {
-    water-mesh-name: water;
+    water-mesh-name: terrain_water;
     water-max-area: 0.01%;
     water-color-noise-freq: 100000;
     water-ele-noise-freq: 100000;
