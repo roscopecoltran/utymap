@@ -1,7 +1,7 @@
 canvas|z1 {
     layer-priority: water,border;
     grid-cell-size: 5%;
-    max-area: 0.05%;
+    max-area: 0.1%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(#87cefa, #1e90ff);
@@ -12,11 +12,13 @@ canvas|z1 {
     water-ele-noise-freq: 0.05;
     water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-0.2%;
+    water-mesh-name: terrain_water;
 
-    border-max-area: 0.05%;
+    border-max-area: 0.1%;
     border-color-noise-freq: 0.1;
     border-ele-noise-freq: 0.05;
     border-color: gradient(red);
+    border-mesh-name: terrain_border;
 }
 
 way|z1[featurecla=River][scalerank=1],
@@ -42,7 +44,7 @@ area|z1[featurecla=Country][scalerank=1],
 relation|z1[featurecla=Country][scalerank=1] {
     clip:true;
     builders: terrain;
-    max-area: 0.05%;
+    max-area: 0.1%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(white);
@@ -96,7 +98,7 @@ area|z1[sr_geounit=Belarus],
 relation|z1[sr_geounit=Belarus],
 area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
-    mesh-name: ussr;
+    mesh-name: terrain_ussr;
     color: gradient(red);
     height-offset: 0.2%;
 }
