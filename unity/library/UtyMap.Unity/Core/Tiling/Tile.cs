@@ -36,7 +36,7 @@ namespace UtyMap.Unity.Core.Tiling
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
         /// <param name="projection"> Projection. </param>
-        internal Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection)
+        public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection)
         {
             QuadKey = quadKey;
             Stylesheet = stylesheet;
