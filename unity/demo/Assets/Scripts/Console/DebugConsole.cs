@@ -36,7 +36,7 @@ namespace Assets.Scripts.Console
 
     public class DebugConsole : MonoBehaviour
     {
-        private const string Version = "0.2";
+        private const string Version = "0.1";
         private const string EntryField = "DebugConsoleEntryField";
 
         public VarWatcher Watcher { get; private set; }
@@ -158,7 +158,7 @@ namespace Assets.Scripts.Console
             _windowRect = new Rect(30.0f, 30.0f, 300.0f, 450.0f);
 #endif
 
-            LogMessage(ConsoleMessage.Info(string.Format(" ActionStreetMap Engine, version {0}", Version)));
+            LogMessage(ConsoleMessage.Info(string.Format(" UtyMap, version {0}", Version)));
             LogMessage(ConsoleMessage.Info(" type 'help' for available commands."));
             LogMessage(ConsoleMessage.Info(""));
 
