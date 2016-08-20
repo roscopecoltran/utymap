@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UtyMap.Unity;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure;
@@ -8,11 +7,14 @@ using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
-using Component = UtyDepend.Component;
 
 namespace Assets.Scripts
 {
-    /// <summary> Performs some initialization and listens for position changes of character.  </summary>
+    /// <summary> 
+    ///     This behavior is used in Street Level scene where you have 3D buildings and the highest 
+    ///     level of detalization. Add it to Character. 
+    ///     In general, it performs some initialization and listens for position changes of character.
+    /// </summary>
     sealed class StreetLevelBehaviour : MonoBehaviour
     {
         private ApplicationManager _appManager;
