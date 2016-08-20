@@ -84,7 +84,6 @@ namespace Assets.Scripts
                     //var elevation = AppManager.GetService<IElevationProvider>()
                     //    .GetElevation(new Vector2(position.x, position.z));
                     //transform.position = new Vector3(position.x, elevation + 90, position.z);
-                    //rigidBody.constraints = originalConstraints;
                     gameObject.GetComponent<Rigidbody>().isKinematic = false;
                 });
 #endif
