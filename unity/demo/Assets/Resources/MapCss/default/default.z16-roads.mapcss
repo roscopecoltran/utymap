@@ -1,12 +1,12 @@
 canvas|z16 {
-    drive-mesh-name: drive;
+    drive-mesh-name: terrain_drive;
     drive-max-area: 5%;
     drive-color-noise-freq: 0.1;
     drive-ele-noise-freq: 0;
     drive-color: gradient(#4d4d4d);
     drive-height-offset:-0.2m;
 
-    pedestrian-mesh-name: pedestrian;
+    pedestrian-mesh-name: terrain_pedestrian;
     pedestrian-max-area: 5%;
     pedestrian-color-noise-freq: 0.1;
     pedestrian-ele-noise-freq: 0.05;
