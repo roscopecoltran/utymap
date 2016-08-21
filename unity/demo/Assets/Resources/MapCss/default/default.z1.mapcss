@@ -1,7 +1,7 @@
 canvas|z1 {
     layer-priority: water,border;
     grid-cell-size: 5%;
-    max-area: 0.1%;
+    max-area: 0.2%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
     color: gradient(#87cefa, #1e90ff);
