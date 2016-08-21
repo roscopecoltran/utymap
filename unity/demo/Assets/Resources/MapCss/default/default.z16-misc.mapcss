@@ -6,7 +6,7 @@ way,relation|z16[barrier] {
     builders: barrier;
     color: gradient(#15c0c0, #0a5a5a 50%, #000000);
 
-    height: 3m;
+    height: 2m;
     min-height: 0m;
     offset: 0.2m;
 }

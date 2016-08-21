@@ -8,9 +8,8 @@ namespace Assets.Scripts
         public string Resolve(string path)
         {
 #if UNITY_ANDROID
-            if (path.StartsWith(PathPrefix))
-                return path;
-            return String.Format("{0}/{1}", PathPrefix, path.Replace(@"\", "/"));
+            // TODO detect real path somehow
+            return @"/storage/sdcard0/UtyMap/" + path;
 #else
             return "Assets//Resources//" + path;
 #endif
