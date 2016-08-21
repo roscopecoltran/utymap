@@ -1,0 +1,6 @@
+canvas|z14 {
+    layer-priority: water,drive,green;
+}
+
+@import url("default.z14-lines.mapcss");
+@import url("default.z14-polygons.mapcss");

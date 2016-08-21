@@ -1,12 +1,11 @@
-﻿using System;
-using UtyMap.Unity;
+﻿using System.Threading;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyMap.Unity.Maps.Data;
 using NUnit.Framework;
+using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
 
@@ -19,6 +18,7 @@ namespace UtyMap.Unity.Tests.Integration
         private CompositionRoot _compositionRoot;
         private IMapDataLoader _mapDataLoader;
         private ITileController _tileController;
+        private bool _isCalled;
 
         [TestFixtureSetUp]
         public void Setup()
@@ -29,6 +29,7 @@ namespace UtyMap.Unity.Tests.Integration
             // get local references
             _mapDataLoader = _compositionRoot.GetService<IMapDataLoader>();
             _tileController = _compositionRoot.GetService<ITileController>();
+            _isCalled = false;
         }
 
         [TestFixtureTearDown]
@@ -49,15 +50,8 @@ namespace UtyMap.Unity.Tests.Integration
             // ACT & ASSERT
             for (var y = 0; y < count; ++y)
                 for (var x = 0; x < count; ++x)
-                {
-                    var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod);
-                    var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
-                    _mapDataLoader
-                        .Load(tile)
-                        .SubscribeOn(Scheduler.CurrentThread)
-                        .ObserveOn(Scheduler.CurrentThread)
-                        .Subscribe(AssertData);
-                }
+                    LoadQuadKeySync(new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod));
+            Assert.IsTrue(_isCalled);
         }
 
         [Test(Description = "This test loads 4 tiles at zoom level 1.")]
@@ -74,15 +68,26 @@ namespace UtyMap.Unity.Tests.Integration
             // ACT & ASSERT
             for (var y = 0; y < count; ++y)
                 for (var x = 0; x < count; ++x)
-                {
-                    var quadKey = new QuadKey(x, y, lod);
-                    var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
-                    _mapDataLoader
-                        .Load(tile)
-                        .SubscribeOn(Scheduler.CurrentThread)
-                        .ObserveOn(Scheduler.CurrentThread)
-                        .Subscribe(AssertData);
-                }
+                    LoadQuadKeySync(new QuadKey(x, y, lod));
+
+            Assert.IsTrue(_isCalled);
+        }
+
+        [Test(Description = "This test loads 4 tiles at zoom level 14.")]
+        public void CanLoadAtBirdEyeLevelOfDetails()
+        {
+            // ARRANGE
+            int lod = 14;
+            SetupMapData(TestHelper.BerlinXmlData, lod);
+            var count = 1;
+            var centerQuadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, lod);
+
+            // ACT & ASSERT
+            for (var y = 0; y < count; ++y)
+                for (var x = 0; x < count; ++x)
+                    LoadQuadKeySync(new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod));
+            
+            Assert.IsTrue(_isCalled);
         }
 
         #region Private members
@@ -96,9 +101,25 @@ namespace UtyMap.Unity.Tests.Integration
                 .AddToStore(MapStorageType.InMemory, mapDataPath, _tileController.Stylesheet, range);
         }
 
+        /// <summary> Loads quadkey waiting for completion callback. </summary>
+        private void LoadQuadKeySync(QuadKey quadKey)
+        {
+            var manualResetEvent = new ManualResetEvent(false);
+            var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
+
+            _mapDataLoader
+                .Load(tile)
+                .SubscribeOn(Scheduler.CurrentThread)
+                .ObserveOn(Scheduler.CurrentThread)
+                .Subscribe(AssertData, () => manualResetEvent.Set());
+
+            manualResetEvent.WaitOne();
+        }
+
         /// <summary> Checks whether data satisfied minimal correctness critirea. </summary>
         private void AssertData(Union<Element, Mesh> data)
         {
+            _isCalled = true;
             var elements = 0;
             var meshes = 0;
             data.Match(
