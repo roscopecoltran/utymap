@@ -24,7 +24,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
     Mesh forestMesh("forest");
   
     // go through mesh region triangles and insert copy of the tree
-    int step = 3 * extrasContext.style.getValue(TreeFrequencyKey); 
+    int step = 3 * static_cast<int>(std::max(extrasContext.style.getValue(TreeFrequencyKey), 1.)); 
     for (auto i = extrasContext.startTriangle; i < extrasContext.mesh.triangles.size(); i += step) {
 
         double centroidX = 0;
