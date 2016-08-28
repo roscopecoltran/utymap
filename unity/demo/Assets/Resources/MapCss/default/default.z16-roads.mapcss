@@ -25,8 +25,8 @@ way|z16[highway=path][foot=designated] {
     width: 1m;
 }
 way|z16[highway=service] {
-    terrain-layer: pedestrian;
-    width: 0.7m;
+    terrain-layer: drive;
+    width: 2.5m;
 }
 way|z16[highway=footway] {
     terrain-layer: pedestrian;
@@ -35,7 +35,6 @@ way|z16[highway=footway] {
 
 way|z16[highway=tertiary],
 way|z16[highway=residential],
-way|z16[highway=service],
 way|z16[highway=unclassified],
 way|z16[highway=road] {
     terrain-layer: drive;
