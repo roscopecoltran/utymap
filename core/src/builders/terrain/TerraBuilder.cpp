@@ -132,7 +132,7 @@ public:
             if (element->tags.empty())
                 element->tags = rel.tags;
 
-            if (context_.styleProvider.hasStyle(rel, context_.quadKey.levelOfDetail))
+            if (context_.styleProvider.hasStyle(*element, context_.quadKey.levelOfDetail))
                 element->accept(visitor);
         }
 
