@@ -96,6 +96,7 @@ area,relation|z16[natural=wood],
 area,relation|z16[landuse=forest] {
     mesh-extras: forest;
     mesh-name: terrain_forest;
+    tree-frequency: 30;
     color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
     trunk-color: gradient(#f4a460, #614126 50%, #302013);

@@ -7,6 +7,10 @@
 using namespace utymap::builders;
 using namespace utymap::meshing;
 
+namespace {
+    const std::string TreeFrequencyKey = "tree-frequency";
+}
+
 void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::Context& extrasContext)
 {
     // generate tree mesh
@@ -18,9 +22,9 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 
     // forest mesh contains all trees
     Mesh forestMesh("forest");
-    
+  
     // go through mesh region triangles and insert copy of the tree
-    int step = 3 * 10; // NOTE: only insert in every tenth triangle
+    int step = 3 * extrasContext.style.getValue(TreeFrequencyKey); 
     for (auto i = extrasContext.startTriangle; i < extrasContext.mesh.triangles.size(); i += step) {
 
         double centroidX = 0;
