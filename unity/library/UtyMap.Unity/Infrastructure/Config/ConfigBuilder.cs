@@ -90,7 +90,7 @@ namespace UtyMap.Unity.Infrastructure.Config
                 .SetRemoteElevationData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
                 .SetRemoteMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
                 .SetCache("Cache")
-                .SetGeocodingServer("http://nominatim.openstreetmap.org/search");
+                .SetGeocodingServer("http://nominatim.openstreetmap.org/search?");
         }
 
         #endregion
