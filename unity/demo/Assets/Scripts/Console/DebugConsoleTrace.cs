@@ -21,7 +21,11 @@ namespace Assets.Scripts.Console
         protected override void WriteRecord(RecordType type, string category, string message, Exception exception)
         {
             var logMessage = ToLogMessage(type, category, message, exception);
-            _console.LogMessage(logMessage);
+
+            // NOTE console can be null.
+            if (_console != null)
+                _console.LogMessage(logMessage);
+
             switch (type)
             {
                 case RecordType.Error:
