@@ -33,6 +33,7 @@ namespace Assets.Scripts
                     compositionRoot.RegisterAction((c, _) => 
                         c.Register(UtyDepend.Component.For<IProjection>().Use<SphericalProjection>(GlobeRadius)));
                 });
+            _appManager.CreateDebugConsole();
 
             _mapDataLoader = _appManager.GetService<IMapDataLoader>();
             _modelBuilder = _appManager.GetService<IModelBuilder>();

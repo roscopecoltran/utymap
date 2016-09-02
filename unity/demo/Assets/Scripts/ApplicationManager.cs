@@ -61,10 +61,6 @@ namespace Assets.Scripts
             MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
                 _trace.Error(FatalCategoryName, ex, "Unhandled exception"));
 
-            // console is way to debug/investigate app behavior on real devices when
-            // regular debugger is not applicable
-            CreateConsole();
-
             try
             {
                 var config = ConfigBuilder.GetDefault()
@@ -95,7 +91,11 @@ namespace Assets.Scripts
         }
 
         /// <summary> Creates debug console in scene. </summary>
-        private void CreateConsole()
+        /// <remarks> 
+        ///     Console is way to debug/investigate app behavior on real devices when 
+        ///     regular debugger is not applicable.
+        /// </remarks>
+        public void CreateDebugConsole()
         {
             // NOTE DebugConsole is based on some adapted solution found in Internet
             var consoleGameObject = new GameObject("_DebugConsole_");
@@ -133,7 +133,7 @@ namespace Assets.Scripts
             try
             {
                 if (IsInitialized)
-                    throw new InvalidOperationException("Should not call RunGame more than once.");
+                    return;
 
                 GetService<IMessageBus>()
                     .AsObservable<TileLoadStartMessage>()

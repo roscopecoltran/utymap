@@ -35,6 +35,7 @@ namespace Assets.Scripts
                             .For<IProjection>()
                             .Use<CartesianProjection>(new GeoCoordinate(StartLatitude, StartLongitude))));
                 });
+            _appManager.CreateDebugConsole();
         }
 
         /// <summary> Runs game after all Start() methods are called. </summary>

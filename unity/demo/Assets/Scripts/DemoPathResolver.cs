@@ -11,7 +11,7 @@ namespace Assets.Scripts
             // TODO detect real path somehow
             return @"/storage/sdcard0/UtyMap/" + path;
 #else
-            return "Assets//Resources//" + path;
+            return @"Assets/Resources/" + path;
 #endif
         }
     }

@@ -1,13 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
-using UtyMap.Unity.Infrastructure.Diagnostic;
-using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Maps.Data;
-using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 
 namespace Assets.Scripts
@@ -27,17 +22,14 @@ namespace Assets.Scripts
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
-        /// <summary>
-        ///     Place name. Will be resolved to the certain GeoCoordinate via performing reverse
-        ///     geocoding request to reverse geocoding server.
-        /// </summary>
-        public string PlaceName;
-
-        /// <summary> Start latitude. Used if PlaceName is empty. </summary>
+        /// <summary> Start latitude. </summary>
         public double StartLatitude = 52.53149;
 
-        /// <summary> Start longitude. Used if PlaceName is empty. </summary>
+        /// <summary> Start longitude. </summary>
         public double StartLongitude = 13.38787;
+
+        // NOTE workaround for passing parameters between scenes.
+        internal static GeoCoordinate? StartCoordinate { get; set; }
 
         #region Unity lifecycle events
 
@@ -51,14 +43,14 @@ namespace Assets.Scripts
                     compositionRoot.RegisterAction((c, _) => 
                         c.Register(UtyDepend.Component.For<IProjection>().Use<CartesianProjection>(GetWorldZeroPoint())));
                 });
+            _appManager.CreateDebugConsole();
 
             _tileController = _appManager.GetService<ITileController>();
         }
 
         void Start()
         {
-            // Need to wrap by conditional compilation symbols due to issues with compilation
-            // on CI withoud Unity3d: ThirdPersonController is javascript class.
+            // Need to wrap by conditional compilation symbols due to issues with Unity classes.
 #if !CONSOLE
             // set gravity to zero on start to prevent free fall as terrain loading takes some time.
             // restore it afterwards.
@@ -91,12 +83,12 @@ namespace Assets.Scripts
                 // NOTE this is just example: you can load your regions into memory once
                 // game is started. Also you can specify different zoom level if you
                 // have valid mapcss stylesheet
-                _appManager
-                    .GetService<IMapDataLoader>()
-                    .AddToStore(MapStorageType.InMemory,
-                                @"Osm/berlin.osm.xml",
-                                _appManager.GetService<Stylesheet>(),
-                                new Range<int>(LevelOfDetails, LevelOfDetails));
+                //_appManager
+                //    .GetService<IMapDataLoader>()
+                //    .AddToStore(MapStorageType.InMemory,
+                //                @"Osm/berlin.osm.xml",
+                //                _appManager.GetService<Stylesheet>(),
+                //                new Range<int>(LevelOfDetails, LevelOfDetails));
 
                 _appManager.RunGame();
             }, Scheduler.ThreadPool).Subscribe();
@@ -117,33 +109,10 @@ namespace Assets.Scripts
 
         #region Private methods
 
-        /// <summary>
-        ///     Gets start geocoordinate using desired method: direct latitude/longitude or
-        ///     via reverse geocoding request for given place name.
-        /// </summary>
+        /// <summary> Gets Geocoordinate which correspons to (0, 0) in world coordinates. </summary>
         private GeoCoordinate GetWorldZeroPoint()
         {
-            var coordinate = new GeoCoordinate(StartLatitude, StartLongitude);
-            if (!String.IsNullOrEmpty(PlaceName))
-            {
-                // NOTE this will freeze UI thread as we're making web request and should wait for its result
-                // TODO improve it
-                var place = _appManager.GetService<IGeocoder>().Search(PlaceName)
-                    .Wait();
-
-                if (place != null)
-                {
-                    StartLatitude = place.Coordinate.Latitude;
-                    StartLongitude = place.Coordinate.Longitude;
-                    // NOTE this prevents name resolution to be done more than once
-                    PlaceName = null;
-                    return place.Coordinate;
-                }
-
-                _appManager.GetService<ITrace>()
-                    .Warn("init", "Cannot resolve '{0}', will use default latitude/longitude", PlaceName);
-            }
-            return coordinate;
+            return StartCoordinate ?? new GeoCoordinate(StartLatitude, StartLongitude);
         }
 
         #endregion
