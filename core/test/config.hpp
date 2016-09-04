@@ -1,6 +1,6 @@
 #define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
 
-#define TEST_EXTERNAL_ASSETS_PATH TEST_ASSETS_PATH "../../../unity/demo/Assets/Resources/"
+#define TEST_EXTERNAL_ASSETS_PATH TEST_ASSETS_PATH "../../../unity/demo/Assets/StreamingAssets/"
 
 #define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
 #define TEST_MAPCSS_DEFAULT TEST_EXTERNAL_ASSETS_PATH "MapCss/default/default.mapcss"

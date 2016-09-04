@@ -1,6 +1,6 @@
 canvas|z16 {
     grid-cell-size: 5%;
-    max-area: 0.01%;
+    max-area: 0.05%;
     color-noise-freq: 100000;
     ele-noise-freq: 7500;
     color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);

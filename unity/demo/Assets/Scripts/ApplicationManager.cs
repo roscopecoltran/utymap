@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.Scripts.Console;
+using Assets.Scripts.Environment;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Core;
@@ -19,6 +20,8 @@ using Component = UtyDepend.Component;
 
 namespace Assets.Scripts
 {
+    /// <summary> Provides unified way to work with application state from different scenes. </summary>
+    /// <remarks> This class should be only one singleton in demo app. </remarks>
     class ApplicationManager
     {
         private const string FatalCategoryName = "Fatal";
@@ -50,8 +53,7 @@ namespace Assets.Scripts
 
         public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction)
         {
-            // create default container which should not be exposed outside
-            // to avoid Service Locator pattern.
+            // create default container which should not be exposed outside to avoid Service Locator pattern.
             _container = new Container();
 
             // create trace to log important messages
@@ -108,7 +110,7 @@ namespace Assets.Scripts
 
         #endregion
 
-        #region Service locator
+        #region Service locator: use these methods carefully.
 
         /// <summary> Gets service of T from container. </summary>
         public T GetService<T>()

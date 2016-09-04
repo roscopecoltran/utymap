@@ -1,6 +1,6 @@
-﻿using UnityEngine.UI;
+﻿using Assets.Scripts.Environment;
+using UnityEngine.UI;
 using UtyMap.Unity.Core;
-using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using UtyRx;
@@ -10,12 +10,10 @@ namespace Assets.Scripts.Menu
     public class OfflineMapsPanelManager : PanelManager
     {
         private IMapDataLoader _mapDataLoader;
-        private IPathResolver _pathResolver;
         private Stylesheet _stylesheet;
 
         private void Start()
         {
-            _pathResolver = ApplicationManager.Instance.GetService<IPathResolver>();
             _mapDataLoader = ApplicationManager.Instance.GetService<IMapDataLoader>();
             _stylesheet = ApplicationManager.Instance.GetService<Stylesheet>();
 
@@ -30,8 +28,7 @@ namespace Assets.Scripts.Menu
 
         private void InitializeImportPaths()
         {
-            // TODO Allow user to redefine index location
-            DestinationPathField.text = _pathResolver.Resolve("Index/");
+            DestinationPathField.text = EnvironmentApi.ExternalDataPath;
             DestinationPathField.readOnly = true;
         }
 
