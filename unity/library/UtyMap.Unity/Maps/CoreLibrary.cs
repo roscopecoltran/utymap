@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UtyMap.Unity.Core;
@@ -21,16 +22,16 @@ namespace UtyMap.Unity.Maps
         /// <param name="onError"> OnError callback. </param>
         public static void Configure(string stringPath, string mapDataPath, string elePath, OnError onError)
         {
+            // NOTE this directories should be created in advance (and some others..)
+            if (!Directory.Exists(stringPath) || !Directory.Exists(mapDataPath))
+                throw new DirectoryNotFoundException(String.Format("Cannot find {0} or {1}", stringPath, mapDataPath));
+
             configure(stringPath, elePath, onError);
 
             // NOTE actually, it is possible to have multiple in-memory and persistent 
             // storages at the same time.
             registerInMemoryStore(InMemoryStoreKey);
             registerPersistentStore(PersistentStoreKey, mapDataPath);
-
-            // NOTE core library can't create directories so far
-            for (int i = 1; i <= 16; ++i)
-                Directory.CreateDirectory(Path.Combine(mapDataPath, i.ToString()));
         }
 
         /// <summary> Preloads elevation data for given quadkey. </summary>
