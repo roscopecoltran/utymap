@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UtyRx;
@@ -53,7 +52,6 @@ namespace Assets.Scripts.Console.Commands
                 info.AppendLine();
                 info.AppendFormat("editorApp: {0}\n", UnityEditor.EditorApplication.applicationPath);
                 info.AppendFormat("editorAppContents: {0}\n", UnityEditor.EditorApplication.applicationContentsPath);
-                info.AppendFormat("scene: {0}\n", EditorSceneManager.GetActiveScene().name);
 #endif
                 info.AppendLine();
                 var devices = WebCamTexture.devices;
