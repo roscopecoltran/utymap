@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using UtyMap.Unity.Maps.Geocoding;
 using UtyDepend;
+using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 
-namespace UtyMap.Unity.Core.Commands
+namespace Assets.Scripts.Console.Commands
 {
     /// <summary> Represents reverse geocoding command. </summary>
     internal class GeocodeCommand : ICommand
@@ -35,7 +35,7 @@ namespace UtyMap.Unity.Core.Commands
                     PrintHelp(response);
                     o.OnNext(response.ToString());
                     o.OnCompleted();
-                }
+                } else
                 {
                     _geoCoder.Search(args[1]).Subscribe(r =>
                         response.AppendFormat("{0} {1}\n", r.Coordinate, r.DisplayName),

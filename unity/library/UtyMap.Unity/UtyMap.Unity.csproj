@@ -48,11 +48,6 @@
   <ItemGroup>
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Core\BoundingBox.cs" />
-    <Compile Include="Core\Commands\Arguments.cs" />
-    <Compile Include="Core\Commands\CommandController.cs" />
-    <Compile Include="Core\Commands\GeocodeCommand.cs" />
-    <Compile Include="Core\Commands\ICommand.cs" />
-    <Compile Include="Core\Commands\SysCommand.cs" />
     <Compile Include="Core\GeoCoordinate.cs" />
     <Compile Include="Core\IProjection.cs" />
     <Compile Include="Core\Models\Element.cs" />

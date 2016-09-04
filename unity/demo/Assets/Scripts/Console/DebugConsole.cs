@@ -27,8 +27,12 @@ using Assets.Scripts.Console.Utils;
 using Assets.Scripts.Console.Watchers;
 using UnityEngine;
 using UtyDepend;
-using UtyMap.Unity.Core.Commands;
+using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
+using Command = Assets.Scripts.Console.Commands.Command;
+using CommandController = Assets.Scripts.Console.Commands.CommandController;
+using GrepCommand = Assets.Scripts.Console.Commands.GrepCommand;
+using SysCommand = Assets.Scripts.Console.Commands.SysCommand;
 
 namespace Assets.Scripts.Console
 {
@@ -42,19 +46,7 @@ namespace Assets.Scripts.Console
         public VarWatcher Watcher { get; private set; }
         private IContainer _container;
 
-        private CommandController _commandController;
-        public CommandController CommandController
-        {
-            get
-            {
-                if (_commandController == null)
-                {
-                    _commandController = _container.Resolve<CommandController>();
-                    RegisterTerminalCommands();
-                }
-                return _commandController;
-            }
-        }
+        private readonly CommandController _commandController = new CommandController();
 
         /// <summary>
         /// How many lines of text this console will display.
@@ -129,6 +121,7 @@ namespace Assets.Scripts.Console
         public void SetContainer(IContainer container)
         {
             _container = container;
+            RegisterTerminalCommands();
         }
 
         private void OnEnable()
@@ -161,23 +154,21 @@ namespace Assets.Scripts.Console
             LogMessage(ConsoleMessage.Info(string.Format(" UtyMap, version {0}", Version)));
             LogMessage(ConsoleMessage.Info(" type 'help' for available commands."));
             LogMessage(ConsoleMessage.Info(""));
-
-            //RegisterTerminalCommands();
         }
 
         private void RegisterTerminalCommands()
         {
-            CommandController.Register(new Command("close", "closes console", _ =>
+            _commandController.Register(new Command("close", "closes console", _ =>
             {
                 IsOpen = false;
                 return "opened";
             }));
-            CommandController.Register(new Command("clear", "clears console", _ =>
+            _commandController.Register(new Command("clear", "clears console", _ =>
             {
                 ClearLog();
                 return "clear";
             }));
-            CommandController.Register(new Command("filter","filter console items", args =>
+            _commandController.Register(new Command("filter", "filter console items", args =>
             {
                 const string enabledStr = "-e:";
                 const string disabledStr = "-d";
@@ -201,9 +192,23 @@ namespace Assets.Scripts.Console
                 return "";
             }));
 
-            // NOTE grep is special command and cannot be registered as normal command
-            CommandController.Register(new GrepCommand(_messages));
-            CommandController.Register(new SysCommand());
+            _commandController.Register(new GeocodeCommand(_container.Resolve<IGeocoder>()));
+            _commandController.Register(new GrepCommand(_messages));
+            _commandController.Register(new SysCommand());
+            _commandController.Register(new Command("help", "prints help", args =>
+            {
+                 var output = new StringBuilder();
+                output.AppendLine(":: Command List ::");
+
+                foreach (var name in _commandController.Commands.Keys)
+                {
+                    var command = _commandController.Commands[name];
+                    output.AppendFormat("{0}: {1}\n", name, command.Description);
+                }
+
+                output.AppendLine(" ");
+                return output.ToString();
+            }));
         }
 
         [Conditional("DEBUG_CONSOLE"),
@@ -591,9 +596,9 @@ namespace Assets.Scripts.Console
             input = input.Select(low => low.ToLower()).ToList();
             var cmd = input[0];
 
-            if (CommandController.Contains(cmd))
+            if (_commandController.Contains(cmd))
             {
-                CommandController[cmd].Execute(input.ToArray())
+                _commandController[cmd].Execute(input.ToArray())
                     .ObserveOn(Scheduler.MainThread)
                     .Subscribe(r => LogMessage(ConsoleMessage.Info(r)));
 

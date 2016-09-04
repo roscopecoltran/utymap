@@ -1,8 +1,10 @@
 ﻿using System.Text;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UtyRx;
 
-namespace UtyMap.Unity.Core.Commands
+namespace Assets.Scripts.Console.Commands
 {
     /// <summary>
     ///     Creates commands which returns system environment information.
@@ -26,8 +28,10 @@ namespace UtyMap.Unity.Core.Commands
                 info.AppendFormat("Platform: {0} Language: {1}\n", Application.platform, Application.systemLanguage);
                 info.AppendFormat("Screen:({0},{1}) DPI:{2} Target:{3}fps\n", Screen.width, Screen.height, Screen.dpi,
                     Application.targetFrameRate);
-                info.AppendFormat("Level: {0} ({1} of {2})\n", Application.loadedLevelName, Application.loadedLevel,
-                    Application.levelCount);
+                info.AppendFormat("Level: {0} ({1} of {2})\n", 
+                    SceneManager.GetActiveScene().name, 
+                    SceneManager.GetActiveScene().buildIndex,
+                    SceneManager.sceneCount);
                 info.AppendFormat("Quality: {0}\n", QualitySettings.names[QualitySettings.GetQualityLevel()]);
                 info.AppendLine();
                 info.AppendFormat("Data Path: {0}\n", Application.dataPath);
@@ -49,7 +53,7 @@ namespace UtyMap.Unity.Core.Commands
                 info.AppendLine();
                 info.AppendFormat("editorApp: {0}\n", UnityEditor.EditorApplication.applicationPath);
                 info.AppendFormat("editorAppContents: {0}\n", UnityEditor.EditorApplication.applicationContentsPath);
-                info.AppendFormat("scene: {0}\n", UnityEditor.EditorApplication.currentScene);
+                info.AppendFormat("scene: {0}\n", EditorSceneManager.GetActiveScene().name);
 #endif
                 info.AppendLine();
                 var devices = WebCamTexture.devices;

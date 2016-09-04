@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
-namespace UtyMap.Unity.Core.Commands
+namespace Assets.Scripts.Console.Commands
 {
     /// <summary> Helper class to parse list of arguments. </summary>
     public class Arguments

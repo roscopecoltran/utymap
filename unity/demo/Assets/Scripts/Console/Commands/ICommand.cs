@@ -1,7 +1,7 @@
 ﻿using System;
 using UtyRx;
 
-namespace UtyMap.Unity.Core.Commands
+namespace Assets.Scripts.Console.Commands
 {
     /// <summary> Command line command. </summary>
     public interface ICommand

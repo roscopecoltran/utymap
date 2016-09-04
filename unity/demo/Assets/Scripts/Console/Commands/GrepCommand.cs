@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Assets.Scripts.Console.Utils;
-using UtyMap.Unity.Core.Commands;
 using UtyRx;
 
 namespace Assets.Scripts.Console.Commands
