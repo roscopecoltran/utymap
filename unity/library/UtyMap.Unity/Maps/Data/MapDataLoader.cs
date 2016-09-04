@@ -209,7 +209,7 @@ namespace UtyMap.Unity.Maps.Data
                 tile, filePathResolved, stylesheetPathResolved));
 
             string errorMsg = null;
-            CoreLibrary.AddToStore(MapStorageType.InMemory,
+            CoreLibrary.AddToStore(MapStorageType.Persistent,
                 stylesheetPathResolved,
                 filePathResolved,
                 tile.QuadKey,
