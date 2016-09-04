@@ -59,6 +59,9 @@ namespace Assets.Scripts
             // create trace to log important messages
             _trace = new DebugConsoleTrace();
 
+            // UtyMap requires some files/directories to be precreated.
+            InstallationApi.EnsureFileHierarchy(_trace);
+
             // subscribe to unhandled exceptions in RX
             MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
                 _trace.Error(FatalCategoryName, ex, "Unhandled exception"));

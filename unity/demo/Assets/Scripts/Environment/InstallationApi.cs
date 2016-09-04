@@ -19,13 +19,13 @@ namespace Assets.Scripts.Environment
                 return;
 
             // NOTE On unity editor is easier for development to use original files.
-//#if !UNITY_EDITOR
+#if !UNITY_EDITOR
             CopyFiles(GetMapCssFileName(), trace);
             CopyFiles(GetNaturalEarthFileName(), trace);
-//#endif
+#endif
             CreateDirectories(GetDirectories());
 
-            //MarkAsInstalled();
+            MarkAsInstalled();
         }
 
         #region Hard coded file/directory names
@@ -119,7 +119,7 @@ namespace Assets.Scripts.Environment
 
             trace.Info("install", string.Format("copy from {0} to {1} bytes:{2}", srcAssetAbsolutePath, destAbsolutePath, reader.bytes.Length));
 
-            //File.WriteAllBytes(destAbsolutePath, reader.bytes);
+            File.WriteAllBytes(destAbsolutePath, reader.bytes);
         }
     }
 }
