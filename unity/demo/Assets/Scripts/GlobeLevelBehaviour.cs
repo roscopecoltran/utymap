@@ -52,16 +52,16 @@ namespace Assets.Scripts
                 // NOTE it's better not to mix borders and admin areas due to polygon clipping issues.
                 if (LoadBorder)
                 {
-                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_admin_0_boundary_lines_land", stylesheet, range);
-                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_land", stylesheet, range);
+                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_admin_0_boundary_lines_land", stylesheet, range);
+                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_land", stylesheet, range);
                 }
                 else
                 {
-                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_admin_0_scale_rank", stylesheet, range);
+                    _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_admin_0_scale_rank", stylesheet, range);
                 }
 
-                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_lakes", stylesheet, range);
-                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"/NaturalEarth/ne_110m_rivers_lake_centerlines", stylesheet, range);
+                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_lakes", stylesheet, range);
+                _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_rivers_lake_centerlines", stylesheet, range);
 
                 _appManager.RunGame();
 
