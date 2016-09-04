@@ -25,6 +25,7 @@ using System.Text.RegularExpressions;
 using Assets.Scripts.Console.Commands;
 using Assets.Scripts.Console.Utils;
 using Assets.Scripts.Console.Watchers;
+using Assets.Scripts.Environment;
 using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity.Maps.Geocoding;
@@ -40,7 +41,6 @@ namespace Assets.Scripts.Console
 
     public class DebugConsole : MonoBehaviour
     {
-        private const string Version = "0.1";
         private const string EntryField = "DebugConsoleEntryField";
 
         public VarWatcher Watcher { get; private set; }
@@ -87,13 +87,14 @@ namespace Assets.Scripts.Console
         private bool _dirty;
 
         #region GUI position values
+        private static Rect WindowRect = new Rect(10.0f, 10.0f, Screen.width - 20, Screen.height / 2 - 20);
 
-        // Make these values public if you want to adjust layout of console window
-        private readonly Rect scrollRect = new Rect(10, 20, 280, 362);
-        private readonly Rect inputRect = new Rect(10, 388, 228, 24);
-        private readonly Rect enterRect = new Rect(240, 388, 50, 24);
-        private readonly Rect toolbarRect = new Rect(16, 416, 266, 25);
-        private Rect messageLine = new Rect(4, 0, 264, 20);
+        private readonly Rect scrollRect = new Rect(10, 20, WindowRect.width - 20, WindowRect.height - 88);
+        private readonly Rect inputRect = new Rect(10, WindowRect.height - 62, WindowRect.width - 72, 24);
+        private Rect messageLine = new Rect(4, 0, WindowRect.width - 36, 20);
+        private readonly Rect enterRect = new Rect(WindowRect.width - 60, WindowRect.height - 62, 50, 24);
+        private readonly Rect toolbarRect = new Rect(16, WindowRect.height - 34, 266, 25);
+       
         private int lineOffset = -4;
         private string[] tabs = new string[] {"Log", "Copy Log", "Watch Vars"};
 
@@ -126,13 +127,13 @@ namespace Assets.Scripts.Console
 
         private void OnEnable()
         {
-            var scale = Screen.dpi/160.0f;
+            //var scale = Screen.dpi/160.0f;
 
-            if (scale != 0.0f && scale >= 1.1f)
-            {
-                _scaled = true;
-                _guiScale.Set(scale, scale, scale);
-            }
+            //if (scale != 0.0f && scale >= 1.1f)
+            //{
+            //    _scaled = true;
+            //    _guiScale.Set(scale, scale, scale);
+            //}
 
             windowMethods = new GUI.WindowFunction[] {LogWindow, CopyLogWindow, WatchVarWindow};
 
@@ -144,14 +145,14 @@ namespace Assets.Scripts.Console
 
 #if MOBILE
     this.useGUILayout = false;
-    _windowRect = new Rect(5.0f, 5.0f, 300.0f, 450.0f);
+    _windowRect = WindowRect;
     _fakeWindowRect = new Rect(0.0f, 0.0f, _windowRect.width, _windowRect.height);
     _fakeDragRect = new Rect(0.0f, 0.0f, _windowRect.width - 32, 24);
 #else
-            _windowRect = new Rect(30.0f, 30.0f, 300.0f, 450.0f);
+     _windowRect = WindowRect;
 #endif
 
-            LogMessage(ConsoleMessage.Info(string.Format(" UtyMap, version {0}", Version)));
+    LogMessage(ConsoleMessage.Info(string.Format(" UtyMap, version {0}", EnvironmentApi.Version)));
             LogMessage(ConsoleMessage.Info(" type 'help' for available commands."));
             LogMessage(ConsoleMessage.Info(""));
         }
@@ -333,7 +334,8 @@ namespace Assets.Scripts.Console
       prevMousePos = Input.mousePosition;
     }
 #endif
-    GUI.Box(_fakeWindowRect, string.Format("Debug Console v{0}\tfps: {1:00.0}", Version, _fps.current), dragging ? windowOnStyle : windowStyle);
+    GUI.Box(_fakeWindowRect, string.Format("Debug Console v{0}\tfps: {1:00.0}", 
+        EnvironmentApi.Version, _fps.current), dragging ? windowOnStyle : windowStyle);
     windowMethods[toolbarIndex](0);
     GUI.EndGroup();
 #endif
