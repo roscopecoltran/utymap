@@ -10,7 +10,7 @@ namespace Assets.Scripts.Environment
         /// <inheritdoc />
         public string Resolve(string path)
         {
-            return Path.Combine(_root, path);
+            return path.StartsWith(_root) ? path : Path.Combine(_root, path);
         }
     }
 }
