@@ -66,7 +66,7 @@ namespace UtyMap.Unity.Maps.Data
             var dataPathResolved = _pathResolver.Resolve(dataPath);
             var stylesheetPathResolved = _pathResolver.Resolve(stylesheet.Path);
 
-            Trace.Info(TraceCategory, String.Format("add to {0} storage: data:{1} style: {2}",
+            Trace.Info(TraceCategory, String.Format("add to {0} storage: data:{1} using style: {2}",
                 storageType, dataPathResolved, stylesheetPathResolved));
 
             string errorMsg = null;
@@ -180,11 +180,13 @@ namespace UtyMap.Unity.Maps.Data
         {
             return Observable.Create<Union<Element, Mesh>>(observer =>
             {
-                Trace.Info(TraceCategory, "loading tile: {0}", tile.ToString());
+                var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
+
+                Trace.Info(TraceCategory, "loading tile: {0} using style: {1}", tile.ToString(), stylesheetPathResolved);
                 var adapter = new MapTileAdapter(tile, observer, Trace);
 
                 CoreLibrary.LoadQuadKey(
-                    _pathResolver.Resolve(tile.Stylesheet.Path), 
+                    stylesheetPathResolved, 
                     tile.QuadKey,
                     adapter.AdaptMesh,
                     adapter.AdaptElement,
@@ -200,11 +202,16 @@ namespace UtyMap.Unity.Maps.Data
         /// <summary> Adds tile data into in memory storage. </summary>
         private string SaveTileDataInMemory(Tile tile, string filePath)
         {
-            Trace.Info(TraceCategory, "try to save: {0} from {1}", tile.ToString(), filePath);
+            var filePathResolved = _pathResolver.Resolve(filePath);
+            var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
+            
+            Trace.Info(TraceCategory, String.Format("save tile data {0} from {1} using style: {2}", 
+                tile, filePathResolved, stylesheetPathResolved));
+
             string errorMsg = null;
             CoreLibrary.AddToStore(MapStorageType.InMemory,
-                _pathResolver.Resolve(tile.Stylesheet.Path),
-                _pathResolver.Resolve(filePath),
+                stylesheetPathResolved,
+                filePathResolved,
                 tile.QuadKey,
                 error => errorMsg = error);
 
