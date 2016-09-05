@@ -20,8 +20,9 @@ namespace Assets.Scripts.Environment
 
             // NOTE On unity editor is easier for development to use original files.
 #if !UNITY_EDITOR
-            CopyFiles(GetMapCssFileName(), trace);
-            CopyFiles(GetNaturalEarthFileName(), trace);
+            CopyFiles(GetMapCssFileNames(), trace);
+            CopyFiles(GetNaturalEarthFileNames(), trace);
+            CopyFiles(GetOsmFileNames(), trace);
 #endif
             CreateDirectories(GetDirectories());
 
@@ -31,7 +32,7 @@ namespace Assets.Scripts.Environment
         #region Hard coded file/directory names
 
         // NOTE Android platform does not support getting file list from jar.
-        private static IEnumerable<string> GetMapCssFileName()
+        private static IEnumerable<string> GetMapCssFileNames()
         {
             return new List<string>()
             {
@@ -50,7 +51,7 @@ namespace Assets.Scripts.Environment
             }.Select(f => "MapCss/default/default." + f);
         }
 
-        private static IEnumerable<string> GetNaturalEarthFileName()
+        private static IEnumerable<string> GetNaturalEarthFileNames()
         {
             return new List<string>()
             {
@@ -67,6 +68,14 @@ namespace Assets.Scripts.Environment
                 String.Format("{0}.shp",Path.Combine("NaturalEarth", f)),
                 String.Format("{0}.shx",Path.Combine("NaturalEarth", f))
             });
+        }
+
+        private static IEnumerable<string> GetOsmFileNames()
+        {
+            return new List<string>()
+            {
+                "berlin.osm.xml"
+            }.Select(f => "Osm/" + f);
         }
 
         private static IEnumerable<string> GetDirectories()
