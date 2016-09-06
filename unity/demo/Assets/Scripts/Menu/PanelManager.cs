@@ -17,11 +17,6 @@ namespace Assets.Scripts.Menu
         private Animator _open;
         private GameObject _previouslySelected;
 
-        void Awake()
-        {
-            ApplicationManager.Instance.InitializeFramework(ConfigBuilder.GetDefault(), _ => { });
-        }
-
         public void OnEnable()
         {
             _openParameterId = Animator.StringToHash(OpenTransitionName);
