@@ -12,17 +12,22 @@ namespace Assets.Scripts
     {
         private const string TraceCategory = "device.location";
 
+        public int UpdateFrequencyInSeconds = 5;
+
         private ITrace _trace;
         private IMessageBus _messageBus;
+        private bool _isInitialized;
 
-        IEnumerator Start()
+        void Start()
         {
-            if (_trace == null || _messageBus == null)
-            {
-                _trace = ApplicationManager.Instance.GetService<ITrace>();
-                _messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
-            }
+            _trace = ApplicationManager.Instance.GetService<ITrace>();
+            _messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
 
+            StartCoroutine(PositionUpdate());
+        }
+
+        IEnumerator PositionUpdate()
+        {
             // First, check if user has location service enabled
             if (!Input.location.isEnabledByUser)
             {
@@ -54,22 +59,23 @@ namespace Assets.Scripts
                 _trace.Warn(TraceCategory, "Unable to determine device location");
                 yield break;
             }
-            else
+
+            while (true)
             {
                 LocationInfo info = Input.location.lastData;
 
-                _trace.Debug(TraceCategory, String.Format("LocationInfo: ({0}, {1}) time: {2} accuracy: {3}", 
+                _trace.Debug(TraceCategory, String.Format("LocationInfo: ({0}, {1}) time: {2} accuracy: {3}",
                     info.latitude, info.longitude, info.timestamp, info.horizontalAccuracy));
 
                 GeoPosition position = new GeoPosition();
                 position.Coordinate = new GeoCoordinate(info.latitude, info.longitude);
-                position.Time = new TimeSpan(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(info.timestamp).Ticks);
-                
-                _messageBus.Send(position);
-            }
+                position.Time =
+                    new TimeSpan(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(info.timestamp).Ticks);
 
-            // Stop service if there is no need to query location updates continuously
-            Input.location.Stop();
+                _messageBus.Send(position);
+
+                yield return new WaitForSeconds(UpdateFrequencyInSeconds);
+            }
         }
     }
 }

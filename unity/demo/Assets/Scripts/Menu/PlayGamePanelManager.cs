@@ -2,6 +2,8 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Positioning;
+using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
@@ -15,6 +17,7 @@ namespace Assets.Scripts.Menu
         public InputField NameInputField;
         public InputField CoordinateInputField;
         public Button SearchButton;
+        public Button LocateButton;
 
         private ITrace _trace;
         private IGeocoder _geoCoder;
@@ -22,6 +25,7 @@ namespace Assets.Scripts.Menu
         private GeocoderResult[] _results;
         private int _currentIndex = 0;
         private bool _isSearchClick = true;
+        private GeoPosition _geoPosition;
 
         void Start()
         {
@@ -29,8 +33,6 @@ namespace Assets.Scripts.Menu
             _geoCoder = ApplicationManager.Instance.GetService<IGeocoder>();
 
             // NOTE Set some defaults to get user an idea what these fields about.
-            // TODO ideally we should store the last one defined by user, current 
-            // device position or last position in the game.
             NameInputField.text = "Moscow, Red Square";
             CoordinateInputField.text = (new GeoCoordinate(55.75396, 37.62050)).ToString();
 
@@ -39,9 +41,28 @@ namespace Assets.Scripts.Menu
                 SearchButton.GetComponentInChildren<Text>().text = "Search";
                 _isSearchClick = true;
             });
+
+            LocateButton.enabled = false;
+            var messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
+            messageBus
+                .AsObservable<GeoPosition>()
+                .Subscribe(OnGeoPosition);
         }
 
-        public void OnSearch()
+        private void OnGeoPosition(GeoPosition geoPosition)
+        {
+            _geoPosition = geoPosition;
+            LocateButton.enabled = _geoPosition != null;
+        }
+
+        public void OnLocateClick()
+        {
+            // TODO perform reverse geocoding request
+            NameInputField.text = "<Device location>";
+            CoordinateInputField.text = _geoPosition.Coordinate.ToString();
+        }
+
+        public void OnSearchClick()
         {
             if (_isSearchClick)
             {
