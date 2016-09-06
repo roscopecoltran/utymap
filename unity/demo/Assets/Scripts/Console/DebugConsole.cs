@@ -154,6 +154,7 @@ namespace Assets.Scripts.Console
 
     LogMessage(ConsoleMessage.Info(string.Format(" UtyMap, version {0}", EnvironmentApi.Version)));
             LogMessage(ConsoleMessage.Info(" type 'help' for available commands."));
+            LogMessage(ConsoleMessage.Info(" double tap or press tilda to show/hide console."));
             LogMessage(ConsoleMessage.Info(""));
         }
 
