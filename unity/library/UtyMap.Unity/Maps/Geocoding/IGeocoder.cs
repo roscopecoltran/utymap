@@ -6,16 +6,14 @@ namespace UtyMap.Unity.Maps.Geocoding
     /// <summary> Defines reverse geocoder API. </summary>
     public interface IGeocoder
     {
-        /// <summary> Performs reverse geocoding for given string. </summary>
-        /// <param name="name">Search query.</param>
-        /// <returns>Results.</returns>
+        /// <summary> Performs geocoding for given place. </summary>
         IObservable<GeocoderResult> Search(string name);
 
-        /// <summary> Performs reverse geocoding for given string and area. </summary>
-        /// <param name="name">Search query.</param>
-        /// <param name="area">Bounding box.</param>
-        /// <returns>Results.</returns>
+        /// <summary> Performs geocoding for given place and area. </summary>
         IObservable<GeocoderResult> Search(string name, BoundingBox area);
+
+        /// <summary> Performs reverse geocodin for given geocoordinate. </summary>
+        IObservable<GeocoderResult> Search(GeoCoordinate coordinate);
     }
 
     /// <summary> Represents geocoding results. </summary>

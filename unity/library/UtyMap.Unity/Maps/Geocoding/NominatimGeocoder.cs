@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,22 @@ using UtyRx;
 namespace UtyMap.Unity.Maps.Geocoding
 {
     /// <summary> Geocoder which uses osm nominatim. </summary>
-    internal class NominatimGeocoder: IGeocoder, IConfigurable
+    internal class NominatimGeocoder : IGeocoder, IConfigurable
     {
+
+        private const string DefaultSearchServer = @"http://nominatim.openstreetmap.org/search?";
+        private const string DefaultReverseSearchServer = @"http://nominatim.openstreetmap.org/reverse?";
+
+        // NOTE: nominatim wants user agent header.
+        private readonly Dictionary<string, string> _headers = new Dictionary<string, string>()
+        {
+            { "User-Agent", "UtyMap" }
+        };
+
         private readonly INetworkService _networkService;
-        private const string DefaultServer = @"http://nominatim.openstreetmap.org/search?";
+
         private string _searchPath;
+        private string _reverseSearchPath;
 
         [Dependency]
         public NominatimGeocoder(INetworkService networkService)
@@ -46,11 +58,23 @@ namespace UtyMap.Unity.Maps.Geocoding
             }
             sb.AppendFormat("q={0}&format=json", Uri.EscapeDataString(name));
 
-            return _networkService.Get(sb.ToString())
+            return _networkService.Get(sb.ToString(), _headers)
                 .Take(1)
                 .SelectMany(r => (
-                    from JSONNode json in JSON.Parse(r).AsArray 
+                    from JSONNode json in JSON.Parse(r).AsArray
                     select ParseGeocoderResult(json)));
+        }
+
+        /// <inheritdoc />
+        public IObservable<GeocoderResult> Search(GeoCoordinate coordinate)
+        {
+            var url = String.Format("{0}format=json&lat={1}&lon={2}",
+                _reverseSearchPath, coordinate.Latitude, coordinate.Longitude);
+
+            return _networkService
+                .Get(url, _headers)
+                .Take(1)
+                .Select(r => ParseGeocoderResult(JSON.Parse(r)));
         }
 
         private GeocoderResult ParseGeocoderResult(JSONNode resultNode)
@@ -87,7 +111,8 @@ namespace UtyMap.Unity.Maps.Geocoding
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _searchPath = configSection.GetString("geocoding", DefaultServer);
+            _searchPath = configSection.GetString("geocoding", DefaultSearchServer);
+            _reverseSearchPath = configSection.GetString("reverse_geocoding", DefaultReverseSearchServer);
         }
     }
 }
