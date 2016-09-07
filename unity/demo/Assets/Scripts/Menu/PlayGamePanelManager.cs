@@ -60,6 +60,15 @@ namespace Assets.Scripts.Menu
             // TODO perform reverse geocoding request
             NameInputField.text = "<Device location>";
             CoordinateInputField.text = _geoPosition.Coordinate.ToString();
+            _geoCoder
+                  .Search(_geoPosition.Coordinate)
+                  .SubscribeOn(Scheduler.MainThread)
+                  .ObserveOn(Scheduler.MainThread)
+                  .Where(r => r != null && !String.IsNullOrEmpty(r.DisplayName))
+                  .Subscribe(result =>
+                  {
+                      NameInputField.text = result.DisplayName;
+                  });
         }
 
         public void OnSearchClick()
