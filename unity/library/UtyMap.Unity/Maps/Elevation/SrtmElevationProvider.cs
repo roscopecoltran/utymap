@@ -20,6 +20,7 @@ namespace UtyMap.Unity.Maps.Elevation
 
         private readonly object _lockObj = new object();
         private readonly IFileSystemService _fileSystemService;
+        private readonly INetworkService _networkService;
         private readonly ITrace _trace;
 
         private string _srtmServer;
@@ -40,12 +41,11 @@ namespace UtyMap.Unity.Maps.Elevation
         private byte[] _hgtData;
 
         /// <summary> Creates SRTM specific implementation of <see cref="IElevationProvider"/>. </summary>
-        /// <param name="fileSystemService">File system service.</param>
-        /// <param name="trace">Trace.</param>
         [Dependency]
-        public SrtmElevationProvider(IFileSystemService fileSystemService, ITrace trace)
+        public SrtmElevationProvider(IFileSystemService fileSystemService,  INetworkService networkService, ITrace trace)
         {
             _fileSystemService = fileSystemService;
+            _networkService = networkService;
             _trace = trace;
         }
 
@@ -247,7 +247,7 @@ namespace UtyMap.Unity.Maps.Elevation
             _dataDirectory = configSection.GetString(@"data/elevation/local", null);
             _srtmSchemaPath = configSection.GetString(@"data/elevation/remote.schema", null);
             _srtmServer = configSection.GetString(@"data/elevation/remote.server", @"http://dds.cr.usgs.gov/srtm/version2_1/SRTM3");
-            _downloader = new SrtmDownloader(_srtmServer, _srtmSchemaPath, _fileSystemService, _trace);
+            _downloader = new SrtmDownloader(_srtmServer, _srtmSchemaPath, _fileSystemService, _networkService, _trace);
         }
     }
 }

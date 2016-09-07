@@ -5,11 +5,9 @@ using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Maps.Elevation;
 using UtyMap.Unity.Maps.Geocoding;
-using UtyMap.Unity.Maps.Imaginary;
 using UtyDepend;
 using UtyDepend.Config;
 
@@ -32,8 +30,6 @@ namespace UtyMap.Unity
         /// <param name="configSection"> Application configuration. </param>
         public CompositionRoot(IContainer container, IConfigSection configSection)
         {
-            UnityScheduler.SetDefaultForUnity();
-
             _container = container;
             _configSection = configSection;
             _bootstrapperActions = new List<Action<IContainer, IConfigSection>>();
@@ -63,6 +59,7 @@ namespace UtyMap.Unity
             _container.Register(Component.For<IMessageBus>().Use<MessageBus>());
             _container.Register(Component.For<IPathResolver>().Use<PathResolver>());
             _container.Register(Component.For<IFileSystemService>().Use<FileSystemService>());
+            _container.Register(Component.For<INetworkService>().Use<NetworkService>());
 
             // core services 
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
@@ -71,7 +68,6 @@ namespace UtyMap.Unity
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
-            _container.Register(Component.For<ImaginaryProvider>().Use<BingImaginaryProvider>().SetConfig(_configSection));
 
             // go through all actions to add/override services.
             _bootstrapperActions.ForEach(action => action(_container, _configSection));

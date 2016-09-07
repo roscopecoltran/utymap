@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Console;
 using Assets.Scripts.Environment;
+using Assets.Scripts.Reactive;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Core;
@@ -12,7 +13,6 @@ using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyRx;
 using IContainer = UtyDepend.IContainer;
 using Container = UtyDepend.Container;
@@ -62,6 +62,9 @@ namespace Assets.Scripts
             // UtyMap requires some files/directories to be precreated.
             InstallationApi.EnsureFileHierarchy(_trace);
 
+            // Setup RX configuration.
+            UnityScheduler.SetDefaultForUnity();
+
             // subscribe to unhandled exceptions in RX
             MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
                 _trace.Error(FatalCategoryName, ex, "Unhandled exception"));
@@ -78,6 +81,7 @@ namespace Assets.Scripts
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
                     .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<DemoPathResolver>()))
                     .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<DemoModelBuilder>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<DemoNetworkService>()))
                     .RegisterAction((c, _) => c.Register(Component.For<CustomizationService>().Use<CustomizationService>()))
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
 

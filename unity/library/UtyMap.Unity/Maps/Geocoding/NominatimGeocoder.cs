@@ -2,10 +2,11 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using UtyDepend;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Infrastructure.Formats;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyDepend.Config;
+using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
 namespace UtyMap.Unity.Maps.Geocoding
@@ -13,8 +14,15 @@ namespace UtyMap.Unity.Maps.Geocoding
     /// <summary> Geocoder which uses osm nominatim. </summary>
     internal class NominatimGeocoder: IGeocoder, IConfigurable
     {
+        private readonly INetworkService _networkService;
         private const string DefaultServer = @"http://nominatim.openstreetmap.org/search?";
         private string _searchPath;
+
+        [Dependency]
+        public NominatimGeocoder(INetworkService networkService)
+        {
+            _networkService = networkService;
+        }
 
         /// <inheritdoc />
         public IObservable<GeocoderResult> Search(string name)
@@ -38,7 +46,7 @@ namespace UtyMap.Unity.Maps.Geocoding
             }
             sb.AppendFormat("q={0}&format=json", Uri.EscapeDataString(name));
 
-            return ObservableWWW.Get(sb.ToString())
+            return _networkService.Get(sb.ToString())
                 .Take(1)
                 .SelectMany(r => (
                     from JSONNode json in JSON.Parse(r).AsArray 

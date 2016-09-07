@@ -4,7 +4,6 @@ using System.Threading;
 using UtyMap.Unity.Core.Positioning;
 using UtyMap.Unity.Core.Positioning.Nmea;
 using UtyMap.Unity.Infrastructure;
-using UtyMap.Unity.Infrastructure.Reactive;
 using NUnit.Framework;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;

@@ -3,12 +3,8 @@ using System.Collections;
 using UnityEngine;
 using UtyRx;
 
-namespace UtyMap.Unity.Infrastructure.Reactive
+namespace Assets.Scripts.Reactive
 {
-#if CONSOLE
-    using System.Net;
-#endif
-
 #if !(UNITY_METRO || UNITY_WP8) && (UNITY_4_4 || UNITY_4_3 || UNITY_4_2 || UNITY_4_1 || UNITY_4_0_1 || UNITY_4_0 || UNITY_3_5 || UNITY_3_4 || UNITY_3_3 || UNITY_3_2 || UNITY_3_1 || UNITY_3_0_0 || UNITY_3_0 || UNITY_2_6_1 || UNITY_2_6)
     // Fallback for Unity versions below 4.5
     using Hash = System.Collections.Hashtable;
@@ -25,47 +21,20 @@ namespace UtyMap.Unity.Infrastructure.Reactive
     {
         public static IObservable<string> Get(string url, Hash headers = null, IProgress<float> progress = null)
         {
-#if !CONSOLE
             return ObservableUnity
                 .FromCoroutine<string>((observer, cancellation) => 
                     FetchText(new WWW(url, null, (headers ?? new Hash())), observer, progress, cancellation))
                 .SubscribeOn(Scheduler.MainThread)
                 .Take(1); 
-#else
-            var webClient = new WebClient();
-            var query = Observable.FromEventPattern<DownloadStringCompletedEventHandler, DownloadStringCompletedEventArgs>
-                (
-                    eh => new DownloadStringCompletedEventHandler(eh),
-                    eh => webClient.DownloadStringCompleted += eh,
-                    eh => webClient.DownloadStringCompleted -= eh
-                ).Select(o => o.EventArgs.Result);
-
-            webClient.DownloadStringAsync(new Uri(url));
-            return query;
-#endif
         }
 
         public static IObservable<byte[]> GetAndGetBytes(string url, Hash headers = null, IProgress<float> progress = null)
         {
-#if !CONSOLE
             return ObservableUnity
                 .FromCoroutine<byte[]>((observer, cancellation) => 
                     FetchBytes(new WWW(url, null, (headers ?? new Hash())), observer, progress, cancellation))
                 .SubscribeOn(Scheduler.MainThread)
                 .Take(1);
-#else
-            var webClient = new WebClient();
-            var query = Observable
-                .FromEventPattern<DownloadDataCompletedEventHandler, DownloadDataCompletedEventArgs>
-                (
-                    eh => new DownloadDataCompletedEventHandler(eh),
-                    eh => webClient.DownloadDataCompleted += eh,
-                    eh => webClient.DownloadDataCompleted -= eh
-                ).Select(o => o.EventArgs.Result);
-
-            webClient.DownloadDataAsync(new Uri(url));
-            return query;
-#endif
         }
         public static IObservable<WWW> GetWWW(string url, Hash headers = null, IProgress<float> progress = null)
         {

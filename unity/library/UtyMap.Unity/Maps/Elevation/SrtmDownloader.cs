@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
@@ -13,6 +12,7 @@ namespace UtyMap.Unity.Maps.Elevation
     {
         private const string TraceCategory = "mapdata.srtm";
         private readonly IFileSystemService _fileSystemService;
+        private readonly INetworkService _networkService;
         private readonly ITrace _trace;
         private readonly string _server;
         private readonly string _schemaPath;
@@ -27,18 +27,16 @@ namespace UtyMap.Unity.Maps.Elevation
         };
 
         /// <summary> Creates instance of <see cref="SrtmDownloader"/>. </summary>
-        /// <param name="schemaPath">Uri schema path.</param>
-        /// <param name="fileSystemService">File system service.</param>
-        /// <param name="server">Server.</param>
-        /// <param name="trace">Trace.</param>
         public SrtmDownloader(string server, 
                               string schemaPath, 
                               IFileSystemService fileSystemService, 
+                              INetworkService networkService,
                               ITrace trace)
         {
             _server = server;
             _schemaPath = schemaPath;
             _fileSystemService = fileSystemService;
+            _networkService = networkService;
             _trace = trace;
         }
 
@@ -60,7 +58,7 @@ namespace UtyMap.Unity.Maps.Elevation
                     var url = String.Format("{0}/{1}/{2}", _server, ContinentMap[int.Parse(parameters[1])],
                         parameters[1].EndsWith("zip") ? "" : parameters[0] + ".hgt.zip");
                     _trace.Warn(TraceCategory, String.Format("Downloading SRTM data from {0}", url));
-                    return ObservableWWW.GetAndGetBytes(url);
+                    return _networkService.GetAndGetBytes(url);
                 }
             }
             return Observable.Throw<byte[]>(new ArgumentException(

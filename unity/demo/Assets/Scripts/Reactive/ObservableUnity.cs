@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UtyRx;
 
-namespace UtyMap.Unity.Infrastructure.Reactive
+namespace Assets.Scripts.Reactive
 {
     public enum FrameCountType
     {

@@ -6,9 +6,7 @@ using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Infrastructure.Reactive;
 using UtyMap.Unity.Maps.Elevation;
-using UtyMap.Unity.Maps.Imaginary;
 using UtyDepend;
 using UtyDepend.Config;
 using UtyRx;
@@ -43,20 +41,19 @@ namespace UtyMap.Unity.Maps.Data
         private string _mapDataServerQuery;
         private string _mapDataFormatExtension;
         private string _cachePath;
-        private IFileSystemService _fileSystemService;
-
-        private readonly ImaginaryProvider _imaginaryProvider;
+        private readonly IFileSystemService _fileSystemService;
+        private readonly INetworkService _networkService;
 
         [Dependency]
         public ITrace Trace { get; set; }
 
         [Dependency]
         public MapDataLoader(IElevationProvider elevationProvider, IFileSystemService fileSystemService,
-            ImaginaryProvider imaginaryProvider, IPathResolver pathResolver)
+            INetworkService networkService, IPathResolver pathResolver)
         {
             _elevationProvider = elevationProvider;
             _fileSystemService = fileSystemService;
-            _imaginaryProvider = imaginaryProvider;
+            _networkService = networkService;
             _pathResolver = pathResolver;
         }
 
@@ -147,8 +144,8 @@ namespace UtyMap.Unity.Maps.Data
                     query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
                     query.MaxPoint.Latitude + padding, query.MaxPoint.Longitude + padding);
                 var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
-                Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, query.ToString(), uri);
-                ObservableWWW.GetAndGetBytes(uri)
+                Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, tile.QuadKey.ToString(), uri);
+                _networkService.GetAndGetBytes(uri)
                     .ObserveOn(Scheduler.ThreadPool)
                     .Subscribe(bytes =>
                     {

@@ -3,17 +3,13 @@ using System.Collections;
 using UnityEngine;
 using UtyRx;
 
-namespace UtyMap.Unity.Infrastructure.Reactive
+namespace Assets.Scripts.Reactive
 {
     public static class UnityScheduler
     {
         public static void SetDefaultForUnity()
         {
-#if CONSOLE
-            Scheduler.MainThread = Scheduler.CurrentThread;
-#else
             Scheduler.MainThread = new MainThreadScheduler();
-#endif
             Scheduler.DefaultSchedulers.ConstantTimeOperations = Scheduler.Immediate;
             Scheduler.DefaultSchedulers.TailRecursion = Scheduler.Immediate;
             Scheduler.DefaultSchedulers.Iteration = Scheduler.CurrentThread;
