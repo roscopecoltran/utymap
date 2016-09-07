@@ -38,7 +38,7 @@ namespace Assets.Scripts.Menu
 
             NameInputField.onEndEdit.AddListener(_ =>
             {
-                SearchButton.GetComponentInChildren<Text>().text = "Search";
+                SearchButton.GetComponentInChildren<Text>().text = "Search by name";
                 _isSearchClick = true;
             });
 
