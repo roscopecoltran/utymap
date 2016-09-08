@@ -8,6 +8,7 @@ namespace Assets.Scripts
         private void Awake()
         {
             ApplicationManager.Instance.InitializeFramework(ConfigBuilder.GetDefault(), _ => { });
+            ApplicationManager.Instance.CreateDebugConsole(false);
         }
     }
 }
