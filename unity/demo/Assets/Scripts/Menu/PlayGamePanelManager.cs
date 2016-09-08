@@ -33,8 +33,8 @@ namespace Assets.Scripts.Menu
             _geoCoder = ApplicationManager.Instance.GetService<IGeocoder>();
 
             // NOTE Set some defaults to get user an idea what these fields about.
-            NameInputField.text = "Moscow, Red Square";
-            CoordinateInputField.text = (new GeoCoordinate(55.75396, 37.62050)).ToString();
+            NameInputField.text = PositionConfiguration.PlaceName;
+            CoordinateInputField.text = PositionConfiguration.StartPosition.ToString();
 
             NameInputField.onEndEdit.AddListener(_ =>
             {
@@ -115,7 +115,7 @@ namespace Assets.Scripts.Menu
             _trace.Info(LogCategory, "Parsing GeoCoordinate from: {0}", coordText);
 
             var coordParts = coordText.Split(',');
-            StreetLevelBehaviour.StartCoordinate = new GeoCoordinate(
+            PositionConfiguration.StartPosition = new GeoCoordinate(
                 double.Parse(coordParts[0]),
                 double.Parse(coordParts[1]));
 
