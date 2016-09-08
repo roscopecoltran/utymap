@@ -49,23 +49,14 @@ namespace Assets.Scripts
         {
             // Need to wrap by conditional compilation symbols due to issues with Unity classes.
 #if !CONSOLE
-            // set gravity to zero on start to prevent free fall as terrain loading takes some time.
-            // restore it afterwards.
+            // Freeze character on start to prevent free fall as terrain loading takes some time.
+            // Restore it afterwards.
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
-
-            // restore gravity and adjust character y-position once first tile is loaded
             _appManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
                 .Take(1)
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(_ =>
                 {
-                    // TODO expose elevation logic from native or use old managed implementation?
-                    // NOTE in second case, we will consume additional memory
-
-                    //var position = transform.position;
-                    //var elevation = AppManager.GetService<IElevationProvider>()
-                    //    .GetElevation(new Vector2(position.x, position.z));
-                    //transform.position = new Vector3(position.x, elevation + 90, position.z);
                     gameObject.GetComponent<Rigidbody>().isKinematic = false;
                 });
 #endif
