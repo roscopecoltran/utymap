@@ -75,20 +75,19 @@ namespace Assets.Scripts
         void OnEnable()
         {
             // utymap is better to start on non-UI thread
-            Observable.Start(() =>
-            {
-                // NOTE this is just example: you can load your regions into memory once
-                // game is started. Also you can specify different zoom level if you
-                // have valid mapcss stylesheet
-                //_appManager
-                //    .GetService<IMapDataLoader>()
-                //    .AddToStore(MapStorageType.InMemory,
-                //                @"Osm/berlin.osm.xml",
-                //                _appManager.GetService<Stylesheet>(),
-                //                new Range<int>(LevelOfDetails, LevelOfDetails));
+            //Observable.Start(() =>
+            //{
+            //    // NOTE this is just example: you can load your regions into memory once
+            //    // game is started. Also you can specify different zoom level if you
+            //    // have valid mapcss stylesheet
+            //    _appManager
+            //        .GetService<IMapDataLoader>()
+            //        .AddToStore(MapStorageType.InMemory,
+            //                    @"Osm/berlin.osm.xml",
+            //                    _appManager.GetService<Stylesheet>(),
+            //                    new Range<int>(LevelOfDetails, LevelOfDetails));
 
-                _appManager.RunGame();
-            }, Scheduler.ThreadPool).Subscribe();
+            //}, Scheduler.ThreadPool).Subscribe();
         }
 
         /// <summary> Listens for position changes to notify library. </summary>

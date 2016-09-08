@@ -63,8 +63,6 @@ namespace Assets.Scripts
                 _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_lakes", stylesheet, range);
                 _mapDataLoader.AddToStore(MapStorageType.InMemory, @"NaturalEarth/ne_110m_rivers_lake_centerlines", stylesheet, range);
 
-                _appManager.RunGame();
-
                 LoadGlobe();
 
             }, Scheduler.ThreadPool).Subscribe();

@@ -30,6 +30,8 @@ namespace Assets.Scripts
         private DebugConsoleTrace _trace;
         private CompositionRoot _compositionRoot;
 
+        public bool IsInitialized { get; private set; }
+
         #region Singleton implementation
 
         private ApplicationManager()
@@ -53,6 +55,8 @@ namespace Assets.Scripts
 
         public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction)
         {
+            IsInitialized = false;
+
             // create default container which should not be exposed outside to avoid Service Locator pattern.
             _container = new Container();
 
@@ -91,6 +95,8 @@ namespace Assets.Scripts
 
                 // setup object graph
                 _compositionRoot.Setup();
+
+                IsInitialized = true;
             }
             catch (Exception ex)
             {
@@ -104,7 +110,7 @@ namespace Assets.Scripts
         ///     Console is way to debug/investigate app behavior on real devices when 
         ///     regular debugger is not applicable.
         /// </remarks>
-        public void CreateDebugConsole()
+        public void CreateDebugConsole(bool isOpen = true)
         {
             // NOTE DebugConsole is based on some adapted solution found in Internet
             var consoleGameObject = new GameObject("_DebugConsole_");
@@ -112,7 +118,7 @@ namespace Assets.Scripts
             _trace.SetConsole(console);
             // that is not nice, but we need to use commands registered in DI with their dependencies
             console.SetContainer(_container);
-            console.IsOpen = true;
+            console.IsOpen = isOpen;
         }
 
         #endregion
@@ -129,33 +135,6 @@ namespace Assets.Scripts
         public IEnumerable<T> GetServices<T>()
         {
             return _container.ResolveAll<T>();
-        }
-
-        #endregion
-
-        #region Public members
-
-        public bool IsInitialized { get; private set; }
-
-        public void RunGame()
-        {
-            try
-            {
-                if (IsInitialized)
-                    return;
-
-                GetService<IMessageBus>()
-                    .AsObservable<TileLoadStartMessage>()
-                    .ObserveOn(Scheduler.MainThread)
-                    .Subscribe(m => m.Tile.GameObject = new GameObject("tile"));
-
-                IsInitialized = true;
-            }
-            catch (Exception ex)
-            {
-                _trace.Error("FATAL", ex, "Error running game:");
-                throw;
-            }
         }
 
         #endregion

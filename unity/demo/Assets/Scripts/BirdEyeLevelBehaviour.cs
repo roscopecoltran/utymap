@@ -54,8 +54,6 @@ namespace Assets.Scripts
                                 _appManager.GetService<Stylesheet>(),
                                 new Range<int>(LevelOfDetails, LevelOfDetails));
 
-                _appManager.RunGame();
-
                 // NOTE Assume that persistent data is created.
                 LoadTiles();
             }, Scheduler.ThreadPool).Subscribe();
