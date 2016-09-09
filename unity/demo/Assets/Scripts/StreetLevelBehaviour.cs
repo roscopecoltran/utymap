@@ -22,12 +22,6 @@ namespace Assets.Scripts
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
-        /// <summary> Start latitude. </summary>
-        public double StartLatitude = PositionConfiguration.StartPosition.Latitude;
-
-        /// <summary> Start longitude. </summary>
-        public double StartLongitude = PositionConfiguration.StartPosition.Longitude;
-
         #region Unity lifecycle events
 
         /// <summary> Performs framework initialization once, before any Start() is called. </summary>
@@ -99,12 +93,7 @@ namespace Assets.Scripts
         /// <summary> Gets Geocoordinate which correspons to (0, 0) in world coordinates. </summary>
         private GeoCoordinate GetWorldZeroPoint()
         {
-            // NOTE allow redefine position in unity editor.
-            var editTimePosition = new GeoCoordinate(StartLatitude, StartLongitude);
-
-            return editTimePosition != PositionConfiguration.StartPosition
-                ? editTimePosition
-                : PositionConfiguration.StartPosition;
+            return PositionConfiguration.StartPosition;
         }
 
         #endregion

@@ -7,6 +7,6 @@ namespace Assets.Scripts
     internal static class PositionConfiguration
     {
         public static string PlaceName = "Moscow, Red Square";
-        public static GeoCoordinate StartPosition = new GeoCoordinate(52.53149, 13.38787);
+        public static GeoCoordinate StartPosition = new GeoCoordinate(55.75395, 37.62064);
     }
 }
