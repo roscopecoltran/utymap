@@ -42,12 +42,6 @@ public:
         }
     }
 
-    ~StringTableImpl()
-    {
-        indexFile_.close();
-        dataFile_.close();
-    }
-
     std::uint32_t getId(const std::string& str)
     {
         std::uint32_t hash;
