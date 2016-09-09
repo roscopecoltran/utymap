@@ -15,23 +15,37 @@ namespace UtyMap.Unity.Maps
         private const string InMemoryStoreKey = "InMemory";
         private const string PersistentStoreKey = "Persistent";
 
-        /// <summary> Configure utymap. Should be called first. </summary>
+        private static object __lockObj = new object();
+
+        // NOTE: protection flag against multiple configuration.
+        // TODO: maybe support multiple calls?
+        private volatile static bool _isConfigured;
+
+        /// <summary> Configure utymap. Should be called before any core API usage. </summary>
         /// <param name="stringPath"> Path to string table. </param>
         /// <param name="mapDataPath">Path for map data. </param>
         /// <param name="elePath"> Path to elevation data. </param>
         /// <param name="onError"> OnError callback. </param>
         public static void Configure(string stringPath, string mapDataPath, string elePath, OnError onError)
         {
-            // NOTE this directories should be created in advance (and some others..)
-            if (!Directory.Exists(stringPath) || !Directory.Exists(mapDataPath))
-                throw new DirectoryNotFoundException(String.Format("Cannot find {0} or {1}", stringPath, mapDataPath));
+            lock (__lockObj)
+            {
+                // NOTE this directories should be created in advance (and some others..)
+                if (!Directory.Exists(stringPath) || !Directory.Exists(mapDataPath))
+                    throw new DirectoryNotFoundException(String.Format("Cannot find {0} or {1}", stringPath, mapDataPath));
 
-            configure(stringPath, elePath, onError);
+                if (_isConfigured)
+                    return;
 
-            // NOTE actually, it is possible to have multiple in-memory and persistent 
-            // storages at the same time.
-            registerInMemoryStore(InMemoryStoreKey);
-            registerPersistentStore(PersistentStoreKey, mapDataPath);
+                configure(stringPath, elePath, onError);
+
+                // NOTE actually, it is possible to have multiple in-memory and persistent 
+                // storages at the same time.
+                registerInMemoryStore(InMemoryStoreKey);
+                registerPersistentStore(PersistentStoreKey, mapDataPath);
+
+                _isConfigured = true;
+            }
         }
 
         /// <summary> Preloads elevation data for given quadkey. </summary>
