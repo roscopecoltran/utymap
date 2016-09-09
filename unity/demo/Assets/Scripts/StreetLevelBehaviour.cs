@@ -3,6 +3,7 @@ using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
+using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyRx;
 
 namespace Assets.Scripts
@@ -14,10 +15,12 @@ namespace Assets.Scripts
     /// </summary>
     sealed class StreetLevelBehaviour : MonoBehaviour
     {
+        private const string LogCategory = "scene.street";
         private const int LevelOfDetails = 16;
 
         private ApplicationManager _appManager;
         private ITileController _tileController;
+        private ITrace _trace;
 
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
@@ -37,6 +40,7 @@ namespace Assets.Scripts
             _appManager.CreateDebugConsole();
 
             _tileController = _appManager.GetService<ITileController>();
+            _trace = _appManager.GetService<ITrace>();
         }
 
         void Start()
@@ -52,6 +56,15 @@ namespace Assets.Scripts
                 .Subscribe(_ =>
                 {
                     gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                });
+
+            // We want to destroy tile's gameobjects at some point.
+            _appManager.GetService<IMessageBus>().AsObservable<TileDestroyMessage>()
+                .ObserveOn(Scheduler.MainThread)
+                .Subscribe(m =>
+                {
+                    _trace.Info(LogCategory, "Remove tile: {0}", m.Tile.ToString());
+                    Destroy(m.Tile.GameObject);
                 });
 #endif
         }
