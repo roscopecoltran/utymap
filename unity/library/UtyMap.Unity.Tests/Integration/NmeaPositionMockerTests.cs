@@ -38,7 +38,7 @@ namespace UtyMap.Unity.Tests.Integration
             if(!waitEvent.WaitOne(TimeSpan.FromSeconds(60)))
                 throw new TimeoutException();
             mocker.Stop();
-            Assert.AreEqual(16, count);
+            Assert.Greater(count, 1);
         }
     }
 }
