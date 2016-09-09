@@ -45,8 +45,6 @@ namespace Assets.Scripts
 
         void Start()
         {
-            // Need to wrap by conditional compilation symbols due to issues with Unity classes.
-#if !CONSOLE
             // Freeze character on start to prevent free fall as terrain loading takes some time.
             // Restore it afterwards.
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -66,7 +64,6 @@ namespace Assets.Scripts
                     _trace.Info(LogCategory, "Remove tile: {0}", m.Tile.ToString());
                     Destroy(m.Tile.GameObject);
                 });
-#endif
         }
 
         /// <summary> Runs game after all Start() methods are called. </summary>
