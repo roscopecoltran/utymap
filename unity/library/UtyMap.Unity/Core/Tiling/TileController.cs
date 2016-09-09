@@ -42,7 +42,7 @@ namespace UtyMap.Unity.Core.Tiling
 
     /// <summary> Default implementation of tile controller. </summary>
     /// <remarks> Not thread safe. </remarks>
-    internal class TileController : ITileController, IConfigurable
+    internal class TileController : ITileController, IConfigurable, IDisposable
     {
         private readonly IModelBuilder _modelBuilder;
         private readonly object _lockObj = new object();
@@ -258,6 +258,13 @@ namespace UtyMap.Unity.Core.Tiling
             var gamma = 1.0f - alpha - beta;
 
             return alpha > 0 && beta > 0 && gamma > 0;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            foreach (var loadedTile in _loadedTiles)
+                loadedTile.Value.Dispose();
         }
     }
 
