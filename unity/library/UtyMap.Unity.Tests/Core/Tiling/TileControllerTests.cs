@@ -41,6 +41,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
 
             _configSection.Setup(c => c.GetFloat("sensitivity", It.IsAny<float>())).Returns(20);
             _configSection.Setup(c => c.GetFloat("offset", It.IsAny<float>())).Returns(100);
+
             _tileLoader.Setup(t => t.Load(It.IsAny<Tile>())).Returns(_loaderResult.Object);
 
             _tileController = new TileController(new ModelBuilder(), _tileLoader.Object, _messageBus.Object);
@@ -71,6 +72,18 @@ namespace UtyMap.Unity.Tests.Core.Tiling
 
             _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, newQuadKey))));
             _messageBus.Verify(mb => mb.Send(It.Is<TileLoadStartMessage>(m => CheckQuadKey(m.Tile.QuadKey, newQuadKey))));
+        }
+
+        [Test (Description = "Tests whether far tile can be destroyed.")]
+        public void CanUnloadFarTile()
+        {
+            _configSection.Setup(c => c.GetInt("max_tile_distance", It.IsAny<int>())).Returns(1);
+            QuadKey quadKey = GeoUtils.CreateQuadKey(_worldZeroPoint, LevelOfDetails);
+
+            for (int i = 0; i < 2; ++i)
+                _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(1, 0), i*400), LevelOfDetails);
+
+            _messageBus.Verify(mb => mb.Send(It.Is<TileDestroyMessage>(m => CheckQuadKey(m.Tile.QuadKey, quadKey))));
         }
 
         #region Helpers

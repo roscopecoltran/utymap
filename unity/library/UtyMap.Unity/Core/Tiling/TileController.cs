@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Utils;
@@ -51,6 +52,7 @@ namespace UtyMap.Unity.Core.Tiling
 
         private double _offsetRatio;
         private double _moveSensitivity;
+        private int _maxTileDistance;
 
         private Vector2 _lastUpdatePosition = new Vector2(float.MinValue, float.MinValue);
 
@@ -100,6 +102,9 @@ namespace UtyMap.Unity.Core.Tiling
 
         private void OnPosition(GeoCoordinate geoPosition, Vector2 position, int levelOfDetails)
         {
+            if (!IsValidLevelOfDetails(levelOfDetails))
+                throw new ArgumentException(String.Format("Invalid level of details: {0}", levelOfDetails), "levelOfDetails");
+
             CurrentMapPoint = position;
             CurrentPosition = geoPosition;
 
@@ -113,6 +118,8 @@ namespace UtyMap.Unity.Core.Tiling
 
                     _currentQuadKey = GeoUtils.CreateQuadKey(geoPosition, levelOfDetails);
 
+                    UnloadFarTiles(_currentQuadKey);
+
                     if (_loadedTiles.ContainsKey(_currentQuadKey))
                     {
                         var tile = _loadedTiles[_currentQuadKey];
@@ -122,8 +129,6 @@ namespace UtyMap.Unity.Core.Tiling
                     }
 
                     Load(_currentQuadKey);
-
-                    // TODO add unload old tiles logic
                 }
             }
         }
@@ -133,6 +138,7 @@ namespace UtyMap.Unity.Core.Tiling
         {
             _moveSensitivity = configSection.GetFloat("sensitivity", 30);
             _offsetRatio = configSection.GetFloat("offset", 10); // percentage of tile size
+            _maxTileDistance = configSection.GetInt("max_tile_distance", 2);
         }
 
         #endregion
@@ -200,6 +206,44 @@ namespace UtyMap.Unity.Core.Tiling
         }
 
         #endregion
+
+        #region Unloading tiles
+
+        /// <summary> Removes far tiles from list of loaded and sends corresponding message. </summary>
+        private void UnloadFarTiles(QuadKey currentQuadKey)
+        {
+            var tiles = _loadedTiles.ToArray();
+
+            foreach (var loadedTile in tiles)
+            {
+                var quadKey = loadedTile.Key;
+                if ((Math.Abs(quadKey.TileX - currentQuadKey.TileX) + 
+                     Math.Abs(quadKey.TileY - currentQuadKey.TileY)) <= _maxTileDistance)
+                    continue;
+                
+                loadedTile.Value.Dispose();
+                _loadedTiles.Remove(quadKey);
+                _messageBus
+                    .Send(new TileDestroyMessage(loadedTile.Value));
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Checks that passed level of details is greater than zero and it equals last used quadkey's one. 
+        /// </summary>
+        /// <remarks>
+        ///     This class is not designed to support dynamic level of details changes.
+        /// </remarks>
+        private bool IsValidLevelOfDetails(int levelOfDetails)
+        {
+            var currentLevelOfDetails = _currentQuadKey.LevelOfDetail == 0
+                ? levelOfDetails
+                : _currentQuadKey.LevelOfDetail;
+
+            return levelOfDetails > 0 && currentLevelOfDetails == levelOfDetails;
+        }
 
         /// <summary>
         ///     Checks whether point is located in triangle.
