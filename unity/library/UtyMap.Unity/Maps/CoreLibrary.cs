@@ -129,7 +129,9 @@ namespace UtyMap.Unity.Maps
         /// <summary> Frees resources. Should be called before application stops. </summary>
         public static void Dispose()
         {
-            cleanup();
+            // NOTE: do not allow to call cleanup as configure method can be called only once (see above)
+            // So, let OS release resources once app has been finished
+            //cleanup();
         }
 
         #region Private members

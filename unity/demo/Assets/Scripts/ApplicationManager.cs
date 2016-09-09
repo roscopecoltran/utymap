@@ -57,6 +57,10 @@ namespace Assets.Scripts
         {
             IsInitialized = false;
 
+            // Need to dispose all previously used components as we're going to create new ones.
+            if (_container != null)
+                _container.Dispose();
+
             // create default container which should not be exposed outside to avoid Service Locator pattern.
             _container = new Container();
 
