@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Environment;
+﻿using System;
+using Assets.Scripts.Environment;
 using UnityEngine.UI;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -12,7 +13,7 @@ namespace Assets.Scripts.Menu
         private IMapDataLoader _mapDataLoader;
         private Stylesheet _stylesheet;
 
-        private void Start()
+        void Start()
         {
             _mapDataLoader = ApplicationManager.Instance.GetService<IMapDataLoader>();
             _stylesheet = ApplicationManager.Instance.GetService<Stylesheet>();
@@ -25,6 +26,10 @@ namespace Assets.Scripts.Menu
         public InputField SourcePathField;
         public InputField DestinationPathField;
         public Button ImportButton;
+        public Toggle StorageTypeToggle;
+
+        public Slider MinSlider;
+        public Slider MaxSlider;
 
         private void InitializeImportPaths()
         {
@@ -35,11 +40,21 @@ namespace Assets.Scripts.Menu
         public void OnImportClick()
         {
             var sourcePath = SourcePathField.text;
-            Observable.Start(() =>
-            {
-                // TODO Allow user to change import parameters (e.g. zoom)
-                _mapDataLoader.AddToStore(MapStorageType.Persistent, sourcePath, _stylesheet, new Range<int>(16, 16));
-            }, Scheduler.ThreadPool);
+            var storageType = StorageTypeToggle.isOn ? MapStorageType.InMemory : MapStorageType.Persistent;
+            var range = new Range<int>((int) MinSlider.value, (int) MaxSlider.value);
+
+            // NOTE if button is not enabled then import is still in progress
+            // or error occured.
+            if (!ImportButton.enabled || String.IsNullOrEmpty(sourcePath))
+                return;
+
+            ImportButton.enabled = false;
+
+            Observable
+                .Start(() => _mapDataLoader.AddToStore(storageType, sourcePath, _stylesheet, range))
+                .SubscribeOn(Scheduler.ThreadPool)
+                .ObserveOn(Scheduler.MainThread)
+                .Subscribe(_ => { }, () => ImportButton.enabled = true);
         }
 
         #endregion
