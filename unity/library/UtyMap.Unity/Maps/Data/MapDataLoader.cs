@@ -138,7 +138,7 @@ namespace UtyMap.Unity.Maps.Data
             // need to download from remote server
             return Observable.Create<Tile>(observer =>
             {
-                double padding = 0.001;
+                double padding = 0.000001;
                 BoundingBox query = tile.BoundingBox;
                 var queryString = String.Format(_mapDataServerQuery,
                     query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
