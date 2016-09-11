@@ -67,6 +67,7 @@ namespace Assets.Scripts.Menu
                   .Where(r => r != null && !String.IsNullOrEmpty(r.DisplayName))
                   .Subscribe(result =>
                   {
+                      PositionConfiguration.PlaceName = result.DisplayName;
                       NameInputField.text = result.DisplayName;
                   });
         }
@@ -105,6 +106,7 @@ namespace Assets.Scripts.Menu
             SearchButton.GetComponentInChildren<Text>().text =
                 String.Format("Result {0} of {1}", _currentIndex + 1, _results.Length);
 
+            PositionConfiguration.PlaceName = _results[_currentIndex].DisplayName;
             NameInputField.text = _results[_currentIndex].DisplayName;
             CoordinateInputField.text = _results[_currentIndex].Coordinate.ToString();
         }
