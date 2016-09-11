@@ -74,14 +74,7 @@ namespace Assets.Scripts
                 .Load(tile)
                 .SubscribeOn(Scheduler.CurrentThread)
                 .ObserveOn(Scheduler.MainThread)
-                .Subscribe(u =>
-                {
-                    // NOTE can create game object only on UI thread
-                    if (tile.GameObject == null)
-                        tile.GameObject = new GameObject("tile");
-
-                    u.Match(e => modelBuilder.BuildElement(tile, e), m => modelBuilder.BuildMesh(tile, m));
-                });
+                .Subscribe(u => u.Match(e => modelBuilder.BuildElement(tile, e), m => modelBuilder.BuildMesh(tile, m)));
         }
     }
 }
