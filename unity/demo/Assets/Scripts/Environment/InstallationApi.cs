@@ -74,7 +74,6 @@ namespace Assets.Scripts.Environment
         {
             return new List<string>()
             {
-                "berlin.osm.xml"
             }.Select(f => "Osm/" + f);
         }
 

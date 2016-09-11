@@ -14,12 +14,6 @@ namespace Assets.Scripts
     {
         private const int LevelOfDetails = 14;
 
-        /// <summary> Start latitude. </summary>
-        public double StartLatitude = 52.53149;
-
-        /// <summary> Start longitude. </summary>
-        public double StartLongitude = 13.38787;
-
         private ApplicationManager _appManager;
 
         #region Unity lifecycle events
@@ -33,7 +27,7 @@ namespace Assets.Scripts
                 {
                     compositionRoot.RegisterAction((c, _) => c.Register(UtyDepend.Component
                             .For<IProjection>()
-                            .Use<CartesianProjection>(new GeoCoordinate(StartLatitude, StartLongitude))));
+                            .Use<CartesianProjection>(PositionConfiguration.StartPosition)));
                 });
             _appManager.CreateDebugConsole();
         }
@@ -42,21 +36,7 @@ namespace Assets.Scripts
         void OnEnable()
         {
             // utymap is better to start on non-UI thread
-            Observable.Start(() =>
-            {
-                // NOTE this is just example: you can load your regions into memory once
-                // game is started. Also you can specify different zoom level if you
-                // have valid mapcss stylesheet
-                _appManager
-                    .GetService<IMapDataLoader>()
-                    .AddToStore(MapStorageType.InMemory,
-                                @"Osm/berlin.osm.xml",
-                                _appManager.GetService<Stylesheet>(),
-                                new Range<int>(LevelOfDetails, LevelOfDetails));
-
-                // NOTE Assume that persistent data is created.
-                LoadTiles();
-            }, Scheduler.ThreadPool).Subscribe();
+            Observable.Start(LoadTiles, Scheduler.ThreadPool).Subscribe();
         }
 
         #endregion
@@ -68,7 +48,7 @@ namespace Assets.Scripts
             var modelBuilder = _appManager.GetService<IModelBuilder>();
             var mapDataLoader = _appManager.GetService<IMapDataLoader>();
 
-            var centerQuadKey = GeoUtils.CreateQuadKey(new GeoCoordinate(StartLatitude, StartLongitude), LevelOfDetails);
+            var centerQuadKey = GeoUtils.CreateQuadKey(PositionConfiguration.StartPosition, LevelOfDetails);
             var tile = new Tile(centerQuadKey, tileController.Stylesheet, tileController.Projection);
             mapDataLoader
                 .Load(tile)
