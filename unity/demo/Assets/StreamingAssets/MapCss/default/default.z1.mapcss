@@ -71,7 +71,7 @@ relation|z1[featurecla=Adm-0 scale ranks]{
 area|z1[sr_geounit=Germany],
 relation|z1[sr_geounit=Germany] {
     color: gradient(orange);
-    height-offset: 0.1%;
+    height-offset: 1%;
 }
 
 area|z1[sr_geounit=China],
@@ -100,7 +100,7 @@ area|z1[sr_geounit=Ukraine],
 relation|z1[sr_geounit=Ukraine] {
     mesh-name: terrain_ussr;
     color: gradient(red);
-    height-offset: 0.2%;
+    height-offset: 2%;
 }
 
 node|z1[featurecla=Populated place],

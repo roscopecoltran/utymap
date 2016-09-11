@@ -12,7 +12,7 @@ namespace Assets.Scripts
     sealed class GlobeLevelBehaviour : MonoBehaviour
     {
         public float GlobeRadius = 100;
-        public bool LoadBorder = true;
+        public bool LoadBorder = false;
 
         [RangeAttribute(1, 1)]
         public int LevelOfDetails = 1;
@@ -85,14 +85,7 @@ namespace Assets.Scripts
                         .Load(tile)
                         .SubscribeOn(Scheduler.CurrentThread)
                         .ObserveOn(Scheduler.MainThread)
-                        .Subscribe(u =>
-                        {
-                            // NOTE can create game object only on UI thread
-                            if (tile.GameObject == null)
-                                tile.GameObject = new GameObject("tile");
-
-                            u.Match(e => _modelBuilder.BuildElement(tile, e), m => _modelBuilder.BuildMesh(tile, m));
-                        });
+                        .Subscribe(u => u.Match(e => _modelBuilder.BuildElement(tile, e), m => _modelBuilder.BuildMesh(tile, m)));
                 }
         }
     }
