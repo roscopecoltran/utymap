@@ -15,10 +15,10 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 {
     // generate tree mesh
     Mesh treeMesh("");
-    MeshContext meshContext(treeMesh, extrasContext.style);
-    TreeBuilder::createGenerator(builderContext, meshContext)
-        .setPosition(Vector3(0, 0, 0)) // NOTE we will override coordinates later
-        .generate();
+    MeshContext meshContext(treeMesh, extrasContext.style, utymap::mapcss::ColorGradient());
+    auto generator = TreeBuilder::createGenerator(builderContext, meshContext);
+    generator->setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
+    generator->generate();
 
     // forest mesh contains all trees
     Mesh forestMesh("forest");

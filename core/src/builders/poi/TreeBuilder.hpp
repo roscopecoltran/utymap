@@ -10,6 +10,8 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
+#include <memory>
+
 namespace utymap { namespace builders {
 
 // Builds single tree.
@@ -33,8 +35,8 @@ public:
     void complete() { }
 
     // Creates tree generator which can be used to produce multiple trees inside mesh.
-    static TreeGenerator createGenerator(const utymap::builders::BuilderContext& builderContext,
-                                         utymap::builders::MeshContext& meshContext);
+    static std::unique_ptr<TreeGenerator> createGenerator(const utymap::builders::BuilderContext& builderContext,
+                                                          const utymap::builders::MeshContext& meshContext);
 };
 
 }}

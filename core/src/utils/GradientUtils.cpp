@@ -247,7 +247,7 @@ namespace
 const std::regex GradientUtils::gradientRegEx = 
     std::regex("rgb ?\\([ 0-9.%,]+?\\)|#[0-9a-fA-F]{3,6}\\s[0-9]{1,3}[%|px]|#[0-9a-fA-F]{3,6}|([a-zA-Z]+){1}(\\s[0-9]{1,3}\\s*[%|px]?)?");
 
-std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::string& gradientStr)
+std::unique_ptr<const ColorGradient> GradientUtils::parseGradient(const std::string& gradientStr)
 {
     const static std::string prefix = "gradient";
     auto begin = std::sregex_iterator(
@@ -281,7 +281,7 @@ std::shared_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
         data.push_back(std::make_pair(0., colorMap.find("red")->second));
     }
 
-    return std::make_shared<ColorGradient>(data);
+    return std::unique_ptr<const ColorGradient>(new ColorGradient(data));
 }
 
 bool GradientUtils::isGradient(const std::string& gradientStr)
@@ -297,13 +297,13 @@ Color GradientUtils::parseColor(const std::string& colorStr)
     return colorStr[0] == '#' ? fromHex(colorStr) : fromName(colorStr);
 }
 
-std::shared_ptr<const ColorGradient> GradientUtils::evaluateGradient(const StyleProvider& styleProvider,
-                                                                     const Style &style,
-                                                                     const std::string &key)
+const ColorGradient& GradientUtils::evaluateGradient(const StyleProvider& styleProvider,
+                                                     const Style &style,
+                                                     const std::string &key)
 {
     // TODO evaluate gradient using tags
-    auto gradient = style.getString(key);
-    return styleProvider.getGradient(*gradient);
+    auto gradientStr = style.getString(key);
+    return styleProvider.getGradient(*gradientStr);
 }
 
 

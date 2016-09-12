@@ -27,12 +27,12 @@ public:
     static bool isGradient(const std::string& gradientStr);
 
     // Parses color gradient from string.
-    static std::shared_ptr<const utymap::mapcss::ColorGradient> parseGradient(const std::string& gradientStr);
+    static std::unique_ptr<const utymap::mapcss::ColorGradient> parseGradient(const std::string& gradientStr);
 
     // Gets gradient.
-    static std::shared_ptr<const utymap::mapcss::ColorGradient> evaluateGradient(const utymap::mapcss::StyleProvider& styleProvider,
-                                                                                 const utymap::mapcss::Style& style,
-                                                                                 const std::string& key);
+    static const utymap::mapcss::ColorGradient& evaluateGradient(const utymap::mapcss::StyleProvider& styleProvider,
+                                                                 const utymap::mapcss::Style& style,
+                                                                 const std::string& key);
 
     // Gets color for specific coordinate using coherent noise function
     static inline utymap::mapcss::Color getColor(const utymap::mapcss::ColorGradient& gradient,

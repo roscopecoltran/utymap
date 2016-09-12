@@ -33,7 +33,7 @@ struct Filter
     std::unordered_map<uint32_t, Style::value_type> declarations;
 };
 
-// key: level of detais, value: filters for specific element type.
+// key: level of details, value: filters for specific element type.
 typedef std::unordered_map<int, std::vector<Filter>> FilterMap;
 
 struct FilterCollection
@@ -188,7 +188,7 @@ public:
 
     FilterCollection filters;
     StringTable& stringTable;
-    std::unordered_map<std::string, std::shared_ptr<const ColorGradient>> gradients;
+    std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         stringTable(stringTable),
@@ -256,11 +256,11 @@ public:
         if (gradients.find(key) == gradients.end()) {
             auto gradient = utymap::utils::GradientUtils::parseGradient(key);
             if (!gradient->empty())
-                gradients[key] = gradient;
+                gradients.emplace(std::make_pair(key, std::move(gradient)));
         }
     }
 
-    inline std::shared_ptr<const ColorGradient> getGradient(const std::string& key)
+    const ColorGradient& getGradient(const std::string& key)
     {
         auto gradientPair = gradients.find(key);
         if (gradientPair == gradients.end()) {
@@ -268,10 +268,10 @@ public:
             if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
             std::lock_guard<std::mutex> lock(lock_);
-            gradients[key] = gradient;
-            return gradient;
+            gradients.emplace(key, std::move(gradient));
+            gradientPair = gradients.find(key);
         }
-        return gradientPair->second;
+        return *gradientPair->second;
     }
 private:
     std::mutex lock_;
@@ -311,7 +311,7 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
     return std::move(style);
 }
 
-std::shared_ptr<const ColorGradient> StyleProvider::getGradient(const std::string& key) const
+const ColorGradient& StyleProvider::getGradient(const std::string& key) const
 {
     return pimpl_->getGradient(key);
 }

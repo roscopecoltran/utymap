@@ -18,7 +18,7 @@ class FacadeBuilder
   FacadeBuilder(const utymap::builders::BuilderContext& builderContext,
                 utymap::builders::MeshContext& meshContext)
       : builderContext_(builderContext), meshContext_(meshContext),
-        gradient_(), minHeight_(0), height_(0), colorNoiseFreq_(0)
+        minHeight_(0), height_(0), colorNoiseFreq_(0)
   {
   }
 
@@ -28,10 +28,9 @@ class FacadeBuilder
   // Sets height above ground level.
   inline FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
 
-  // Sets color.
-  inline FacadeBuilder& setColor(std::shared_ptr<const utymap::mapcss::ColorGradient>& gradient, double noiseFreq)
+  // Sets color noise freq.
+  inline FacadeBuilder& setColorNoiseFreq(double noiseFreq)
   {
-      gradient_ = gradient;
       colorNoiseFreq_ = noiseFreq;
       return *this;
   }
@@ -43,7 +42,6 @@ class FacadeBuilder
 
   const utymap::builders::BuilderContext& builderContext_;
   utymap::builders::MeshContext& meshContext_;
-  std::shared_ptr<const utymap::mapcss::ColorGradient> gradient_;
   double height_, minHeight_, colorNoiseFreq_;
 };
 

@@ -27,7 +27,7 @@ public:
         // Height offset.
         double heightOffset;
         // Gradient data.
-        std::shared_ptr<const utymap::mapcss::ColorGradient> gradient;
+        const utymap::mapcss::ColorGradient& gradient;
         // Fixed elevation.
         double elevation;
         // Flip triangle side.
@@ -43,7 +43,7 @@ public:
                 double eleNoiseFreq,
                 double colorNoiseFreq,
                 double heightOffset,
-                std::shared_ptr<const utymap::mapcss::ColorGradient> gradient,
+                const utymap::mapcss::ColorGradient& gradient,
                 double elevation = std::numeric_limits<double>::lowest(),
                 bool flipSide = false,
                 int segmentSplit = 0) :

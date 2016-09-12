@@ -3,7 +3,6 @@
 #include "builders/misc/BarrierBuilder.hpp"
 #include "clipper/clipper.hpp"
 #include "entities/Way.hpp"
-#include "utils/ElementUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
@@ -71,23 +70,22 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     double minHeight = style.getValue(MinHeightKey);
     double elevation = context_.eleProvider.getElevation(way.coordinates[0]) + minHeight;
 
-    Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
-    MeshContext meshContext(mesh, style);
+    const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
 
-    auto gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
+    Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
+    MeshContext meshContext(mesh, style, gradient);
 
     // NOTE: Reuse building builders.
-
     FlatRoofBuilder(context_, meshContext)
         .setHeight(0)
         .setMinHeight(elevation + height)
-        .setColor(gradient, 0)
+        .setColorNoiseFreq(0)
         .build(polygon);
 
     FlatFacadeBuilder(context_, meshContext)
         .setHeight(height)
         .setMinHeight(elevation)
-        .setColor(gradient, 0)
+        .setColorNoiseFreq(0)
         .build(polygon);
 
     context_.meshCallback(mesh);

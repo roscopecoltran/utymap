@@ -17,14 +17,17 @@ class AbstractGenerator
 public:
 
     AbstractGenerator(const utymap::builders::BuilderContext& builderContext,
-                      utymap::builders::MeshContext& meshContext):
+                      const utymap::builders::MeshContext& meshContext):
         builderContext_(builderContext),
         meshContext_(meshContext),
-        options_(0, 0,  0, 0, nullptr),
+        options_(0, 0,  0, 0, meshContext.gradient),
         vertNoiseFreq_(0),
         colorNoiseFreq(0)
     {
     }
+
+    virtual ~AbstractGenerator() = default;
+
     // Generates mesh data and updates given mesh.
     virtual void generate() = 0;
 
@@ -35,11 +38,9 @@ public:
         return *this;
     }
 
-    // Sets color
-    AbstractGenerator& setColor(std::shared_ptr<const utymap::mapcss::ColorGradient>& gradient,
-                                double noiseFreq)
+    // Sets color noise frequency
+    AbstractGenerator& setColorNoiseFreq(double noiseFreq)
     {
-        options_.gradient = gradient;
         options_.colorNoiseFreq = colorNoiseFreq;
         return *this;
     }
@@ -66,7 +67,7 @@ protected:
 
 private:
     const utymap::builders::BuilderContext& builderContext_;
-    utymap::builders::MeshContext& meshContext_;
+    const utymap::builders::MeshContext& meshContext_;
     utymap::meshing::MeshBuilder::Options options_;
     double vertNoiseFreq_, colorNoiseFreq;
 };

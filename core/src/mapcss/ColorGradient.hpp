@@ -24,8 +24,24 @@ public:
     {
     }
 
+    ColorGradient(ColorGradient&& other) :
+        colors_(std::move(other.colors_))
+    {
+    }
+
+    ColorGradient& operator=(ColorGradient&& other)
+    {
+        if (this != &other)
+            colors_ = std::move(other.colors_);
+
+        return *this;
+    }
+
     inline utymap::mapcss::Color evaluate(double time) const
     {
+        if (colors_.empty())
+            return utymap::mapcss::Color();
+
         GradientData::size_type index = 0;
         while (index < colors_.size() - 1 && colors_[index].first < time)
             index++;

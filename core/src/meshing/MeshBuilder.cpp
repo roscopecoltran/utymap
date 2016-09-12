@@ -98,7 +98,7 @@ public:
 
     inline void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
     {
-        auto color = options.gradient->evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
+        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, p1, ele1, color, index);
@@ -113,7 +113,7 @@ public:
 
     inline void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
     {
-        auto color = options.gradient->evaluate((NoiseUtils::perlin2D(v0.x, v0.z, options.colorNoiseFreq) + 1) / 2);
+        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, options.colorNoiseFreq) + 1) / 2);
         int startIndex = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, v0, color, startIndex);
@@ -169,7 +169,7 @@ private:
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            int color = GradientUtils::getColor(*options.gradient, x, y, options.colorNoiseFreq);
+            int color = GradientUtils::getColor(options.gradient, x, y, options.colorNoiseFreq);
             mesh.colors.push_back(color);
         }
 

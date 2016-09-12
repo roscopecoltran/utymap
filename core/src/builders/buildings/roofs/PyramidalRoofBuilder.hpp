@@ -28,7 +28,7 @@ public:
                 0, // ele noise
                 colorNoiseFreq_,
                 0,
-                gradient_,
+                meshContext_.gradient,
                 0);
 
             auto lastPointIndex = range.second - 2;

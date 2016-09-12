@@ -34,7 +34,7 @@ public:
                 .setRadius(radius, heightInMeters)
                 .setRecursionLevel(2)
                 .isSemiSphere(false)
-                .setColor(gradient_, 0)
+                .setColorNoiseFreq(0)
                 .generate();
     }
 };

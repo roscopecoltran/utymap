@@ -11,14 +11,19 @@
 namespace utymap { namespace builders {
 
 // Generates tree.
-class TreeGenerator : public AbstractGenerator
+class TreeGenerator
 {
 public:
     TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  utymap::builders::MeshContext& meshContext) :
-            AbstractGenerator(builderContext, meshContext), // ignored
-            trunkGenerator(builderContext, meshContext),
-            foliageGenerator(builderContext, meshContext),
+                  const utymap::builders::MeshContext& meshContext,
+                  const utymap::mapcss::ColorGradient& trunkGradient,
+                  const utymap::mapcss::ColorGradient& foliageGradient) :
+            trunkGeneratorMeshContext(meshContext.mesh, meshContext.style, trunkGradient),
+            foliageGeneratorMeshContext(meshContext.mesh, meshContext.style, foliageGradient),
+
+            trunkGenerator(builderContext, trunkGeneratorMeshContext),
+            foliageGenerator(builderContext, foliageGeneratorMeshContext),
+
             position_(),
             trunkHeight_(0),
             trunkRadius_(0),
@@ -26,6 +31,8 @@ public:
             foliageHeight_(0)
     {
     }
+
+    TreeGenerator(const TreeGenerator&) = delete;
 
     // Sets position of tree
     TreeGenerator& setPosition(const utymap::meshing::Vector3& position)
@@ -56,17 +63,17 @@ public:
         return *this;
     }
 
-    // Sets trunk color.
-    TreeGenerator& setTrunkColor(std::shared_ptr<const utymap::mapcss::ColorGradient>& gradient, double noiseFreq)
+    // Sets trunk color noise freq
+    TreeGenerator& setTrunkColorNoiseFreq(double noiseFreq)
     {
-        trunkGenerator.setColor(gradient, noiseFreq);
+        trunkGenerator.setColorNoiseFreq(noiseFreq);
         return *this;
     }
 
-    // Sets foliage color.
-    TreeGenerator& setFoliageColor(std::shared_ptr<const utymap::mapcss::ColorGradient>& gradient, double noiseFreq)
+    // Sets foliage color noise freq.
+    TreeGenerator& setFoliageColorNoiseFreq(double noiseFreq)
     {
-        foliageGenerator.setColor(gradient, noiseFreq);
+        foliageGenerator.setColorNoiseFreq(noiseFreq);
         return *this;
     }
 
@@ -95,6 +102,8 @@ public:
     }
 
 private:
+    utymap::builders::MeshContext trunkGeneratorMeshContext;
+    utymap::builders::MeshContext foliageGeneratorMeshContext;
     CylinderGenerator trunkGenerator;
     IcoSphereGenerator foliageGenerator;
     meshing::Vector3 position_;

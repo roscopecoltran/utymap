@@ -23,7 +23,7 @@ public:
         0, // ele noise
         colorNoiseFreq_,
         height_,
-        gradient_,
+        meshContext_.gradient,
         minHeight_
     );
 

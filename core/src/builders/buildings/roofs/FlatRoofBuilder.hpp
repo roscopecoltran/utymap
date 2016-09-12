@@ -36,7 +36,7 @@ public:
                                        0, // ele noise
                                        colorNoiseFreq_,
                                        0,
-                                       gradient_,
+                                       meshContext_.gradient,
                                        minHeight_,
                                        flipSide_
                                    ));

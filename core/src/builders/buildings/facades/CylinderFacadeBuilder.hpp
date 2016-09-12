@@ -32,7 +32,7 @@ public:
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
                 .setRadius(radius)
-                .setColor(gradient_, 0)
+                .setColorNoiseFreq(0)
                 .generate();
         });
     }

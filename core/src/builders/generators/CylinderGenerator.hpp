@@ -14,7 +14,7 @@ class CylinderGenerator : public AbstractGenerator
 public:
 
     CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
-                      utymap::builders::MeshContext& meshContext) :
+                      const utymap::builders::MeshContext& meshContext) :
             AbstractGenerator(builderContext, meshContext),
             center_(), radius_(0), height_(0), radialSegments_(0), maxSegmentHeight_(0)
     {

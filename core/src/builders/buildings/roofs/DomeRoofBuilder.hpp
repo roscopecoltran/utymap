@@ -39,7 +39,7 @@ public:
                 .setRecursionLevel(2)
                 .isSemiSphere(true)
                 .setVertexNoiseFreq(0.0)
-                .setColor(gradient_, 0)
+                .setColorNoiseFreq(0)
                 .generate();
         });
     }

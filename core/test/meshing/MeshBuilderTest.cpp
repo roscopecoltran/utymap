@@ -14,8 +14,6 @@ using namespace utymap::meshing;
 
 namespace {
     typedef Vector2 DPoint;
-    auto colorGradient = std::make_shared<const ColorGradient>(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
-
     struct Meshing_MeshingFixture
     {
         Meshing_MeshingFixture() : eleProvider(), builder(eleProvider)
@@ -49,7 +47,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_ThenRefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient
+        /* color gradient */ ColorGradient()
     ));
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
@@ -81,7 +79,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_ThenRefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient
+        /* color gradient */ ColorGradient()
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
@@ -118,7 +116,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient
+        /* color gradient */ ColorGradient()
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
@@ -138,7 +136,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_ThenRefinesCorrec
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ colorGradient
+        /* color gradient */ ColorGradient()
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);

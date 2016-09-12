@@ -22,8 +22,6 @@ using namespace utymap::utils;
 
 namespace {
     const std::string stylesheet = "node|z1[natural=tree] { color:gradient(red);}";
-    auto colorGradient = std::make_shared<const ColorGradient>(ColorGradient::GradientData{ { 0, Color(0, 0, 0, 0) } });
-
     struct Builders_Generators_GeneratorFixture
     {
         Builders_Generators_GeneratorFixture() :
@@ -38,7 +36,7 @@ namespace {
             *dependencyProvider.getElevationProvider(),
             [](const Mesh&) {},
             [](const Element&) {}),
-            meshContext(mesh, style)
+            meshContext(mesh, style, ColorGradient())
         {
         }
 
@@ -60,7 +58,7 @@ BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanG
         .setRadius(10)
         .setRecursionLevel(2)
         .isSemiSphere(false)
-        .setColor(colorGradient, 0.1)
+        .setColorNoiseFreq(0.1)
         .setVertexNoiseFreq(0.5)
         .generate();
 
@@ -78,7 +76,7 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
             .setRadius(1)
-            .setColor(colorGradient, 0.1)
+            .setColorNoiseFreq(0.1)
             .generate();
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
@@ -88,14 +86,14 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    TreeGenerator treeGenerator(builderContext, meshContext);
+    TreeGenerator treeGenerator(builderContext, meshContext, ColorGradient(), ColorGradient());
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
             .setTrunkHeight(5)
             .setTrunkRadius(0.5)
             .setFoliageRadius(4)
-            .setTrunkColor(colorGradient, 0.1)
-            .setFoliageColor(colorGradient, 0.1)
+            .setTrunkColorNoiseFreq(0.1)
+            .setFoliageColorNoiseFreq(0.1)
             .generate();
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
