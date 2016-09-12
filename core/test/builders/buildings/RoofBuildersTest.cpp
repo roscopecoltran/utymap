@@ -26,6 +26,7 @@ namespace {
         std::shared_ptr<MeshContext> meshContext;
         std::shared_ptr<Mesh> mesh;
         std::shared_ptr<Style> style;
+        std::shared_ptr<ColorGradient> gradient;
 
         template<typename T>
         T createRoofBuilder()
@@ -34,7 +35,8 @@ namespace {
             Area building = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0, { { "building", "yes" } }, {});
             style = std::make_shared<Style>(dependencyProvider.getStyleProvider(stylesheet)->forElement(building, 16));
             mesh = std::make_shared<Mesh>("");
-            meshContext = std::make_shared<MeshContext>(*mesh, *style, ColorGradient());
+            gradient = std::make_shared<ColorGradient>();
+            meshContext = std::make_shared<MeshContext>(*mesh, *style, *gradient);
 
             return T(*builderContext, *meshContext);
         }
