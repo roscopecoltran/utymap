@@ -9,7 +9,7 @@
 
 namespace utymap { namespace formats {
 
-enum FormatType
+enum class FormatType
 {
     Pbf = 0,
     Xml = 1,

@@ -23,7 +23,7 @@ public:
     // Defines callback
     typedef std::function<void(const utymap::entities::Element& element, const utymap::QuadKey& quadKey)> Callback;
     // Defines polygon points location relative to current quadkey.
-    enum PointLocation { AllInside, AllOutside, Mixed };
+    enum class PointLocation { AllInside, AllOutside, Mixed };
 
     ElementGeometryClipper(Callback callback);
 

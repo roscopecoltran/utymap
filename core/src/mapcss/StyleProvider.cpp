@@ -17,7 +17,7 @@ using namespace utymap::mapcss;
 namespace {
 
 // Contains operation types supported by mapcss parser.
-enum OpType { Exists, Equals, NotEquals, Less, Greater };
+enum class OpType { Exists, Equals, NotEquals, Less, Greater };
 
 struct ConditionType
 {
