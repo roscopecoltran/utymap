@@ -16,7 +16,7 @@ namespace {
     typedef Vector2 DPoint;
     struct Meshing_MeshingFixture
     {
-        Meshing_MeshingFixture() : eleProvider(), builder(eleProvider)
+        Meshing_MeshingFixture() : eleProvider(), builder(eleProvider), gradient()
         {
             BOOST_TEST_MESSAGE("setup fixture");
         }
@@ -24,6 +24,7 @@ namespace {
 
         FlatElevationProvider eleProvider;
         MeshBuilder builder;
+        ColorGradient gradient;
     };
 }
 
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_ThenRefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ ColorGradient()
+        /* color gradient */ gradient
     ));
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
@@ -79,7 +80,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_ThenRefinesCorrectly)
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ ColorGradient()
+        /* color gradient */ gradient
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
@@ -116,7 +117,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ ColorGradient()
+        /* color gradient */ gradient
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);
@@ -136,7 +137,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_ThenRefinesCorrec
         /* elevation noise frequency*/ 0,
         /* color noise frequency */ 0,
         /* height offset */ 0,
-        /* color gradient */ ColorGradient()
+        /* color gradient */ gradient
     ));
 
     BOOST_CHECK(mesh.vertices.size() > 0);

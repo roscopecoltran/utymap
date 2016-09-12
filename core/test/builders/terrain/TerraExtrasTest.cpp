@@ -14,6 +14,7 @@ using namespace utymap::mapcss;
 using namespace utymap::meshing;
 
 namespace {
+    const ColorGradient gradient = ColorGradient();
     const std::string stylesheet = "area|z16[amenity=forest] { "
                                     "foliage-color: gradient(green);"
                                     "trunk-color:gradient(red); foliage-radius:2.5m;"
@@ -40,7 +41,7 @@ namespace {
             Polygon polygon(4, 0);
             polygon.addContour(std::vector < Vector2 > {{0, 0}, { 10, 0 }, { 10, 10 }, { 0, 10 } });
             MeshBuilder builder(*dependencyProvider.getElevationProvider());
-            builder.addPolygon(*mesh, polygon, MeshBuilder::Options(5, 0, 0, 0, ColorGradient()));
+            builder.addPolygon(*mesh, polygon, MeshBuilder::Options(5, 0, 0, 0, gradient));
             return mesh;
         }
 

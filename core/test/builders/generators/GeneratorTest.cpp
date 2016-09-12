@@ -27,6 +27,7 @@ namespace {
         Builders_Generators_GeneratorFixture() :
             dependencyProvider(),
             mesh(""),
+            gradient(),
             style(dependencyProvider.getStyleProvider(stylesheet)
             ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
             builderContext(
@@ -36,13 +37,14 @@ namespace {
             *dependencyProvider.getElevationProvider(),
             [](const Mesh&) {},
             [](const Element&) {}),
-            meshContext(mesh, style, ColorGradient())
+            meshContext(mesh, style, gradient)
         {
         }
 
         DependencyProvider dependencyProvider;
         Mesh mesh;
         Style style;
+        ColorGradient gradient;
         BuilderContext builderContext;
         MeshContext meshContext;
     };
