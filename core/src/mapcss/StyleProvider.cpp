@@ -9,6 +9,7 @@
 #include "utils/GradientUtils.hpp"
 
 #include <functional>
+#include <mutex>
 
 using namespace utymap::entities;
 using namespace utymap::index;
@@ -266,11 +267,14 @@ public:
             auto gradient = utymap::utils::GradientUtils::parseGradient(key);
             if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
-            // TODO store it in map in thread safe way
+            std::lock_guard<std::mutex> lock(lock_);
+            gradients[key] = gradient;
             return gradient;
         }
         return gradientPair->second;
     }
+private:
+    std::mutex lock_;
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
