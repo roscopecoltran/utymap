@@ -44,23 +44,22 @@ namespace Assets.Scripts.Menu
             _open = anim;
             _open.SetBool(_openParameterId, true);
 
-            GameObject go = FindFirstEnabledSelectable(anim.gameObject);
-
-            SetSelected(go);
+            //GameObject go = FindFirstEnabledSelectable(anim.gameObject);
+            //SetSelected(go);
         }
 
-        static GameObject FindFirstEnabledSelectable (GameObject gameObject)
-        {
-            GameObject go = null;
-            var selectables = gameObject.GetComponentsInChildren<Selectable> (true);
-            foreach (var selectable in selectables) {
-                if (selectable.IsActive () && selectable.IsInteractable ()) {
-                    go = selectable.gameObject;
-                    break;
-                }
-            }
-            return go;
-        }
+        //static GameObject FindFirstEnabledSelectable (GameObject gameObject)
+        //{
+        //    GameObject go = null;
+        //    var selectables = gameObject.GetComponentsInChildren<Selectable> (true);
+        //    foreach (var selectable in selectables) {
+        //        if (selectable.IsActive () && selectable.IsInteractable ()) {
+        //            go = selectable.gameObject;
+        //            break;
+        //        }
+        //    }
+        //    return go;
+        //}
 
         public void CloseCurrent()
         {
