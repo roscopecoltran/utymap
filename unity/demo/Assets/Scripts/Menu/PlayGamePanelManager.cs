@@ -113,19 +113,13 @@ namespace Assets.Scripts.Menu
 
         public void OnStreetLevelPlayClick()
         {
-            var coordText = CoordinateInputField.text;
-            _trace.Info(LogCategory, "Parsing GeoCoordinate from: {0}", coordText);
-
-            var coordParts = coordText.Split(',');
-            PositionConfiguration.StartPosition = new GeoCoordinate(
-                double.Parse(coordParts[0]),
-                double.Parse(coordParts[1]));
-
+            ParseCoordinate();
             SceneManager.LoadScene("StreetLevelScene");
         }
 
         public void OnBirdEyeLevelPlayClick()
         {
+            ParseCoordinate();
             SceneManager.LoadScene("BirdEyeLevelScene");
         }
 
@@ -141,6 +135,17 @@ namespace Assets.Scripts.Menu
 #else
 		    UnityEngine.Application.Quit();
 #endif
+        }
+
+        private void ParseCoordinate()
+        {
+            var coordText = CoordinateInputField.text;
+            _trace.Info(LogCategory, "Parsing GeoCoordinate from: {0}", coordText);
+
+            var coordParts = coordText.Split(',');
+            PositionConfiguration.StartPosition = new GeoCoordinate(
+                double.Parse(coordParts[0]),
+                double.Parse(coordParts[1]));
         }
     }
 }
