@@ -42,13 +42,13 @@ public:
     {
     }
 
-    void visitNode(const Node& node) { visitElement(node); }
+    void visitNode(const Node& node) override { visitElement(node); }
 
-    void visitWay(const Way& way) { visitElement(way); }
+    void visitWay(const Way& way) override { visitElement(way); }
 
-    void visitArea(const Area& area) { visitElement(area); }
+    void visitArea(const Area& area) override { visitElement(area); }
 
-    void visitRelation(const Relation& relation) { visitElement(relation); }
+    void visitRelation(const Relation& relation) override { visitElement(relation); }
 
     void complete()
     {

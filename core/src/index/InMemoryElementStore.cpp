@@ -38,22 +38,22 @@ namespace {
         {
         }
 
-        void visitNode(const utymap::entities::Node& node)
+        void visitNode(const utymap::entities::Node& node) override
         {
             elementsMap_[quadKey_].push_back(std::make_shared<Node>(node));
         }
 
-        void visitWay(const utymap::entities::Way& way)
+        void visitWay(const utymap::entities::Way& way) override
         {
             elementsMap_[quadKey_].push_back(std::make_shared<Way>(way));
         }
 
-        void visitArea(const utymap::entities::Area& area)
+        void visitArea(const utymap::entities::Area& area) override
         {
             elementsMap_[quadKey_].push_back(std::make_shared<Area>(area));
         }
 
-        void visitRelation(const utymap::entities::Relation& relation)
+        void visitRelation(const utymap::entities::Relation& relation) override
         {
             elementsMap_[quadKey_].push_back(std::make_shared<Relation>(relation));
         }

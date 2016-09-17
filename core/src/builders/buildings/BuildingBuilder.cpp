@@ -140,13 +140,13 @@ namespace {
         MultiPolygonVisitor(std::shared_ptr<Polygon> polygon)
             : polygon_(polygon) {}
 
-        void visitNode(const utymap::entities::Node& node) { fail(node); }
+        void visitNode(const utymap::entities::Node& node) override { fail(node); }
 
-        void visitWay(const utymap::entities::Way& way) { fail(way); }
+        void visitWay(const utymap::entities::Way& way) override { fail(way); }
 
-        void visitRelation(const utymap::entities::Relation& relation) { fail(relation); }
+        void visitRelation(const utymap::entities::Relation& relation) override { fail(relation); }
 
-        void visitArea(const utymap::entities::Area& area)
+        void visitArea(const utymap::entities::Area& area) override
         {
             if (!utymap::utils::isClockwise(area.coordinates))
                 polygon_->addContour(toPoints(area.coordinates));

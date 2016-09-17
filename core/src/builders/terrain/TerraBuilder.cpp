@@ -46,11 +46,11 @@ namespace {
         RelationVisitor(ElementVisitor& b, const Relation& r, TerraGenerator::Region& reg) :
                 builder(b), relation(r), region(reg) {}
 
-        void visitNode(const utymap::entities::Node& n) { n.accept(builder); }
+        void visitNode(const utymap::entities::Node& n) override { n.accept(builder); }
 
-        void visitWay(const utymap::entities::Way& w) { w.accept(builder); }
+        void visitWay(const utymap::entities::Way& w) override { w.accept(builder); }
 
-        void visitArea(const utymap::entities::Area& a)
+        void visitArea(const utymap::entities::Area& a) override
         {
             Path path;
             path.reserve(a.coordinates.size());
@@ -61,7 +61,7 @@ namespace {
             region.area += std::abs(utymap::utils::getArea(a.coordinates));
         }
 
-        void visitRelation(const utymap::entities::Relation& r)  { r.accept(builder); }
+        void visitRelation(const utymap::entities::Relation& r) override { r.accept(builder); }
     };
 }
 
@@ -83,11 +83,11 @@ public:
         clipper_.AddPath(tileRect_, ptClip, true);
     }
 
-    void visitNode(const utymap::entities::Node& node)
+    void visitNode(const utymap::entities::Node& node) override
     {
     }
 
-    void visitWay(const utymap::entities::Way& way)
+    void visitWay(const utymap::entities::Way& way) override
     {
         Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, way.coordinates);
@@ -113,7 +113,7 @@ public:
         generator_.addRegion(type, region);
     }
 
-    void visitArea(const utymap::entities::Area& area)
+    void visitArea(const utymap::entities::Area& area) override
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, area.coordinates);
@@ -123,7 +123,7 @@ public:
         generator_.addRegion(type, region);
     }
 
-    void visitRelation(const utymap::entities::Relation& rel)
+    void visitRelation(const utymap::entities::Relation& rel) override
     {
         auto region = std::make_shared<TerraGenerator::Region>();
         RelationVisitor visitor(*this, rel, *region);
@@ -151,7 +151,7 @@ public:
     }
 
     // builds tile mesh using data provided.
-    void complete()
+    void complete() override
     {
         clipper_.Clear();
         generator_.generate(tileRect_);

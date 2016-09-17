@@ -22,6 +22,8 @@ public:
 
     // Visits relation.
     virtual void visitRelation(const Relation&) = 0;
+
+    virtual ~ElementVisitor() = default;
 };
 
 }}

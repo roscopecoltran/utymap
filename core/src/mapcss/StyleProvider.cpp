@@ -61,13 +61,13 @@ public:
     {
     }
 
-    void visitNode(const Node& node) { checkOrBuild(node.tags, filters_.nodes); }
+    void visitNode(const Node& node) override { checkOrBuild(node.tags, filters_.nodes); }
 
-    void visitWay(const Way& way) { checkOrBuild(way.tags, filters_.ways); }
+    void visitWay(const Way& way) override { checkOrBuild(way.tags, filters_.ways); }
 
-    void visitArea(const Area& area) { checkOrBuild(area.tags, filters_.areas); }
+    void visitArea(const Area& area) override { checkOrBuild(area.tags, filters_.areas); }
 
-    void visitRelation(const Relation& relation) { checkOrBuild(relation.tags, filters_.relations); }
+    void visitRelation(const Relation& relation) override { checkOrBuild(relation.tags, filters_.relations); }
 
     inline bool canBuild() { return canBuild_; }
 

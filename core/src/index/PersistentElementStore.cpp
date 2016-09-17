@@ -49,14 +49,14 @@ namespace {
         {
         }
 
-        void visitNode(const Node& node)
+        void visitNode(const Node& node) override
         {
             writeFlags(0);
             writeTags(node.tags);
             writeCoordinate(node.coordinate);
         }
 
-        void visitWay(const Way& way)
+        void visitWay(const Way& way) override
         {
             writeFlags(1);
             writeTags(way.tags);
@@ -67,7 +67,7 @@ namespace {
             }
         }
 
-        void visitArea(const Area& area)
+        void visitArea(const Area& area) override
         {
             writeFlags(2);
             writeTags(area.tags);
@@ -79,7 +79,7 @@ namespace {
             }
         }
 
-        void visitRelation(const Relation& relation)
+        void visitRelation(const Relation& relation) override
         {
             writeFlags(3);
             writeTags(relation.tags);

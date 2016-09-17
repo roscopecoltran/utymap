@@ -191,7 +191,7 @@ namespace {
         {
         }
 
-        void visitNode(const Node& node)
+        void visitNode(const Node& node) override
         {
             if (bbox_.contains(node.coordinate)) {
                 ensureRelation();
@@ -199,17 +199,17 @@ namespace {
             }
         }
 
-        void visitWay(const Way& way)
+        void visitWay(const Way& way) override
         {
             addElement(processWay(clipper_, bbox_, way), way);
         }
 
-        void visitArea(const Area& area)
+        void visitArea(const Area& area) override
         {
             addElement(processArea(clipper_, bbox_, area),area);
         }
 
-        void visitRelation(const Relation& relation)
+        void visitRelation(const Relation& relation) override
         {
             addElement(processRelation(clipper_, bbox_, relation), relation);
         }

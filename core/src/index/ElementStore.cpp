@@ -14,9 +14,9 @@ using namespace utymap::formats;
 using namespace utymap::mapcss;
 
 namespace {
-    const static std::string ClipKey = "clip";
-    const static std::string SkipKey = "skip";
-    const static std::string SizeKey = "size";
+    const std::string ClipKey = "clip";
+    const std::string SkipKey = "skip";
+    const std::string SizeKey = "size";
 
     // Creates bounding box of given element.
     class BoundingBoxVisitor : public ElementVisitor
@@ -24,22 +24,22 @@ namespace {
     public:
         BoundingBox boundingBox;
 
-        void visitNode(const Node& node)
+        void visitNode(const Node& node) override
         {
             boundingBox.expand(node.coordinate);
         }
 
-        void visitWay(const Way& way)
+        void visitWay(const Way& way) override
         {
             boundingBox.expand(way.coordinates.cbegin(), way.coordinates.cend());
         }
 
-        void visitArea(const Area& area)
+        void visitArea(const Area& area) override
         {
             boundingBox.expand(area.coordinates.cbegin(), area.coordinates.cend());
         }
 
-        void visitRelation(const Relation& relation)
+        void visitRelation(const Relation& relation) override
         {
             for (const auto& element: relation.elements) {
                 element->accept(*this);
@@ -54,10 +54,6 @@ ElementStore::ElementStore(StringTable& stringTable) :
     clipKeyId_(stringTable.getId(ClipKey)),
     skipKeyId_(stringTable.getId(SkipKey)),
     sizeKeyId_(stringTable.getId(SizeKey))
-{
-}
-
-ElementStore::~ElementStore()
 {
 }
 

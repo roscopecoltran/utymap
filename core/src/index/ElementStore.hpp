@@ -20,7 +20,7 @@ class ElementStore
 public:
     ElementStore(utymap::index::StringTable& stringTable);
 
-    virtual ~ElementStore();
+    virtual ~ElementStore() = default;
 
     // Searches for elements for given quadKey
     virtual void search(const utymap::QuadKey& quadKey,

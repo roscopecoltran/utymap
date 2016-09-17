@@ -30,13 +30,13 @@ class GeoStore::GeoStoreImpl
         {
         }
 
-        void visitNode(const Node& node) { visitIfNecessary(node); }
+        void visitNode(const Node& node) override { visitIfNecessary(node); }
 
-        void visitWay(const Way& way)  { visitIfNecessary(way); }
+        void visitWay(const Way& way) override  { visitIfNecessary(way); }
 
-        void visitArea(const Area& area)  { visitIfNecessary(area); }
+        void visitArea(const Area& area) override { visitIfNecessary(area); }
 
-        void visitRelation(const Relation& relation)  { visitIfNecessary(relation); }
+        void visitRelation(const Relation& relation) override { visitIfNecessary(relation); }
 
     private:
 

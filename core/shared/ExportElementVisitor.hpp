@@ -29,22 +29,22 @@ struct ExportElementVisitor : public utymap::entities::ElementVisitor
     {
     }
 
-    void visitNode(const utymap::entities::Node& node)
+    void visitNode(const utymap::entities::Node& node) override
     {
         visitElement(node, Coordinates{ node.coordinate });
     }
 
-    void visitWay(const utymap::entities::Way& way)
+    void visitWay(const utymap::entities::Way& way) override
     {
         visitElement(way, way.coordinates);
     }
 
-    void visitArea(const utymap::entities::Area& area)
+    void visitArea(const utymap::entities::Area& area) override
     {
         visitElement(area, area.coordinates);
     }
 
-    void visitRelation(const utymap::entities::Relation& relation)
+    void visitRelation(const utymap::entities::Relation& relation) override
     {
         // TODO not supported yet.
     }
