@@ -148,7 +148,7 @@ void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& stylePro
 }
 
 QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable) :
-    pimpl_(new QuadKeyBuilder::QuadKeyBuilderImpl(geoStore, stringTable))
+    pimpl_(utymap::utils::make_unique<QuadKeyBuilderImpl>(geoStore, stringTable))
 {
 }
 

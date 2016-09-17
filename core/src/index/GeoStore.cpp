@@ -172,7 +172,7 @@ private:
     }
 };
 
-GeoStore::GeoStore(StringTable& stringTable) : pimpl_(new GeoStore::GeoStoreImpl(stringTable))
+GeoStore::GeoStore(StringTable& stringTable) : pimpl_(utymap::utils::make_unique<GeoStoreImpl>(stringTable))
 {
 }
 

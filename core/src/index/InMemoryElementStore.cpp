@@ -85,7 +85,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl
 };
 
 InMemoryElementStore::InMemoryElementStore(StringTable& stringTable) :
-    ElementStore(stringTable), pimpl_(new InMemoryElementStore::InMemoryElementStoreImpl())
+    ElementStore(stringTable), pimpl_(utymap::utils::make_unique<InMemoryElementStoreImpl>())
 {
 }
 

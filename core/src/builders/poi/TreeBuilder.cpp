@@ -85,7 +85,7 @@ std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext
     const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, TrunkColorKey);
     const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, meshContext.style, FoliageColorKey);
 
-    std::unique_ptr<TreeGenerator> generator(new TreeGenerator(builderContext, meshContext, trunkGradient, foliageGradient));
+    auto generator = utymap::utils::make_unique<TreeGenerator>(builderContext, meshContext, trunkGradient, foliageGradient);
 
     generator->setFoliageColorNoiseFreq(0);
     generator->setFoliageRadius(foliageRadiusInDegrees, foliageRadiusInMeters);

@@ -281,7 +281,7 @@ std::unique_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
         data.push_back(std::make_pair(0., colorMap.find("red")->second));
     }
 
-    return std::unique_ptr<const ColorGradient>(new ColorGradient(data));
+    return utymap::utils::make_unique<const ColorGradient>(data);
 }
 
 bool GradientUtils::isGradient(const std::string& gradientStr)

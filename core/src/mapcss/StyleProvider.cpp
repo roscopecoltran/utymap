@@ -278,7 +278,7 @@ private:
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
-    pimpl_(new StyleProvider::StyleProviderImpl(stylesheet, stringTable))
+    pimpl_(utymap::utils::make_unique<StyleProviderImpl>(stylesheet, stringTable))
 {
 }
 

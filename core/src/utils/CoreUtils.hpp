@@ -3,9 +3,10 @@
 
 #include <chrono>
 #include <string>
-#include <sstream>
+#include <memory>
 
 #include <boost/lexical_cast.hpp>
+
 
 namespace utymap { namespace utils {
 
@@ -50,6 +51,13 @@ struct measure
         return duration.count();
     }
 };
+
+// Custom implementation of missing function in C++11
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 }}
 

@@ -4,6 +4,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "index/PersistentElementStore.hpp"
+#include "utils/CoreUtils.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -330,7 +331,7 @@ private:
 };
 
 PersistentElementStore::PersistentElementStore(const std::string& dataPath, StringTable& stringTable) :
-        ElementStore(stringTable), pimpl_(new PersistentElementStore::PersistentElementStoreImpl(dataPath))
+    ElementStore(stringTable), pimpl_(utymap::utils::make_unique<PersistentElementStoreImpl>(dataPath))
 {
 }
 

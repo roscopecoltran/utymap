@@ -9,6 +9,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
+#include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/NoiseUtils.hpp"
@@ -197,7 +198,6 @@ void TerraBuilder::complete() { pimpl_->complete(); }
 TerraBuilder::~TerraBuilder() { }
 
 TerraBuilder::TerraBuilder(const BuilderContext& context) :
-    utymap::builders::ElementBuilder(context),
-    pimpl_(new TerraBuilder::TerraBuilderImpl(context))
+    ElementBuilder(context), pimpl_(utymap::utils::make_unique<TerraBuilderImpl>(context))
 {
 }

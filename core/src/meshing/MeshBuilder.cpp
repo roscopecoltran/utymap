@@ -3,6 +3,7 @@
 
 #include "meshing/MeshBuilder.hpp"
 #include "triangle/triangle.h"
+#include "utils/CoreUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
 using namespace utymap::heightmap;
@@ -188,7 +189,7 @@ private:
 };
 
 MeshBuilder::MeshBuilder(const ElevationProvider& eleProvider) :
-    pimpl_(new MeshBuilder::MeshBuilderImpl(eleProvider))
+    pimpl_(utymap::utils::make_unique<MeshBuilderImpl>(eleProvider))
 {
 }
 

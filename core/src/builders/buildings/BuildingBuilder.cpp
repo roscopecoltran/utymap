@@ -328,7 +328,7 @@ private:
 };
 
 BuildingBuilder::BuildingBuilder(const BuilderContext& context)
-    : ElementBuilder(context), pimpl_(new BuildingBuilder::BuildingBuilderImpl(context))
+    : ElementBuilder(context), pimpl_(utymap::utils::make_unique<BuildingBuilderImpl>(context))
 {
 }
 

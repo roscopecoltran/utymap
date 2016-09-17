@@ -1,5 +1,6 @@
 #include "hashing/MurmurHash3.h"
-#include "StringTable.hpp"
+#include "index/StringTable.hpp"
+#include "utils/CoreUtils.hpp"
 
 #include <cstdio>
 #include <fstream>
@@ -122,7 +123,7 @@ private:
 };
 
 StringTable::StringTable(const std::string& path) :
-    pimpl_(new StringTable::StringTableImpl(path + "string.idx", path + "string.dat", 0)) 
+    pimpl_(utymap::utils::make_unique<StringTableImpl>(path + "string.idx", path + "string.dat", 0))
 {
 }
 
