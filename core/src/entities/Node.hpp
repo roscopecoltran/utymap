@@ -14,7 +14,7 @@ namespace utymap { namespace entities {
     GeoCoordinate coordinate;
 
     // Accepts visitor.
-    void accept(ElementVisitor& visitor) const
+    void accept(ElementVisitor& visitor) const override
     {
         visitor.visitNode(*this);
     }

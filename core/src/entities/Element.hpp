@@ -34,10 +34,10 @@ struct Element
     // Returns tag collection represented by vector of tuple<uint,uint>.
     std::vector<Tag> tags;
 
-    virtual ~Element() {}
+    virtual ~Element() = default;
 
     // Visitor method.
-    virtual void accept(ElementVisitor&) const { };
+    virtual void accept(ElementVisitor&) const = 0;
 
     // Returns string representation of element.
     virtual std::string toString(utymap::index::StringTable& st) const

@@ -16,7 +16,7 @@ struct Way : public Element
     std::vector<GeoCoordinate> coordinates;
 
     // Accepts visitor.
-    void accept(ElementVisitor& visitor) const
+    void accept(ElementVisitor& visitor) const override
     {
         visitor.visitWay(*this);
     }
