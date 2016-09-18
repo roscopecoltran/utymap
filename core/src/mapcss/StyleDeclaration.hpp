@@ -19,18 +19,26 @@ struct StyleDeclaration final
 {
     StyleDeclaration(std::uint32_t key, const std::string& value) :
         key_(key),
-        value_(std::make_shared<std::string>(value)),
+        value_(value),
         tree_(StyleEvaluator::parse(value))
     {
     }
 
-    ~StyleDeclaration() {}
+    ~StyleDeclaration() {};
+    StyleDeclaration(StyleDeclaration&& other) : 
+        key_(other.key_), value_(other.value_), tree_(std::move(other.tree_))
+    {
+    }
+
+    StyleDeclaration(const StyleDeclaration&) = delete;
+    StyleDeclaration&operator=(StyleDeclaration&& other) = delete;
+    StyleDeclaration&operator=(const StyleDeclaration&) = delete;
 
     // Gets declaration key.
     std::uint32_t key() const { return key_; };
 
     // Gets declaration value.
-    std::shared_ptr<std::string> value() const { return value_; };
+    const std::string& value() const { return value_; };
 
     // Gets true if declaration should be evaluated
     bool isEval() const { return tree_ != nullptr; }
@@ -48,9 +56,9 @@ struct StyleDeclaration final
 
 private:
 
-    const std::uint32_t key_;
-    std::shared_ptr<std::string> value_;
-    std::shared_ptr<StyleEvaluator::Tree> tree_;
+    std::uint32_t key_;
+    std::string value_;
+    std::unique_ptr<StyleEvaluator::Tree> tree_;
 };
 
 }}

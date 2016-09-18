@@ -4,7 +4,6 @@
 #include "BoundingBox.hpp"
 #include "Callbacks.hpp"
 #include "GeoCoordinate.hpp"
-#include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
 #include "entities/Area.hpp"
@@ -78,7 +77,7 @@ private:
         cstyles.reserve(style.declarations.size());
         for (const auto pair : style.declarations) {
             styleStrings_.push_back(stringTable_.getString(pair.first));
-            styleStrings_.push_back(*pair.second->value());
+            styleStrings_.push_back(pair.second.value());
             cstyles.push_back(styleStrings_[styleStrings_.size() - 2].c_str());
             cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
         }

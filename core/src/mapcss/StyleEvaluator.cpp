@@ -1,10 +1,9 @@
 #include "mapcss/StyleEvaluator.hpp"
+#include "utils/CoreUtils.hpp"
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-
-#include <algorithm>
 
 using namespace utymap::entities;
 using namespace utymap::index;
@@ -76,9 +75,9 @@ BOOST_FUSION_ADAPT_STRUCT(
     (std::list<Operation>, rest)
 )
 
-std::shared_ptr<Tree> StyleEvaluator::parse(const std::string& expression)
+std::unique_ptr<Tree> StyleEvaluator::parse(const std::string& expression)
 {
-    auto tree = std::make_shared<Tree>();
+    auto tree = utymap::utils::make_unique<Tree>();
 
     EvalGrammar<std::string::const_iterator> grammar;
 

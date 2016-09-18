@@ -20,23 +20,32 @@ namespace {
 // Contains operation types supported by mapcss parser.
 enum class OpType { Exists, Equals, NotEquals, Less, Greater };
 
-struct ConditionType
+struct ConditionType final
 {
     uint32_t key;
     uint32_t value;
     OpType type;
 };
 
-struct Filter
+struct Filter final
 {
     std::vector<ConditionType> conditions;
-    std::unordered_map<uint32_t, Style::value_type> declarations;
+    std::unordered_map<uint32_t, std::unique_ptr<const StyleDeclaration>> declarations;
+
+    Filter() = default;
+    Filter(const Filter& other) = delete;
+
+    Filter(Filter&& other)
+    {
+        conditions = std::move(other.conditions);
+        declarations = std::move(other.declarations);
+    }
 };
 
 // key: level of details, value: filters for specific element type.
 typedef std::unordered_map<int, std::vector<Filter>> FilterMap;
 
-struct FilterCollection
+struct FilterCollection final
 {
     FilterMap nodes;
     FilterMap ways;
@@ -45,18 +54,18 @@ struct FilterCollection
     FilterMap canvases;
 };
 
-class StyleBuilder : public ElementVisitor
+class StyleBuilder final : public ElementVisitor
 {
     typedef std::vector<Tag>::const_iterator TagIterator;
 public:
 
     StyleBuilder(std::vector<Tag> tags, StringTable& stringTable,
                  const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
+            style(tags, stringTable),
             filters_(filters),
             levelOfDetails_(levelOfDetails),
             onlyCheck_(onlyCheck),
             canBuild_(false),
-            style_(tags, stringTable),
             stringTable_(stringTable)
     {
     }
@@ -71,17 +80,11 @@ public:
 
     bool canBuild() const { return canBuild_; }
 
-    Style build()
-    {
-        if (onlyCheck_)
-            throw std::domain_error("Cannot build feature for check mode.");
-
-        return style_;
-    }
+    Style style;
 
 private:
 
-    inline void checkOrBuild(const std::vector<Tag>& tags, const FilterMap& filters)
+    void checkOrBuild(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         if (onlyCheck_)
             check(tags, filters);
@@ -147,7 +150,7 @@ private:
                 if (isMatched) {
                     canBuild_ = true;
                     for (const auto& d : filter.declarations) {
-                        style_.put(d.second);
+                        style.put(*d.second);
                     }
                 }
             }
@@ -176,7 +179,6 @@ private:
     int levelOfDetails_;
     bool onlyCheck_;
     bool canBuild_;
-    Style style_;
     StringTable& stringTable_;
 };
 
@@ -214,7 +216,7 @@ public:
                     else
                         throw std::domain_error("Unexpected selector name:" + name);
 
-                    Filter filter = Filter();
+                    Filter filter;
                     filter.conditions.reserve(selector.conditions.size());
                     for (const Condition& condition : selector.conditions) {
                         ConditionType c;
@@ -239,13 +241,13 @@ public:
                         if (utymap::utils::GradientUtils::isGradient(declaration.value))
                             addGradient(declaration.value);
 
-                        filter.declarations[key] = std::make_shared<StyleDeclaration>(key, declaration.value);
+                        filter.declarations.emplace(key, utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value));
                     }
 
                     std::sort(filter.conditions.begin(), filter.conditions.end(),
                         [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
                     for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
-                        (*filtersPtr)[i].push_back(filter);
+                        (*filtersPtr)[i].push_back(std::move(filter));
                     }
                 }
             }
@@ -298,7 +300,7 @@ Style StyleProvider::forElement(const Element& element, int levelOfDetails) cons
 {
     StyleBuilder builder(element.tags, pimpl_->stringTable, pimpl_->filters, levelOfDetails);
     element.accept(builder);
-    return std::move(builder.build());
+    return std::move(builder.style);
 }
 
 Style StyleProvider::forCanvas(int levelOfDetails) const
@@ -306,7 +308,7 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
     Style style({}, pimpl_->stringTable);
     for (const auto &filter : pimpl_->filters.canvases[levelOfDetails]) {
         for (const auto &declaration : filter.declarations) {
-            style.put(declaration.second);
+            style.put(*declaration.second);
         }
     }
     return std::move(style);

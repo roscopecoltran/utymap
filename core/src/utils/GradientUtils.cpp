@@ -303,6 +303,5 @@ const ColorGradient& GradientUtils::evaluateGradient(const StyleProvider& styleP
                                                      const std::string &key)
 {
     // TODO evaluate gradient using tags
-    auto gradientStr = style.getString(key);
-    return styleProvider.getGradient(*gradientStr);
+    return styleProvider.getGradient(style.getString(key));
 }

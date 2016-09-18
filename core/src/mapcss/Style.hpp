@@ -10,18 +10,14 @@
 
 #include <cstdint>
 #include <string>
-#include <memory>
 #include <unordered_map>
 
 namespace utymap { namespace mapcss {
 
 // Represents style for element.
 struct Style final
-{
-    typedef std::uint32_t key_type;
-    typedef std::shared_ptr<utymap::mapcss::StyleDeclaration> value_type;
-
-    std::unordered_map<key_type, value_type> declarations;
+{    
+    std::unordered_map<std::uint32_t, const StyleDeclaration&> declarations;
 
     Style(const std::vector<utymap::entities::Tag>& tags,
           utymap::index::StringTable& stringTable) :
@@ -29,23 +25,34 @@ struct Style final
     {
     }
 
-    bool has(key_type key) const
+    Style(Style&& other) : stringTable_(other.stringTable_)
+    {
+        declarations = std::move(other.declarations);
+        tags_ = std::move(other.tags_);
+    }
+
+    Style(const Style &) = default;
+
+    Style& operator=(const Style&) = delete;
+    Style& operator=(Style&&) = delete;
+
+    bool has(std::uint32_t key) const
     {
         return declarations.find(key) != declarations.end();
     }
 
-    bool has(key_type key, const std::string& value) const
+    bool has(std::uint32_t key, const std::string& value) const
     {
         auto it = declarations.find(key);
-        return it != declarations.end() && *it->second->value() == value;
+        return it != declarations.end() && it->second.value() == value;
     }
 
-    void put(const value_type& declaration)
+    void put(const StyleDeclaration& declaration)
     {
-        declarations[declaration->key()] = declaration;
+        declarations.emplace(declaration.key(), declaration);
     }
 
-    value_type get(key_type key) const
+    const StyleDeclaration& get(std::uint32_t key) const
     {
         auto it = declarations.find(key);
         if (it == declarations.end())
@@ -55,48 +62,48 @@ struct Style final
     }
 
     // Gets string by given key. Empty string by default
-    std::shared_ptr<std::string> getString(const std::string& key) const
+    std::string getString(const std::string& key) const
     {
-        key_type keyId = stringTable_.getId(key);
+        std::uint32_t keyId = stringTable_.getId(key);
         return getString(keyId);
     }
     
     // Gets string by given key. Empty string by default
-    std::shared_ptr<std::string> getString(key_type keyId) const
+    std::string getString(std::uint32_t keyId) const
     {
         if (!has(keyId))
-            return std::make_shared<std::string>("");
+            return "";
 
-        auto declaration = get(keyId);
+        auto& declaration = get(keyId);
 
-        return declaration->isEval()
-               ? std::make_shared<std::string>(declaration->evaluate<std::string>(tags_, stringTable_))
-               : declaration->value();
+        return declaration.isEval()
+               ? declaration.evaluate<std::string>(tags_, stringTable_)
+               : declaration.value();
     }
 
     // Gets double value or zero.
     double getValue(const std::string& key,
-                           double size = 1,
-                           const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
+                    double size = 1,
+                    const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
     {
-        key_type keyId = stringTable_.getId(key);
+        std::uint32_t keyId = stringTable_.getId(key);
         return getValue(keyId, size, coordinate);
     }
 
     // Gets double value or zero.
-    double getValue(key_type keyId,
-                           double size = 1,
-                           const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
+    double getValue(std::uint32_t keyId,
+                    double size = 1,
+                    const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
     {
         if (!has(keyId))
             return 0;
 
-        auto declaration = get(keyId);
-        auto rawValue = declaration->value();
-        char dimen = (*rawValue)[rawValue->size() - 1];
+        const auto& declaration = get(keyId);
+        const auto& rawValue = declaration.value();
+        char dimen = rawValue[rawValue.size() - 1];
 
         if (dimen == 'm') {
-            double value = utymap::utils::parseDouble(rawValue->substr(0, rawValue->size() - 1));
+            double value = utymap::utils::parseDouble(rawValue.substr(0, rawValue.size() - 1));
             return coordinate.isValid()
                 ? utymap::utils::GeoUtils::getOffset(coordinate, value)
                 : value;
@@ -104,18 +111,18 @@ struct Style final
 
         // relative to size
         if (dimen == '%') {
-            double value = utymap::utils::parseDouble(rawValue->substr(0, rawValue->size() - 1));
+            double value = utymap::utils::parseDouble(rawValue.substr(0, rawValue.size() - 1));
             return size * value * 0.01;
         }
 
-        return declaration->isEval()
-                ? declaration->evaluate<double>(tags_, stringTable_)
-                : utymap::utils::parseDouble(*rawValue);
+        return declaration.isEval()
+                ? declaration.evaluate<double>(tags_, stringTable_)
+                : utymap::utils::parseDouble(rawValue);
     }
 
 private:
     utymap::index::StringTable& stringTable_;
-    const std::vector<utymap::entities::Tag> tags_;
+    std::vector<utymap::entities::Tag> tags_;
 };
 
 }}

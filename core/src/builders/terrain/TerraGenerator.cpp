@@ -68,7 +68,7 @@ void TerraGenerator::generate(Path& tileRect)
 void TerraGenerator::buildLayers()
 {
     // 1. process layers: regions with shared properties.
-    std::stringstream ss(*style_.getString(LayerPriorityKey));
+    std::stringstream ss(style_.getString(LayerPriorityKey));
     while (ss.good()) {
         std::string name;
         getline(ss, name, ',');
@@ -109,7 +109,7 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
         style.getValue(prefix + EleNoiseFreqKey, quadKeyWidth),
         style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
         style.getValue(prefix + HeightOffsetKey, quadKeyWidth),
-        context_.styleProvider.getGradient(*style.getString(prefix + GradientKey)),
+        context_.styleProvider.getGradient(style.getString(prefix + GradientKey)),
         std::numeric_limits<double>::lowest(), /* no elevation offset */ 
         false, /* don't flip */
         1 /* no new vertices on boundaries */));
@@ -188,7 +188,7 @@ TerraGenerator::Points TerraGenerator::restorePoints(const Path& path) const
 
 void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionContext)
 {
-    std::string meshName = *regionContext.style.getString(regionContext.prefix + MeshNameKey);
+    std::string meshName = regionContext.style.getString(regionContext.prefix + MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
         TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
@@ -207,7 +207,7 @@ void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
                                           TerraExtras::Context& extrasContext,
                                           const RegionContext& regionContext) const
 {
-    std::string meshExtras = *regionContext.style.getString(regionContext.prefix + MeshExtrasKey);
+    std::string meshExtras = regionContext.style.getString(regionContext.prefix + MeshExtrasKey);
     if (meshExtras.empty())
         return;
 

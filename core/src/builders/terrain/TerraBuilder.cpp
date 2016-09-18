@@ -104,7 +104,7 @@ public:
 
         region->points = solution;
         std::string type = region->isLayer
-            ? *style.getString(TerrainLayerKey)
+            ? style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
     }
@@ -114,7 +114,7 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, area.coordinates);
         std::string type = region->isLayer
-            ? *style.getString(TerrainLayerKey)
+            ? style.getString(TerrainLayerKey)
             : "";
         generator_.addRegion(type, region);
     }
@@ -140,7 +140,7 @@ public:
                 region->context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
             std::string type = region->isLayer 
-                ? *style.getString(TerrainLayerKey)
+                ? style.getString(TerrainLayerKey)
                 : "";
             generator_.addRegion(type, region);
         }

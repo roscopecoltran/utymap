@@ -244,12 +244,12 @@ private:
 
     static bool isBuilding(const Style& style)
     {
-        return *style.getString("building") == "true";
+        return style.getString("building") == "true";
     }
 
     static bool isMultipolygon(const Style& style)
     {
-        return *style.getString("multipolygon") == "true";
+        return style.getString("multipolygon") == "true";
     }
 
     void build(const Element& element, const Style& style)
@@ -288,7 +288,7 @@ private:
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
 
-        auto roofBuilder = RoofBuilderFactoryMap.find(*roofType)->second(context_, roofMeshContext);
+        auto roofBuilder = RoofBuilderFactoryMap.find(roofType)->second(context_, roofMeshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
         roofBuilder->setColorNoiseFreq(0);
@@ -313,7 +313,7 @@ private:
         MeshContext facadeMeshContext(meshContext.mesh, meshContext.style, gradient);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
-        auto facadeBuilder = FacadeBuilderFactoryMap.find(*facadeType)->second(context_, facadeMeshContext);
+        auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);
 
         facadeBuilder->setHeight(height);
         facadeBuilder->setMinHeight(elevation);

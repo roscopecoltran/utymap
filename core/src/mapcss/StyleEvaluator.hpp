@@ -44,8 +44,10 @@ struct StyleEvaluator final
         std::list<Operation> rest;
     };
 
+    StyleEvaluator() = delete;
+
     // Parses expression into AST.
-    static std::shared_ptr<Tree> parse(const std::string& expression);
+    static std::unique_ptr<Tree> parse(const std::string& expression);
 
     // Evaluates expression using tags.
     template <typename T>
@@ -148,8 +150,8 @@ private:
         }
     };
 
-    std::shared_ptr<std::string> value_;
-    std::shared_ptr<Tree> tree_;
+    std::string value_;
+    std::unique_ptr<Tree> tree_;
 };
 
 } }

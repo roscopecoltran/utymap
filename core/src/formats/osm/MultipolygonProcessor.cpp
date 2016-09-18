@@ -19,7 +19,7 @@ typedef std::deque<GeoCoordinate> Coords;
 typedef std::vector<int> Ints;
 
 
-struct MultipolygonProcessor::CoordinateSequence
+struct MultipolygonProcessor::CoordinateSequence final
 {
     std::uint64_t id;
     Coords coordinates;
@@ -28,17 +28,6 @@ struct MultipolygonProcessor::CoordinateSequence
         id(id), coordinates(coordinates.begin(), coordinates.end())
     {
     }
-
-    CoordinateSequence(CoordinateSequence&& other)
-    {
-        id = other.id;
-        coordinates = std::move(other.coordinates);
-    }
-
-    CoordinateSequence(const CoordinateSequence &) = delete;
-    CoordinateSequence& operator=(const CoordinateSequence&) = delete;
-    CoordinateSequence& operator=(CoordinateSequence&&) = delete;
-
 
     // Tries to add another sequence onto the start or end of this one.
     // If it succeeds, the other sequence may also be modified and

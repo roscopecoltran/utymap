@@ -65,7 +65,7 @@ private:
         if (!style.has(builderKeyId_))
             return;
 
-        std::stringstream ss(*style.get(builderKeyId_)->value());
+        std::stringstream ss(style.get(builderKeyId_).value());
         while (ss.good()) {
             std::string name;
             getline(ss, name, ',');
