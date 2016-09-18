@@ -83,20 +83,18 @@ private:
         auto factory = builderFactoryMap_.find(name);
         if (factory == builderFactoryMap_.end()) {
             // use external builder by default
-            auto externalBuilder = std::make_shared<ExternalBuilder>(context_);
-            builders_[name] = externalBuilder;
-            return *externalBuilder;
+            builders_.emplace(name, utymap::utils::make_unique<ExternalBuilder>(context_));
+        } else {
+            builders_.emplace(name, factory->second(context_));
         }
 
-        auto builder = factory->second(context_);
-        builders_[name] = builder;
-        return *builder;
+        return *builders_[name];
     }
 
     const BuilderContext context_;
     BuilderFactoryMap& builderFactoryMap_;
     std::uint32_t builderKeyId_;
-    std::unordered_map<std::string, std::shared_ptr<ElementBuilder>> builders_;
+    std::unordered_map<std::string, std::unique_ptr<ElementBuilder>> builders_;
 };
 
 public:

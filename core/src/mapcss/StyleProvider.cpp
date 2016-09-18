@@ -289,6 +289,10 @@ StyleProvider::~StyleProvider()
 {
 }
 
+StyleProvider::StyleProvider(StyleProvider&& other) : pimpl_(std::move(other.pimpl_))
+{
+}
+
 bool StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const
 {
     StyleBuilder builder(element.tags, pimpl_->stringTable, pimpl_->filters, levelOfDetails, true);

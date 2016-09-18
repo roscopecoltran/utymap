@@ -21,10 +21,11 @@ struct ExportElementVisitor : public utymap::entities::ElementVisitor
     using Coordinates = std::vector<utymap::GeoCoordinate>;
 
     ExportElementVisitor(utymap::index::StringTable& stringTable,
-                        utymap::mapcss::StyleProvider& styleProvider,
-                        int levelOfDetail,
-                        OnElementLoaded* elementCallback) :
-    stringTable_(stringTable), styleProvider_(styleProvider), levelOfDetail_(levelOfDetail), elementCallback_(elementCallback)
+                         const utymap::mapcss::StyleProvider& styleProvider,
+                         int levelOfDetail,
+                         OnElementLoaded* elementCallback) :
+        stringTable_(stringTable), styleProvider_(styleProvider), 
+        levelOfDetail_(levelOfDetail), elementCallback_(elementCallback)
     {
     }
 
@@ -92,7 +93,7 @@ private:
         styleStrings_.clear();
     }
     utymap::index::StringTable& stringTable_;
-    utymap::mapcss::StyleProvider& styleProvider_;
+    const utymap::mapcss::StyleProvider& styleProvider_;
     int levelOfDetail_;
     OnElementLoaded* elementCallback_;
     std::vector<std::string> tagStrings_;   // holds temporary tag strings

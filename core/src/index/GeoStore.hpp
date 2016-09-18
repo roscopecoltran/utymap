@@ -26,7 +26,7 @@ public:
 
     // Adds underlying element store for usage.
     void registerStore(const std::string& storeKey, 
-                       const std::shared_ptr<ElementStore>& store);
+                       std::unique_ptr<ElementStore> store);
 
     // Adds element to selected store.
     void add(const std::string& storeKey, 

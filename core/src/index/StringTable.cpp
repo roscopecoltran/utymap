@@ -139,7 +139,7 @@ std::string StringTable::getString(std::uint32_t id) const
     return pimpl_->getString(id);
 }
 
-void StringTable::flush()
+void StringTable::flush() const
 {
     pimpl_->flush();
 }

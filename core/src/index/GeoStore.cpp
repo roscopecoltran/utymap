@@ -62,21 +62,21 @@ public:
     {
     }
 
-    void registerStore(const std::string& storeKey, const std::shared_ptr<ElementStore>& store)
+    void registerStore(const std::string& storeKey, std::unique_ptr<ElementStore> store)
     {
-        storeMap_[storeKey] = store;
+        storeMap_.emplace(storeKey, std::move(store));
     }
 
     void add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)
     {
-        auto elementStore = storeMap_[storeKey];
+        auto& elementStore = storeMap_[storeKey];
         elementStore->store(element, range, styleProvider);
         elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
     {
-        auto elementStore = storeMap_[storeKey];
+        auto& elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, quadKey, styleProvider);
         });
@@ -85,7 +85,7 @@ public:
 
     void add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
     {
-        auto elementStore = storeMap_[storeKey];
+        auto& elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, range, styleProvider);
         });
@@ -94,7 +94,7 @@ public:
 
     void add(const std::string& storeKey, const std::string& path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
     {
-        auto elementStore = storeMap_[storeKey];
+        auto& elementStore = storeMap_[storeKey];
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, bbox, range, styleProvider);
         });
@@ -158,7 +158,7 @@ public:
 
 private:
     StringTable& stringTable_;
-    std::map<std::string, std::shared_ptr<ElementStore>> storeMap_;
+    std::map<std::string, std::unique_ptr<ElementStore>> storeMap_;
 
     static FormatType getFormatTypeFromPath(const std::string& path)
     {
@@ -181,9 +181,9 @@ GeoStore::~GeoStore()
     google::protobuf::ShutdownProtobufLibrary();
 }
 
-void utymap::index::GeoStore::registerStore(const std::string& storeKey, const std::shared_ptr<ElementStore>& store)
+void utymap::index::GeoStore::registerStore(const std::string& storeKey, std::unique_ptr<ElementStore> store)
 {
-    pimpl_->registerStore(storeKey, store);
+    pimpl_->registerStore(storeKey, std::move(store));
 }
 
 void utymap::index::GeoStore::add(const std::string& storeKey, const Element& element, const LodRange& range, const StyleProvider& styleProvider)

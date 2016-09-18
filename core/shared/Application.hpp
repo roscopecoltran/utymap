@@ -5,7 +5,6 @@
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
-#include "builders/ExternalBuilder.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/buildings/BuildingBuilder.hpp"
 #include "builders/misc/BarrierBuilder.hpp"
@@ -19,6 +18,7 @@
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
+#include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
 
 #include "Callbacks.hpp"
@@ -43,8 +43,8 @@ public:
     Application(const char* stringPath, 
                 const char* elePath, 
                 OnError* errorCallback) :
-        stringTable_(stringPath), geoStore_(stringTable_), srtmEleProvider_(elePath),
-        flatEleProvider_(), quadKeyBuilder_(geoStore_, stringTable_)
+        stringTable_(stringPath), geoStore_(stringTable_), flatEleProvider_(),
+        srtmEleProvider_(elePath), quadKeyBuilder_(geoStore_, stringTable_)
     {
         registerDefaultBuilders();
     }
@@ -57,14 +57,12 @@ public:
 
     void registerInMemoryStore(const char* key)
     {
-        geoStore_.registerStore(key,
-            std::make_shared<utymap::index::InMemoryElementStore>(stringTable_));
+        geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::InMemoryElementStore>(stringTable_));
     }
 
     void registerPersistentStore(const char* key, const char* dataPath)
     {
-        geoStore_.registerStore(key,
-            std::make_shared<utymap::index::PersistentElementStore>(dataPath, stringTable_));
+        geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::PersistentElementStore>(dataPath, stringTable_));
     }
 
     // Preload elevation data. Not thread safe.
@@ -81,7 +79,7 @@ public:
                     OnError* errorCallback)
     {
         safeExecute([&]() {
-            geoStore_.add(key, path, quadKey, *getStyleProvider(styleFile).get());
+            geoStore_.add(key, path, quadKey, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
@@ -94,7 +92,7 @@ public:
                     OnError* errorCallback)
     {
         safeExecute([&]() {
-            geoStore_.add(key, path, bbox, range, *getStyleProvider(styleFile).get());
+            geoStore_.add(key, path, bbox, range, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
@@ -106,7 +104,7 @@ public:
                     OnError* errorCallback)
     {
         safeExecute([&]() {
-            geoStore_.add(key, path, range, *getStyleProvider(styleFile).get());
+            geoStore_.add(key, path, range, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
@@ -118,7 +116,7 @@ public:
                     OnError* errorCallback)
     {
         safeExecute([&]() {
-            geoStore_.add(key, element, range, *getStyleProvider(styleFile).get());
+            geoStore_.add(key, element, range, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
@@ -135,9 +133,9 @@ public:
                      OnError* errorCallback)
     {
         safeExecute([&]() {
-            auto styleProvider = getStyleProvider(styleFile);
-            ExportElementVisitor elementVisitor(stringTable_, *styleProvider, quadKey.levelOfDetail, elementCallback);
-            quadKeyBuilder_.build(quadKey, *styleProvider, getElevationProvider(quadKey),
+            auto& styleProvider = getStyleProvider(styleFile);
+            ExportElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
+            quadKeyBuilder_.build(quadKey, styleProvider, getElevationProvider(quadKey),
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
@@ -153,14 +151,14 @@ public:
     }
 
     // Gets id for the string.
-    inline std::uint32_t getStringId(const char* str)
+    std::uint32_t getStringId(const char* str) const
     {
         return stringTable_.getId(str);
     }
 
 private:
 
-    void safeExecute(const std::function<void()>& action, 
+    static void safeExecute(const std::function<void()>& action, 
                      OnError* errorCallback)
     {
         try {
@@ -175,14 +173,14 @@ private:
     {
         return quadKey.levelOfDetail <= SrtmElevationLodStart
             ? flatEleProvider_
-            : (utymap::heightmap::ElevationProvider&) srtmEleProvider_;
+            : static_cast<utymap::heightmap::ElevationProvider&>(srtmEleProvider_);
     }
 
-    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& filePath)
+    const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& filePath)
     {
         auto pair = styleProviders_.find(filePath);
         if (pair != styleProviders_.end())
-            return pair->second;
+            return *pair->second;
 
         std::ifstream styleFile(filePath);
         if (!styleFile.good())
@@ -192,36 +190,38 @@ private:
         std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
         utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
-        styleProviders_[filePath] = std::make_shared<utymap::mapcss::StyleProvider>(stylesheet, stringTable_);
-        return styleProviders_[filePath];
+        
+        styleProviders_.emplace(filePath, utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(stylesheet, stringTable_));
+        return *styleProviders_[filePath];
     }
 
     void registerDefaultBuilders()
     {
         quadKeyBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
-            return std::make_shared<utymap::builders::TerraBuilder>(context);
+            return utymap::utils::make_unique<utymap::builders::TerraBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
-            return std::make_shared<utymap::builders::BuildingBuilder>(context);
+            return utymap::utils::make_unique<utymap::builders::BuildingBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("tree", [&](const utymap::builders::BuilderContext& context) {
-            return std::make_shared<utymap::builders::TreeBuilder>(context);
+            return utymap::utils::make_unique<utymap::builders::TreeBuilder>(context);
         });
 
         quadKeyBuilder_.registerElementBuilder("barrier", [&](const utymap::builders::BuilderContext& context) {
-            return std::make_shared<utymap::builders::BarrierBuilder>(context);
+            return utymap::utils::make_unique<utymap::builders::BarrierBuilder>(context);
         });
     }
 
     utymap::index::StringTable stringTable_;
     utymap::index::GeoStore geoStore_;
+
     utymap::heightmap::FlatElevationProvider flatEleProvider_;
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
 
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
-    std::unordered_map<std::string, std::shared_ptr<utymap::mapcss::StyleProvider>> styleProviders_;
+    std::unordered_map<std::string, std::unique_ptr<const utymap::mapcss::StyleProvider>> styleProviders_;
 };
 
 #endif // APPLICATION_HPP_DEFINED

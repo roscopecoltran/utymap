@@ -30,7 +30,7 @@ public:
     std::string getString(std::uint32_t id) const;
 
     // Flushes changes to disk.
-    void flush();
+    void flush() const;
 
 private:
     class StringTableImpl;

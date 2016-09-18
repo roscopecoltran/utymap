@@ -21,6 +21,11 @@ public:
                   utymap::index::StringTable&);
 
     ~StyleProvider();
+    StyleProvider(StyleProvider&&);
+
+    StyleProvider(const StyleProvider&) = delete;
+    StyleProvider&operator=(const StyleProvider&) = delete;
+    StyleProvider&operator=(StyleProvider&&) = delete;
 
     // Checks whether style is defined for the element.
     bool hasStyle(const utymap::entities::Element&, int levelOfDetails) const;
