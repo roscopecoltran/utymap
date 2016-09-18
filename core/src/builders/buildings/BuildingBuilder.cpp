@@ -28,7 +28,6 @@ using namespace utymap::index;
 using namespace utymap::utils;
 
 namespace {
-
     const std::string RoofTypeKey = "roof-type";
     const std::string RoofHeightKey = "roof-height";
     const std::string RoofColorKey = "roof-color";
@@ -49,60 +48,60 @@ namespace {
         void build(utymap::meshing::Polygon&) override {}
     };
 
-    typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
+    typedef std::function<std::unique_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
     std::unordered_map<std::string, RoofBuilderFactory> RoofBuilderFactoryMap =
     {
         {
             "none",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<EmptyRoofBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<EmptyRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<FlatRoofBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<FlatRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "dome",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<DomeRoofBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<DomeRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "pyramidal",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<PyramidalRoofBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<PyramidalRoofBuilder>(builderContext, meshContext);
             }
         },
         {
             "mansard",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<MansardRoofBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<MansardRoofBuilder>(builderContext, meshContext);
             }
         }
     };
 
-    typedef std::function<std::shared_ptr<FacadeBuilder>(const BuilderContext&, MeshContext&)> FacadeBuilderFactory;
+    typedef std::function<std::unique_ptr<FacadeBuilder>(const BuilderContext&, MeshContext&)> FacadeBuilderFactory;
     std::unordered_map<std::string, FacadeBuilderFactory> FacadeBuilderFactoryMap =
     {
         {
             "flat",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<FlatFacadeBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<FlatFacadeBuilder>(builderContext, meshContext);
             }
         },
         {
             "cylinder",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<CylinderFacadeBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<CylinderFacadeBuilder>(builderContext, meshContext);
             }
         },
         {
             "sphere",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
-                return std::make_shared<SphereFacadeBuilder>(builderContext, meshContext);
+                return utymap::utils::make_unique<SphereFacadeBuilder>(builderContext, meshContext);
             }
         }
     };
@@ -124,7 +123,7 @@ namespace {
     // as one game object. If area/relation is already part of relation then we
     // should avoid processing it as independent element. We cannot just delete 
     // element from store as it might be a part of other relation.
-    inline bool shouldBeIgnored(const Element& element)
+    bool shouldBeIgnored(const Element& element)
     {
         return hasTag(std::numeric_limits<std::uint32_t>::max(),
                       std::numeric_limits<std::uint32_t>::max(),
@@ -136,7 +135,7 @@ namespace {
     {
     public:
 
-        MultiPolygonVisitor(std::shared_ptr<Polygon> polygon)
+        MultiPolygonVisitor(Polygon& polygon)
             : polygon_(polygon) {}
 
         void visitNode(const utymap::entities::Node& node) override { fail(node); }
@@ -148,9 +147,9 @@ namespace {
         void visitArea(const utymap::entities::Area& area) override
         {
             if (!utymap::utils::isClockwise(area.coordinates))
-                polygon_->addContour(toPoints(area.coordinates));
+                polygon_.addContour(toPoints(area.coordinates));
             else
-                polygon_->addHole(toPoints(area.coordinates));
+                polygon_.addHole(toPoints(area.coordinates));
         }
 
     private:
@@ -158,7 +157,7 @@ namespace {
         {
             throw std::domain_error("Unexpected element in multipolygon: " + utymap::utils::toString(element.id));
         }
-        std::shared_ptr<Polygon> polygon_;
+        Polygon& polygon_;
     };
 }
 
@@ -201,7 +200,7 @@ public:
         Style style = context_.styleProvider.forElement(relation, context_.quadKey.levelOfDetail);
 
         if (isMultipolygon(style) && isBuilding(style)) {
-            MultiPolygonVisitor visitor(polygon_);
+            MultiPolygonVisitor visitor(*polygon_);
 
             for (const auto& element : relation.elements)
                 element->accept(visitor);
@@ -225,10 +224,10 @@ private:
     bool ensureContext(const Element& element)
     {
         if (polygon_ == nullptr)
-            polygon_ = std::make_shared<Polygon>(1, 0);
+            polygon_ = utymap::utils::make_unique<Polygon>(1, 0);
 
         if (mesh_ == nullptr) {
-            mesh_ = std::make_shared<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
+            mesh_ = utymap::utils::make_unique<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
             return true;
         }
 
@@ -322,8 +321,8 @@ private:
         facadeBuilder->build(*polygon_);
     }
 
-    std::shared_ptr<Polygon> polygon_;
-    std::shared_ptr<Mesh> mesh_;
+    std::unique_ptr<Polygon> polygon_;
+    std::unique_ptr<Mesh> mesh_;
 };
 
 BuildingBuilder::BuildingBuilder(const BuilderContext& context)
