@@ -106,7 +106,7 @@ public:
         std::string type = region->isLayer
             ? style.getString(TerrainLayerKey)
             : "";
-        generator_.addRegion(type, region);
+        generator_.addRegion(type, std::move(region));
     }
 
     void visitArea(const utymap::entities::Area& area) override
@@ -116,12 +116,12 @@ public:
         std::string type = region->isLayer
             ? style.getString(TerrainLayerKey)
             : "";
-        generator_.addRegion(type, region);
+        generator_.addRegion(type, std::move(region));
     }
 
     void visitRelation(const utymap::entities::Relation& rel) override
     {
-        auto region = std::make_shared<TerraGenerator::Region>();
+        auto region = utymap::utils::make_unique<TerraGenerator::Region>();
         RelationVisitor visitor(*this, rel, *region);
 
         for (const auto& element : rel.elements) {
@@ -137,12 +137,12 @@ public:
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
             region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
             if (!region->isLayer)
-                region->context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+                region->context = utymap::utils::make_unique<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
             std::string type = region->isLayer 
                 ? style.getString(TerrainLayerKey)
                 : "";
-            generator_.addRegion(type, region);
+            generator_.addRegion(type, std::move(region));
         }
     }
 
@@ -155,9 +155,9 @@ public:
 
 private:
 
-    std::shared_ptr<TerraGenerator::Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates)
+    std::unique_ptr<TerraGenerator::Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates) const
     {
-        auto region = std::make_shared<TerraGenerator::Region>();
+        auto region = utymap::utils::make_unique<TerraGenerator::Region>();
         Path path;
         path.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates)
@@ -167,11 +167,11 @@ private:
 
         region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
         if (!region->isLayer)
-            region->context = std::make_shared<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+            region->context = utymap::utils::make_unique<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
 
         region->area = std::abs(utymap::utils::getArea(coordinates));
 
-        return region;
+        return std::move(region);
     }
 
     const Style style_;

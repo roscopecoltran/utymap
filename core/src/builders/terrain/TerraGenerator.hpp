@@ -38,14 +38,24 @@ public:
     // Represents terrain region.
     struct Region
     {
-        Region() 
-            : isLayer(false), area(0), context(nullptr), points() 
+        Region() : 
+            isLayer(false), area(0), context(nullptr), points() 
         {
         }
 
+        Region(Region&& other) :
+            isLayer(other.isLayer), area(other.area), 
+            context(std::move(other.context)), points(std::move(other.points))
+        {
+        };
+
+        Region(const Region&) = delete;
+        Region&operator=(const Region&) = delete;
+        Region&operator=(Region&&) = delete;
+
         bool isLayer;
         double area;
-        std::shared_ptr<RegionContext> context; // optional: might be empty if polygon is layer
+        std::unique_ptr<RegionContext> context; // optional: might be empty if polygon is layer
         ClipperLib::Paths points;
     };
 
@@ -54,7 +64,7 @@ public:
                    ClipperLib::ClipperEx& foregroundClipper_);
 
     // Adds region
-    void addRegion(const std::string& type, std::shared_ptr<Region>& region);
+    void addRegion(const std::string& type, std::unique_ptr<Region> region);
 
     // Generates mesh and calls callback from context.
     void generate(ClipperLib::Path& tileRect);
@@ -64,7 +74,7 @@ public:
                                       const std::string& prefix) const;
 
 private:
-    typedef std::shared_ptr<Region> RegionPtr;
+    typedef std::unique_ptr<Region> RegionPtr;
     typedef std::vector<utymap::meshing::Vector2> Points;
 
 

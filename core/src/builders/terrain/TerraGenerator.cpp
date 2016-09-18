@@ -46,9 +46,9 @@ TerraGenerator::TerraGenerator(const BuilderContext& context, const Style& style
 {
 }
 
-void TerraGenerator::addRegion(const std::string& type, std::shared_ptr<Region>& region)
+void TerraGenerator::addRegion(const std::string& type, std::unique_ptr<Region> region)
 {
-    layers_[type].push(region);
+    layers_[type].push(std::move(region));
 }
 
 void TerraGenerator::generate(Path& tileRect)
