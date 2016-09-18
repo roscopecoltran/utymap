@@ -17,7 +17,7 @@ struct MultipolygonProcessor final
 private:
     // Helper class which provides the way to handle coordinate sequences.
     struct CoordinateSequence;
-    typedef std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> CoordinateSequences;
+    typedef std::vector<MultipolygonProcessor::CoordinateSequence> CoordinateSequences;
     typedef utymap::entities::Tag ElementTag;
     typedef std::vector<utymap::entities::Tag> ElementTags;
 
@@ -34,17 +34,17 @@ private:
 
     void simpleCase(const CoordinateSequences& sequences,
                     const std::vector<int>& outerIndecies,
-                    const std::vector<int>& innerIndecies);
+                    const std::vector<int>& innerIndecies) const;
 
-    void complexCase(CoordinateSequences& sequences);
+    void complexCase(CoordinateSequences& sequences) const;
 
-    CoordinateSequences createRings(CoordinateSequences& sequences);
+    CoordinateSequences createRings(CoordinateSequences& sequences) const;
 
-    void fillRelation(CoordinateSequences& rings);
+    void fillRelation(CoordinateSequences& rings) const;
 
-    void insertCoordinates(const std::deque<GeoCoordinate>& source, 
-                           std::vector<GeoCoordinate>& destination, 
-                           bool isOuter) const;
+    static void insertCoordinates(const std::deque<GeoCoordinate>& source,
+                                  std::vector<GeoCoordinate>& destination, 
+                                  bool isOuter);
 
     void mergeTags(const ElementTags& tags);
 
