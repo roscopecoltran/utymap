@@ -17,7 +17,7 @@
 namespace utymap { namespace builders {
 
 // Responsible for building single quadkey.
-class QuadKeyBuilder
+class QuadKeyBuilder final
 {
 public:
 

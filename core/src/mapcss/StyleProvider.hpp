@@ -13,11 +13,12 @@
 namespace utymap { namespace mapcss {
 
 // This class responsible for filtering elements.
-class StyleProvider
+class StyleProvider final
 {
 public:
 
-    StyleProvider(const utymap::mapcss::StyleSheet&, utymap::index::StringTable&);
+    StyleProvider(const utymap::mapcss::StyleSheet&, 
+                  utymap::index::StringTable&);
 
     ~StyleProvider();
 

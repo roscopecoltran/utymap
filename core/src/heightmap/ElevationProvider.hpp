@@ -19,7 +19,7 @@ public:
     // Gets elevation for given geocoordinate.
     virtual double getElevation(double latitude, double longitude) const = 0;
 
-    virtual ~ElevationProvider() {}
+    virtual ~ElevationProvider() = default;
 };
 
 }}

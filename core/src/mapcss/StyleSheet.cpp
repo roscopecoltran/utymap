@@ -13,7 +13,10 @@ std::ostream& utymap::mapcss::operator<<(std::ostream &stream, const Condition &
 
 std::ostream& utymap::mapcss::operator<<(std::ostream &stream, const Zoom &z)
 {
-    return stream << "|z" << utymap::utils::toString((int)z.start) << "-" << utymap::utils::toString((int)z.end);
+    return stream 
+        << "|z" 
+        << utymap::utils::toString(static_cast<int>(z.start)) 
+        << "-" << utymap::utils::toString(static_cast<int>(z.end));
 }
 
 std::ostream& utymap::mapcss::operator<<(std::ostream &stream, const Selector &s)

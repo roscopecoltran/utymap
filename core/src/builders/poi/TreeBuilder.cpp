@@ -57,7 +57,7 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
         int treeCount = static_cast<int>(distanceInMeters / treeStepInMeters);
 
         for (int j = 0; j < treeCount; ++j) {
-            GeoCoordinate position = GeoUtils::newPoint(p1, p2, (double) j / treeCount);
+            GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / treeCount);
             
             double elevation = context_.eleProvider.getElevation(position);
             utymap::utils::copyMesh(Vector3(position.longitude, elevation, position.latitude), treeMesh, newMesh);

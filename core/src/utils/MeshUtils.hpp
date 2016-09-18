@@ -6,7 +6,7 @@
 namespace utymap { namespace utils {
 
 // Copies mesh into existing one adjusting position.
-inline void copyMesh(const utymap::meshing::Vector3 position, const utymap::meshing::Mesh& source, utymap::meshing::Mesh& destination)
+inline void copyMesh(const utymap::meshing::Vector3& position, const utymap::meshing::Mesh& source, utymap::meshing::Mesh& destination)
 {
     int startIndex = static_cast<int>(destination.vertices.size() / 3);
 

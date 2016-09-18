@@ -39,7 +39,7 @@ public:
 
 private:
 
-    void parseBounds(Visitor& visitor, ptree::value_type const& node)
+    static void parseBounds(Visitor& visitor, ptree::value_type const& node)
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
@@ -52,7 +52,7 @@ private:
         visitor.visitBounds(BoundingBox(minPoint, maxPoint));
     }
 
-    void parseTag(ptree::value_type const& node, Tags& tags)
+    static void parseTag(ptree::value_type const& node, Tags& tags)
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
@@ -62,7 +62,7 @@ private:
         tags.push_back(tag);
     }
 
-    void parseNode(Visitor& visitor, ptree::value_type const& node)
+    static void parseNode(Visitor& visitor, ptree::value_type const& node)
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
 
@@ -82,7 +82,7 @@ private:
         visitor.visitNode(id, coordinate, tags);
     }
 
-    void parseWays(Visitor& visitor, ptree::value_type const& node)
+    static void parseWays(Visitor& visitor, ptree::value_type const& node)
     {
         uint64_t id = node.second.get_child("<xmlattr>")
             .get_child("id")
@@ -108,7 +108,7 @@ private:
         visitor.visitWay(id, nodeIds, tags);
     }
 
-    void parseRelations(Visitor& visitor, ptree::value_type const& node)
+    static void parseRelations(Visitor& visitor, ptree::value_type const& node)
     {
         uint64_t id = node.second.get_child("<xmlattr>")
             .get_child("id")
@@ -136,7 +136,7 @@ private:
         visitor.visitRelation(id, members, tags);
     }
 
-    inline std::string getType(const ptree& attributes)
+    static std::string getType(const ptree& attributes)
     {
         auto type = attributes.get_child("type").get_value<std::string>();
         if (type == "node")

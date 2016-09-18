@@ -10,8 +10,6 @@
 #include "utils/GeoUtils.hpp"
 
 #include <functional>
-#include <string>
-#include <memory>
 
 namespace utymap { namespace builders {
 
@@ -46,9 +44,9 @@ struct BuilderContext
         styleProvider(styleProvider),
         stringTable(stringTable),
         eleProvider(eleProvider),
-        meshBuilder(eleProvider),
         meshCallback(meshCallback),
-        elementCallback(elementCallback)
+        elementCallback(elementCallback),
+        meshBuilder(eleProvider)
     {
     }
 };

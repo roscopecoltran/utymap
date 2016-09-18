@@ -16,7 +16,6 @@
 #include "utils/ElementUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
-#include <exception>
 #include <unordered_map>
 
 using namespace utymap;
@@ -47,7 +46,7 @@ namespace {
     public:
         EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc)
             : RoofBuilder(bc, mc) { }
-        void build(utymap::meshing::Polygon&) {}
+        void build(utymap::meshing::Polygon&) override {}
     };
 
     typedef std::function<std::shared_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;
@@ -155,7 +154,7 @@ namespace {
         }
 
     private:
-        inline void fail(const utymap::entities::Element& element)
+        static void fail(const utymap::entities::Element& element)
         {
             throw std::domain_error("Unexpected element in multipolygon: " + utymap::utils::toString(element.id));
         }
@@ -173,11 +172,11 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node&) { }
+    void visitNode(const utymap::entities::Node&) override { }
 
-    void visitWay(const utymap::entities::Way&) { }
+    void visitWay(const utymap::entities::Way&) override { }
 
-    void visitArea(const utymap::entities::Area& area)
+    void visitArea(const utymap::entities::Area& area) override
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
 
@@ -192,7 +191,7 @@ public:
         completeIfNecessary(justCreated);
     }
 
-    void visitRelation(const utymap::entities::Relation& relation)
+    void visitRelation(const utymap::entities::Relation& relation) override
     {
         if (relation.elements.empty())
             return;
@@ -217,13 +216,13 @@ public:
         completeIfNecessary(justCreated);
     }
 
-    void complete()
+    void complete() override
     {
     }
 
 private:
 
-    inline bool ensureContext(const Element& element)
+    bool ensureContext(const Element& element)
     {
         if (polygon_ == nullptr)
             polygon_ = std::make_shared<Polygon>(1, 0);
@@ -236,7 +235,7 @@ private:
         return false;
     }
 
-    inline void completeIfNecessary(bool justCreated)
+    void completeIfNecessary(bool justCreated)
     {
         if (justCreated) {
             context_.meshCallback(*mesh_);
@@ -244,12 +243,12 @@ private:
         }
     }
 
-    inline bool isBuilding(const Style& style) const
+    static bool isBuilding(const Style& style)
     {
         return *style.getString("building") == "true";
     }
 
-    inline bool isMultipolygon(const Style& style) const
+    static bool isMultipolygon(const Style& style)
     {
         return *style.getString("multipolygon") == "true";
     }
@@ -282,7 +281,7 @@ private:
         polygon_.reset();
     }
 
-    void attachRoof(MeshContext& meshContext, double elevation, double height)
+    void attachRoof(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
         MeshContext roofMeshContext(meshContext.mesh, meshContext.style, gradient);
@@ -297,7 +296,7 @@ private:
         roofBuilder->build(*polygon_);
     }
 
-    void attachFloors(MeshContext& meshContext, double elevation, double height)
+    void attachFloors(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
         MeshContext floorMeshContext(meshContext.mesh, meshContext.style, gradient);
@@ -309,7 +308,7 @@ private:
         floorBuilder.build(*polygon_);
     }
 
-    void attachFacade(MeshContext& meshContext, double elevation, double height)
+    void attachFacade(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, FacadeColorKey);
         MeshContext facadeMeshContext(meshContext.mesh, meshContext.style, gradient);
@@ -332,11 +331,7 @@ BuildingBuilder::BuildingBuilder(const BuilderContext& context)
 {
 }
 
-BuildingBuilder::~BuildingBuilder() { }
-
-void BuildingBuilder::visitNode(const Node&) { }
-
-void BuildingBuilder::visitWay(const Way&) { }
+BuildingBuilder::~BuildingBuilder() {}
 
 void BuildingBuilder::visitArea(const Area& area)
 {

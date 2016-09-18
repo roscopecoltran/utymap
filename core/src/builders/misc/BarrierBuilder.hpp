@@ -8,7 +8,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way to build barrier.
-class BarrierBuilder : public ElementBuilder
+class BarrierBuilder final : public ElementBuilder
 {
 
 public:
@@ -17,20 +17,20 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node& node) { }
+    void visitNode(const utymap::entities::Node&) override { }
 
-    void visitArea(const utymap::entities::Area& area) { }
+    void visitArea(const utymap::entities::Area&) override { }
 
-    void visitWay(const utymap::entities::Way& way);
+    void visitWay(const utymap::entities::Way& way) override;
 
-    void visitRelation(const utymap::entities::Relation& relation) { }
+    void visitRelation(const utymap::entities::Relation&) override { }
 
-    void complete() { }
+    void complete() override { }
    
 private:
     void buildFromPolygon(const utymap::entities::Way& way, 
                           const utymap::mapcss::Style& style,
-                          utymap::meshing::Polygon& polygon);
+                          utymap::meshing::Polygon& polygon) const;
 };
 
 }}

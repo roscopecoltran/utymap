@@ -1,7 +1,4 @@
 #include "builders/terrain/TerraGenerator.hpp"
-#include "utils/GeoUtils.hpp"
-
-#include <iterator>
 
 #include <functional>
 #include <unordered_map>
@@ -16,20 +13,20 @@ using namespace std::placeholders;
 
 namespace {
     const double AreaTolerance = 1000; // Tolerance for meshing
-    const static double Scale = 1E7;
+    const double Scale = 1E7;
 
-    const static std::string TerrainMeshName = "terrain";
-    const static std::string ColorNoiseFreqKey = "color-noise-freq";
-    const static std::string EleNoiseFreqKey = "ele-noise-freq";
-    const static std::string GradientKey = "color";
-    const static std::string MaxAreaKey = "max-area";
-    const static std::string HeightOffsetKey = "height-offset";
-    const static std::string LayerPriorityKey = "layer-priority";
-    const static std::string MeshNameKey = "mesh-name";
-    const static std::string MeshExtrasKey = "mesh-extras";
-    const static std::string GridCellSize = "grid-cell-size";
+    const std::string TerrainMeshName = "terrain";
+    const std::string ColorNoiseFreqKey = "color-noise-freq";
+    const std::string EleNoiseFreqKey = "ele-noise-freq";
+    const std::string GradientKey = "color";
+    const std::string MaxAreaKey = "max-area";
+    const std::string HeightOffsetKey = "height-offset";
+    const std::string LayerPriorityKey = "layer-priority";
+    const std::string MeshNameKey = "mesh-name";
+    const std::string MeshExtrasKey = "mesh-extras";
+    const std::string GridCellSize = "grid-cell-size";
 
-    const static std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs = 
+    const std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs = 
     {
         { "forest", std::bind(&TerraExtras::addForest, _1, _2) },
         { "water", std::bind(&TerraExtras::addWater, _1, _2) },
@@ -37,11 +34,15 @@ namespace {
 };
 
 TerraGenerator::TerraGenerator(const BuilderContext& context, const Style& style, ClipperEx& foregroundClipper) :
-context_(context), mesh_(TerrainMeshName), style_(style), foregroundClipper_(foregroundClipper), backGroundClipper_(),
-        rect_(context.boundingBox.minPoint.longitude, 
-              context.boundingBox.minPoint.latitude, 
-              context.boundingBox.maxPoint.longitude, 
-              context.boundingBox.maxPoint.latitude)
+    context_(context),
+    style_(style),
+    foregroundClipper_(foregroundClipper),
+    backGroundClipper_(),
+    mesh_(TerrainMeshName),
+    rect_(context.boundingBox.minPoint.longitude,
+            context.boundingBox.minPoint.latitude,
+            context.boundingBox.maxPoint.longitude,
+            context.boundingBox.maxPoint.latitude)
 {
 }
 
@@ -99,7 +100,7 @@ void TerraGenerator::buildBackground(Path& tileRect)
         populateMesh(background, createRegionContext(style_, ""));
 }
 
-TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& style, const std::string& prefix)
+TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& style, const std::string& prefix) const
 {
     double quadKeyWidth = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
 
@@ -174,7 +175,7 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
 }
 
 // restores mesh points from clipper points and injects new ones according to grid.
-TerraGenerator::Points TerraGenerator::restorePoints(const Path& path)
+TerraGenerator::Points TerraGenerator::restorePoints(const Path& path) const
 {
     auto lastItemIndex = path.size() - 1;
     Points points;
@@ -202,9 +203,9 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     }
 }
 
-void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh &mesh,
+void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
                                           TerraExtras::Context& extrasContext,
-                                          const RegionContext& regionContext)
+                                          const RegionContext& regionContext) const
 {
     std::string meshExtras = *regionContext.style.getString(regionContext.prefix + MeshExtrasKey);
     if (meshExtras.empty())

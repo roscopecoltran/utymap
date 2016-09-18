@@ -11,12 +11,11 @@
 #include <string>
 #include <regex>
 #include <memory>
-#include <unordered_map>
 
 namespace utymap { namespace utils {
 
 // Provides the way to work with color gradient and color data.
-class GradientUtils
+class GradientUtils final
 {
 public:
 
@@ -35,8 +34,8 @@ public:
                                                                  const std::string& key);
 
     // Gets color for specific coordinate using coherent noise function
-    static inline utymap::mapcss::Color getColor(const utymap::mapcss::ColorGradient& gradient,
-                                                 double x, double y, double noise)
+    static utymap::mapcss::Color getColor(const utymap::mapcss::ColorGradient& gradient,
+                                          double x, double y, double noise)
     {
         double colorTime = (NoiseUtils::perlin2D(x, y, noise) + 1) / 2;
         return gradient.evaluate(colorTime);

@@ -4,12 +4,11 @@
 #include "utils/GeoUtils.hpp"
 
 #include <stdexcept>
-#include <string>
 
 namespace utymap {
 
 // Represents level of details range.
-struct LodRange
+struct LodRange final
 {
     int start;
     int end;

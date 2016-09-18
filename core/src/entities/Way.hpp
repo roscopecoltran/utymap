@@ -10,7 +10,7 @@
 namespace utymap { namespace entities {
 
 // Represents open polyline on map.
-struct Way : public Element
+struct Way final : public Element
 {
     // Returns way's coordinates on map.
     std::vector<GeoCoordinate> coordinates;

@@ -1,7 +1,6 @@
 #ifndef FORMATS_OSM_BUILDINGPROCESSOR_HPP_DEFINED
 #define FORMATS_OSM_BUILDINGPROCESSOR_HPP_DEFINED
 
-#include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
 #include "formats/osm/OsmDataContext.hpp"

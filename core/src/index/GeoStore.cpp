@@ -7,7 +7,6 @@
 #include "formats/osm/OsmDataVisitor.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "index/PersistentElementStore.hpp"
 #include "utils/CoreUtils.hpp"
 
 #include <set>
@@ -40,7 +39,7 @@ class GeoStore::GeoStoreImpl
 
     private:
 
-        inline void visitIfNecessary(const Element& element)
+        void visitIfNecessary(const Element& element)
         {
             if (element.id == 0 || ids_.find(element.id) == ids_.end() ||
                     styleProvider_.hasStyle(element, quadKey_.levelOfDetail)) {
@@ -161,7 +160,7 @@ private:
     StringTable& stringTable_;
     std::map<std::string, std::shared_ptr<ElementStore>> storeMap_;
 
-    FormatType getFormatTypeFromPath(const std::string& path)
+    static FormatType getFormatTypeFromPath(const std::string& path)
     {
         if (utymap::utils::endsWith(path, "pbf"))
             return FormatType::Pbf;

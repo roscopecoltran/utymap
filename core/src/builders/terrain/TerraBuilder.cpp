@@ -1,5 +1,4 @@
 #include "BoundingBox.hpp"
-#include "Exceptions.hpp"
 #include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
@@ -12,9 +11,6 @@
 #include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
 #include "utils/GeometryUtils.hpp"
-#include "utils/NoiseUtils.hpp"
-
-#include <map>
 
 using namespace ClipperLib;
 using namespace utymap::builders;
@@ -26,14 +22,14 @@ using namespace utymap::meshing;
 using namespace utymap::utils;
 
 namespace {
-    const static double Scale = 1E7;
-    const static std::string TerrainLayerKey = "terrain-layer";
-    const static std::string WidthKey = "width";
+    const double Scale = 1E7;
+    const std::string TerrainLayerKey = "terrain-layer";
+    const std::string WidthKey = "width";
 
     // Converts coordinate to clipper's IntPoint.
-    inline IntPoint toIntPoint(double x, double y)
+    IntPoint toIntPoint(double x, double y)
     {
-        return IntPoint((cInt)(x * Scale), (cInt)(y * Scale));
+        return IntPoint(static_cast<cInt>(x * Scale), static_cast<cInt>(y * Scale));
     }
 
     // Visits relation and fills region.
@@ -44,7 +40,7 @@ namespace {
         TerraGenerator::Region& region;
 
         RelationVisitor(ElementVisitor& b, const Relation& r, TerraGenerator::Region& reg) :
-                builder(b), relation(r), region(reg) {}
+                relation(r), builder(b), region(reg) {}
 
         void visitNode(const utymap::entities::Node& n) override { n.accept(builder); }
 

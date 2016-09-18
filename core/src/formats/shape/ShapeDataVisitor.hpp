@@ -1,7 +1,6 @@
 #ifndef INDEX_SHAPEDATAVISITOR_HPP_DEFINED
 #define INDEX_SHAPEDATAVISITOR_HPP_DEFINED
 
-#include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
@@ -19,7 +18,7 @@
 
 namespace utymap { namespace formats {
 
-struct ShapeDataVisitor
+struct ShapeDataVisitor final
 {
     int nodes;
     int ways;
@@ -27,12 +26,12 @@ struct ShapeDataVisitor
     int relations;
 
     ShapeDataVisitor(utymap::index::StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
-        stringTable_(stringTable),
-        functor_(functor),
         nodes(0),
         ways(0),
         areas(0),
-        relations(0)
+        relations(0),
+        stringTable_(stringTable),
+        functor_(functor)
     {
     }
 

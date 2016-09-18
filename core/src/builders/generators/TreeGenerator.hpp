@@ -6,8 +6,6 @@
 #include "builders/generators/IcoSphereGenerator.hpp"
 #include "meshing/MeshTypes.hpp"
 
-#include <cmath>
-
 namespace utymap { namespace builders {
 
 // Generates tree.

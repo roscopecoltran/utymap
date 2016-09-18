@@ -11,7 +11,7 @@
 
 namespace utymap { namespace utils {
 
-class GeoUtils
+class GeoUtils final
 {
 public:
     static const int MinLevelOfDetails = 1;
@@ -42,20 +42,18 @@ public:
     {
         std::string code;
         code.reserve(static_cast<std::size_t>(quadKey.levelOfDetail));
-        for (int i = quadKey.levelOfDetail; i > 0; --i)
-        {
+        for (int i = quadKey.levelOfDetail; i > 0; --i) {
             char digit = '0';
             int mask = 1 << (i - 1);
             if ((quadKey.tileX & mask) != 0)
                 digit++;
-            if ((quadKey.tileY & mask) != 0)
-            {
+            if ((quadKey.tileY & mask) != 0) {
                 digit++;
                 digit++;
             }
             code += digit;
         }
-        return std::move(code);
+        return code;
     }
 
     // Visits all tiles which are intersecting with given bounding box at given level of details
@@ -129,30 +127,29 @@ public:
 
 private:
 
-    inline static int lonToTileX(double lon, int levelOfDetail)
+    static int lonToTileX(double lon, int levelOfDetail)
     {
-        return (int)(std::floor((lon + 180.0) / 360.0 * pow(2.0, levelOfDetail)));
+        return static_cast<int>(std::floor((lon + 180.0) / 360.0 * pow(2.0, levelOfDetail)));
     }
 
-    inline static int latToTileY(double lat, int levelOfDetail)
+    static int latToTileY(double lat, int levelOfDetail)
     {
-        return (int)(std::floor((1.0 - log(tan(lat * pi / 180.0) + 1.0 / cos(lat * pi / 180.0)) / pi) /
-            2.0 * pow(2.0, levelOfDetail)));
+        return static_cast<int>(std::floor((1.0 - log(tan(lat * pi / 180.0) + 1.0 / cos(lat * pi / 180.0)) / pi) / 2.0 * pow(2.0, levelOfDetail)));
     }
 
-    inline static double tileXToLon(int x, int levelOfDetail)
+    static double tileXToLon(int x, int levelOfDetail)
     {
         return x / pow(2.0, levelOfDetail) * 360.0 - 180;
     }
 
-    inline static double tileYToLat(int y, int levelOfDetail)
+    static double tileYToLat(int y, int levelOfDetail)
     {
         double n = pi - 2.0 * pi * y / pow(2.0, levelOfDetail);
         return 180.0 / pi * atan(0.5 * (exp(n) - exp(-n)));
     }
 
     /// Earth radius at a given latitude, according to the WGS-84 ellipsoid [m].
-    inline static double wgs84EarthRadius(double lat)
+    static double wgs84EarthRadius(double lat)
     {
         // Semi-axes of WGS-84 geoidal reference
         const double WGS84_a = 6378137.0; // Major semiaxis [m]

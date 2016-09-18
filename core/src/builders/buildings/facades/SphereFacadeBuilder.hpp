@@ -13,12 +13,12 @@ class SphereFacadeBuilder : public FacadeBuilder
 {
 public:
     SphereFacadeBuilder(const utymap::builders::BuilderContext& builderContext,
-                        utymap::builders::MeshContext& meshContext)
-            : FacadeBuilder(builderContext, meshContext)
+                        utymap::builders::MeshContext& meshContext) : 
+        FacadeBuilder(builderContext, meshContext)
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         utymap::meshing::Vector2 center2d;
         double radius;

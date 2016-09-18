@@ -189,7 +189,7 @@ namespace
         { "grey", Color(190, 190, 190, 255) },
     };
 
-    inline char hexToInt(char hexChar)
+    char hexToInt(char hexChar)
     {
         switch (hexChar)
         {
@@ -221,8 +221,9 @@ namespace
         
         case 'F':
         case 'f': return 15;
+        default:
+            throw std::invalid_argument(std::string("Unknown hex:") + hexChar);
         }
-        throw std::invalid_argument(std::string("Unknown hex:") + hexChar);
     }
 
     inline Color fromName(const std::string& colorStr)
@@ -305,5 +306,3 @@ const ColorGradient& GradientUtils::evaluateGradient(const StyleProvider& styleP
     auto gradientStr = style.getString(key);
     return styleProvider.getGradient(*gradientStr);
 }
-
-

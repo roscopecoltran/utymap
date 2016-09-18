@@ -1,7 +1,6 @@
 #ifndef BUILDERS_BUILDINGS_FACADES_PYRAMIDALROOFBUILDER_HPP_DEFINED
 #define BUILDERS_BUILDINGS_FACADES_PYRAMIDALROOFBUILDER_HPP_DEFINED
 
-#include "GeoCoordinate.hpp"
 #include "builders/buildings/roofs/RoofBuilder.hpp"
 #include "utils/GeometryUtils.hpp"
 
@@ -10,7 +9,7 @@
 namespace utymap { namespace builders {
 
 // Builds flat roof in low poly.
-class PyramidalRoofBuilder : public RoofBuilder
+class PyramidalRoofBuilder final : public RoofBuilder
 {
 public:
     PyramidalRoofBuilder(const utymap::builders::BuilderContext& builderContext,
@@ -19,7 +18,7 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         for (const auto& range : polygon.outers) {
             auto center = utymap::utils::getCentroid(polygon, range);
@@ -44,9 +43,6 @@ public:
             }
         }   
     }
-
-private:
-
 };
 
 }}

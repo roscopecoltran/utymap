@@ -13,33 +13,33 @@
 namespace utymap { namespace builders {
 
 // Splits line to segments on axis aligned grid intersections.
-class LineGridSplitter
+class LineGridSplitter final
 {
     typedef utymap::meshing::Vector2 Point;
     typedef std::vector<Point> Points;
 
     struct sort_x
     {
-        inline bool operator() (const Point& a, const Point& b) { return a.x < b.x; }
+        bool operator() (const Point& a, const Point& b) const { return a.x < b.x; }
     };
 
     struct sort_reverse_x
     {
-        inline bool operator() (const Point& a, const Point& b) { return a.x > b.x; }
+        bool operator() (const Point& a, const Point& b) const { return a.x > b.x; }
     };
 
     struct sort_y
     {
-        inline bool operator() (const Point& a, const Point& b) { return a.y < b.y; }
+        bool operator() (const Point& a, const Point& b) const { return a.y < b.y; }
     };
 
     struct sort_reverse_y
     {
-        inline bool operator() (const Point& a, const Point& b) { return a.y > b.y; }
+        bool operator() (const Point& a, const Point& b) const { return a.y > b.y; }
     };
 
 public:
-    LineGridSplitter() : step_(1), scale_(1)
+    LineGridSplitter() : scale_(1), step_(1)
     {
     }
 

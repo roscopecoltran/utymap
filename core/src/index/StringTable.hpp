@@ -11,7 +11,7 @@ namespace utymap { namespace index {
 // Index file consists of id-offset pairs where id - string id,
 // offset - first character of the string inside data file.
 // data file contains list of null terminated strings.
-class StringTable
+class StringTable final
 {
 public:
 
@@ -24,10 +24,10 @@ public:
     ~StringTable();
 
     // Gets id of given string.
-    std::uint32_t getId(const std::string& str);
+    std::uint32_t getId(const std::string& str) const;
 
     // Gets original string by id.
-    std::string getString(std::uint32_t id);
+    std::string getString(std::uint32_t id) const;
 
     // Flushes changes to disk.
     void flush();

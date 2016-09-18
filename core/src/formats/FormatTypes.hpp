@@ -16,14 +16,14 @@ enum class FormatType
     Shape = 2
 };
 
-struct Tag
+struct Tag final
 {
     std::string key;
     std::string value;
 };
 
 // this type is specific for osm formats
-struct RelationMember
+struct RelationMember final
 {
     std::uint64_t refId;
     std::string type;
@@ -31,7 +31,7 @@ struct RelationMember
 };
 
 // this type is specific for shapefile format
-struct PolygonMember
+struct PolygonMember final
 {
     bool isRing;
     std::vector<GeoCoordinate> coordinates;

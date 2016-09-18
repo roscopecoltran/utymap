@@ -1,7 +1,6 @@
 #ifndef BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED
 #define BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED
 
-#include "BoundingBox.hpp"
 #include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
@@ -62,7 +61,7 @@ public:
 
     // Creates region  context.
     RegionContext createRegionContext(const utymap::mapcss::Style& style,
-                                      const std::string& prefix);
+                                      const std::string& prefix) const;
 
 private:
     typedef std::shared_ptr<Region> RegionPtr;
@@ -92,14 +91,14 @@ private:
 
     void populateMesh(ClipperLib::Paths& paths, const RegionContext& regionContext);
 
-    Points restorePoints(const ClipperLib::Path& path);
+    Points restorePoints(const ClipperLib::Path& path) const;
 
     void fillMesh(utymap::meshing::Polygon& polygon, const RegionContext& regionContext);
 
     // Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
                               TerraExtras::Context& extrasContext,
-                              const RegionContext& regionContext);
+                              const RegionContext& regionContext) const;
 
     void processHeightOffset(const Points& points, const RegionContext& regionContext);
 

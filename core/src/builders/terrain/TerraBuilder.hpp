@@ -3,7 +3,6 @@
 
 #include "builders/BuilderContext.hpp"
 #include "builders/ElementBuilder.hpp"
-#include "entities/Element.hpp"
 
 #include <memory>
 
@@ -18,15 +17,15 @@ public:
 
     ~TerraBuilder();
 
-    void visitNode(const utymap::entities::Node&);
+    void visitNode(const utymap::entities::Node&) override;
 
-    void visitWay(const utymap::entities::Way&);
+    void visitWay(const utymap::entities::Way&) override;
 
-    void visitArea(const utymap::entities::Area&);
+    void visitArea(const utymap::entities::Area&) override;
 
-    void visitRelation(const utymap::entities::Relation&);
+    void visitRelation(const utymap::entities::Relation&) override;
 
-    void complete();
+    void complete() override;
 
 private:
     class TerraBuilderImpl;

@@ -3,15 +3,12 @@
 
 #include "BoundingBox.hpp"
 #include "GeoCoordinate.hpp"
+#include "LodRange.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "formats/FormatTypes.hpp"
 #include "index/ElementStore.hpp"
 #include "index/StringTable.hpp"
-#include "LodRange.hpp"
-
-#include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <string>
@@ -20,7 +17,7 @@
 namespace utymap { namespace index {
 
 // Provides API to store and access geo data using different underlying data stores.
-class GeoStore
+class GeoStore final
 {
 public:
     GeoStore(utymap::index::StringTable& stringTable);

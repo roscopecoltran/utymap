@@ -24,15 +24,15 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node& node);
+    void visitNode(const utymap::entities::Node& node) override;
 
-    void visitWay(const utymap::entities::Way& way);
+    void visitWay(const utymap::entities::Way& way) override;
 
-    void visitArea(const utymap::entities::Area& area) { }
+    void visitArea(const utymap::entities::Area& area) override { }
 
-    void visitRelation(const utymap::entities::Relation& relation);
+    void visitRelation(const utymap::entities::Relation& relation) override;
 
-    void complete() { }
+    void complete() override { }
 
     // Creates tree generator which can be used to produce multiple trees inside mesh.
     static std::unique_ptr<TreeGenerator> createGenerator(const utymap::builders::BuilderContext& builderContext,

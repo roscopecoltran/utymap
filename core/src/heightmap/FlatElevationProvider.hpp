@@ -10,11 +10,11 @@ class FlatElevationProvider: public ElevationProvider
 {
 public:
 
-    void preload(const utymap::BoundingBox&) {}
+    void preload(const utymap::BoundingBox&) override {}
 
-    double getElevation(const utymap::GeoCoordinate&) const { return 0; }
+    double getElevation(const utymap::GeoCoordinate&) const override { return 0; }
 
-    double getElevation(double, double) const { return 0; };
+    double getElevation(double, double) const override { return 0; };
 };
 
 }}

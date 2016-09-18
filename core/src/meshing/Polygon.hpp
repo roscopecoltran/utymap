@@ -3,13 +3,11 @@
 
 #include "meshing/MeshTypes.hpp"
 
-#include <stdexcept>
-
 namespace utymap { namespace meshing {
 
 // Represents polygon in 2D space.
 // NOTE this class is designed to work with Triangle library
-class Polygon
+class Polygon final
 {
 public:
     typedef std::pair<std::size_t, std::size_t> Range;
@@ -78,7 +76,7 @@ private:
     }
 
     // tries to find point in polygon.
-    bool findPointInPolygon(const std::vector<Vector2>& contour, Vector2& point) const
+    static bool findPointInPolygon(const std::vector<Vector2>& contour, Vector2& point)
     {
         Rectangle bounds;
         bounds.expand(contour);
@@ -127,7 +125,7 @@ private:
     }
 
     // checks whether point in polygon using ray casting algorithm
-    bool isPointInPolygon(const Vector2& point, const std::vector<Vector2>& poly) const
+    static bool isPointInPolygon(const Vector2& point, const std::vector<Vector2>& poly)
     {
         bool inside = false;
         double x = point.x;

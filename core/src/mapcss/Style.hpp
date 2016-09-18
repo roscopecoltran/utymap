@@ -16,7 +16,7 @@
 namespace utymap { namespace mapcss {
 
 // Represents style for element.
-struct Style
+struct Style final
 {
     typedef std::uint32_t key_type;
     typedef std::shared_ptr<utymap::mapcss::StyleDeclaration> value_type;
@@ -24,28 +24,28 @@ struct Style
     std::unordered_map<key_type, value_type> declarations;
 
     Style(const std::vector<utymap::entities::Tag>& tags,
-          utymap::index::StringTable& stringTable)
-        : tags_(tags), stringTable_(stringTable), declarations()
+          utymap::index::StringTable& stringTable) :
+        declarations(), stringTable_(stringTable), tags_(tags)
     {
     }
 
-    inline bool has(key_type key) const
+    bool has(key_type key) const
     {
         return declarations.find(key) != declarations.end();
     }
 
-    inline bool has(key_type key, const std::string& value) const
+    bool has(key_type key, const std::string& value) const
     {
         auto it = declarations.find(key);
         return it != declarations.end() && *it->second->value() == value;
     }
 
-    inline void put(const value_type& declaration)
+    void put(const value_type& declaration)
     {
         declarations[declaration->key()] = declaration;
     }
 
-    inline value_type get(key_type key) const
+    value_type get(key_type key) const
     {
         auto it = declarations.find(key);
         if (it == declarations.end())
@@ -55,14 +55,14 @@ struct Style
     }
 
     // Gets string by given key. Empty string by default
-    inline std::shared_ptr<std::string> getString(const std::string& key) const
+    std::shared_ptr<std::string> getString(const std::string& key) const
     {
         key_type keyId = stringTable_.getId(key);
         return getString(keyId);
     }
     
     // Gets string by given key. Empty string by default
-    inline std::shared_ptr<std::string> getString(key_type keyId) const
+    std::shared_ptr<std::string> getString(key_type keyId) const
     {
         if (!has(keyId))
             return std::make_shared<std::string>("");
@@ -75,7 +75,7 @@ struct Style
     }
 
     // Gets double value or zero.
-    inline double getValue(const std::string& key,
+    double getValue(const std::string& key,
                            double size = 1,
                            const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
     {
@@ -84,7 +84,7 @@ struct Style
     }
 
     // Gets double value or zero.
-    inline double getValue(key_type keyId,
+    double getValue(key_type keyId,
                            double size = 1,
                            const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
     {
@@ -108,7 +108,7 @@ struct Style
             return size * value * 0.01;
         }
 
-        return  declaration->isEval()
+        return declaration->isEval()
                 ? declaration->evaluate<double>(tags_, stringTable_)
                 : utymap::utils::parseDouble(*rawValue);
     }

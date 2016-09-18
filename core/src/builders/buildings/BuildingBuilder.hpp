@@ -9,22 +9,22 @@
 namespace utymap { namespace builders {
 
 // Responsible for building generation.
-class BuildingBuilder : public utymap::builders::ElementBuilder
+class BuildingBuilder final: public utymap::builders::ElementBuilder
 {
 public:
     BuildingBuilder(const utymap::builders::BuilderContext&);
 
     ~BuildingBuilder();
 
-    void visitNode(const utymap::entities::Node&);
+    void visitNode(const utymap::entities::Node&) override {};
 
-    void visitWay(const utymap::entities::Way&);
+    void visitWay(const utymap::entities::Way&) override {};
 
-    void visitArea(const utymap::entities::Area& area);
+    void visitArea(const utymap::entities::Area& area) override;
 
-    void visitRelation(const utymap::entities::Relation&);
+    void visitRelation(const utymap::entities::Relation&) override;
 
-    void complete();
+    void complete() override;
 
 private:
     class BuildingBuilderImpl;

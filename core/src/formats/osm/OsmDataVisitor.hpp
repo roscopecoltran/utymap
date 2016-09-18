@@ -7,18 +7,15 @@
 #include "formats/FormatTypes.hpp"
 #include "formats/osm/OsmDataContext.hpp"
 #include "index/StringTable.hpp"
-#include "utils/ElementUtils.hpp"
 
 #include <functional>
 #include <string>
-#include <memory>
 #include <vector>
-#include <unordered_set>
 #include <unordered_map>
 
 namespace utymap { namespace formats {
 
-class OsmDataVisitor
+class OsmDataVisitor final
 {
 public:
 

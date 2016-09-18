@@ -4,17 +4,15 @@
 #include "GeoCoordinate.hpp"
 #include "formats/FormatTypes.hpp"
 #include "formats/osm/OsmDataContext.hpp"
-#include "index/StringTable.hpp"
 
 #include <deque>
 #include <functional>
 #include <memory>
-#include <unordered_map>
 
 namespace utymap { namespace formats {
 
 // Builds relation from multipolygon (see http://wiki.openstreetmap.org/wiki/Talk:Relation:multipolygon)
-struct MultipolygonProcessor
+struct MultipolygonProcessor final
 {
 private:
     // Helper class which provides the way to handle coordinate sequences.

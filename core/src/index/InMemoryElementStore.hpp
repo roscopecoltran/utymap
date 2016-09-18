@@ -11,7 +11,7 @@
 namespace utymap { namespace index {
 
 // Provides API to store elements in memory.
-class InMemoryElementStore : public ElementStore
+class InMemoryElementStore final : public ElementStore
 {
 public:
     InMemoryElementStore(utymap::index::StringTable& stringTable);
@@ -19,14 +19,14 @@ public:
     ~InMemoryElementStore();
 
     void search(const utymap::QuadKey& quadKey, 
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor) override;
 
-    bool hasData(const utymap::QuadKey& quadKey) const;
+    bool hasData(const utymap::QuadKey& quadKey) const override;
 
-    void commit();
+    void commit() override;
 
 protected:
-    void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
+    void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) override;
 
 private:
     class InMemoryElementStoreImpl;

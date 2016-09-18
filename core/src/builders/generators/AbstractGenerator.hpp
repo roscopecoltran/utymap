@@ -3,7 +3,6 @@
 
 #include "builders/BuilderContext.hpp"
 #include "builders/MeshContext.hpp"
-#include "mapcss/ColorGradient.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/NoiseUtils.hpp"
 

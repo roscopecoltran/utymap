@@ -11,7 +11,7 @@
 
 namespace utymap { namespace formats {
 
-class RelationProcessor
+class RelationProcessor final
 {
 public:
 

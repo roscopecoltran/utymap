@@ -11,7 +11,7 @@
 namespace utymap { namespace utils {
 
 template <typename T>
-inline std::string toString(T t) 
+std::string toString(T t) 
 {
     return boost::lexical_cast<std::string>(t);
 }

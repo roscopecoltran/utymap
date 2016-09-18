@@ -46,6 +46,10 @@ namespace {
             }
         }
     };
+
+    bool checkSize(const utymap::BoundingBox& quadKeyBBox, const utymap::BoundingBox& elementBbox, double minSize) {
+        return elementBbox.width() / quadKeyBBox.width() > minSize;
+    }
 }
 
 namespace utymap { namespace index {
@@ -123,10 +127,6 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
 
     // NOTE still might be clipped and then skipped
     return wasStored;
-}
-
-bool ElementStore::checkSize(const utymap::BoundingBox& quadKeyBBox, const utymap::BoundingBox& elementBbox, double minSize) const {
-    return elementBbox.width() / quadKeyBBox.width() > minSize;
 }
 
 }}

@@ -4,18 +4,19 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
+#include "utils/CoreUtils.hpp"
+
 #include "shapefile/shapefil.h"
 
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <stdexcept>
 #include <vector>
 
 namespace utymap { namespace formats {
 
 template<typename Visitor>
-class ShapeParser
+class ShapeParser final
 {
 public:
 
@@ -39,11 +40,10 @@ public:
         if (entityCount != DBFGetRecordCount(dbfFile))
             throw std::domain_error("dbf file has different entity count.");
 
-        for (int k = 0; k < entityCount; k++)
-        {
+        for (int k = 0; k < entityCount; k++) {
             SHPObject* shape = SHPReadObject(shpFile, k);
             if (shape == NULL)
-                throw std::domain_error("Unable to read shape:" + to_string(k));
+                throw std::domain_error("Unable to read shape:" + utymap::utils::toString(k));
 
             Tags tags = parseTags(dbfFile, k);
             visitShape(*shape, tags, visitor);
@@ -56,23 +56,14 @@ public:
     }
 
 private:
-    // NOTE: Workaround due to MinGW g++ compiler
-    template <typename T>
-    inline std::string to_string(T const& value) const
-    {
-        std::stringstream sstr;
-        sstr << value;
-        return sstr.str();
-    }
 
-    inline Tags parseTags(DBFHandle dbfFile, int k) const
+    Tags parseTags(DBFHandle dbfFile, int k) const
     {
         char title[12];
         int fieldCount = DBFGetFieldCount(dbfFile);
         Tags tags;
         tags.reserve(fieldCount);
-        for (int i = 0; i < fieldCount; i++)
-        {
+        for (int i = 0; i < fieldCount; i++) {
             if (DBFIsAttributeNULL(dbfFile, k, i))
                 continue;
 
@@ -87,10 +78,10 @@ private:
                         tag.value = DBFReadStringAttribute(dbfFile, k, i);
                         break;
                     case FTInteger:
-                        tag.value = to_string(DBFReadIntegerAttribute(dbfFile, k, i));
+                        tag.value = utymap::utils::toString(DBFReadIntegerAttribute(dbfFile, k, i));
                         break;
                     case FTDouble:
-                        tag.value = to_string(DBFReadDoubleAttribute(dbfFile, k, i));
+                        tag.value = utymap::utils::toString(DBFReadDoubleAttribute(dbfFile, k, i));
                         break;
                     default:
                         break;
@@ -101,7 +92,7 @@ private:
         return std::move(tags);
     }
 
-    inline void visitShape(const SHPObject& shape, Tags& tags, Visitor& visitor) const
+    void visitShape(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         switch (shape.nSHPType)
         {
@@ -132,13 +123,13 @@ private:
         }
     }
 
-    inline void visitPoint(const SHPObject& shape, Tags& tags, Visitor& visitor) const
+    void visitPoint(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         utymap::GeoCoordinate coordinate(shape.padfY[0], shape.padfX[0]);
         visitor.visitNode(coordinate, tags);
     }
 
-    inline void visitArc(const SHPObject& shape, Tags& tags, Visitor& visitor) const
+    void visitArc(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         if (shape.nParts > 1) {
             std::cerr << "Arc type has more than one part.";
@@ -154,7 +145,7 @@ private:
         visitor.visitWay(coordinates, tags,coordinates[0] == coordinates[coordinates.size() - 1]);
     }
 
-    inline void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor) const
+    void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         PolygonMembers members;
         members.reserve(shape.nParts);
@@ -172,6 +163,7 @@ private:
                 coordinates->reserve(endIndex - startIndex);
                 partNum++;
             }
+            // FIXME: coordinates might be non-initialized
             coordinates->push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
         visitor.visitRelation(members, tags);

@@ -12,7 +12,7 @@ namespace utymap { namespace builders {
 
 // Builds icosphere.
 // See http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
-class IcoSphereGenerator : public AbstractGenerator
+class IcoSphereGenerator final : public AbstractGenerator
 {
     // Helper class for calculations
     struct TriangleIndices
@@ -61,7 +61,7 @@ public:
         return *this;
     }
 
-    void generate()
+    void generate() override
     {
         // create 12 vertices of a icosahedron
         double t = (1 + std::sqrt(5)) / 2;
@@ -187,7 +187,7 @@ private:
         }
     }
 
-    inline utymap::meshing::Vector3 scale(const utymap::meshing::Vector3& v)
+    utymap::meshing::Vector3 scale(const utymap::meshing::Vector3& v) const
     {
         return utymap::meshing::Vector3(
             v.x * radius_ * 1.5,

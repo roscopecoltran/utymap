@@ -6,7 +6,7 @@
 
 namespace utymap {
 
-struct GeoCoordinate
+struct GeoCoordinate final
 {
     // Latitude.
     double latitude;

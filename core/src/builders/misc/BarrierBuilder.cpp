@@ -64,7 +64,7 @@ void BarrierBuilder::visitWay(const Way& way)
     buildFromPolygon(way, style, polygon);
 }
 
-void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygon& polygon)
+void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygon& polygon) const
 {
     double height = style.getValue(HeightKey);
     double minHeight = style.getValue(MinHeightKey);

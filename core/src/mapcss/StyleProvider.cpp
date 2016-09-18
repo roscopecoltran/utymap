@@ -69,9 +69,9 @@ public:
 
     void visitRelation(const Relation& relation) override { checkOrBuild(relation.tags, filters_.relations); }
 
-    inline bool canBuild() { return canBuild_; }
+    bool canBuild() const { return canBuild_; }
 
-    inline Style build()
+    Style build()
     {
         if (onlyCheck_)
             throw std::domain_error("Cannot build feature for check mode.");
@@ -90,7 +90,7 @@ private:
     }
 
     // checks tag's value assuming that the key is already checked.
-    inline bool match_tag(const Tag& tag, const ConditionType& condition)
+    bool match_tag(const Tag& tag, const ConditionType& condition)
     {
         switch (condition.type) {
             case OpType::Exists:
@@ -103,13 +103,14 @@ private:
                 return compareDoubles(tag.value, condition.value, std::less<double>());
             case OpType::Greater:
                 return compareDoubles(tag.value, condition.value, std::greater<double>());
+            default: 
+                return false;
         }
-        return false;
     }
 
     // Compares two raw string values using double conversion.
     template<typename Func>
-    inline bool compareDoubles(std::uint32_t left, std::uint32_t right, Func binaryOp)
+    bool compareDoubles(std::uint32_t left, std::uint32_t right, Func binaryOp)
     {
         double leftValue = utymap::utils::parseDouble(stringTable_.getString(left));
         double rightValue = utymap::utils::parseDouble(stringTable_.getString(right));
@@ -191,8 +192,8 @@ public:
     std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
-        stringTable(stringTable),
         filters(),
+        stringTable(stringTable),
         gradients()
     {
         filters.nodes.reserve(24);
@@ -238,7 +239,7 @@ public:
                         if (utymap::utils::GradientUtils::isGradient(declaration.value))
                             addGradient(declaration.value);
 
-                        filter.declarations[key] = Style::value_type(new StyleDeclaration(key, declaration.value));
+                        filter.declarations[key] = std::make_shared<StyleDeclaration>(key, declaration.value);
                     }
 
                     std::sort(filter.conditions.begin(), filter.conditions.end(),

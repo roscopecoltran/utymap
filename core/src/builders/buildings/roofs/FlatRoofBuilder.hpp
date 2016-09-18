@@ -5,8 +5,6 @@
 #include "meshing/MeshBuilder.hpp"
 #include "meshing/Polygon.hpp"
 
-#include <vector>
-
 namespace utymap { namespace builders {
 
 // Builds flat roof in low poly.
@@ -14,8 +12,8 @@ class FlatRoofBuilder : public RoofBuilder
 {
 public:
     FlatRoofBuilder(const utymap::builders::BuilderContext& builderContext,
-                    utymap::builders::MeshContext& meshContext)
-        : RoofBuilder(builderContext, meshContext), flipSide_(false)
+                    utymap::builders::MeshContext& meshContext) : 
+        RoofBuilder(builderContext, meshContext), flipSide_(false)
     {
     }
 
@@ -25,7 +23,7 @@ public:
         return *this;
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         builderContext_.meshBuilder
                        .addPolygon(meshContext_.mesh,

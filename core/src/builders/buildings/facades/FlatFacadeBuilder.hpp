@@ -11,12 +11,12 @@ class FlatFacadeBuilder : public FacadeBuilder
 {
 public:
     FlatFacadeBuilder(const utymap::builders::BuilderContext& builderContext,
-                      utymap::builders::MeshContext& meshContext)
-        : FacadeBuilder(builderContext, meshContext)
+                      utymap::builders::MeshContext& meshContext) : 
+        FacadeBuilder(builderContext, meshContext)
     {
     }
 
-  void build(utymap::meshing::Polygon& polygon)
+  void build(utymap::meshing::Polygon& polygon) override
   {
     utymap::meshing::MeshBuilder::Options options(
         0, // area
@@ -36,9 +36,9 @@ public:
 
 private:
 
-    inline void buildRange(const utymap::meshing::Polygon& polygon,
-                           const utymap::meshing::Polygon::Range& range, 
-                           const utymap::meshing::MeshBuilder::Options& options)
+    void buildRange(const utymap::meshing::Polygon& polygon,
+                    const utymap::meshing::Polygon::Range& range, 
+                    const utymap::meshing::MeshBuilder::Options& options)
     {
         std::int64_t first = range.first;
         std::int64_t last = range.second - 2;

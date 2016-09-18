@@ -14,7 +14,7 @@
 namespace utymap { namespace builders {
 
 // Builds mansard roof.
-class MansardRoofBuilder : public FlatRoofBuilder
+class MansardRoofBuilder final : public FlatRoofBuilder
 {
     const double Scale = 1E7;
 
@@ -25,7 +25,7 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         ClipperLib::ClipperOffset offset;
         ClipperLib::Path path;
@@ -61,7 +61,7 @@ public:
 
 private:
 
-    void buildMansardShape(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index)
+    void buildMansardShape(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index) const
     {
         if (!ClipperLib::Orientation(offsetShape))
             std::reverse(offsetShape.begin(), offsetShape.end());
@@ -100,7 +100,7 @@ private:
         }
     }
 
-    std::size_t findFirstIndex(const ClipperLib::IntPoint& p, const utymap::meshing::Polygon& polygon) 
+    std::size_t findFirstIndex(const ClipperLib::IntPoint& p, const utymap::meshing::Polygon& polygon) const
     {
         utymap::meshing::Vector2 point(p.X / Scale, p.Y / Scale);
 

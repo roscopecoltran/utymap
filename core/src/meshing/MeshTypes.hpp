@@ -46,22 +46,22 @@ struct Vector3
     Vector3() : x(0), y(0), z(0)  { }
     Vector3(double x, double y, double z) : x(x), y(y), z(z) { }
 
-    inline Vector3 operator*(double mult)
+    Vector3 operator*(double mult) const
     {
         return Vector3(x * mult, y *mult, z * mult);
     }
 
-    inline Vector3 operator+(const Vector3& rhs)
+    Vector3 operator+(const Vector3& rhs) const
     {
         return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
     }
 
-    inline double magnitude()
+    double magnitude() const
     {
         return std::sqrt(x*x + y*y + z*z);
     }
 
-    inline Vector3 normalized()
+    Vector3 normalized() const
     {
         double length = magnitude();
         return length > std::numeric_limits<double>::epsilon()
@@ -73,7 +73,7 @@ struct Vector3
 /// Geometry line in linear form. General form:
 /// Ax + By + C = 0;
 /// <see href="http://en.wikipedia.org/wiki/Linear_equation"/>
-struct LineLinear
+struct LineLinear final
 {
     double A;
     double B;
@@ -96,38 +96,36 @@ struct LineLinear
     }
 
     /// Gets collision point of two lines.
-    inline Vector2 collide(const LineLinear& line)
+    Vector2 collide(const LineLinear& line) const
     {
         return collide(*this, line);
     }
 
     /// <summary> Collision point of two lines. </summary>
-    inline static Vector2 collide(const LineLinear& line1, const LineLinear& line2)
+    static Vector2 collide(const LineLinear& line1, const LineLinear& line2)
     {
         return collide(line1.A, line1.B, line1.C, line2.A, line2.B, line2.C);
     }
 
     /// <summary> Collision point of two lines. </summary>
-    inline static Vector2 collide(double A1, double B1, double C1, double A2, double B2, double C2)
+    static Vector2 collide(double A1, double B1, double C1, double A2, double B2, double C2)
     {
         double WAB = A1*B2 - A2*B1;
         double WBC = B1*C2 - B2*C1;
         double WCA = C1*A2 - C2*A1;
 
-        return WAB == 0 
-            ? Vector2() 
-            : Vector2(WBC / WAB, WCA / WAB);
+        return WAB == 0  ? Vector2() : Vector2(WBC / WAB, WCA / WAB);
     }
 
     /// <summary> Check whether point belongs to line. </summary>
-    inline bool contains(const Vector2& point) const
+    bool contains(const Vector2& point) const
     {
         return std::abs((point.x * A + point.y * B + C)) < 1E-8;
     }
 };
 
 // Represents axis aligned rectangle in 2D space.
-struct Rectangle
+struct Rectangle final
 {
     double xMin, xMax, yMin, yMax;
 
@@ -142,7 +140,7 @@ struct Rectangle
     }
 
     Rectangle(double xMin, double yMin, double xMax, double yMax) :
-        xMin(xMin), yMin(yMin), xMax(xMax), yMax(yMax),
+        xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
         _left(Vector2(xMin, yMin), Vector2(xMin, yMax)),
         _right(Vector2(xMax, yMin), Vector2(xMax, yMax)),
         _bottom(Vector2(xMin, yMin), Vector2(xMax, yMin)),
@@ -152,12 +150,12 @@ struct Rectangle
 
     void expand(const std::vector<Vector2>& contour)
     {
-        for (const Vector2& p : contour) {
+        for (const auto& p : contour) {
             expand(p);
         }
     }
 
-    inline void expand(const Vector2& point)
+    void expand(const Vector2& point)
     {
         xMin = std::min(xMin, point.x);
         yMin = std::min(yMin, point.y);
@@ -165,13 +163,13 @@ struct Rectangle
         yMax = std::max(yMax, point.y);
     }
 
-    inline bool contains(const Vector2& pt) const
+    bool contains(const Vector2& pt) const
     {
         return ((pt.x >= xMin) && (pt.x <= xMax) && (pt.y >= yMin) && (pt.y <= yMax));
     }
 
     // Checks whether point is on border of rectangle.
-    inline bool isOnBorder(const Vector2& point) const
+    bool isOnBorder(const Vector2& point) const
     {
         return _left.contains(point) || _right.contains(point) ||
                _bottom.contains(point) || _top.contains(point);
@@ -179,7 +177,7 @@ struct Rectangle
 };
 
 // Represents mesh which uses only primitive types to store data due to interoperability.
-struct Mesh
+struct Mesh final
 {
     std::string name;
     std::vector<double> vertices;

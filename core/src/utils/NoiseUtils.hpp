@@ -7,11 +7,9 @@ namespace utymap { namespace utils {
 
 // Provides noise generation functions.
 // Ported from C# code from here : http ://catlikecoding.com/unity/tutorials/noise/
-class NoiseUtils
+class NoiseUtils final
 {
-
 public:
-
     // Calculates perlin 2D noise.
     static double perlin2D(double x, double y, double frequency);
 
@@ -20,17 +18,17 @@ public:
 
 private:
 
-    static inline double dot(const utymap::meshing::Vector3& g, double x, double y, double z)
+    static double dot(const utymap::meshing::Vector3& g, double x, double y, double z)
     {
         return g.x*x + g.y*y + g.z*z;
     }
 
-    static inline double dot(const utymap::meshing::Vector2& g, double x, double y)
+    static double dot(const utymap::meshing::Vector2& g, double x, double y)
     {
         return g.x*x + g.y*y;
     }
 
-    static inline double smooth(double t)
+    static double smooth(double t)
     {
         return t*t*t*(t*(t * 6 - 15) + 10);
     }

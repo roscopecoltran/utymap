@@ -4,10 +4,6 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/MeshContext.hpp"
 #include "meshing/Polygon.hpp"
-#include "mapcss/ColorGradient.hpp"
-
-#include <memory>
-#include <vector>
 
 namespace utymap { namespace builders {
 
@@ -16,20 +12,23 @@ class FacadeBuilder
 {
  public:
   FacadeBuilder(const utymap::builders::BuilderContext& builderContext,
-                utymap::builders::MeshContext& meshContext)
-      : builderContext_(builderContext), meshContext_(meshContext),
-        minHeight_(0), height_(0), colorNoiseFreq_(0)
+                utymap::builders::MeshContext& meshContext) : 
+        builderContext_(builderContext), 
+        meshContext_(meshContext),
+        height_(0), minHeight_(0), colorNoiseFreq_(0)
   {
   }
 
+  virtual ~FacadeBuilder() = default;
+
   // Sets facade height.
-  inline FacadeBuilder& setHeight(double height) { height_ = height; return *this; }
+  FacadeBuilder& setHeight(double height) { height_ = height; return *this; }
 
   // Sets height above ground level.
-  inline FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
+  FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
 
   // Sets color noise freq.
-  inline FacadeBuilder& setColorNoiseFreq(double noiseFreq)
+  FacadeBuilder& setColorNoiseFreq(double noiseFreq)
   {
       colorNoiseFreq_ = noiseFreq;
       return *this;

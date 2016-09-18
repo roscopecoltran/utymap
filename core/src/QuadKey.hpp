@@ -4,7 +4,7 @@
 namespace utymap {
 
 // Represents quadkey: a node of quadtree
-struct QuadKey
+struct QuadKey final
 {
     // Level of details (zoom).
     int levelOfDetail;

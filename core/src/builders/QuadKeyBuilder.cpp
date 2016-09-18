@@ -1,8 +1,6 @@
-#include "Exceptions.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/QuadKeyBuilder.hpp"
-#include "builders/terrain/TerraBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"

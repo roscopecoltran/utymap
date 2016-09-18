@@ -10,14 +10,13 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <vector>
 
 namespace utymap { namespace utils {
 
 // Provides the way to save polygon to svg file which is helpful for debugging.
 // Ported from C# implementation.
-class SvgBuilder
+class SvgBuilder final
 {
 public:
 
@@ -29,7 +28,7 @@ public:
 
         PolyInfo pi;
         pi.polygons = poly;
-        pi.si = style.Clone();
+        pi.si = style.clone();
         polyInfoList.push_back(pi);
     }
 
@@ -73,10 +72,10 @@ public:
             }
         }
 
-        rec.left = (std::int64_t)((double)rec.left * scale);
-        rec.top = (std::int64_t)((double)rec.top * scale);
-        rec.right = (std::int64_t)((double)rec.right * scale);
-        rec.bottom = (std::int64_t)((double)rec.bottom * scale);
+        rec.left = static_cast<std::int64_t>(static_cast<double>(rec.left) * scale);
+        rec.top = static_cast<std::int64_t>(static_cast<double>(rec.top) * scale);
+        rec.right = static_cast<std::int64_t>(static_cast<double>(rec.right) * scale);
+        rec.bottom = static_cast<std::int64_t>(static_cast<double>(rec.bottom) * scale);
         std::int64_t offsetX = -rec.left + margin;
         std::int64_t offsetY = -rec.top + margin;
 
@@ -93,23 +92,23 @@ public:
                 if (p.size() < 3) continue;
 
                 out << string_format(" M %.2f %.2f",
-                    ((double)p[0].X * scale + offsetX),
-                    ((double)p[0].Y * scale + offsetY));
+                    (static_cast<double>(p[0].X) * scale + offsetX),
+                    (static_cast<double>(p[0].Y) * scale + offsetY));
 
                 for (int k = 1; k < p.size(); k++) {
                     out << string_format(" L %.2f %.2f",
-                        ((double)p[k].X * scale + offsetX),
-                        ((double)p[k].Y * scale + offsetY));
+                        (static_cast<double>(p[k].X) * scale + offsetX),
+                        (static_cast<double>(p[k].Y) * scale + offsetY));
                 }
                 out << " z";
             }
 
             out << string_format(svg_path_format,
                 colorToHex(pi.si.brushClr).c_str(),
-                (float)pi.si.brushClr.a / 255,
+                static_cast<float>(pi.si.brushClr.a) / 255,
                 (pi.si.pft == ClipperLib::PolyFillType::pftEvenOdd ? "evenodd" : "nonzero"),
                 colorToHex(pi.si.penClr).c_str(),
-                (float)pi.si.penClr.a / 255,
+                static_cast<float>(pi.si.penClr.a) / 255,
                 pi.si.penWidth);
 
             if (pi.si.showCoords) {
@@ -119,8 +118,8 @@ public:
                         std::int64_t x = pt.X;
                         std::int64_t y = pt.Y;
                         out << string_format("<text x=\"%d\" y=\"%d\">%d,%d</text>\n",
-                            (int)(x * scale + offsetX),
-                            (int)(y * scale + offsetY),
+                            static_cast<int>(x * scale + offsetX),
+                            static_cast<int>(y * scale + offsetY),
                             x,
                             y);
                     }
@@ -142,7 +141,7 @@ private:
         double penWidth;
         bool showCoords;
 
-        StyleInfo Clone()
+        StyleInfo clone() const
         {
             StyleInfo si;
             si.pft = pft;
@@ -169,15 +168,16 @@ private:
         StyleInfo si;
     };
 
-    std::string string_format(const std::string& fmt, ...)
+    // TODO rewrite this function
+    static std::string string_format(const std::string& fmt, ...)
     {
-        int size = ((int)fmt.size()) * 2 + 50;
+        int size = static_cast<int>(fmt.size()) * 2 + 50;
         std::string str;
         va_list ap;
         while (1) {
             str.resize(size);
             va_start(ap, fmt);
-            int n = vsnprintf((char*)str.data(), size, fmt.c_str(), ap);
+            int n = vsnprintf(const_cast<char*>(str.data()), size, fmt.c_str(), ap);
             va_end(ap);
             if (n > -1 && n < size) {
                 str.resize(n);
@@ -189,7 +189,7 @@ private:
         return str;
     }
 
-    inline std::string colorToHex(const utymap::mapcss::Color& color)
+    static std::string colorToHex(const utymap::mapcss::Color& color)
     {
         return string_format("#%0x%0x%0x", color.r, color.g, color.b);
     }

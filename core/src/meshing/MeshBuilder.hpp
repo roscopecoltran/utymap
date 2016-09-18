@@ -2,7 +2,6 @@
 #define MESHING_MESHBUILDER_HPP_DEFINED
 
 #include "heightmap/ElevationProvider.hpp"
-#include "mapcss/Color.hpp"
 #include "mapcss/ColorGradient.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"

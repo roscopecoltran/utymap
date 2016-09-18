@@ -15,7 +15,7 @@
 namespace utymap { namespace formats {
 
 template<typename Visitor>
-class OsmPbfParser
+class OsmPbfParser final
 {
     const int MAX_BLOB_HEADER_SIZE = 64 * 1024;
     const int MAX_UNCOMPRESSED_BLOB_SIZE = 32 * 1024 * 1024;
@@ -229,7 +229,7 @@ private:
         }
     }
 
-    inline std::string parseType(OSMPBF::Relation& rel, int index)
+    static std::string parseType(OSMPBF::Relation& rel, int index)
     {
         switch (rel.types(index)) {
         case OSMPBF::Relation::NODE:

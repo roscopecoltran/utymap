@@ -8,7 +8,7 @@
 namespace utymap { namespace mapcss {
 
 // Represents condition.
-struct Condition
+struct Condition final
 {
     std::string key;
     std::string operation;
@@ -16,14 +16,14 @@ struct Condition
 };
 
 // Represents map zoom level.
-struct Zoom
+struct Zoom final
 {
     std::uint8_t start;
     std::uint8_t end;
 };
 
 // Represents selector.
-struct Selector
+struct Selector final
 {
     std::vector<std::string> names;
     Zoom zoom;
@@ -31,21 +31,21 @@ struct Selector
 };
 
 // Represents declaration.
-struct Declaration
+struct Declaration final
 {
     std::string key;
     std::string value;
 };
 
 // Represents rule.
-struct Rule
+struct Rule final
 {
     std::vector<Selector> selectors;
     std::vector<Declaration> declarations;
 };
 
 // Represents stylesheet.
-struct StyleSheet
+struct StyleSheet final
 {
     std::vector<Rule> rules;
 };

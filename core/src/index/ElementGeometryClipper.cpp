@@ -19,7 +19,7 @@ namespace {
 
     using PointLocation = utymap::index::ElementGeometryClipper::PointLocation;
 
-    inline PointLocation checkWay(const BoundingBox& bbox, const Way& way, ClipperLib::Path& wayShape) {
+    PointLocation checkWay(const BoundingBox& bbox, const Way& way, ClipperLib::Path& wayShape) {
         wayShape.reserve(way.coordinates.size());
         bool allInside = true;
         bool allOutside = true;
@@ -37,7 +37,7 @@ namespace {
             (allOutside ? PointLocation::AllOutside : PointLocation::Mixed);
     }
 
-    inline PointLocation checkArea(const BoundingBox& bbox, const Area& area, ClipperLib::Path& areaShape) {
+    PointLocation checkArea(const BoundingBox& bbox, const Area& area, ClipperLib::Path& areaShape) {
         bool allInside = true;
         auto areaBbox = BoundingBox();
 
@@ -57,7 +57,7 @@ namespace {
     }
 
     template<typename T>
-    inline void setCoordinates(T& t, const ClipperLib::Path& path) {
+    void setCoordinates(T& t, const ClipperLib::Path& path) {
         t.coordinates.reserve(path.size());
         for (const auto& c : path) {
             t.coordinates.push_back(GeoCoordinate(c.Y / Scale, c.X / Scale));
@@ -65,7 +65,7 @@ namespace {
     }
 
     template<typename T>
-    inline void setData(T& t, const utymap::entities::Element& element, const ClipperLib::Path& path) {
+    void setData(T& t, const utymap::entities::Element& element, const ClipperLib::Path& path) {
         t.id = element.id;
         t.tags = element.tags;
         setCoordinates<T>(t, path);
@@ -118,7 +118,7 @@ namespace {
             return clippedWay;
         }
         // 4. in this case, result should be stored as relation (collection of ways)
-        else if (count > 1) {
+        if (count > 1) {
             auto relation = std::make_shared<Relation>();
             relation->id = way.id;
             relation->tags = way.tags;
@@ -164,7 +164,7 @@ namespace {
             return clippedArea;
         }
         // 4. in this case, result should be stored as relation (collection of areas)
-        else if (solution.size() > 0) {
+        if (solution.size() > 0) {
             auto relation = std::make_shared<Relation>();
             relation->id = area.id;
             relation->tags = area.tags;
@@ -187,7 +187,7 @@ namespace {
     struct RelationVisitor : public ElementVisitor
     {
         RelationVisitor(ClipperLib::ClipperEx& clipper, const BoundingBox& quadKeyBbox) :
-            clipper_(clipper), bbox_(quadKeyBbox), relation(nullptr)
+            relation(nullptr), clipper_(clipper), bbox_(quadKeyBbox)
         {
         }
 
@@ -218,7 +218,7 @@ namespace {
 
     private:
 
-        inline void ensureRelation()
+        void ensureRelation()
         {
             if (relation == nullptr)
                 relation = std::make_shared<Relation>();

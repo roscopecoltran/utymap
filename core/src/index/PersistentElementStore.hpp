@@ -11,7 +11,7 @@
 namespace utymap { namespace index {
 
 // Provides API to store elements in persistent store.
-class PersistentElementStore : public ElementStore
+class PersistentElementStore final : public ElementStore
 {
 public:
     PersistentElementStore(const std::string& path,
@@ -20,14 +20,14 @@ public:
     ~PersistentElementStore();
 
     void search(const utymap::QuadKey& quadKey, 
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor) override;
 
-    bool hasData(const utymap::QuadKey& quadKey) const;
+    bool hasData(const utymap::QuadKey& quadKey) const override;
 
-    void commit();
+    void commit() override;
 
 protected:
-    void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey);
+    void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) override;
 
 private:
     class PersistentElementStoreImpl;

@@ -129,12 +129,12 @@ StringTable::StringTable(const std::string& path) :
 
 StringTable::~StringTable() { }
 
-std::uint32_t StringTable::getId(const std::string& str)
+std::uint32_t StringTable::getId(const std::string& str) const
 {
     return pimpl_->getId(str);
 }
 
-std::string StringTable::getString(std::uint32_t id)
+std::string StringTable::getString(std::uint32_t id) const
 {
     return pimpl_->getString(id);
 }

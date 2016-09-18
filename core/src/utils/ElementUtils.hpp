@@ -52,7 +52,8 @@ inline bool hasTag(std::uint32_t key,
         const auto middle = begin + (std::distance(begin, end) / 2);
         if (middle->key == key)
             return middle->value == value;
-        else if (middle->key > key)
+
+        if (middle->key > key)
             end = middle;
         else
             begin = middle + 1;
@@ -70,7 +71,8 @@ inline std::string getTagValue(std::uint32_t key,
         const auto middle = begin + (std::distance(begin, end) / 2);
         if (middle->key == key) 
             return stringTable.getString(middle->value);
-        else if (middle->key > key)
+        
+        if (middle->key > key)
             end = middle;
         else
             begin = middle + 1;

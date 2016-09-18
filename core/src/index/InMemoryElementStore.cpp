@@ -1,4 +1,3 @@
-#include "BoundingBox.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
@@ -68,17 +67,17 @@ class InMemoryElementStore::InMemoryElementStoreImpl
  public:
     ElementMap elementsMap;
 
-    inline ElementMap::const_iterator begin(const utymap::QuadKey& quadKey) const
+    ElementMap::const_iterator begin(const utymap::QuadKey& quadKey) const
     {
         return elementsMap.find(quadKey);
     }
 
-    inline ElementMap::const_iterator end() const
+    ElementMap::const_iterator end() const
     {
         return elementsMap.cend();
     }
 
-    inline bool hasData(const utymap::QuadKey& quadKey) const
+    bool hasData(const utymap::QuadKey& quadKey) const
     {
         return elementsMap.find(quadKey) != elementsMap.end();
     }  

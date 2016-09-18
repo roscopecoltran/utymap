@@ -13,13 +13,12 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <type_traits>
 #include <vector>
 
 namespace utymap { namespace mapcss {
 
 // Represents style declaration which support evaluation.
-struct StyleEvaluator
+struct StyleEvaluator final
 {
     // NOTE has to put these declarations here due to evaluate function implementation
     struct Nil {};
@@ -67,11 +66,11 @@ private:
         typedef T result_type;
 
         Evaluator(const std::vector<utymap::entities::Tag>& tags,
-            utymap::index::StringTable& stringTable)
-            : tags_(tags), stringTable_(stringTable)  { }
+                  utymap::index::StringTable& stringTable) :
+            tags_(tags), stringTable_(stringTable)  { }
 
     protected:
-        std::string throwException() const { throw std::domain_error("Evaluator: unsupported operation."); }
+        static std::string throwException() { throw std::domain_error("Evaluator: unsupported operation."); }
 
         const std::vector<utymap::entities::Tag>& tags_;
         utymap::index::StringTable& stringTable_;
@@ -81,8 +80,8 @@ private:
     struct DoubleEvaluator : public Evaluator<double>
     {
         DoubleEvaluator(const std::vector<utymap::entities::Tag>& tags,
-            utymap::index::StringTable& stringTable)
-            : Evaluator(tags, stringTable) { }
+                        utymap::index::StringTable& stringTable) :
+            Evaluator(tags, stringTable) { }
 
         double operator()(Nil) const { return 0; }
         double operator()(double n) const { return n; }
@@ -91,12 +90,12 @@ private:
         {
             double rhs = boost::apply_visitor(*this, o.operand);
             switch (o.operator_) {
-            case '+': return lhs + rhs;
-            case '-': return lhs - rhs;
-            case '*': return lhs * rhs;
-            case '/': return lhs / rhs;
+                case '+': return lhs + rhs;
+                case '-': return lhs - rhs;
+                case '*': return lhs * rhs;
+                case '/': return lhs / rhs;
+                default: return 0;
             }
-            return 0;
         }
 
         double operator()(const std::string& tagKey) const
@@ -109,10 +108,10 @@ private:
         {
             double rhs = boost::apply_visitor(*this, s.operand);
             switch (s.sign) {
-            case '-': return -rhs;
-            case '+': return +rhs;
+                case '-': return -rhs;
+                case '+': return +rhs;
+                default: return 0;
             }
-            return 0;
         }
 
         double operator()(const Tree& tree) const

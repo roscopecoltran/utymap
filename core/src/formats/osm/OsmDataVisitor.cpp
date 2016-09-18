@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <unordered_set>
 
 using namespace utymap;
 using namespace utymap::formats;

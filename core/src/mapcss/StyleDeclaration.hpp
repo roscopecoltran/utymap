@@ -7,9 +7,6 @@
 #include "mapcss/StyleEvaluator.hpp"
 #include "utils/ElementUtils.hpp"
 
-#include <boost/variant/recursive_variant.hpp>
-#include <boost/variant/apply_visitor.hpp>
-
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -18,11 +15,11 @@
 namespace utymap { namespace mapcss {
 
 // Represents style declaration which support evaluation.
-struct StyleDeclaration
+struct StyleDeclaration final
 {
     StyleDeclaration(std::uint32_t key, const std::string& value) :
-        key_(key), 
-        value_(std::make_shared<std::string>(value)), 
+        key_(key),
+        value_(std::make_shared<std::string>(value)),
         tree_(StyleEvaluator::parse(value))
     {
     }
@@ -30,18 +27,18 @@ struct StyleDeclaration
     ~StyleDeclaration() {}
 
     // Gets declaration key.
-    inline std::uint32_t key() const { return key_; };
+    std::uint32_t key() const { return key_; };
 
     // Gets declaration value.
-    inline std::shared_ptr<std::string> value() const { return value_; };
+    std::shared_ptr<std::string> value() const { return value_; };
 
     // Gets true if declaration should be evaluated
-    inline bool isEval() const { return tree_ != nullptr; }
+    bool isEval() const { return tree_ != nullptr; }
 
     // Evaluates expression using tags
     template <typename T>
-    inline T evaluate(const std::vector<utymap::entities::Tag>& tags,
-                      utymap::index::StringTable& stringTable) const
+    T evaluate(const std::vector<utymap::entities::Tag>& tags,
+               utymap::index::StringTable& stringTable) const
     {
         if (!isEval())
             throw utymap::MapCssException("Cannot evaluate raw value.");

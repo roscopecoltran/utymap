@@ -48,7 +48,7 @@ public:
         }
         else {
 
-            mid.trianglearealist = (REAL *)malloc(mid.numberoftriangles * sizeof(REAL));
+            mid.trianglearealist = static_cast<REAL *>(malloc(mid.numberoftriangles * sizeof(REAL)));
             for (int i = 0; i < mid.numberoftriangles; ++i) {
                 mid.trianglearealist[i] = options.area;
             }
@@ -131,7 +131,7 @@ public:
 
 private:
 
-    inline void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex) const
+    static void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex)
     {
         mesh.vertices.push_back(p.x);
         mesh.vertices.push_back(p.y);
@@ -140,7 +140,7 @@ private:
         mesh.triangles.push_back(triIndex);
     }
 
-    inline void addVertex(Mesh& mesh, const Vector3& vertex, int color, int triIndex) const
+    static void addVertex(Mesh& mesh, const Vector3& vertex, int color, int triIndex)
     {
         addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
@@ -157,10 +157,10 @@ private:
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
 
-            double ele = options.heightOffset +
+            double ele = options.heightOffset + 
                 (options.elevation > std::numeric_limits<double>::lowest()
-                ? options.elevation
-                : eleProvider_.getElevation(y, x));
+                    ? options.elevation
+                    : eleProvider_.getElevation(y, x));
 
             // do no apply noise on boundaries
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)

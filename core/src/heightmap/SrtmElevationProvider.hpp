@@ -3,7 +3,6 @@
 
 #include "heightmap/ElevationProvider.hpp"
 
-#include <cstdio>
 #include <cstdint>
 #include <cmath>
 #include <fstream>
@@ -17,7 +16,7 @@
 namespace utymap { namespace heightmap {
 
 // Provides the way to get elevation for given location from SRTM data.
-class SrtmElevationProvider : public ElevationProvider
+class SrtmElevationProvider final : public ElevationProvider
 {
     struct HgtCellKey
     {
@@ -49,7 +48,7 @@ class SrtmElevationProvider : public ElevationProvider
 
 public:
 
-    SrtmElevationProvider(std::string dataDirectory, int maxCacheSize = 4):
+    SrtmElevationProvider(std::string dataDirectory, int maxCacheSize = 4) :
         dataDirectory_(dataDirectory), maxCacheSize_(maxCacheSize)
     {
     }
@@ -60,13 +59,13 @@ public:
             delete pair.second->data;
     }
 
-    void preload(const utymap::BoundingBox& bbox)
+    void preload(const utymap::BoundingBox& bbox) override
     {
-        int minLat = (int)bbox.minPoint.latitude;
-        int minLon = (int)bbox.minPoint.longitude;
+        int minLat = static_cast<int>(bbox.minPoint.latitude);
+        int minLon = static_cast<int>(bbox.minPoint.longitude);
 
-        int maxLat = (int)bbox.maxPoint.latitude;
-        int maxLon = (int)bbox.maxPoint.longitude;
+        int maxLat = static_cast<int>(bbox.maxPoint.latitude);
+        int maxLon = static_cast<int>(bbox.maxPoint.longitude);
 
         int latDiff = maxLat - minLat;
         int lonDiff = maxLon - minLon;
@@ -85,16 +84,22 @@ public:
             }
     }
 
-    double getElevation(const utymap::GeoCoordinate& coordinate) const { return getElevationImpl(coordinate.latitude, coordinate.longitude); };
+    double getElevation(const utymap::GeoCoordinate& coordinate) const override 
+    {
+        return getElevationImpl(coordinate.latitude, coordinate.longitude); 
+    }
 
-    double getElevation(double latitude, double longitude) const { return getElevationImpl(latitude, longitude); };
+    double getElevation(double latitude, double longitude) const override
+    {
+        return getElevationImpl(latitude, longitude);
+    }
 
 private:
 
-    inline double getElevationImpl(double latitude, double longitude) const
+    double getElevationImpl(double latitude, double longitude) const
     {
-        int latDec = (int) latitude;
-        int lonDec = (int) longitude;
+        int latDec = static_cast<int>(latitude);
+        int lonDec = static_cast<int>(longitude);
 
         double secondsLat = (latitude - latDec) * 3600;
         double secondsLon = (longitude - lonDec) * 3600;
@@ -113,8 +118,8 @@ private:
         // (sec)    0        3   x  (lon)
 
         //both values are [0; totalPx - 1] (totalPx reserved for interpolating)
-        int y = (int)(secondsLat / cell->secondsPerPx);
-        int x = (int)(secondsLon / cell->secondsPerPx);
+        int y = static_cast<int>(secondsLat / cell->secondsPerPx);
+        int x = static_cast<int>(secondsLon / cell->secondsPerPx);
 
         //get norther and easter points
         int height2 = readPx(cell, y, x);
@@ -138,7 +143,7 @@ private:
         return height0*dy*(1 - dx) + height1*dy*(dx)+height2*(1 - dy)*(1 - dx) + height3*(1 - dy)*dx;
     }
 
-    inline int readPx(CellPtr cell, int y, int x) const
+    static int readPx(CellPtr cell, int y, int x)
     {
         int pos = cell->offset + 2 * (x - cell->totalPx*y);
         // TODO ensure that it works on all platforms
@@ -146,15 +151,14 @@ private:
                *((cell->data + pos + 1));
     }
 
-    inline CellPtr readCell(const std::string& path) const
+   static CellPtr readCell(const std::string& path)
     {
         std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
         file.seekg(0, std::ios::end);
         auto size = file.tellg();
 
         int totalPx, secondsPerPx;
-        switch (size)
-        {
+        switch (size) {
             case 1201 * 1201 * 2: // SRTM-3
                 totalPx = 1201;
                 secondsPerPx = 3;
@@ -173,7 +177,7 @@ private:
         file.read(data, size);
         file.close();
 
-        return CellPtr(new HgtCell(totalPx, secondsPerPx, data, size));
+        return std::make_shared<HgtCell>(totalPx, secondsPerPx, data, size);
     }
 
     std::string getFilePath(const HgtCellKey& key) const

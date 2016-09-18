@@ -10,8 +10,8 @@ namespace utymap {
 class MapCssException : public std::invalid_argument
 {
 public:
-    MapCssException(std::string message) : invalid_argument(message.c_str()) {}
-    ~MapCssException() throw() {}
+    MapCssException(const std::string& message) : invalid_argument(message.c_str()) {}
+    ~MapCssException() = default;
 };
 
 }

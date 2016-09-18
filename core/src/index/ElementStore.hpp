@@ -6,11 +6,9 @@
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
 #include "LodRange.hpp"
-#include "formats/FormatTypes.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <cstdint>
-#include <memory>
 
 namespace utymap { namespace index {
 
@@ -58,10 +56,6 @@ private:
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider,
                const Visitor& visitor);
-
-    bool checkSize(const utymap::BoundingBox& quadKeyBBox,
-                   const utymap::BoundingBox& elementBbox,
-                   double minSize) const;
 
     std::uint32_t clipKeyId_, skipKeyId_, sizeKeyId_;
 };
