@@ -3,7 +3,6 @@
 #include "entities/Relation.hpp"
 #include "formats/osm/MultipolygonProcessor.hpp"
 
-#include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GeoUtils.hpp"
 #include "utils/GeometryUtils.hpp"
@@ -34,9 +33,6 @@ struct MultipolygonProcessor::CoordinateSequence final
     // should be considered "spent".
     bool tryAdd(CoordinateSequence& other)
     {
-        if (other.coordinates.empty())
-            return false;
-
         //add the sequence at the end
         if (last() == other.first()) {
             coordinates.pop_back();
@@ -66,7 +62,7 @@ struct MultipolygonProcessor::CoordinateSequence final
         return false;
     }
 
-    bool isClosed() 
+    bool isClosed() const
     { 
         return coordinates.size() > 1 && coordinates[0] == coordinates[coordinates.size() - 1]; 
     }
@@ -149,11 +145,11 @@ void MultipolygonProcessor::process()
         else
             continue;
 
-        auto sequence = CoordinateSequence(member.refId, coordinates);
-        if (!sequence.isClosed()) 
+        auto sequence = std::make_shared<CoordinateSequence>(member.refId, coordinates);
+        if (!sequence->isClosed()) 
             allClosed = false;
 
-        sequences.push_back(std::move(sequence));
+        sequences.push_back(sequence);
     }
 
     if (outerIndecies.size() == 1 && allClosed)
@@ -165,20 +161,19 @@ void MultipolygonProcessor::process()
 void MultipolygonProcessor::simpleCase(const CoordinateSequences& sequences, const Ints& outerIndecies, const Ints& innerIndecies) const
 {
     // TODO set correct tags!
-    auto& outer = sequences[outerIndecies[0]];
+    auto outer = sequences[outerIndecies[0]];
 
     // outer
     auto outerArea = std::make_shared<Area>();
-    outerArea->id = outer.id;
-    insertCoordinates(outer.coordinates, outerArea->coordinates, true);
+    outerArea->id = outer->id;
+    insertCoordinates(outer->coordinates, outerArea->coordinates, true);
 
     relation_.elements.push_back(outerArea);
 
     // inner
     for (int i : innerIndecies) {
-        auto& coords = sequences[i].coordinates;
         auto innerArea = std::make_shared<Area>();
-        insertCoordinates(coords, innerArea->coordinates, false);
+        insertCoordinates(sequences[i]->coordinates, innerArea->coordinates, false);
         relation_.elements.push_back(innerArea);
     }
 }
@@ -191,22 +186,22 @@ void MultipolygonProcessor::complexCase(CoordinateSequences& sequences) const
     fillRelation(rings);
 }
 
-MultipolygonProcessor::CoordinateSequences MultipolygonProcessor::createRings(CoordinateSequences& sequences) const
+std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> MultipolygonProcessor::createRings(CoordinateSequences& sequences) const
 {
     CoordinateSequences closedRings;
-    CoordinateSequence* currentRing = nullptr;
+    std::shared_ptr<MultipolygonProcessor::CoordinateSequence> currentRing = nullptr;
     while (!sequences.empty()) {
         if (currentRing == nullptr) {
             // start a new ring with any remaining node sequence
             auto lastIndex = sequences.size() - 1;
-            currentRing = &sequences[lastIndex];
+            currentRing = sequences[lastIndex];
             sequences.erase(sequences.begin() + lastIndex);
         }
         else {
             // try to continue the ring by appending a node sequence
             bool isFound = false;
             for (auto it = sequences.begin(); it != sequences.end(); ++it) {
-                if (!currentRing->tryAdd(*it)) continue;
+                if (!currentRing->tryAdd(**it)) continue;
                 isFound = true;
                 sequences.erase(it);
                 break;
@@ -219,7 +214,7 @@ MultipolygonProcessor::CoordinateSequences MultipolygonProcessor::createRings(Co
         // check whether the ring under construction is closed
         if (currentRing != nullptr && currentRing->isClosed()) {
             // TODO check that it isn't self-intersecting!
-            closedRings.push_back(std::move(*currentRing));
+            closedRings.push_back(currentRing);
             currentRing = nullptr;
         }
     }
@@ -231,17 +226,17 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings) const
 {
     while (!rings.empty()) {
         // find an outer ring
-        CoordinateSequence* outer = nullptr;
+        std::shared_ptr<CoordinateSequence> outer = nullptr;
         for (auto candidate = rings.begin(); candidate != rings.end(); ++candidate) {
             bool containedInOtherRings = false;
             for (auto other = rings.begin(); other != rings.end(); ++other) {
-                if (other != candidate && other->containsRing(candidate->coordinates)) {
+                if (other != candidate && (*other)->containsRing((*candidate)->coordinates)) {
                     containedInOtherRings = true;
                     break;
                 }
             }
             if (containedInOtherRings) continue;
-            outer = &(*candidate);
+            outer = *candidate;
             rings.erase(candidate);
             break;
         }
@@ -249,10 +244,10 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings) const
         // find inner rings of that ring
         CoordinateSequences inners;
         for (auto ring = rings.begin(); ring != rings.end();) {
-            if (outer->containsRing(ring->coordinates)) {
+            if (outer->containsRing((*ring)->coordinates)) {
                 bool containedInOthers = false;
                 for (auto other = rings.begin(); other != rings.end(); ++other) {
-                    if (other != ring && other->containsRing(ring->coordinates)) {
+                    if (other != ring && (*other)->containsRing((*ring)->coordinates)) {
                         containedInOthers = true;
                         break;
                     }
@@ -275,7 +270,7 @@ void MultipolygonProcessor::fillRelation(CoordinateSequences& rings) const
         // inner: create a new area and remove the used rings
         for (const auto& innerRing : inners) {
             auto innerArea = std::make_shared<Area>();
-            insertCoordinates(innerRing.coordinates, innerArea->coordinates, false);
+            insertCoordinates(innerRing->coordinates, innerArea->coordinates, false);
             relation_.elements.push_back(innerArea);
         }
     }
