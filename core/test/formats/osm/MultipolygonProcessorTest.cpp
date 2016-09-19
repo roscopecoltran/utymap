@@ -33,7 +33,7 @@ namespace {
             return relation;
         }
 
-        RelationMembers createRelationMembers(const std::initializer_list<std::tuple<std::uint64_t, std::string, std::string>>& membersInfo)
+        RelationMembers createRelationMembers(const std::initializer_list<std::tuple<std::uint64_t, std::string, std::string>>& membersInfo) const
         {
             RelationMembers members;
             members.reserve(membersInfo.size());
@@ -47,7 +47,7 @@ namespace {
         {
         }
 
-        std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate> source, bool isOuter = true)
+        std::vector<GeoCoordinate> ensureExpectedOrientation(std::vector<GeoCoordinate>& source, bool isOuter = true) const
         {
             std::vector<GeoCoordinate> destination;
             destination.reserve(source.size());

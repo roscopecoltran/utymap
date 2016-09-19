@@ -1,11 +1,8 @@
 #include "QuadKey.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
-#include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
-#include "entities/Relation.hpp"
-#include "heightmap/FlatElevationProvider.hpp"
 
 #include <boost/test/unit_test.hpp>
 

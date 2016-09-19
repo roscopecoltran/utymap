@@ -31,7 +31,7 @@ struct GeoCoordinate final
                std::abs(longitude - rhs.longitude) < std::numeric_limits<double>::epsilon();
     }
 
-    inline bool isValid() const
+    bool isValid() const
     {
         // NOTE please note that lowest and biggest values are not included.
         return latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180;

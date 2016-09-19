@@ -17,10 +17,10 @@ namespace {
 
         Counter() : nodes(0), ways(0), areas(0), relations(0) {}
 
-        void visitNode(const Node&) { nodes++; }
-        void visitWay(const Way&) { ways++; }
-        void visitArea(const Area&) { areas++; }
-        void visitRelation(const Relation&) { relations++; }
+        void visitNode(const Node&) override { nodes++; }
+        void visitWay(const Way&) override { ways++; }
+        void visitArea(const Area&) override { areas++; }
+        void visitRelation(const Relation&) override { relations++; }
     };
 
     struct Entities_ElementFixture

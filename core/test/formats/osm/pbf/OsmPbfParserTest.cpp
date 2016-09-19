@@ -1,4 +1,3 @@
-#include "BoundingBox.hpp"
 #include "formats/osm/pbf/OsmPbfParser.hpp"
 #include "formats/osm/CountableOsmDataVisitor.hpp"
 #include "config.hpp"

@@ -6,8 +6,6 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
-#include <cstdio>
-
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;

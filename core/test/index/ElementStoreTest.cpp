@@ -26,20 +26,20 @@ namespace {
 
         TestElementStore(StringTable& stringTable, StoreCallback function) :
             ElementStore(stringTable),
-            function_(function),
-            times(0)
+            times(0),
+            function_(function)
         {
         }
 
-        void search(const QuadKey& quadKey, ElementVisitor& visitor) { }
+        void search(const QuadKey&, ElementVisitor&) override { }
 
-        bool hasData(const QuadKey& quadKey) const { return true; }
+        bool hasData(const QuadKey&) const override { return true; }
 
-        void commit() {}
+        void commit() override {}
 
     protected:
 
-        void storeImpl(const Element& element, const QuadKey& quadKey)
+        void storeImpl(const Element& element, const QuadKey& quadKey) override
         {
             times++;
             function_(element, quadKey);
@@ -55,9 +55,7 @@ namespace {
 
     bool checkQuadKey(const utymap::QuadKey& quadKey, int lod, int tileX, int tileY)
     {
-        return quadKey.levelOfDetail == lod &&
-            quadKey.tileX == tileX &&
-            quadKey.tileY == tileY;
+        return quadKey.levelOfDetail == lod && quadKey.tileX == tileX && quadKey.tileY == tileY;
     }
 
     template<typename T>
@@ -83,10 +81,10 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped)
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, -10 }, { 10, 0 } });
+            checkGeometry<Way>(static_cast<const Way&>(element), { { 10, -10 }, { 10, 0 } });
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 10, 0 }, { 10, 10 } });
+            checkGeometry<Way>(static_cast<const Way&>(element), { { 10, 0 }, { 10, 10 } });
         }
         else {
             BOOST_FAIL("Unexpected quadKey!");
@@ -107,13 +105,13 @@ BOOST_AUTO_TEST_CASE(GivenWayIntersectsTwoTilesTwice_WhenStore_GeometryIsClipped
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Way>(reinterpret_cast<const Way&>(element), { { 20, 0 }, { 20, -10 }, { 10, -10 }, {10, 0} });
+            checkGeometry<Way>(static_cast<const Way&>(element), { { 20, 0 }, { 20, -10 }, { 10, -10 }, { 10, 0 } });
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            const Relation& relation = reinterpret_cast<const Relation&>(element);
+            const Relation& relation = static_cast<const Relation&>(element);
             BOOST_CHECK_EQUAL(relation.elements.size(), 2);
-            checkGeometry<Way>(reinterpret_cast<const Way&>(*relation.elements[0]), { { 20, 10 }, { 20, 0 } });
-            checkGeometry<Way>(reinterpret_cast<const Way&>(*relation.elements[1]), { { 10, 0 }, { 10, 10 } });
+            checkGeometry<Way>(static_cast<const Way&>(*relation.elements[0]), { { 20, 10 }, { 20, 0 } });
+            checkGeometry<Way>(static_cast<const Way&>(*relation.elements[1]), { { 10, 0 }, { 10, 10 } });
         }
         else {
             BOOST_FAIL("Unexpected quadKey!");
@@ -136,7 +134,7 @@ BOOST_AUTO_TEST_CASE(GivenWayOutsideTileWithBoundingBoxIntersectingTile_WhenStor
         if (checkQuadKey(quadKey, 1, 1, 1) || 
             checkQuadKey(quadKey, 1, 0, 0) || 
             checkQuadKey(quadKey, 1, 0, 1)) {
-            BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
+            BOOST_CHECK(static_cast<const Way&>(element).coordinates.size() > 0);
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
             BOOST_FAIL("This quadkey should be skipped!!");
@@ -160,10 +158,10 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesOnce_WhenStore_GeometryIsClipped
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, {10, -10}, {10, 0} });
+            checkGeometry<Area>(static_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 10, -10 }, { 10, 0 } });
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 10 }, { 20, 0 }, { 10, 0 }, { 10, 10 } });
+            checkGeometry<Area>(static_cast<const Area&>(element), { { 20, 10 }, { 20, 0 }, { 10, 0 }, { 10, 10 } });
         }
         else {
             BOOST_FAIL("Unexpected quadKey!");
@@ -184,14 +182,14 @@ BOOST_AUTO_TEST_CASE(GivenAreaIntersectsTwoTilesTwice_WhenStore_GeometryIsClippe
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(element), 
+            checkGeometry<Area>(static_cast<const Area&>(element),
             { { 10, 0 }, { 10, -5 }, { 15, -5 }, { 15, 0 }, { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
         }
         else if (checkQuadKey(quadKey, 1, 1, 0)) {
-            const Relation& relation = reinterpret_cast<const Relation&>(element);
+            const Relation& relation = static_cast<const Relation&>(element);
             BOOST_CHECK_EQUAL(relation.elements.size(), 2);
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[0]), { { 15, 10 }, { 20, 10 }, { 20, 0 }, {15, 0} });
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*relation.elements[1]), { { 10, 10 }, { 10, 0 }, { 5, 0 }, { 5, 10 } });
+            checkGeometry<Area>(static_cast<const Area&>(*relation.elements[0]), { { 15, 10 }, { 20, 10 }, { 20, 0 }, { 15, 0 } });
+            checkGeometry<Area>(static_cast<const Area&>(*relation.elements[1]), { { 10, 10 }, { 10, 0 }, { 5, 0 }, { 5, 10 } });
         }
         else {
             BOOST_FAIL("Unexpected quadKey!");
@@ -213,7 +211,7 @@ BOOST_AUTO_TEST_CASE(GivenAreaBiggerThanTile_WhenStore_GeometryIsTheSameAsForTil
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
             // TODO improve geometry check
-            BOOST_CHECK_EQUAL(reinterpret_cast<const Area&>(element).coordinates.size(), 4);
+            BOOST_CHECK_EQUAL(static_cast<const Area&>(element).coordinates.size(), 4);
         }
     });
 
@@ -236,13 +234,13 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationIsReturned
     relation.elements.push_back(std::make_shared<Area>(outer));
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
-        auto result = reinterpret_cast<const Relation&>(element);
+        auto result = static_cast<const Relation&>(element);
         if (checkQuadKey(quadKey, 1, 1, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[0]), { { 15, 5 }, { 15, 0 }, { 10, 0 }, { 10, 5 } });
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[1]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[0]), { { 15, 5 }, { 15, 0 }, { 10, 0 }, { 10, 5 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[1]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
         } else if(checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[0]), { { 15, 0 }, { 15, -5 }, { 10, -5 }, { 10, 0 } });
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[1]), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[0]), { { 15, 0 }, { 15, -5 }, { 10, -5 }, { 10, 0 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[1]), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
         } else {
             BOOST_FAIL("Unexpected quadKey!");
         }
@@ -267,13 +265,13 @@ BOOST_AUTO_TEST_CASE(GivenRelationOfPolygonWithHole_WhenStore_RelationAndAreaRet
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
-            const Relation& result = reinterpret_cast<const Relation&>(element);
+            const Relation& result = static_cast<const Relation&>(element);
             BOOST_CHECK_EQUAL(result.elements.size(), 2);
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[0]), { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
-            checkGeometry<Area>(reinterpret_cast<const Area&>(*result.elements[1]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[0]), { { 10, 8 }, { 15, 8 }, { 15, 2 }, { 10, 2 } });
+            checkGeometry<Area>(static_cast<const Area&>(*result.elements[1]), { { 20, 10 }, { 20, 0 }, { 5, 0 }, { 5, 10 } });
         }
         else if (checkQuadKey(quadKey, 1, 0, 0)) {
-            checkGeometry<Area>(reinterpret_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
+            checkGeometry<Area>(static_cast<const Area&>(element), { { 20, 0 }, { 20, -10 }, { 5, -10 }, { 5, 0 } });
         }
         else {
             BOOST_FAIL("Unexpected quadKey!");
@@ -293,7 +291,7 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {
         if (checkQuadKey(quadKey, 1, 1, 0)) {
-            BOOST_CHECK(reinterpret_cast<const Way&>(element).coordinates.size() > 0);
+            BOOST_CHECK(static_cast<const Way&>(element).coordinates.size() > 0);
         } else {
             BOOST_FAIL("Unexpected quadKey!");
         }
@@ -325,7 +323,7 @@ BOOST_AUTO_TEST_CASE(GivenWayWithLargeSize_WhenStore_IsStored)
     TestElementStore elementStore(*dependencyProvider.getStringTable(),
         [&](const Element& element, const QuadKey& quadKey) {});
 
-    elementStore.store(way, LodRange(1, 1),
+    elementStore.store(way, LodRange(1, 1), 
         *dependencyProvider.getStyleProvider("way|z1[test=Foo] { size: 50%;}"));
 
     BOOST_CHECK_EQUAL(elementStore.times, 1);

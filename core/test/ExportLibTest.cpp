@@ -22,7 +22,7 @@ namespace {
             ::registerInMemoryStore(InMemoryStoreKey);
         }
 
-        void loadQuadKeys(int levelOfDetails, int startX, int endX, int startY, int endY)
+        void loadQuadKeys(int levelOfDetails, int startX, int endX, int startY, int endY) const
         {
             isCalled = false;
             for (int i = startX; i <= endX; ++i) {

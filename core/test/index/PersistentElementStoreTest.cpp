@@ -50,23 +50,23 @@ namespace {
         int times = 0;
         std::shared_ptr<Element> element;
 
-        void visitNode(const Node& node) 
+        void visitNode(const Node& node) override
         { 
             ++times; 
             element = std::make_shared<Node>(node);
         }
 
-        void visitWay(const Way& way)
+        void visitWay(const Way& way) override
         {
             ++times;
             element = std::make_shared<Way>(way);
         }
-        void visitArea(const Area& area)
+        void visitArea(const Area& area) override
         {
             ++times;
             element = std::make_shared<Area>(area);
         }
-        void visitRelation(const Relation& relation)
+        void visitRelation(const Relation& relation) override
         {
             ++times;
             element = std::make_shared<Relation>(relation);

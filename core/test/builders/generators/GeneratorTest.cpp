@@ -29,7 +29,7 @@ namespace {
             mesh(""),
             gradient(),
             style(dependencyProvider.getStyleProvider(stylesheet)
-            ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
+                ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
             builderContext(
             QuadKey{ 1, 1, 1 },
             *dependencyProvider.getStyleProvider(stylesheet),
@@ -43,8 +43,8 @@ namespace {
 
         DependencyProvider dependencyProvider;
         Mesh mesh;
-        Style style;
         ColorGradient gradient;
+        Style style;
         BuilderContext builderContext;
         MeshContext meshContext;
     };

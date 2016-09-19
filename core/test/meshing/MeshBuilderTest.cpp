@@ -18,9 +18,7 @@ namespace {
     {
         Meshing_MeshingFixture() : eleProvider(), builder(eleProvider), gradient()
         {
-            BOOST_TEST_MESSAGE("setup fixture");
         }
-        ~Meshing_MeshingFixture()       { BOOST_TEST_MESSAGE("teardown fixture"); }
 
         FlatElevationProvider eleProvider;
         MeshBuilder builder;

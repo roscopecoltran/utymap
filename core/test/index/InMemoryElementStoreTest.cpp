@@ -29,12 +29,12 @@ namespace {
             auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
 
             elementStore.store(ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
-            { { "any", "true" } }, { { 5, -5 }, { 5, -10 } }), range, *styleProvider);
+                { { "any", "true" } }, { { 5, -5 }, { 5, -10 } }), range, *styleProvider);
             elementStore.store(ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0,
-            { { "any", "true" } }, { { 5, -5 }, { 5, -10 }, { 10, -10 } }), range, *styleProvider);
+                { { "any", "true" } }, { { 5, -5 }, { 5, -10 }, { 10, -10 } }), range, *styleProvider);
 
             Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,
-            { { "any", "true" } });
+                { { "any", "true" } });
             node.coordinate = { 5, -5 };
             elementStore.store(node, range, *styleProvider);
         }
@@ -47,10 +47,10 @@ namespace {
     {
         int times = 0;
 
-        void visitNode(const Node&) { ++times; }
-        void visitWay(const Way&) { ++times; }
-        void visitArea(const Area&) { ++times; }
-        void visitRelation(const Relation&)  { ++times; }
+        void visitNode(const Node&) override { ++times; }
+        void visitWay(const Way&) override { ++times; }
+        void visitArea(const Area&) override { ++times; }
+        void visitRelation(const Relation&) override { ++times; }
     };
 }
 
