@@ -74,11 +74,12 @@ private:
         // convert style
         utymap::mapcss::Style style = styleProvider_.forElement(element, levelOfDetail_);
         std::vector<const char*> cstyles;
-        styleStrings_.reserve(style.declarations.size() * 2);
-        cstyles.reserve(style.declarations.size());
-        for (const auto pair : style.declarations) {
-            styleStrings_.push_back(stringTable_.getString(pair.first));
-            styleStrings_.push_back(pair.second.value());
+        auto declarations = style.declarations();
+        styleStrings_.reserve(declarations.size() * 2);
+        cstyles.reserve(declarations.size());
+        for (const auto& declaration : declarations) {
+            styleStrings_.push_back(stringTable_.getString(declaration->key()));
+            styleStrings_.push_back(declaration->value());
             cstyles.push_back(styleStrings_[styleStrings_.size() - 2].c_str());
             cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
         }

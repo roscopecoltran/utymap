@@ -241,7 +241,7 @@ public:
                         if (utymap::utils::GradientUtils::isGradient(declaration.value))
                             addGradient(declaration.value);
 
-                        filter.declarations.emplace(key, utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value));
+                        filter.declarations[key] = utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value);
                     }
 
                     std::sort(filter.conditions.begin(), filter.conditions.end(),
@@ -251,15 +251,6 @@ public:
                     }
                 }
             }
-        }
-    }
-
-    inline void addGradient(const std::string& key)
-    {
-        if (gradients.find(key) == gradients.end()) {
-            auto gradient = utymap::utils::GradientUtils::parseGradient(key);
-            if (!gradient->empty())
-                gradients.emplace(std::make_pair(key, std::move(gradient)));
         }
     }
 
@@ -277,6 +268,16 @@ public:
         return *gradientPair->second;
     }
 private:
+
+    void addGradient(const std::string& key)
+    {
+        if (gradients.find(key) == gradients.end()) {
+            auto gradient = utymap::utils::GradientUtils::parseGradient(key);
+            if (!gradient->empty())
+                gradients.emplace(std::make_pair(key, std::move(gradient)));
+        }
+    }
+
     std::mutex lock_;
 };
 

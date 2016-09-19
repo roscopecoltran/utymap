@@ -17,17 +17,15 @@ namespace utymap { namespace mapcss {
 // Represents style for element.
 struct Style final
 {    
-    std::unordered_map<std::uint32_t, const StyleDeclaration&> declarations;
-
     Style(const std::vector<utymap::entities::Tag>& tags,
           utymap::index::StringTable& stringTable) :
-        declarations(), stringTable_(stringTable), tags_(tags)
+          stringTable_(stringTable), tags_(tags), declarations_()
     {
     }
 
     Style(Style&& other) : stringTable_(other.stringTable_)
     {
-        declarations = std::move(other.declarations);
+        declarations_ = std::move(other.declarations_);
         tags_ = std::move(other.tags_);
     }
 
@@ -38,27 +36,38 @@ struct Style final
 
     bool has(std::uint32_t key) const
     {
-        return declarations.find(key) != declarations.end();
+        return declarations_.find(key) != declarations_.end();
     }
 
     bool has(std::uint32_t key, const std::string& value) const
     {
-        auto it = declarations.find(key);
-        return it != declarations.end() && it->second.value() == value;
+        auto it = declarations_.find(key);
+        return it != declarations_.end() && it->second->value() == value;
     }
 
     void put(const StyleDeclaration& declaration)
     {
-        declarations.emplace(declaration.key(), declaration);
+        declarations_[declaration.key()] = &declaration;
     }
 
     const StyleDeclaration& get(std::uint32_t key) const
     {
-        auto it = declarations.find(key);
-        if (it == declarations.end())
+        auto it = declarations_.find(key);
+        if (it == declarations_.end())
             throw MapCssException(std::string("Cannot find declaration with the key: ") + stringTable_.getString(key));
 
-        return it->second;
+        return *it->second;
+    }
+
+    std::vector<const StyleDeclaration*> declarations() const
+    {
+        std::vector<const StyleDeclaration*> decs;
+        std::transform(std::begin(declarations_), std::end(declarations_), std::back_inserter(decs),
+            [](std::unordered_map<std::uint32_t, const StyleDeclaration*>::value_type const& pair) {
+            return pair.second;
+        });
+
+        return decs;
     }
 
     // Gets string by given key. Empty string by default
@@ -123,6 +132,7 @@ struct Style final
 private:
     utymap::index::StringTable& stringTable_;
     std::vector<utymap::entities::Tag> tags_;
+    std::unordered_map<std::uint32_t, const StyleDeclaration*> declarations_;
 };
 
 }}
