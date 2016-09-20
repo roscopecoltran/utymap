@@ -13,12 +13,12 @@ class CylinderFacadeBuilder : public FacadeBuilder
 {
 public:
     CylinderFacadeBuilder(const utymap::builders::BuilderContext& builderContext,
-                          utymap::builders::MeshContext& meshContext)
-            : FacadeBuilder(builderContext, meshContext)
+                          utymap::builders::MeshContext& meshContext) : 
+        FacadeBuilder(builderContext, meshContext)
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
             utymap::meshing::Vector2 center2d;

@@ -7,7 +7,6 @@
 
 #include <boost/lexical_cast.hpp>
 
-
 namespace utymap { namespace utils {
 
 template <typename T>

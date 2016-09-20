@@ -53,7 +53,7 @@ public:
         return *this;
     }
 
-    void generate()
+    void generate() override
     {
         int heightSegments = (int) std::ceil(height_ / maxSegmentHeight_);
 

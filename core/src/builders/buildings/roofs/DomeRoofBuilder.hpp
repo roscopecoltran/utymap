@@ -7,8 +7,6 @@
 #include "utils/GeometryUtils.hpp"
 #include "utils/GeoUtils.hpp"
 
-#include <vector>
-
 namespace utymap { namespace builders {
 
 // Builds flat roof in low poly.
@@ -16,12 +14,12 @@ class DomeRoofBuilder : public RoofBuilder
 {
 public:
     DomeRoofBuilder(const utymap::builders::BuilderContext& builderContext,
-                    utymap::builders::MeshContext& meshContext)
-      : RoofBuilder(builderContext, meshContext)
+                    utymap::builders::MeshContext& meshContext) :
+        RoofBuilder(builderContext, meshContext)
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon)
+    void build(utymap::meshing::Polygon& polygon) override
     {
         utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
             utymap::meshing::Vector2 center2d;
