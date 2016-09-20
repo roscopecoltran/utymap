@@ -11,28 +11,23 @@
 #include <cstdint>
 #include <istream>
 #include <stdexcept>
+#include <vector>
 
 namespace utymap { namespace formats {
 
 template<typename Visitor>
 class OsmPbfParser final
 {
-    const int MAX_BLOB_HEADER_SIZE = 64 * 1024;
-    const int MAX_UNCOMPRESSED_BLOB_SIZE = 32 * 1024 * 1024;
+    const static int MaxBlobHeaderSize = 64 * 1024;
+    const static int MaxUncompressedBlobSize = 32 * 1024 * 1024;
 
 public:
 
-    OsmPbfParser()
+    OsmPbfParser() : 
+        buffer_(MaxUncompressedBlobSize), 
+        unpack_buffer_(MaxUncompressedBlobSize), 
+        finished_(false)
     {
-        buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
-        unpack_buffer_ = new char[MAX_UNCOMPRESSED_BLOB_SIZE];
-        finished_ = false;
-    }
-
-    ~OsmPbfParser()
-    {
-        delete[] buffer_;
-        delete[] unpack_buffer_;
     }
 
     void parse(std::istream& stream, Visitor& visitor)
@@ -55,8 +50,8 @@ public:
 
 private:
 
-    char* buffer_;
-    char* unpack_buffer_;
+    std::vector<char> buffer_;
+    std::vector<char> unpack_buffer_;
     bool finished_;
 
     OSMPBF::BlobHeader readHeader(std::istream& stream)
@@ -65,7 +60,7 @@ private:
         OSMPBF::BlobHeader result;
 
         // read size of blob-header
-        if (!stream.read((char*)&sz, 4)) {
+        if (!stream.read(reinterpret_cast<char*>(&sz), 4)) {
             finished_ = true;
             return result;
         }
@@ -73,14 +68,14 @@ private:
         // little endian to big endian
         sz = (((sz & 0xff) << 24) + ((sz & 0xff00) << 8) + ((sz & 0xff0000) >> 8) + ((sz >> 24) & 0xff));
 
-        if (sz > MAX_BLOB_HEADER_SIZE)
+        if (sz > MaxBlobHeaderSize)
             throw std::domain_error("Blob header size is bigger than allowed");
 
-        stream.read(buffer_, sz);
+        stream.read(buffer_.data(), sz);
         if (!stream.good())
             throw std::domain_error("Unable to read blob header from file");
 
-        if (!result.ParseFromArray(buffer_, sz))
+        if (!result.ParseFromArray(buffer_.data(), sz))
             throw std::domain_error("Unable to parse blob header");
 
         return result;
@@ -92,19 +87,19 @@ private:
 
         std::int32_t sz = header.datasize();
 
-        if (sz > MAX_UNCOMPRESSED_BLOB_SIZE)
+        if (sz > MaxUncompressedBlobSize)
             throw std::domain_error("Blob size is bigger then allowed");
 
-        if (!stream.read(buffer_, sz))
+        if (!stream.read(buffer_.data(), sz))
             throw std::domain_error("Unable to read blob from file");
 
-        if (!blob.ParseFromArray(buffer_, sz))
+        if (!blob.ParseFromArray(buffer_.data(), sz))
             throw std::domain_error("Unable to parse blob");
 
         // uncompressed
         if (blob.has_raw()) {
             sz = static_cast<std::int32_t>(blob.raw().size());
-            memcpy(unpack_buffer_, buffer_, sz);
+            memcpy(unpack_buffer_.data(), buffer_.data(), sz);
             return sz;
         }
 
@@ -112,9 +107,9 @@ private:
             sz = static_cast<std::int32_t>(blob.zlib_data().size());
 
             z_stream z;
-            z.next_in = (unsigned char*) blob.zlib_data().c_str();
+            z.next_in = (unsigned char*)blob.zlib_data().c_str();
             z.avail_in = sz;
-            z.next_out = (unsigned char*) unpack_buffer_;
+            z.next_out = reinterpret_cast<unsigned char*>(unpack_buffer_.data());
             z.avail_out = blob.raw_size();
             z.zalloc = Z_NULL;
             z.zfree = Z_NULL;
@@ -142,7 +137,7 @@ private:
     {
         OSMPBF::PrimitiveBlock primblock;
 
-        if (!primblock.ParseFromArray(unpack_buffer_, sz))
+        if (!primblock.ParseFromArray(unpack_buffer_.data(), sz))
             throw std::domain_error("Unable to parse primitive block");
 
         for (int i = 0, l = primblock.primitivegroup_size(); i < l; i++) {
