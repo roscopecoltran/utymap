@@ -1,7 +1,6 @@
 #ifndef EXPORTELEMENTVISITOR_HPP_DEFINED
 #define EXPORTELEMENTVISITOR_HPP_DEFINED
 
-#include "BoundingBox.hpp"
 #include "Callbacks.hpp"
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
