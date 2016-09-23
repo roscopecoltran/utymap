@@ -36,7 +36,7 @@ namespace UtyMap.Unity.Core
         /// <inheritdoc />
         public GeoCoordinate Project(Vector3 worldCoordinate)
         {
-            return GeoUtils.ToGeoCoordinate(_worldZeroPoint, worldCoordinate);
+            return GeoUtils.ToGeoCoordinate(_worldZeroPoint, new Vector2(worldCoordinate.x, worldCoordinate.z));
         }
     }
 
