@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using UnityEngine;
 using UtyDepend.Config;
+using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
 
@@ -36,7 +37,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         }
 
         [Test(Description = "Tests whether first tile can be loaded (done in test setup).")]
-        public void CanLoadFirstTile()
+        public void CanOnPositionLoadFirstTile()
         {
             QuadKey quadKey = GeoUtils.CreateQuadKey(_worldZeroPoint, LevelOfDetails);
 
@@ -46,7 +47,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         }
 
         [Test(Description = "Tests whether next tile can be loaded when position is changed.")]
-        public void CanLoadNextNorthTile()
+        public void CanOnPositionLoadNextNorthTile()
         {
             var newQuadKey = new QuadKey(17602, 10743, LevelOfDetails);
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
@@ -58,7 +59,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         }
 
         [Test (Description = "Tests whether far tile can be disposed.")]
-        public void CanUnloadFarTile()
+        public void CanOnPositionUnloadFarTile()
         {
             _configSection.Setup(c => c.GetInt("max_tile_distance", It.IsAny<int>())).Returns(1);
             QuadKey quadKey = GeoUtils.CreateQuadKey(_worldZeroPoint, LevelOfDetails);
@@ -67,6 +68,16 @@ namespace UtyMap.Unity.Tests.Core.Tiling
                 _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(1, 0), i*400), LevelOfDetails);
 
             _tileObserver.Verify(o => o.OnNext(It.Is<Tile>(tile => tile.IsDisposed && CheckQuadKey(tile.QuadKey, quadKey))));
+        }
+
+        [Test(Description = "Tests whether 2x2 tile grid can be loaded from rectangle.")]
+        public void CanOnRegionLoadMultipleTiles()
+        {
+            var rectangle = new Rectangle(0, 0, 1000, 1000);
+
+            _tileController.OnRegion(rectangle, LevelOfDetails);
+
+            _tileObserver.Verify(o => o.OnNext(It.IsAny<Tile>()), Times.Exactly(4));
         }
 
         #region Helpers

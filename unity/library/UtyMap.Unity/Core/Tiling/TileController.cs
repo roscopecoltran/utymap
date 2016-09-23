@@ -5,12 +5,12 @@ using UnityEngine;
 using UtyMap.Unity.Core.Utils;
 using UtyDepend;
 using UtyDepend.Config;
+using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
 
 namespace UtyMap.Unity.Core.Tiling
 {
     /// <summary> Controls flow of loading/unloading tiles. </summary>
-    /// <summary> Tested for cartesian projection only. </summary>
     public interface ITileController : IObservable<Tile>
     {
         /// <summary> Stylesheet. </summary>
@@ -24,6 +24,15 @@ namespace UtyMap.Unity.Core.Tiling
 
         /// <summary> Should be called when character position is updated. </summary>
         void OnPosition(GeoCoordinate coordinate, int levelOfDetails);
+
+        /// <summary> Loads all tiles for given region and level of details. </summary>
+        void OnRegion(Rectangle boundaries, int levelOfDetails);
+
+        /// <summary> Loads all tiles for given region and level of details. </summary>
+        void OnRegion(BoundingBox boundaries, int levelOfDetails);
+
+        /// <summary> Loads all tiles for given region and level of details. </summary>
+        void OnRegion(IEnumerable<QuadKey> quadKeys);
     }
 
     #region Default implementation
@@ -64,6 +73,31 @@ namespace UtyMap.Unity.Core.Tiling
         public void OnPosition(GeoCoordinate coordinate, int levelOfDetails)
         {
             OnPosition(coordinate, Projection.Project(coordinate, 0), levelOfDetails);
+        }
+
+        /// <inheritdoc />
+        public void OnRegion(Rectangle boundaries, int levelOfDetails)
+        {
+            OnRegion(GeoUtils.RectToBoundingBox(Projection, boundaries), levelOfDetails);
+        }
+
+        /// <inheritdoc />
+        public void OnRegion(BoundingBox boundaries, int levelOfDetails)
+        {
+            OnRegion(GeoUtils.BoundingBoxToQuadKeys(boundaries, levelOfDetails));
+        }
+
+        /// <inheritdoc />
+        public void OnRegion(IEnumerable<QuadKey> quadKeys)
+        {
+            lock (_lockObj)
+            {
+                foreach (QuadKey quadKey in quadKeys)
+                {
+                    if (!_loadedTiles.ContainsKey(quadKey))
+                        Load(quadKey);
+                }
+            }
         }
 
         /// <inheritdoc />

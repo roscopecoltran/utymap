@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UtyMap.Unity.Infrastructure.Primitives;
 
@@ -125,6 +126,38 @@ namespace UtyMap.Unity.Core.Utils
             var maxPoint = projection.Project(boundingBox.MaxPoint, 0);
 
             return new Rectangle(minPoint.x, minPoint.z, maxPoint.x - minPoint.x, maxPoint.z - minPoint.z);
+        }
+
+        public static BoundingBox RectToBoundingBox(IProjection projection, Rectangle rectangle)
+        {
+            var minPoint = projection.Project(new Vector3(rectangle.BottomLeft.x, 0, rectangle.BottomLeft.y));
+            var maxPoint = projection.Project(new Vector3(rectangle.TopRight.x, 0, rectangle.TopRight.y));
+
+            return new BoundingBox(minPoint, maxPoint);
+        }
+
+        public static IEnumerable<QuadKey> BoundingBoxToQuadKeys(BoundingBox bbox, int levelOfDetails)
+        {
+            var minQuadKey = CreateQuadKey(bbox.MinPoint, levelOfDetails);
+            var maxQuadKey = CreateQuadKey(bbox.MaxPoint, levelOfDetails);
+
+            var width = maxQuadKey.TileX - minQuadKey.TileX + 1;
+            var height = minQuadKey.TileY - maxQuadKey.TileY + 1;
+
+            int x = 0, y = 0, dx = 0, dy = -1;
+            int t = Math.Max(width, height);
+            int maxI = t * t;
+
+            for (int i = 0; i < maxI; i++)
+            {
+                if ((-width / 2 <= x) && (x <= width / 2) && (-height / 2 <= y) && (y <= height / 2))
+                    yield return new QuadKey(minQuadKey.TileX + x, minQuadKey.TileY + y, levelOfDetails);
+
+                if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y)))
+                    t = dx; dx = -dy; dy = t;
+                
+                x += dx; y += dy;
+            }
         }
 
         private static int LonToTileX(double longitude, int levelOfDetail)
