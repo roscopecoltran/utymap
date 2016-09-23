@@ -25,8 +25,8 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         public void Setup()
         {
             _configSection = new Mock<IConfigSection>();
-            _configSection.Setup(c => c.GetFloat("sensitivity", It.IsAny<float>())).Returns(20);
-            _configSection.Setup(c => c.GetFloat("offset", It.IsAny<float>())).Returns(100);
+            _configSection.Setup(c => c.GetFloat(@"tile/sensitivity", It.IsAny<float>())).Returns(20);
+            _configSection.Setup(c => c.GetFloat(@"tile/offset", It.IsAny<float>())).Returns(100);
 
             _tileObserver = new Mock<IObserver<Tile>>();
 
@@ -61,7 +61,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         [Test (Description = "Tests whether far tile can be disposed.")]
         public void CanOnPositionUnloadFarTile()
         {
-            _configSection.Setup(c => c.GetInt("max_tile_distance", It.IsAny<int>())).Returns(1);
+            _configSection.Setup(c => c.GetInt(@"tile/max_tile_distance", It.IsAny<int>())).Returns(1);
             QuadKey quadKey = GeoUtils.CreateQuadKey(_worldZeroPoint, LevelOfDetails);
 
             for (int i = 0; i < 2; ++i)

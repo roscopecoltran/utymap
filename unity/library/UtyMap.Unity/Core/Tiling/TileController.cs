@@ -138,9 +138,9 @@ namespace UtyMap.Unity.Core.Tiling
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _moveSensitivity = configSection.GetFloat("sensitivity", 30);
-            _offsetRatio = configSection.GetFloat("offset", 10); // percentage of tile size
-            _maxTileDistance = configSection.GetInt("max_tile_distance", 2);
+            _moveSensitivity = configSection.GetFloat(@"tile/sensitivity", 30);
+            _offsetRatio = configSection.GetFloat(@"tile/offset", 10); // percentage of tile size
+            _maxTileDistance = configSection.GetInt(@"tile/max_tile_distance", 2);
         }
 
         #endregion

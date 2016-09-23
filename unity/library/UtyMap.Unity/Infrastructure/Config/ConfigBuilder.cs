@@ -12,7 +12,7 @@ namespace UtyMap.Unity.Infrastructure.Config
         /// <typeparam name="T">Type of value.</typeparam>
         /// <param name="path">Path.</param>
         /// <param name="value">Value.</param>
-        protected void Add<T>(string path, T value)
+        public void Add<T>(string path, T value)
         {
             _configSection.Add(path, value);
         }
@@ -74,6 +74,13 @@ namespace UtyMap.Unity.Infrastructure.Config
         public ConfigBuilder SetCache(string cache)
         {
             Add<string>("data/cache", cache);
+            return this;
+        }
+
+        /// <summary> Sets distance (in tile count) between current and tile to be unloaded. </summary>
+        public ConfigBuilder SetTileDistance(int distance)
+        {
+            Add<int>(@"tile/max_tile_distance", distance);
             return this;
         }
 
