@@ -13,15 +13,6 @@ namespace UtyMap.Unity.Core.Tiling
     /// <summary> Tested for cartesian projection only. </summary>
     public interface ITileController : IObservable<Tile>
     {
-        /// <summary> Current position on map in world coordinates. </summary>
-        //Vector3 CurrentMapPoint { get; }
-
-        ///// <summary> Current position on map in geo coordinates. </summary>
-        //GeoCoordinate CurrentPosition { get; }
-
-        ///// <summary> Gets current tile. </summary>
-        //Tile CurrentTile { get; }
-
         /// <summary> Stylesheet. </summary>
         Stylesheet Stylesheet { get; set; }
 
@@ -56,15 +47,6 @@ namespace UtyMap.Unity.Core.Tiling
         #region Public members
 
         /// <inheritdoc />
-        public Vector3 CurrentMapPoint { get; private set; }
-
-        /// <inheritdoc />
-        public GeoCoordinate CurrentPosition { get; private set; }
-
-        /// <inheritdoc />
-        public Tile CurrentTile { get { return _loadedTiles[_currentQuadKey]; } }
-
-        /// <inheritdoc />
         [Dependency]
         public Stylesheet Stylesheet { get; set; }
 
@@ -96,16 +78,12 @@ namespace UtyMap.Unity.Core.Tiling
             if (!IsValidLevelOfDetails(levelOfDetails))
                 throw new ArgumentException(String.Format("Invalid level of details: {0}", levelOfDetails), "levelOfDetails");
 
-            //CurrentMapPoint = position;
-            //CurrentPosition = geoPosition;
-
             // call update logic only if threshold is reached
             if (Vector3.Distance(position, _lastUpdatePosition) > _moveSensitivity)
             {
                 lock (_lockObj)
                 {
                     _lastUpdatePosition = position;
-
                     _currentQuadKey = GeoUtils.CreateQuadKey(geoPosition, levelOfDetails);
 
                     UnloadFarTiles(_currentQuadKey);
