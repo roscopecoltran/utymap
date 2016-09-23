@@ -72,8 +72,7 @@ namespace Assets.Scripts
             if (_appManager.IsInitialized && _position != transform.position)
             {
                 _position = transform.position;
-                Scheduler.ThreadPool.Schedule(() => 
-                    _tileController.OnPosition(new Vector2(_position.x, _position.z), LevelOfDetails));
+                Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(_position, LevelOfDetails));
             }
         }
 

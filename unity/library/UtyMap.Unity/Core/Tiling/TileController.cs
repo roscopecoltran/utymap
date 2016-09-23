@@ -17,7 +17,7 @@ namespace UtyMap.Unity.Core.Tiling
     public interface ITileController
     {
         /// <summary> Current position on map in world coordinates. </summary>
-        Vector2 CurrentMapPoint { get; }
+        Vector3 CurrentMapPoint { get; }
 
         /// <summary> Current position on map in geo coordinates. </summary>
         GeoCoordinate CurrentPosition { get; }
@@ -32,7 +32,7 @@ namespace UtyMap.Unity.Core.Tiling
         IProjection Projection { get; set; }
 
         /// <summary> Called when position is changed. </summary>
-        void OnPosition(Vector2 position, int levelOfDetails);
+        void OnPosition(Vector3 position, int levelOfDetails);
 
         /// <summary> Called when position is changed. </summary>
         void OnPosition(GeoCoordinate coordinate, int levelOfDetails);
@@ -54,7 +54,7 @@ namespace UtyMap.Unity.Core.Tiling
         private double _moveSensitivity;
         private int _maxTileDistance;
 
-        private Vector2 _lastUpdatePosition = new Vector2(float.MinValue, float.MinValue);
+        private Vector3 _lastUpdatePosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         private QuadKey _currentQuadKey;
         private readonly Dictionary<QuadKey, Tile> _loadedTiles = new Dictionary<QuadKey, Tile>();
@@ -71,7 +71,7 @@ namespace UtyMap.Unity.Core.Tiling
         }
 
         /// <inheritdoc />
-        public Vector2 CurrentMapPoint { get; private set; }
+        public Vector3 CurrentMapPoint { get; private set; }
 
         /// <inheritdoc />
         public GeoCoordinate CurrentPosition { get; private set; }
@@ -88,7 +88,7 @@ namespace UtyMap.Unity.Core.Tiling
         public IProjection Projection { get; set; }
 
         /// <inheritdoc />
-        public void OnPosition(Vector2 position, int levelOfDetails)
+        public void OnPosition(Vector3 position, int levelOfDetails)
         {
             OnPosition(Projection.Project(position), position, levelOfDetails);
         }
@@ -96,11 +96,10 @@ namespace UtyMap.Unity.Core.Tiling
         /// <inheritdoc />
         public void OnPosition(GeoCoordinate coordinate, int levelOfDetails)
         {
-            var vector3D = Projection.Project(coordinate, 0);
-            OnPosition(coordinate, new Vector2(vector3D.x, vector3D.z), levelOfDetails);
+            OnPosition(coordinate, Projection.Project(coordinate, 0), levelOfDetails);
         }
 
-        private void OnPosition(GeoCoordinate geoPosition, Vector2 position, int levelOfDetails)
+        private void OnPosition(GeoCoordinate geoPosition, Vector3 position, int levelOfDetails)
         {
             if (!IsValidLevelOfDetails(levelOfDetails))
                 throw new ArgumentException(String.Format("Invalid level of details: {0}", levelOfDetails), "levelOfDetails");
@@ -109,8 +108,7 @@ namespace UtyMap.Unity.Core.Tiling
             CurrentPosition = geoPosition;
 
             // call update logic only if threshold is reached
-            if (Math.Abs(position.x - _lastUpdatePosition.x) > _moveSensitivity ||
-                Math.Abs(position.y - _lastUpdatePosition.y) > _moveSensitivity)
+            if (Vector3.Distance(position, _lastUpdatePosition) > _moveSensitivity)
             {
                 lock (_lockObj)
                 {
@@ -164,41 +162,42 @@ namespace UtyMap.Unity.Core.Tiling
 
         #region Preloading
 
-        private void PreloadNextTile(Tile tile, Vector2 position)
+        private void PreloadNextTile(Tile tile, Vector3 position)
         {
             var quadKey = GetNextQuadKey(tile, position);
             if (!_loadedTiles.ContainsKey(quadKey))
                 Load(quadKey);
         }
 
-        private bool ShouldPreload(Tile tile, Vector2 position)
+        private bool ShouldPreload(Tile tile, Vector3 position)
         {
             return !tile.Contains(position, tile.Rectangle.Width * _offsetRatio);
         }
 
         /// <summary> Gets next quadkey. </summary>
-        private QuadKey GetNextQuadKey(Tile tile, Vector2 position)
+        private QuadKey GetNextQuadKey(Tile tile, Vector3 position)
         {
             var quadKey = tile.QuadKey;
+            var position2D = new Vector2(position.x, position.z);
 
             // NOTE left-right and top-bottom orientation
             Vector2 topLeft = new Vector2(tile.Rectangle.Left, tile.Rectangle.Top);
             Vector2 topRight = new Vector2(tile.Rectangle.Right, tile.Rectangle.Top);
 
             // top
-            if (IsPointInTriangle(position, tile.Rectangle.Center, topLeft, topRight))
+            if (IsPointInTriangle(position2D, tile.Rectangle.Center, topLeft, topRight))
                 return new QuadKey(quadKey.TileX, quadKey.TileY - 1, quadKey.LevelOfDetail);
 
             Vector2 bottomLeft = new Vector2(tile.Rectangle.Left, tile.Rectangle.Bottom);
 
             // left
-            if (IsPointInTriangle(position, tile.Rectangle.Center, topLeft, bottomLeft))
+            if (IsPointInTriangle(position2D, tile.Rectangle.Center, topLeft, bottomLeft))
                 return new QuadKey(quadKey.TileX - 1, quadKey.TileY, quadKey.LevelOfDetail);
 
             Vector2 bottomRight = new Vector2(tile.Rectangle.Right, tile.Rectangle.Bottom);
 
             // right
-            if (IsPointInTriangle(position, tile.Rectangle.Center, topRight, bottomRight))
+            if (IsPointInTriangle(position2D, tile.Rectangle.Center, topRight, bottomRight))
                 return new QuadKey(quadKey.TileX + 1, quadKey.TileY, quadKey.LevelOfDetail);
 
             // bottom
