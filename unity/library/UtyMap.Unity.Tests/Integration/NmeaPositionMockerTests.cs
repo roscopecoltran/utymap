@@ -13,6 +13,7 @@ namespace UtyMap.Unity.Tests.Integration
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
     public class NmeaPositionMockerTests
     {
+        [Ignore]
         [Test(Description = "Checks whether nmea file can be read.")]
         public void CanListenPositionChangeEvents()
         {
