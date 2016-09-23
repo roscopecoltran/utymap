@@ -26,6 +26,9 @@ namespace UtyMap.Unity.Core.Tiling
         /// <summary> Sets game object which holds all children objects. </summary>
         public GameObject GameObject { get; set; }
 
+        /// <summary> True if tile was disposed. </summary>
+        public bool IsDisposed { get; private set; }
+
         /// <summary> Stores element ids loaded in this tile. </summary>
         private readonly SafeHashSet<long> _localIds = new SafeHashSet<long>();
 
@@ -86,6 +89,8 @@ namespace UtyMap.Unity.Core.Tiling
             foreach (var id in _localIds)
                 GlobalIds.Remove(id);
             _localIds.Clear();
+
+            IsDisposed = true;
         }
 
         #endregion

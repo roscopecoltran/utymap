@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
-using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyMap.Unity.Infrastructure.Primitives;
+using UtyMap.Unity.Maps.Data;
 using UtyRx;
+using Mesh = UtyMap.Unity.Core.Models.Mesh;
 
 namespace Assets.Scripts
 {
@@ -24,6 +27,8 @@ namespace Assets.Scripts
 
         // Current character position.
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        private IModelBuilder _modelBuilder;
+        private IMapDataLoader _mapDataLoader;
 
         #region Unity lifecycle events
 
@@ -39,16 +44,17 @@ namespace Assets.Scripts
                 });
             _appManager.CreateDebugConsole();
 
-            _tileController = _appManager.GetService<ITileController>();
             _trace = _appManager.GetService<ITrace>();
+
+            _tileController = _appManager.GetService<ITileController>();
+            _modelBuilder = _appManager.GetService<IModelBuilder>();
+            _mapDataLoader = _appManager.GetService<IMapDataLoader>();
         }
 
         void Start()
         {
-            // Freeze character on start to prevent free fall as terrain loading takes some time.
-            // Restore it afterwards.
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            _appManager.GetService<IMessageBus>().AsObservable<TileLoadFinishMessage>()
+            _tileController
                 .Take(1)
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(_ =>
@@ -56,14 +62,21 @@ namespace Assets.Scripts
                     gameObject.GetComponent<Rigidbody>().isKinematic = false;
                 });
 
-            // We want to destroy tile's gameobjects at some point.
-            _appManager.GetService<IMessageBus>().AsObservable<TileDestroyMessage>()
+            _tileController
+                .Where(tile => tile.IsDisposed)
                 .ObserveOn(Scheduler.MainThread)
-                .Subscribe(m =>
-                {
-                    _trace.Info(LogCategory, "Remove tile: {0}", m.Tile.ToString());
-                    Destroy(m.Tile.GameObject);
-                });
+                 .Subscribe(tile =>
+                 {
+                     _trace.Info(LogCategory, "Remove tile: {0}", tile.ToString());
+                     Destroy(tile.GameObject);
+                 });
+
+            _tileController
+                .Where(tile => !tile.IsDisposed)
+                .SelectMany(tile => _mapDataLoader.Load(tile).Select(u => new Tuple<Tile, Union<Element, Mesh>>(tile, u)))
+                .SubscribeOn(Scheduler.ThreadPool)
+                .ObserveOn(Scheduler.MainThread)
+                .Subscribe(t => t.Item2.Match(e => _modelBuilder.BuildElement(t.Item1, e), m => _modelBuilder.BuildMesh(t.Item1, m)));
         }
 
         /// <summary> Listens for position changes to notify library. </summary>

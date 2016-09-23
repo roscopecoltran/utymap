@@ -1,17 +1,12 @@
 ﻿using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Core.Utils;
-using UtyMap.Unity.Infrastructure;
-using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Maps.Data;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
 using UtyDepend.Config;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
-using Mesh = UtyMap.Unity.Core.Models.Mesh;
 
 namespace UtyMap.Unity.Tests.Core.Tiling
 {
@@ -22,31 +17,22 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;
 
         private TileController _tileController;
-        private Mock<IMapDataLoader> _tileLoader;
-        private Mock<IMessageBus> _messageBus;
+        private Mock<IObserver<Tile>> _tileObserver;
         private Mock<IConfigSection> _configSection;
-        private Mock<IObservable<Union<Element, Mesh>>> _loaderResult;
-
-        private float _tileSize;
         
         [SetUp]
         public void Setup()
         {
-            _tileSize = GetTileRect(_worldZeroPoint).width; // ~743.9
-
-            _tileLoader = new Mock<IMapDataLoader>();
-            _messageBus = new Mock<IMessageBus>();
             _configSection = new Mock<IConfigSection>();
-            _loaderResult = new Mock<IObservable<Union<Element, Mesh>>>();
-
             _configSection.Setup(c => c.GetFloat("sensitivity", It.IsAny<float>())).Returns(20);
             _configSection.Setup(c => c.GetFloat("offset", It.IsAny<float>())).Returns(100);
 
-            _tileLoader.Setup(t => t.Load(It.IsAny<Tile>())).Returns(_loaderResult.Object);
+            _tileObserver = new Mock<IObserver<Tile>>();
 
-            _tileController = new TileController(new ModelBuilder(), _tileLoader.Object, _messageBus.Object);
+            _tileController = new TileController();
             _tileController.Projection = new CartesianProjection(_worldZeroPoint);
             _tileController.Configure(_configSection.Object);
+            _tileController.Subscribe(_tileObserver.Object);
         }
 
         [Test(Description = "Tests whether first tile can be loaded (done in test setup).")]
@@ -56,8 +42,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
 
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
 
-            _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, quadKey))));
-            _messageBus.Verify(mb => mb.Send(It.Is<TileLoadStartMessage>(m => CheckQuadKey(m.Tile.QuadKey, quadKey))));
+            _tileObserver.Verify(o => o.OnNext(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, quadKey))));
         }
 
         [Test(Description = "Tests whether next tile can be loaded when position is changed.")]
@@ -65,16 +50,14 @@ namespace UtyMap.Unity.Tests.Core.Tiling
         {
             var newQuadKey = new QuadKey(17602, 10743, LevelOfDetails);
             _tileController.OnPosition(_worldZeroPoint, LevelOfDetails);
-            _tileLoader.ResetCalls();
-            _messageBus.ResetCalls();
+            _tileObserver.ResetCalls();
 
             _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(0, 1), 400), LevelOfDetails);
 
-            _tileLoader.Verify(t => t.Load(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, newQuadKey))));
-            _messageBus.Verify(mb => mb.Send(It.Is<TileLoadStartMessage>(m => CheckQuadKey(m.Tile.QuadKey, newQuadKey))));
+            _tileObserver.Verify(o => o.OnNext(It.Is<Tile>(tile => CheckQuadKey(tile.QuadKey, newQuadKey))));
         }
 
-        [Test (Description = "Tests whether far tile can be destroyed.")]
+        [Test (Description = "Tests whether far tile can be disposed.")]
         public void CanUnloadFarTile()
         {
             _configSection.Setup(c => c.GetInt("max_tile_distance", It.IsAny<int>())).Returns(1);
@@ -83,7 +66,7 @@ namespace UtyMap.Unity.Tests.Core.Tiling
             for (int i = 0; i < 2; ++i)
                 _tileController.OnPosition(MovePosition(_worldZeroPoint, new Vector2(1, 0), i*400), LevelOfDetails);
 
-            _messageBus.Verify(mb => mb.Send(It.Is<TileDestroyMessage>(m => CheckQuadKey(m.Tile.QuadKey, quadKey))));
+            _tileObserver.Verify(o => o.OnNext(It.Is<Tile>(tile => tile.IsDisposed && CheckQuadKey(tile.QuadKey, quadKey))));
         }
 
         #region Helpers
@@ -93,16 +76,6 @@ namespace UtyMap.Unity.Tests.Core.Tiling
             var point = GeoUtils.ToMapCoordinate(_worldZeroPoint, currentPosition);
             var newPoint = point + direction*distance;
             return GeoUtils.ToGeoCoordinate(_worldZeroPoint, newPoint);
-        }
-
-        private Rect GetTileRect(GeoCoordinate coordinate)
-        {
-            var quadKey = GeoUtils.CreateQuadKey(coordinate, LevelOfDetails);
-            var boundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);
-            var minPoint = GeoUtils.ToMapCoordinate(_worldZeroPoint, boundingBox.MinPoint);
-            var maxPoint = GeoUtils.ToMapCoordinate(_worldZeroPoint, boundingBox.MaxPoint);
-
-            return new Rect(minPoint.x, maxPoint.y, maxPoint.x - minPoint.x, maxPoint.y - minPoint.y);
         }
 
         private bool CheckQuadKey(QuadKey actual, QuadKey expected)

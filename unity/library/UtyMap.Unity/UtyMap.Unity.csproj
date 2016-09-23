@@ -72,7 +72,6 @@
     <Compile Include="Core\Stylesheet.cs" />
     <Compile Include="Core\Tiling\Tile.cs" />
     <Compile Include="Core\Tiling\TileController.cs" />
-    <Compile Include="Core\Tiling\TileMessages.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\GeoUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />

@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Utils;
-using UtyMap.Unity.Infrastructure;
-using UtyMap.Unity.Maps.Data;
 using UtyDepend;
 using UtyDepend.Config;
 using UtyRx;
@@ -14,16 +11,16 @@ namespace UtyMap.Unity.Core.Tiling
 {
     /// <summary> Controls flow of loading/unloading tiles. </summary>
     /// <summary> Tested for cartesian projection only. </summary>
-    public interface ITileController
+    public interface ITileController : IObservable<Tile>
     {
         /// <summary> Current position on map in world coordinates. </summary>
-        Vector3 CurrentMapPoint { get; }
+        //Vector3 CurrentMapPoint { get; }
 
-        /// <summary> Current position on map in geo coordinates. </summary>
-        GeoCoordinate CurrentPosition { get; }
+        ///// <summary> Current position on map in geo coordinates. </summary>
+        //GeoCoordinate CurrentPosition { get; }
 
-        /// <summary> Gets current tile. </summary>
-        Tile CurrentTile { get; }
+        ///// <summary> Gets current tile. </summary>
+        //Tile CurrentTile { get; }
 
         /// <summary> Stylesheet. </summary>
         Stylesheet Stylesheet { get; set; }
@@ -31,10 +28,10 @@ namespace UtyMap.Unity.Core.Tiling
         /// <summary> Projection. </summary>
         IProjection Projection { get; set; }
 
-        /// <summary> Called when position is changed. </summary>
+        /// <summary> Should be called when character position is updated. </summary>
         void OnPosition(Vector3 position, int levelOfDetails);
 
-        /// <summary> Called when position is changed. </summary>
+        /// <summary> Should be called when character position is updated. </summary>
         void OnPosition(GeoCoordinate coordinate, int levelOfDetails);
     }
 
@@ -44,11 +41,7 @@ namespace UtyMap.Unity.Core.Tiling
     /// <remarks> Not thread safe. </remarks>
     internal class TileController : ITileController, IConfigurable, IDisposable
     {
-        private readonly IModelBuilder _modelBuilder;
         private readonly object _lockObj = new object();
-
-        private readonly IMapDataLoader _tileLoader;
-        private readonly IMessageBus _messageBus;
 
         private double _offsetRatio;
         private double _moveSensitivity;
@@ -58,17 +51,9 @@ namespace UtyMap.Unity.Core.Tiling
 
         private QuadKey _currentQuadKey;
         private readonly Dictionary<QuadKey, Tile> _loadedTiles = new Dictionary<QuadKey, Tile>();
+        private readonly List<IObserver<Tile>> _tileObservers = new List<IObserver<Tile>>();
 
         #region Public members
-
-        /// <summary> Creates instance of <see cref="TileController"/>. </summary>
-        [Dependency]
-        public TileController(IModelBuilder modelBuilder, IMapDataLoader tileLoader, IMessageBus messageBus)
-        {
-            _modelBuilder = modelBuilder;
-            _tileLoader = tileLoader;
-            _messageBus = messageBus;
-        }
 
         /// <inheritdoc />
         public Vector3 CurrentMapPoint { get; private set; }
@@ -99,13 +84,20 @@ namespace UtyMap.Unity.Core.Tiling
             OnPosition(coordinate, Projection.Project(coordinate, 0), levelOfDetails);
         }
 
+        /// <inheritdoc />
+        public IDisposable Subscribe(IObserver<Tile> observer)
+        {
+            _tileObservers.Add(observer);
+            return Disposable.Empty;
+        }
+
         private void OnPosition(GeoCoordinate geoPosition, Vector3 position, int levelOfDetails)
         {
             if (!IsValidLevelOfDetails(levelOfDetails))
                 throw new ArgumentException(String.Format("Invalid level of details: {0}", levelOfDetails), "levelOfDetails");
 
-            CurrentMapPoint = position;
-            CurrentPosition = geoPosition;
+            //CurrentMapPoint = position;
+            //CurrentPosition = geoPosition;
 
             // call update logic only if threshold is reached
             if (Vector3.Distance(position, _lastUpdatePosition) > _moveSensitivity)
@@ -146,16 +138,10 @@ namespace UtyMap.Unity.Core.Tiling
         /// <summary> Loads tile for given quadKey. </summary>
         private void Load(QuadKey quadKey)
         {
-            Tile tile = new Tile(quadKey, Stylesheet, Projection);
-            _loadedTiles.Add(quadKey, tile); // TODO remove tile from hashmap if exception is raised
-            _messageBus.Send(new TileLoadStartMessage(tile));
-            _tileLoader
-                .Load(tile)
-                .SubscribeOn(Scheduler.ThreadPool)
-                .ObserveOn(Scheduler.MainThread)
-                .Subscribe(
-                    u => u.Match(e => _modelBuilder.BuildElement(tile, e), m => _modelBuilder.BuildMesh(tile, m)),
-                    () => _messageBus.Send(new TileLoadFinishMessage(tile)));
+            var tile = new Tile(quadKey, Stylesheet, Projection);
+            _loadedTiles.Add(quadKey, tile);
+
+            NotifyOnNextObservers(tile);
         }
 
         #endregion
@@ -222,12 +208,18 @@ namespace UtyMap.Unity.Core.Tiling
                 
                 loadedTile.Value.Dispose();
                 _loadedTiles.Remove(quadKey);
-                _messageBus
-                    .Send(new TileDestroyMessage(loadedTile.Value));
+                
+                NotifyOnNextObservers(loadedTile.Value);
             }
         }
 
         #endregion
+
+        private void NotifyOnNextObservers(Tile tile)
+        {
+            foreach (var tileObserver in _tileObservers)
+                tileObserver.OnNext(tile);
+        }
 
         /// <summary>
         ///     Checks that passed level of details is greater than zero and it equals last used quadkey's one. 
@@ -264,6 +256,9 @@ namespace UtyMap.Unity.Core.Tiling
         {
             foreach (var loadedTile in _loadedTiles)
                 loadedTile.Value.Dispose();
+
+            foreach (var tileObserver in _tileObservers)
+                tileObserver.OnCompleted();
         }
     }
 
