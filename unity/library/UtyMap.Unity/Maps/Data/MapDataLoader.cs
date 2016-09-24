@@ -78,7 +78,7 @@ namespace UtyMap.Unity.Maps.Data
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
             return CreateDownloadSequence(tile)
-                .Select(CreateElevationSequence(tile))
+                //.SelectMany(CreateElevationSequence(tile))
                 .SelectMany(CreateLoadSequence);
         }
 
