@@ -53,14 +53,8 @@ namespace Assets.Scripts
 
         void Start()
         {
-            gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            _tileController
-                .Take(1)
-                .ObserveOn(Scheduler.MainThread)
-                .Subscribe(_ =>
-                {
-                    gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                });
+            var rigidBody = gameObject.GetComponent<Rigidbody>();
+            rigidBody.isKinematic = true;
 
             _tileController
                 .Where(tile => tile.IsDisposed)
@@ -73,7 +67,15 @@ namespace Assets.Scripts
 
             _tileController
                 .Where(tile => !tile.IsDisposed)
-                .SelectMany(tile => _mapDataLoader.Load(tile).Select(u => new Tuple<Tile, Union<Element, Mesh>>(tile, u)))
+                .SelectMany(tile => 
+                    _mapDataLoader.Load(tile)
+                                  .Select(u => new Tuple<Tile, Union<Element, Mesh>>(tile, u))
+                                  .ObserveOn(Scheduler.MainThread)
+                                  .DoOnCompleted(() =>
+                                  {
+                                      if (rigidBody.isKinematic)
+                                          rigidBody.isKinematic = false;
+                                  }))
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(t => t.Item2.Match(e => _modelBuilder.BuildElement(t.Item1, e), m => _modelBuilder.BuildMesh(t.Item1, m)));
