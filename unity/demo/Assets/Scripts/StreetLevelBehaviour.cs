@@ -80,9 +80,10 @@ namespace Assets.Scripts
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(t => t.Item2.Match(e => _modelBuilder.BuildElement(t.Item1, e), m => _modelBuilder.BuildMesh(t.Item1, m)));
 
-            // NOTE: code below loads 3x3 (or 3x4 depends on start geocoordinate) region tile by tile.
-            // The region is specified by rectangle defined in world coordinates
-            //Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-300, -300, 600, 600), LevelOfDetails));
+            // NOTE: code below loads region tile by tile.
+            // The region is specified by rectangle defined in world coordinates.
+            //float size = 600; // square side size (in meters)
+            //Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-size / 2, -size / 2, size, size), LevelOfDetails));
         }
 
         /// <summary> Listens for position changes to notify library. </summary>
