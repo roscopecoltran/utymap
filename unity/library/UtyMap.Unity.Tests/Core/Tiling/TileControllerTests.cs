@@ -1,4 +1,5 @@
-﻿using UtyMap.Unity.Core;
+﻿using System.Collections.Generic;
+using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Core.Utils;
 using Moq;
@@ -78,6 +79,29 @@ namespace UtyMap.Unity.Tests.Core.Tiling
             _tileController.OnRegion(rectangle, LevelOfDetails);
 
             _tileObserver.Verify(o => o.OnNext(It.IsAny<Tile>()), Times.Exactly(4));
+        }
+
+        [Test(Description = "Tests whether 3x3 tile grid can be loaded from rectangle in spiral order.")]
+        public void CanOnRegionLoadMultipleTilesInSpiralOrder()
+        {
+            var result = new List<Tile>();
+            var rectangle = new Rectangle(0, 0, 800, 600);
+            _tileController.Subscribe(result.Add);
+
+            _tileController.OnRegion(rectangle, 16);
+           
+            int xBase = 35200, yBase = 21400;
+            var expectedOrder = new List<Tuple<int,int>>()
+            {
+               new Tuple<int, int>(06, 88), new Tuple<int, int>(07, 88), new Tuple<int, int>(07, 87),
+               new Tuple<int, int>(06, 87), new Tuple<int, int>(05, 87), new Tuple<int, int>(05, 88),
+               new Tuple<int, int>(05, 89), new Tuple<int, int>(06, 89), new Tuple<int, int>(07, 89)
+            };
+            Assert.AreEqual(expectedOrder.Count, result.Count);
+            for (int i=0; i < expectedOrder.Count; ++i)
+                Assert.AreEqual(new QuadKey(xBase + expectedOrder[i].Item1,
+                                            yBase + expectedOrder[i].Item2, 16), 
+                                result[i].QuadKey);
         }
 
         #region Helpers

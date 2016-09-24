@@ -144,19 +144,28 @@ namespace UtyMap.Unity.Core.Utils
             var width = maxQuadKey.TileX - minQuadKey.TileX + 1;
             var height = minQuadKey.TileY - maxQuadKey.TileY + 1;
 
+            var halfWidth = width/2;
+            var halfHeight = height/2;
+
+            var xBase = minQuadKey.TileX + halfWidth;
+            var yBase = maxQuadKey.TileY + halfHeight;
+
             int x = 0, y = 0, dx = 0, dy = -1;
             int t = Math.Max(width, height);
-            int maxI = t * t;
-
+            int maxI = t*t;
             for (int i = 0; i < maxI; i++)
             {
-                if ((-width / 2 <= x) && (x <= width / 2) && (-height / 2 <= y) && (y <= height / 2))
-                    yield return new QuadKey(minQuadKey.TileX + x, minQuadKey.TileY + y, levelOfDetails);
+                if ((-halfWidth <= x) && (x <= halfWidth) && (-halfHeight <= y) && (y <= halfHeight))
+                    yield return new QuadKey(xBase + x, yBase - y, levelOfDetails);
 
                 if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y)))
-                    t = dx; dx = -dy; dy = t;
-                
-                x += dx; y += dy;
+                {
+                    t = dx;
+                    dx = -dy;
+                    dy = t;
+                }
+                x += dx;
+                y += dy;
             }
         }
 
