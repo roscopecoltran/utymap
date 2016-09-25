@@ -18,6 +18,7 @@ set(HEADER_FILES
         builders/BuilderContext.hpp
         builders/ElementBuilder.hpp
         builders/ExternalBuilder.hpp
+        builders/MeshContext.hpp
         builders/QuadKeyBuilder.hpp
         builders/buildings/BuildingBuilder.hpp
         builders/buildings/facades/CylinderFacadeBuilder.hpp
