@@ -20,6 +20,7 @@ namespace Assets.Scripts
     {
         private const string LogCategory = "scene.street";
         private const int LevelOfDetails = 16;
+        private const float PositionUpdateThreshold = 10;
 
         private ApplicationManager _appManager;
         private ITileController _tileController;
@@ -89,7 +90,7 @@ namespace Assets.Scripts
         /// <summary> Listens for position changes to notify library. </summary>
         void Update()
         {
-            if (_appManager.IsInitialized && _position != transform.position)
+            if (_appManager.IsInitialized && Vector3.Distance(_position, transform.position) > PositionUpdateThreshold)
             {
                 _position = transform.position;
                 Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(_position, LevelOfDetails));
