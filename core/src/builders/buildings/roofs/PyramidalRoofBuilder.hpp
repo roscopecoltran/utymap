@@ -22,14 +22,6 @@ public:
     {
         for (const auto& range : polygon.outers) {
             auto center = utymap::utils::getCentroid(polygon, range);
-            auto options = utymap::meshing::MeshBuilder::Options(
-                0, // area
-                0, // ele noise
-                colorNoiseFreq_,
-                0,
-                meshContext_.gradient,
-                0);
-
             auto lastPointIndex = range.second - 2;
 
             for (std::size_t i = range.first; i < range.second; i += 2) {
@@ -39,7 +31,8 @@ public:
                 utymap::meshing::Vector3 v1(center.x, minHeight_ + height_, center.y);
                 utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
 
-                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, options, false);
+                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, 
+                    meshContext_.geometryOptions, meshContext_.appearanceOptions);
             }
         }   
     }

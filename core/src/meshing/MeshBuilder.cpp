@@ -14,10 +14,12 @@ class MeshBuilder::MeshBuilderImpl
 {
 public:
 
-    MeshBuilderImpl(const ElevationProvider& eleProvider)
-    : eleProvider_(eleProvider) { }
+    MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
+        quadKey(quadKey), eleProvider_(eleProvider)
+    {
+    }
      
-    void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
+    void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
     {
         triangulateio in, mid;
 
@@ -42,15 +44,15 @@ public:
         ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
 
         // do not refine mesh if area is not set.
-        if (std::abs(options.area) < std::numeric_limits<double>::epsilon()) {
-            fillMesh(&mid, mesh, options);
+        if (std::abs(geometryOptions.area) < std::numeric_limits<double>::epsilon()) {
+            fillMesh(&mid, mesh, geometryOptions, apperanceOptions);
             mid.trianglearealist = nullptr;
         }
         else {
 
             mid.trianglearealist = static_cast<REAL *>(malloc(mid.numberoftriangles * sizeof(REAL)));
             for (int i = 0; i < mid.numberoftriangles; ++i) {
-                mid.trianglearealist[i] = options.area;
+                mid.trianglearealist[i] = geometryOptions.area;
             }
 
             triangulateio out;
@@ -61,12 +63,12 @@ public:
             out.pointmarkerlist = nullptr;
 
             std::string triOptions = "prazPQ";
-            for (int i = 0; i < options.segmentSplit; i++) {
+            for (int i = 0; i < geometryOptions.segmentSplit; i++) {
                 triOptions += "Y";
             }
             ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
 
-            fillMesh(&out, mesh, options);
+            fillMesh(&out, mesh, geometryOptions, apperanceOptions);
 
             free(out.pointlist);
             free(out.pointattributelist);
@@ -86,42 +88,42 @@ public:
     }
 
 
-    inline void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
     {
         double ele1 = eleProvider_.getElevation(p1.y, p1.x);
         double ele2 = eleProvider_.getElevation(p2.y, p2.x);
 
-        ele1 += NoiseUtils::perlin2D(p1.x, p1.y, options.eleNoiseFreq);
-        ele2 += NoiseUtils::perlin2D(p2.x, p2.y, options.eleNoiseFreq);
+        ele1 += NoiseUtils::perlin2D(p1.x, p1.y, geometryOptions.eleNoiseFreq);
+        ele2 += NoiseUtils::perlin2D(p2.x, p2.y, geometryOptions.eleNoiseFreq);
 
-        addPlane(mesh, p1, p2, ele1, ele2, options);
+        addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, apperanceOptions);
     }
 
-    inline void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
     {
-        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, options.colorNoiseFreq) + 1) / 2);
+        auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, apperanceOptions.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, p1, ele1, color, index);
         addVertex(mesh, p2, ele2, color, index + 2);
-        addVertex(mesh, p2, ele2 + options.heightOffset, color, index + 1);
+        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1);
         index += 3;
 
-        addVertex(mesh, p1, ele1 + options.heightOffset, color, index);
+        addVertex(mesh, p1, ele1 + geometryOptions.heightOffset, color, index);
         addVertex(mesh, p1, ele1, color, index + 2);
-        addVertex(mesh, p2, ele2 + options.heightOffset, color, index + 1);
+        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1);
     }
 
-    inline void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
+    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
     {
-        auto color = options.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, options.colorNoiseFreq) + 1) / 2);
+        auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, apperanceOptions.colorNoiseFreq) + 1) / 2);
         int startIndex = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, v0, color, startIndex);
         addVertex(mesh, v1, color, ++startIndex);
         addVertex(mesh, v2, color, ++startIndex);
 
-        if (hasBackSide) {
+        if (geometryOptions.hasBackSide) {
             // TODO check indices
             addVertex(mesh, v2, color, startIndex);
             addVertex(mesh, v1, color, ++startIndex);
@@ -145,7 +147,7 @@ private:
         addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
 
-    void fillMesh(triangulateio* io, Mesh& mesh, const MeshBuilder::Options& options) const
+    void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
@@ -157,26 +159,25 @@ private:
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
 
-            double ele = options.heightOffset + 
-                (options.elevation > std::numeric_limits<double>::lowest()
-                    ? options.elevation
-                    : eleProvider_.getElevation(y, x));
+            double ele = geometryOptions.heightOffset + (geometryOptions.elevation > std::numeric_limits<double>::lowest()
+                ? geometryOptions.elevation
+                : eleProvider_.getElevation(y, x));
 
             // do no apply noise on boundaries
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
-                ele += NoiseUtils::perlin2D(x, y, options.eleNoiseFreq);
+                ele += NoiseUtils::perlin2D(x, y, geometryOptions.eleNoiseFreq);
 
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            int color = GradientUtils::getColor(options.gradient, x, y, options.colorNoiseFreq);
+            int color = GradientUtils::getColor(apperanceOptions.gradient, x, y, apperanceOptions.colorNoiseFreq);
             mesh.colors.push_back(color);
         }
 
-        int first = options.flipSide ? 2 : 1;
+        int first = geometryOptions.flipSide ? 2 : 1;
         int second = 0;
-        int third = options.flipSide ? 1 : 2;
+        int third = geometryOptions.flipSide ? 1 : 2;
 
         for (std::size_t i = 0; i < io->numberoftriangles; i++) {
             mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + first]);
@@ -185,32 +186,33 @@ private:
           }
     }
 
+    const utymap::QuadKey quadKey;
     const ElevationProvider& eleProvider_;
 };
 
-MeshBuilder::MeshBuilder(const ElevationProvider& eleProvider) :
-    pimpl_(utymap::utils::make_unique<MeshBuilderImpl>(eleProvider))
+MeshBuilder::MeshBuilder(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
+    pimpl_(utymap::utils::make_unique<MeshBuilderImpl>(quadKey, eleProvider))
 {
 }
 
 MeshBuilder::~MeshBuilder() { }
 
-void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const
+void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
 {
-    pimpl_->addPolygon(mesh, polygon, options);
+    pimpl_->addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
 {
-    pimpl_->addPlane(mesh, p1, p2, options);
+    pimpl_->addPlane(mesh, p1, p2, geometryOptions, apperanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
 {
-    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, options);
+    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, apperanceOptions);
 }
 
-void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const MeshBuilder::Options& options, bool hasBackSide) const
+void MeshBuilder::addTriangle(Mesh& mesh, const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
 {
-    pimpl_->addTriangle(mesh, v0, v1, v2, options, hasBackSide);
+    pimpl_->addTriangle(mesh, v0, v1, v2, geometryOptions, apperanceOptions);
 }

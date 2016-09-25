@@ -13,34 +13,26 @@ class FlatRoofBuilder : public RoofBuilder
 public:
     FlatRoofBuilder(const utymap::builders::BuilderContext& builderContext,
                     utymap::builders::MeshContext& meshContext) : 
-        RoofBuilder(builderContext, meshContext), flipSide_(false)
+        RoofBuilder(builderContext, meshContext)
     {
     }
 
     FlatRoofBuilder& flipSide()
     {
-        flipSide_ = true;
+        meshContext_.geometryOptions.flipSide = true;
         return *this;
     }
 
     void build(utymap::meshing::Polygon& polygon) override
     {
+        meshContext_.geometryOptions.heightOffset = minHeight_;
+
         builderContext_.meshBuilder
                        .addPolygon(meshContext_.mesh,
                                    polygon,
-                                   utymap::meshing::MeshBuilder::Options
-                                   (
-                                       0, // area
-                                       0, // ele noise
-                                       colorNoiseFreq_,
-                                       0,
-                                       meshContext_.gradient,
-                                       minHeight_,
-                                       flipSide_
-                                   ));
+                                   meshContext_.geometryOptions,
+                                   meshContext_.appearanceOptions);
     }
-private:
-    bool flipSide_;
 };
 
 }}

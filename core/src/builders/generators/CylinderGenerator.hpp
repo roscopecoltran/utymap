@@ -14,9 +14,9 @@ class CylinderGenerator : public AbstractGenerator
 public:
 
     CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
-                      const utymap::builders::MeshContext& meshContext) :
+                      utymap::builders::MeshContext& meshContext) :
             AbstractGenerator(builderContext, meshContext),
-            center_(), radius_(0), height_(0), radialSegments_(0), maxSegmentHeight_(0)
+            center_(), radialSegments_(0), radius_(0), height_(0), maxSegmentHeight_(0)
     {
     }
 
@@ -55,7 +55,7 @@ public:
 
     void generate() override
     {
-        int heightSegments = (int) std::ceil(height_ / maxSegmentHeight_);
+        int heightSegments = static_cast<int>(std::ceil(height_ / maxSegmentHeight_));
 
         double heightStep = height_ / heightSegments;
         double angleStep = 2 * pi / radialSegments_;

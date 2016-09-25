@@ -15,7 +15,8 @@ class FacadeBuilder
                 utymap::builders::MeshContext& meshContext) : 
         builderContext_(builderContext), 
         meshContext_(meshContext),
-        height_(0), minHeight_(0), colorNoiseFreq_(0)
+        height_(0), 
+        minHeight_(0)
   {
   }
 
@@ -28,9 +29,9 @@ class FacadeBuilder
   FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
 
   // Sets color noise freq.
-  FacadeBuilder& setColorNoiseFreq(double noiseFreq)
+  FacadeBuilder& setColorNoiseFreq(double colorNoiseFreq)
   {
-      colorNoiseFreq_ = noiseFreq;
+      meshContext_.appearanceOptions.colorNoiseFreq = colorNoiseFreq;
       return *this;
   }
 
@@ -41,7 +42,7 @@ class FacadeBuilder
 
   const utymap::builders::BuilderContext& builderContext_;
   utymap::builders::MeshContext& meshContext_;
-  double height_, minHeight_, colorNoiseFreq_;
+  double height_, minHeight_;
 };
 
 }}

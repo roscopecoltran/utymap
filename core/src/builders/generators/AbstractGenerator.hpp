@@ -16,12 +16,10 @@ class AbstractGenerator
 public:
 
     AbstractGenerator(const utymap::builders::BuilderContext& builderContext,
-                      const utymap::builders::MeshContext& meshContext):
+                      utymap::builders::MeshContext& meshContext):
         builderContext_(builderContext),
         meshContext_(meshContext),
-        options_(0, 0,  0, 0, meshContext.gradient),
-        vertNoiseFreq_(0),
-        colorNoiseFreq(0)
+        vertNoiseFreq_(0)
     {
     }
 
@@ -38,9 +36,9 @@ public:
     }
 
     // Sets color noise frequency
-    AbstractGenerator& setColorNoiseFreq(double noiseFreq)
+    AbstractGenerator& setColorNoiseFreq(double colorNoiseFreq)
     {
-        options_.colorNoiseFreq = colorNoiseFreq;
+        meshContext_.appearanceOptions.colorNoiseFreq = colorNoiseFreq;
         return *this;
     }
 
@@ -49,8 +47,7 @@ protected:
     // Adds triangle to mesh.
     void addTriangle(const utymap::meshing::Vector3& v0,
                      const utymap::meshing::Vector3& v1,
-                     const utymap::meshing::Vector3& v2,
-                     bool hasBackSide = false) const
+                     const utymap::meshing::Vector3& v2) const
     {
         double noise = std::abs(vertNoiseFreq_) < 1E-5
                        ? utymap::utils::NoiseUtils::perlin2D(v0.x, v0.z, vertNoiseFreq_)
@@ -60,15 +57,14 @@ protected:
                                  utymap::meshing::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
                                  utymap::meshing::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
                                  utymap::meshing::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
-                                 options_,
-                                 hasBackSide);
+                                 meshContext_.geometryOptions,
+                                 meshContext_.appearanceOptions);
     }
 
 private:
     const utymap::builders::BuilderContext& builderContext_;
-    const utymap::builders::MeshContext& meshContext_;
-    utymap::meshing::MeshBuilder::Options options_;
-    double vertNoiseFreq_, colorNoiseFreq;
+    utymap::builders::MeshContext& meshContext_;
+    double vertNoiseFreq_;
 };
 
 }}

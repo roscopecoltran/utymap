@@ -104,15 +104,24 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
 {
     double quadKeyWidth = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
 
-    return TerraGenerator::RegionContext(style, prefix, MeshBuilder::Options(
-        style.getValue(prefix + MaxAreaKey, quadKeyWidth * quadKeyWidth),
-        style.getValue(prefix + EleNoiseFreqKey, quadKeyWidth),
-        style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
-        style.getValue(prefix + HeightOffsetKey, quadKeyWidth),
-        context_.styleProvider.getGradient(style.getString(prefix + GradientKey)),
-        std::numeric_limits<double>::lowest(), /* no elevation offset */ 
-        false, /* don't flip */
-        1 /* no new vertices on boundaries */));
+    MeshBuilder::GeometryOptions geometryOptions(
+            style.getValue(prefix + MaxAreaKey, quadKeyWidth * quadKeyWidth),
+            style.getValue(prefix + EleNoiseFreqKey, quadKeyWidth),
+            std::numeric_limits<double>::lowest(), // no fixed elevation
+            style.getValue(prefix + HeightOffsetKey, quadKeyWidth),
+            false, // no flip
+            false, // no back side
+            1      // no new vertices on boundaries 
+        );
+
+    MeshBuilder::ApperanceOptions apperanceOptions(
+            context_.styleProvider.getGradient(style.getString(prefix + GradientKey)),
+            style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
+            Rectangle(),    // texture map
+            0               // texture scale
+        );
+
+    return TerraGenerator::RegionContext(style, prefix, geometryOptions, apperanceOptions);
 }
 
 void TerraGenerator::buildFromRegions(Regions& regions, const RegionContext& regionContext)
@@ -145,7 +154,7 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
     ClipperLib::SimplifyPolygons(paths);
     ClipperLib::CleanPolygons(paths);
 
-    bool hasHeightOffset = std::abs(regionContext.options.heightOffset) > 1E-8;
+    bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 1E-8;
     // calculate approximate size of overall points
     double size = 0;
     for (std::size_t i = 0; i < paths.size(); ++i)
@@ -192,13 +201,19 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
         TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
-        context_.meshBuilder.addPolygon(polygonMesh, polygon, regionContext.options);
+        context_.meshBuilder.addPolygon(polygonMesh, 
+                                        polygon, 
+                                        regionContext.geometryOptions, 
+                                        regionContext.appearanceOptions);
         addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
         TerraExtras::Context extrasContext(mesh_, regionContext.style);
-        context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.options);
+        context_.meshBuilder.addPolygon(mesh_,
+                                        polygon, 
+                                        regionContext.geometryOptions, 
+                                        regionContext.appearanceOptions);
         addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
 }
@@ -217,8 +232,8 @@ void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
 void TerraGenerator::processHeightOffset(const Points& points, const RegionContext& regionContext)
 {
     // do not use elevation noise for height offset.
-    auto newOptions = regionContext.options;
-    newOptions.eleNoiseFreq = 0;
+    auto newGeometryOptions = regionContext.geometryOptions;
+    newGeometryOptions.eleNoiseFreq = 0;
 
     for (std::size_t i = 0; i < points.size(); ++i) {
         Vector2 p1 = points[i];
@@ -228,6 +243,6 @@ void TerraGenerator::processHeightOffset(const Points& points, const RegionConte
         if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))
             continue;
 
-        context_.meshBuilder.addPlane(mesh_, p1, p2, newOptions);
+        context_.meshBuilder.addPlane(mesh_, p1, p2, newGeometryOptions, regionContext.appearanceOptions);
     }
 }

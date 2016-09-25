@@ -40,8 +40,10 @@ namespace {
             auto mesh = std::make_shared<Mesh>("area");
             Polygon polygon(4, 0);
             polygon.addContour(std::vector < Vector2 > {{0, 0}, { 10, 0 }, { 10, 10 }, { 0, 10 } });
-            MeshBuilder builder(*dependencyProvider.getElevationProvider());
-            builder.addPolygon(*mesh, polygon, MeshBuilder::Options(5, 0, 0, 0, gradient));
+            MeshBuilder builder(QuadKey(16, 0, 0), *dependencyProvider.getElevationProvider());
+            builder.addPolygon(*mesh, polygon, 
+                MeshBuilder::GeometryOptions(5, 0 ,0, 0), 
+                MeshBuilder::ApperanceOptions(gradient, 0, Rectangle(), 0));
             return mesh;
         }
 

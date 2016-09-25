@@ -46,7 +46,7 @@ struct BuilderContext
         eleProvider(eleProvider),
         meshCallback(meshCallback),
         elementCallback(elementCallback),
-        meshBuilder(eleProvider)
+        meshBuilder(quadKey, eleProvider)
     {
     }
 };

@@ -21,22 +21,29 @@ class TerraGenerator
 public:
 
     // Region context encapsulates information about given region.
-    struct RegionContext
+    struct RegionContext final
     {
         const utymap::mapcss::Style style;
-        const std::string prefix;  // Prefix in mapcss.
-        const utymap::meshing::MeshBuilder::Options options;
+        // Prefix in mapcss.
+        const std::string prefix;
+
+        const utymap::meshing::MeshBuilder::GeometryOptions geometryOptions;
+        const utymap::meshing::MeshBuilder::ApperanceOptions appearanceOptions;
 
         RegionContext(const utymap::mapcss::Style& style,
                       const std::string& prefix,
-                      const utymap::meshing::MeshBuilder::Options& options) :
-            style(style), prefix(prefix), options(options)
+                      const utymap::meshing::MeshBuilder::GeometryOptions& geometryOptions,
+                      const utymap::meshing::MeshBuilder::ApperanceOptions& appearanceOptions) :
+            style(style), 
+            prefix(prefix), 
+            geometryOptions(std::move(geometryOptions)), 
+            appearanceOptions(std::move(appearanceOptions))
         {
         }
     };
 
     // Represents terrain region.
-    struct Region
+    struct Region final
     {
         Region() : 
             isLayer(false), area(0), context(nullptr), points() 

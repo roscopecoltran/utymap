@@ -1,83 +1,121 @@
 #ifndef MESHING_MESHBUILDER_HPP_DEFINED
 #define MESHING_MESHBUILDER_HPP_DEFINED
 
+#include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/ColorGradient.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 
-#include <limits>
 #include <memory>
 
 namespace utymap { namespace meshing {
 
 // Provides the way to build mesh in 3D space.
-class MeshBuilder
+class MeshBuilder final
 {
 public:
-    struct Options
+
+    struct GeometryOptions final
     {
+        GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset, 
+                        bool flipSide = false, bool hasBackSide = false, int segmentSplit = 0) :
+            area(area),
+            eleNoiseFreq(eleNoiseFreq),
+            elevation(elevation),
+            heightOffset(heightOffset),
+            flipSide(flipSide),
+            hasBackSide(hasBackSide),
+            segmentSplit(segmentSplit)
+        {
+        }
+
         // Max area of triangle in refined mesh.
         double area;
-        // Elevation noise freq.
+        
+        // Elevation noise frequency.
         double eleNoiseFreq;
-        // Color noise freq.
-        double colorNoiseFreq;
+        
+        // Fixed elevation. If specified elevation provider is not used.
+        double elevation;
+        
         // Height offset.
         double heightOffset;
-        // Gradient data.
-        const utymap::mapcss::ColorGradient& gradient;
-        // Fixed elevation.
-        double elevation;
-        // Flip triangle side.
+        
+        // If set then triangle side is flipped.
         bool flipSide;
+
+        // If set then backside should be generated too.
+        bool hasBackSide;
 
         // Flag indicating whether to suppress boundary segment splitting.
         //     0 = split segments (default)
         //     1 = no new vertices on the boundary
         //     2 = prevent all segment splitting, including internal boundaries
         int segmentSplit;
+    };
 
-        Options(double area,
-                double eleNoiseFreq,
-                double colorNoiseFreq,
-                double heightOffset,
-                const utymap::mapcss::ColorGradient& gradient,
-                double elevation = std::numeric_limits<double>::lowest(),
-                bool flipSide = false,
-                int segmentSplit = 0) :
-            area(area), 
-            eleNoiseFreq(eleNoiseFreq), 
-            colorNoiseFreq(colorNoiseFreq),
-            heightOffset(heightOffset),
+    struct ApperanceOptions final
+    {
+        // Gradient used to calculate color at every vertex.
+        const utymap::mapcss::ColorGradient& gradient;
+
+        // Color noise frequency.
+        double colorNoiseFreq;
+
+        // Texture coordinates map inside atlas.
+        Rectangle textureMap;
+
+        // Texture scale.
+        double textureScale;
+
+        ApperanceOptions(const utymap::mapcss::ColorGradient& gradient,
+                         double colorNoiseFreq,
+                         const Rectangle& textureMap,
+                         double textureScale) :
             gradient(gradient),
-            elevation(elevation),
-            flipSide(flipSide),
-            segmentSplit(segmentSplit)
+            colorNoiseFreq(colorNoiseFreq),
+            textureMap(textureMap),
+            textureScale(textureScale)
         {
         }
     };
 
     // Creates builder with given elevation provider.
-    MeshBuilder(const utymap::heightmap::ElevationProvider& eleProvider);
+    MeshBuilder(const utymap::QuadKey& quadKey, 
+                const utymap::heightmap::ElevationProvider& eleProvider);
+
     ~MeshBuilder();
 
     // Adds polygon to existing mesh using options provided.
-    void addPolygon(Mesh& mesh, Polygon& polygon, const MeshBuilder::Options& options) const;
+    void addPolygon(Mesh& mesh, 
+                    Polygon& polygon, 
+                    const GeometryOptions& geometryOptions, 
+                    const ApperanceOptions& apperanceOptions) const;
 
     // Adds simple plane to existing mesh using options provided.
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const MeshBuilder::Options& options) const;
+    void addPlane(Mesh& mesh, 
+                  const Vector2& p1,
+                  const Vector2& p2, 
+                  const GeometryOptions& geometryOptions, 
+                  const ApperanceOptions& apperanceOptions) const;
 
     // Adds simple plane to existing mesh using elevation and options provided.
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const MeshBuilder::Options& options) const;
+    void addPlane(Mesh& mesh, 
+                  const Vector2& p1, 
+                  const Vector2& p2, 
+                  double ele1, 
+                  double ele2, 
+                  const GeometryOptions& geometryOptions, 
+                  const ApperanceOptions& apperanceOptions) const;
 
-    // Adds triangle to mesh.
+    // Adds triangle to mesh using options provided.
     void addTriangle(Mesh& mesh,
                      const utymap::meshing::Vector3& v0,
                      const utymap::meshing::Vector3& v1,
                      const utymap::meshing::Vector3& v2,
-                     const MeshBuilder::Options& options,
-                     bool hasBackSide) const;
+                     const GeometryOptions& geometryOptions,
+                     const ApperanceOptions& apperanceOptions) const;
 
 private:
     class MeshBuilderImpl;

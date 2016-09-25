@@ -1,3 +1,4 @@
+#include "QuadKey.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 #include "mapcss/ColorGradient.hpp"
@@ -16,13 +17,20 @@ namespace {
     typedef Vector2 DPoint;
     struct Meshing_MeshingFixture
     {
-        Meshing_MeshingFixture() : eleProvider(), builder(eleProvider), gradient()
+        Meshing_MeshingFixture() : 
+            eleProvider(), 
+            builder(utymap::QuadKey(16, 0, 0), eleProvider), 
+            gradient(),
+            geometryOptions(0, 0, 0, 0),
+            apperanceOptions(gradient, 0, Rectangle(), 0)
         {
         }
 
         FlatElevationProvider eleProvider;
         MeshBuilder builder;
         ColorGradient gradient;
+        MeshBuilder::GeometryOptions geometryOptions;
+        MeshBuilder::ApperanceOptions apperanceOptions;
     };
 }
 
@@ -32,6 +40,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_ThenRefinesCorrectly)
 {
     Mesh mesh("");
     Polygon polygon(4, 0);
+    geometryOptions.area = 5;
     polygon.addContour(std::vector<DPoint>
     {
         DPoint(0, 0),
@@ -40,14 +49,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_ThenRefinesCorrectly)
         DPoint(0, 10)
     });
 
-    builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    (
-        /* area=*/ 5,
-        /* elevation noise frequency*/ 0,
-        /* color noise frequency */ 0,
-        /* height offset */ 0,
-        /* color gradient */ gradient
-    ));
+    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
     BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 34);
@@ -57,6 +59,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_ThenRefinesCorrectly)
 {
     Mesh mesh("");
     Polygon polygon(8, 1);
+    geometryOptions.area = 1;
     polygon.addContour(std::vector<DPoint>
     {
         DPoint(0, 0),
@@ -72,14 +75,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_ThenRefinesCorrectly)
         DPoint(3, 6)
     });
 
-    builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    (
-        /* area=*/ 1, 
-        /* elevation noise frequency*/ 0,
-        /* color noise frequency */ 0,
-        /* height offset */ 0,
-        /* color gradient */ gradient
-    ));
+    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -90,6 +86,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
     std::vector<Vector2> contour;
     LineGridSplitter splitter;
     int scale = 10;
+    geometryOptions.area = 1. / scale;
     splitter.setParams(scale, 1);
     std::vector<IntPoint> inputPoints
     {
@@ -109,14 +106,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
     polygon.addContour(contour);
 
     Mesh mesh("");
-    builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    (
-        /* area=*/ 1. / scale,
-        /* elevation noise frequency*/ 0,
-        /* color noise frequency */ 0,
-        /* height offset */ 0,
-        /* color gradient */ gradient
-    ));
+    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -128,15 +118,9 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_ThenRefinesCorrec
     polygon.addContour({ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } });
     polygon.addContour({ { 10, 10 }, { 15, 10 }, { 15, 15 }, { 10, 15 } });
     Mesh mesh("");
+    geometryOptions.area = 1;
 
-    builder.addPolygon(mesh, polygon, MeshBuilder::Options
-    (
-        /* area=*/ 1. / 1.,
-        /* elevation noise frequency*/ 0,
-        /* color noise frequency */ 0,
-        /* height offset */ 0,
-        /* color gradient */ gradient
-    ));
+    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
 }

@@ -18,27 +18,20 @@ public:
 
   void build(utymap::meshing::Polygon& polygon) override
   {
-    utymap::meshing::MeshBuilder::Options options(
-        0, // area
-        0, // ele noise
-        colorNoiseFreq_,
-        height_,
-        meshContext_.gradient,
-        minHeight_
-    );
+      meshContext_.geometryOptions.elevation = minHeight_;
+      meshContext_.geometryOptions.heightOffset = height_;
 
     for (const auto& outer : polygon.outers)
-        buildRange(polygon, outer, options);
+        buildRange(polygon, outer);
 
     for (const auto& inner : polygon.inners)
-        buildRange(polygon, inner, options);
+        buildRange(polygon, inner);
   }
 
 private:
 
     void buildRange(const utymap::meshing::Polygon& polygon,
-                    const utymap::meshing::Polygon::Range& range, 
-                    const utymap::meshing::MeshBuilder::Options& options)
+                    const utymap::meshing::Polygon::Range& range) const
     {
         std::int64_t first = range.first;
         std::int64_t last = range.second - 2;
@@ -52,7 +45,8 @@ private:
                 p1,
                 minHeight_,
                 minHeight_,
-                options);
+                meshContext_.geometryOptions,
+                meshContext_.appearanceOptions);
         }
     }
 };

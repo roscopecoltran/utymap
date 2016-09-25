@@ -56,12 +56,12 @@ public:
             return FlatRoofBuilder::build(polygon);
         }
 
-        buildMansardShape(polygon, solution[0], findFirstIndex(solution[0][0], polygon));
+        build(polygon, solution[0], findFirstIndex(solution[0][0], polygon));
     }
 
 private:
 
-    void buildMansardShape(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index) const
+    void build(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index) const
     {
         if (!ClipperLib::Orientation(offsetShape))
             std::reverse(offsetShape.begin(), offsetShape.end());
@@ -75,13 +75,19 @@ private:
         }
         topShape.addContour(topShapeVertices);
 
-        auto topOptions = utymap::meshing::MeshBuilder::Options(0, 0, colorNoiseFreq_,
-                                                                height_, meshContext_.gradient, minHeight_);
-        builderContext_.meshBuilder.addPolygon(meshContext_.mesh, topShape, topOptions);
+        meshContext_.geometryOptions.elevation = height_;
+        meshContext_.geometryOptions.heightOffset = minHeight_;
+        meshContext_.geometryOptions.flipSide = false;
+
+        builderContext_.meshBuilder.addPolygon(meshContext_.mesh, 
+                                               topShape, 
+                                               meshContext_.geometryOptions, 
+                                               meshContext_.appearanceOptions);
 
         // build sides
-        auto sideOptions = utymap::meshing::MeshBuilder::Options(0, 0, colorNoiseFreq_,
-                                                                 0, meshContext_.gradient, 0);
+        meshContext_.geometryOptions.elevation = std::numeric_limits<double>::lowest();
+        meshContext_.geometryOptions.heightOffset = 0;
+
         double topHeight = minHeight_ + height_;
         auto size = polygon.points.size();
         for (std::size_t i = 0; i < size; i += 2) {
@@ -95,8 +101,11 @@ private:
             auto v2 = utymap::meshing::Vector3(topShape.points[nextTopIndex], topHeight, topShape.points[nextTopIndex + 1]);
             auto v3 = utymap::meshing::Vector3(topShape.points[topIndex], topHeight, topShape.points[topIndex + 1]);
 
-            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v3, sideOptions, false);
-            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1, sideOptions, false);
+            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v3, 
+                meshContext_.geometryOptions, meshContext_.appearanceOptions);
+
+            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1, 
+                meshContext_.geometryOptions, meshContext_.appearanceOptions);
         }
     }
 
