@@ -1,10 +1,14 @@
 #define REAL double
 #define ANSI_DECLARATORS
 
+#include "BoundingBox.hpp"
 #include "meshing/MeshBuilder.hpp"
 #include "triangle/triangle.h"
 #include "utils/CoreUtils.hpp"
+#include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
+
+#include <functional>
 
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
@@ -15,7 +19,7 @@ class MeshBuilder::MeshBuilderImpl
 public:
 
     MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
-        quadKey(quadKey), eleProvider_(eleProvider)
+        bbox(GeoUtils::quadKeyToBoundingBox(quadKey)), eleProvider_(eleProvider)
     {
     }
      
@@ -151,9 +155,14 @@ private:
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        mesh.vertices.reserve(static_cast<std::size_t>(io->numberofpoints * 3 / 2));
-        mesh.triangles.reserve(static_cast<std::size_t>(io->numberoftriangles * 3));
-        mesh.colors.reserve(static_cast<std::size_t>(io->numberofpoints));
+        bool hasTexture = apperanceOptions.textureScale > 0 && 
+                          apperanceOptions.textureMap.width() > 0 &&  
+                          apperanceOptions.textureMap.height() > 0;
+
+        ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
+            static_cast<std::size_t>(io->numberoftriangles), hasTexture);
+
+        auto toUv = createMapFunc(apperanceOptions);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
@@ -173,6 +182,12 @@ private:
 
             int color = GradientUtils::getColor(apperanceOptions.gradient, x, y, apperanceOptions.colorNoiseFreq);
             mesh.colors.push_back(color);
+
+            if (hasTexture) {
+                auto uv = toUv(x, y);
+                mesh.uvs.push_back(uv.x);
+                mesh.uvs.push_back(uv.y);
+            }
         }
 
         int first = geometryOptions.flipSide ? 2 : 1;
@@ -186,7 +201,40 @@ private:
           }
     }
 
-    const utymap::QuadKey quadKey;
+    static void ensureMeshCapacity(Mesh& mesh, std::size_t pointCount, std::size_t triCount, bool hasTexture)
+    {
+        mesh.vertices.reserve(mesh.vertices.size() + pointCount * 3 / 2);
+        mesh.triangles.reserve(mesh.triangles.size() + triCount * 3);
+        mesh.colors.reserve(mesh.colors.size() + pointCount);
+
+        if (hasTexture)
+            mesh.uvs.reserve(mesh.uvs.size() + pointCount);
+    }
+
+    /// Creates function which maps geocoordinate to texture coordinate.
+    std::function<Vector2(double, double)> createMapFunc(const ApperanceOptions& apperanceOptions) const
+    {
+        // Precalculate mapping values
+        double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
+        double geoWidth = bbox.maxPoint.longitude - bbox.minPoint.longitude;
+        double geoX = bbox.minPoint.longitude;
+        double geoY = bbox.minPoint.latitude;
+        
+        double uvHeight = apperanceOptions.textureMap.height();
+        double uvWidth = apperanceOptions.textureMap.width();
+        double uvX = apperanceOptions.textureMap.xMin;
+        double uvY = apperanceOptions.textureMap.yMin;
+
+        double scale = apperanceOptions.textureScale;
+
+        return [=](double x, double y) {
+            double percentX = (x - geoX) / geoWidth * scale;
+            double percentY = (y - geoY) / geoHeight * scale;
+            return Vector2(uvX + uvWidth * percentX, uvY + uvHeight * percentY);
+        };
+    }
+
+    const utymap::BoundingBox bbox;
     const ElevationProvider& eleProvider_;
 };
 

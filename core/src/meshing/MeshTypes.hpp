@@ -2,7 +2,6 @@
 #define MESHING_MESHTYPES_HPP_DEFINED
 
 #include <algorithm>
-#include <cstdint>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -174,6 +173,16 @@ struct Rectangle final
         return _left.contains(point) || _right.contains(point) ||
                _bottom.contains(point) || _top.contains(point);
     }
+
+    double width() const
+    {
+        return xMax - xMin;
+    }
+
+    double height() const
+    {
+        return yMax - yMin;
+    }
 };
 
 // Represents mesh which uses only primitive types to store data due to interoperability.
@@ -183,6 +192,7 @@ struct Mesh final
     std::vector<double> vertices;
     std::vector<int> triangles;
     std::vector<int> colors;
+    std::vector<double> uvs;
 
     Mesh(const std::string& name) : name(name) { }
 
