@@ -1,2 +1,2 @@
 core/lib/* linguist-vendored
-unity/demo/Assets/Standard Assets/* linguist-vendored
+unity/demo/Assets/Standard[\s]?Assets/* linguist-vendored
