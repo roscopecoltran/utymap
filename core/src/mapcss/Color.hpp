@@ -6,7 +6,7 @@
 
 namespace utymap { namespace mapcss {
 
-struct Color 
+struct Color final
 {
     unsigned char r, g, b, a;
 

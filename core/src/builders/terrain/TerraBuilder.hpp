@@ -9,13 +9,13 @@
 namespace utymap { namespace builders {
 
 // Provides the way to build terrain mesh.
-class TerraBuilder : public utymap::builders::ElementBuilder
+class TerraBuilder final : public utymap::builders::ElementBuilder
 {
 public:
 
-    TerraBuilder(const utymap::builders::BuilderContext&);
+    explicit TerraBuilder(const utymap::builders::BuilderContext&);
 
-    ~TerraBuilder();
+    virtual ~TerraBuilder();
 
     void visitNode(const utymap::entities::Node&) override;
 

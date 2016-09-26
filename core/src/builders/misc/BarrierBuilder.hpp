@@ -12,8 +12,8 @@ class BarrierBuilder final : public ElementBuilder
 {
 
 public:
-    BarrierBuilder(const utymap::builders::BuilderContext& context)
-        : ElementBuilder(context)
+    explicit BarrierBuilder(const utymap::builders::BuilderContext& context) :
+            ElementBuilder(context)
     {
     }
 

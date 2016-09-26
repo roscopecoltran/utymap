@@ -20,7 +20,7 @@ namespace utymap { namespace index {
 class GeoStore final
 {
 public:
-    GeoStore(utymap::index::StringTable& stringTable);
+    explicit GeoStore(utymap::index::StringTable& stringTable);
 
     ~GeoStore();
 

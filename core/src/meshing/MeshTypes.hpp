@@ -194,9 +194,12 @@ struct Mesh final
     std::vector<int> colors;
     std::vector<double> uvs;
 
-    Mesh(const std::string& name) : name(name) { }
+    explicit Mesh(const std::string& name) :
+       name(name)
+    {
+    }
 
-    // disable copying to prevent accidential copy
+    // disable copying to prevent accidental copy
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
 };

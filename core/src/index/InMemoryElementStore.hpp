@@ -14,9 +14,9 @@ namespace utymap { namespace index {
 class InMemoryElementStore final : public ElementStore
 {
 public:
-    InMemoryElementStore(utymap::index::StringTable& stringTable);
+    explicit InMemoryElementStore(utymap::index::StringTable& stringTable);
 
-    ~InMemoryElementStore();
+    virtual ~InMemoryElementStore();
 
     void search(const utymap::QuadKey& quadKey, 
                 utymap::entities::ElementVisitor& visitor) override;

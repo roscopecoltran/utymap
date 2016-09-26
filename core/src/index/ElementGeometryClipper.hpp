@@ -17,7 +17,7 @@
 namespace utymap { namespace index {
 
 // Modifies geometry of element by bounding box clipping.
-class ElementGeometryClipper : private utymap::entities::ElementVisitor
+class ElementGeometryClipper final : private utymap::entities::ElementVisitor
 {
 public:
     // Defines callback
@@ -25,7 +25,7 @@ public:
     // Defines polygon points location relative to current quadkey.
     enum class PointLocation { AllInside, AllOutside, Mixed };
 
-    ElementGeometryClipper(Callback callback);
+    explicit ElementGeometryClipper(Callback callback);
 
     void clipAndCall(const utymap::entities::Element& element, const QuadKey& quadKey, const BoundingBox& quadKeyBbox);
 

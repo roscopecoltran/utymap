@@ -131,12 +131,14 @@ namespace {
     }
 
     // Responsible for processing multipolygon relation.
-    class MultiPolygonVisitor : public ElementVisitor
+    class MultiPolygonVisitor final: public ElementVisitor
     {
     public:
 
-        MultiPolygonVisitor(Polygon& polygon)
-            : polygon_(polygon) {}
+        explicit MultiPolygonVisitor(Polygon& polygon) :
+                polygon_(polygon)
+        {
+        }
 
         void visitNode(const utymap::entities::Node& node) override { fail(node); }
 
@@ -166,7 +168,7 @@ namespace utymap { namespace builders {
 class BuildingBuilder::BuildingBuilderImpl : public ElementBuilder
 {
 public:
-    BuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
+    explicit BuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
         ElementBuilder(context)
     {
     }

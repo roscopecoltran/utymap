@@ -85,9 +85,6 @@ private:
         int limit = 8;
 
         Vector2 a, b; // Current edge.
-        double cx, cy; // Center of current edge.
-        double dx, dy; // Direction perpendicular to edge.
-
         if (contour.size() == 3) {
             point = Vector2((contour[0].x + contour[1].x + contour[2].x) / 3,
                 (contour[0].y + contour[1].y + contour[2].y) / 3);
@@ -98,11 +95,11 @@ private:
             a = contour[i];
             b = contour[(i + 1) % length];
 
-            cx = (a.x + b.x) / 2;
-            cy = (a.y + b.y) / 2;
+            double cx = (a.x + b.x) / 2;
+            double cy = (a.y + b.y) / 2;
 
-            dx = (b.y - a.y) / 1.374;
-            dy = (a.x - b.x) / 1.374;
+            double dx = (b.y - a.y) / 1.374;
+            double dy = (a.x - b.x) / 1.374;
 
             for (int j = 1; j <= limit; j++) {
                 // Search to the right of the segment.

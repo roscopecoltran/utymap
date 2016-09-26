@@ -14,10 +14,10 @@ namespace utymap { namespace index {
 class PersistentElementStore final : public ElementStore
 {
 public:
-    PersistentElementStore(const std::string& path,
+    explicit PersistentElementStore(const std::string& path,
                            utymap::index::StringTable& stringTable);
 
-    ~PersistentElementStore();
+    virtual ~PersistentElementStore();
 
     void search(const utymap::QuadKey& quadKey, 
                 utymap::entities::ElementVisitor& visitor) override;

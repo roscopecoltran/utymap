@@ -18,7 +18,7 @@ using namespace utymap::formats;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 
-class GeoStore::GeoStoreImpl
+class GeoStore::GeoStoreImpl final
 {
     // Prevents to visit element twice if it exists in multiply stores.
     class FilterElementVisitor : public ElementVisitor
@@ -57,7 +57,7 @@ class GeoStore::GeoStoreImpl
 
 public:
 
-    GeoStoreImpl(StringTable& stringTable) :
+    explicit GeoStoreImpl(StringTable& stringTable) :
         stringTable_(stringTable)
     {
     }

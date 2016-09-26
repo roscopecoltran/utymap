@@ -15,11 +15,11 @@
 namespace utymap { namespace builders {
 
 // Builds single tree.
-class TreeBuilder : public utymap::builders::ElementBuilder
+class TreeBuilder final : public utymap::builders::ElementBuilder
 {
 public:
 
-    TreeBuilder(const utymap::builders::BuilderContext& context) :
+    explicit TreeBuilder(const utymap::builders::BuilderContext& context) :
                 utymap::builders::ElementBuilder(context)
     {
     }

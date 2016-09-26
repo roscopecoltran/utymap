@@ -9,7 +9,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way to extend terrain mesh with additional data.
-class TerraExtras
+class TerraExtras final
 {
 public:
     // Specifies mesh region which should be used.

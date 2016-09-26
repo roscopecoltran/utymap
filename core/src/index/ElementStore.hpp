@@ -16,7 +16,7 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    ElementStore(utymap::index::StringTable& stringTable);
+    explicit ElementStore(utymap::index::StringTable& stringTable);
 
     virtual ~ElementStore() = default;
 

@@ -16,7 +16,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way to generate terrain mesh.
-class TerraGenerator
+class TerraGenerator final
 {
 public:
 

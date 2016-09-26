@@ -16,7 +16,7 @@ class StringTable final
 public:
 
     // Creates instance of StringTable using file path provided.
-    StringTable(const std::string& path);
+    explicit StringTable(const std::string& path);
 
     StringTable(const StringTable&) = delete;
     StringTable& operator=(StringTable const&) = delete;

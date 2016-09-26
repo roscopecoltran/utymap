@@ -42,10 +42,10 @@ namespace {
     const std::string DataFileExtension = ".dat";
 
     // Writes element to file stream.
-    class ElementWriter : public ElementVisitor
+    class ElementWriter final : public ElementVisitor
     {
     public:
-        ElementWriter(std::fstream& dataFile) : dataFile_(dataFile)
+        explicit ElementWriter(std::fstream& dataFile) : dataFile_(dataFile)
         {
         }
 
@@ -118,10 +118,10 @@ namespace {
     };
 
     // Reads element from file stream.
-    class ElementReader
+    class ElementReader final
     {
     public:
-        ElementReader(std::fstream& dataFile) : dataFile_(dataFile)
+        explicit ElementReader(std::fstream& dataFile) : dataFile_(dataFile)
         {
         }
 
@@ -236,10 +236,10 @@ namespace {
     };
 }
 
-class PersistentElementStore::PersistentElementStoreImpl
+class PersistentElementStore::PersistentElementStoreImpl final
 {
 public:
-    PersistentElementStoreImpl(const std::string& dataPath)
+    explicit PersistentElementStoreImpl(const std::string& dataPath)
             : dataPath_(dataPath)
     {
     }

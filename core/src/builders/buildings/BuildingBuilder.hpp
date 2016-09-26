@@ -12,9 +12,9 @@ namespace utymap { namespace builders {
 class BuildingBuilder final: public utymap::builders::ElementBuilder
 {
 public:
-    BuildingBuilder(const utymap::builders::BuilderContext&);
+    explicit BuildingBuilder(const utymap::builders::BuilderContext&);
 
-    ~BuildingBuilder();
+    virtual ~BuildingBuilder();
 
     void visitNode(const utymap::entities::Node&) override {};
 

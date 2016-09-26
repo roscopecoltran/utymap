@@ -14,7 +14,7 @@
 namespace utymap { namespace builders {
 
 // Provides the way to access all dependencies needed by various element builders.
-struct BuilderContext
+struct BuilderContext final
 {
     // Current quadkey.
     const utymap::QuadKey quadKey;

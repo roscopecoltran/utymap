@@ -35,10 +35,10 @@ struct Filter final
     Filter() = default;
     Filter(const Filter& other) = delete;
 
-    Filter(Filter&& other)
+    Filter(Filter&& other) :
+        conditions(std::move(other.conditions)),
+        declarations(std::move(other.declarations))
     {
-        conditions = std::move(other.conditions);
-        declarations = std::move(other.declarations);
     }
 };
 
@@ -106,8 +106,6 @@ private:
                 return compareDoubles(tag.value, condition.value, std::less<double>());
             case OpType::Greater:
                 return compareDoubles(tag.value, condition.value, std::greater<double>());
-            default: 
-                return false;
         }
     }
 

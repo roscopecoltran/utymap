@@ -23,10 +23,11 @@ struct Style final
     {
     }
 
-    Style(Style&& other) : stringTable_(other.stringTable_)
+    Style(Style&& other) :
+            stringTable_(other.stringTable_),
+            declarations_(std::move(other.declarations_)),
+            tags_(std::move(other.tags_))
     {
-        declarations_ = std::move(other.declarations_);
-        tags_ = std::move(other.tags_);
     }
 
     Style(const Style &) = default;

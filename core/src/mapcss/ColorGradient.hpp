@@ -10,7 +10,7 @@
 namespace utymap { namespace mapcss {
 
 // Represents color gradient.
-class ColorGradient
+class ColorGradient final
 {
 public:
 
@@ -19,7 +19,7 @@ public:
 
     ColorGradient() {}
 
-    ColorGradient(const GradientData& colors) :
+    explicit ColorGradient(const GradientData& colors) :
         colors_(colors)
     {
     }

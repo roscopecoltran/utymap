@@ -61,11 +61,11 @@ namespace {
     };
 }
 
-class TerraBuilder::TerraBuilderImpl : public ElementBuilder
+class TerraBuilder::TerraBuilderImpl final : public ElementBuilder
 {
 public:
 
-    TerraBuilderImpl(const BuilderContext& context) :
+    explicit TerraBuilderImpl(const BuilderContext& context) :
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)), 
         clipper_(),
