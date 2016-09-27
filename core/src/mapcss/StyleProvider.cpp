@@ -190,7 +190,7 @@ public:
     FilterCollection filters;
     StringTable& stringTable;
 
-    std::unordered_map<std::string, ColorGradient> gradients;
+    std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
     TextureAtlas textureAtlas;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
@@ -262,10 +262,10 @@ public:
             if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
             std::lock_guard<std::mutex> lock(lock_);
-            gradients.emplace(key, *gradient);
+            gradients.emplace(key, std::move(gradient));
             gradientPair = gradients.find(key);
         }
-        return gradientPair->second;
+        return *gradientPair->second;
     }
 
     const TextureGroup& getTexture(const std::string& key) const
@@ -280,7 +280,7 @@ private:
         if (gradients.find(key) == gradients.end()) {
             auto gradient = utymap::utils::GradientUtils::parseGradient(key);
             if (!gradient->empty())
-                gradients.emplace(key, *gradient);
+                gradients.emplace(key, std::move(gradient));
         }
     }
 
