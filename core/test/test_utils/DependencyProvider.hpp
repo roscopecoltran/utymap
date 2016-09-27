@@ -43,7 +43,10 @@ public:
     {
         if (styleProvider_ == nullptr) {
             utymap::mapcss::MapCssParser parser;
-            styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(parser.parse(stylesheetStr), *getStringTable());
+            styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(
+                parser.parse(stylesheetStr), 
+                utymap::mapcss::TextureAtlas(), 
+                *getStringTable());
         }
         return styleProvider_;
     }

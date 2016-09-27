@@ -193,7 +193,9 @@ public:
     std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
     TextureAtlas textureAtlas;
 
-    StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
+    StyleProviderImpl(const StyleSheet& stylesheet, 
+                      const TextureAtlas& textureAtlas,
+                      StringTable& stringTable) :
         filters(),
         stringTable(stringTable),
         gradients()
@@ -287,8 +289,8 @@ private:
     std::mutex lock_;
 };
 
-StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
-    pimpl_(utymap::utils::make_unique<StyleProviderImpl>(stylesheet, stringTable))
+StyleProvider::StyleProvider(const StyleSheet& stylesheet, const TextureAtlas& textureAtlas, StringTable& stringTable) :
+    pimpl_(utymap::utils::make_unique<StyleProviderImpl>(stylesheet, textureAtlas, stringTable))
 {
 }
 

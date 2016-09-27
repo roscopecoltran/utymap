@@ -18,7 +18,8 @@ class StyleProvider final
 {
 public:
 
-    StyleProvider(const utymap::mapcss::StyleSheet&, 
+    StyleProvider(const StyleSheet&, 
+                  const TextureAtlas& textureAtlas,
                   utymap::index::StringTable&);
 
     ~StyleProvider();

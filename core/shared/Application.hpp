@@ -190,8 +190,13 @@ private:
         std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
         utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
+
+        // TODO parse texture atlas
+        utymap::mapcss::TextureAtlas textureAtlas;
         
-        styleProviders_.emplace(filePath, utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(stylesheet, stringTable_));
+        styleProviders_.emplace(filePath, utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(
+            stylesheet, textureAtlas, stringTable_));
+
         return *styleProviders_[filePath];
     }
 
