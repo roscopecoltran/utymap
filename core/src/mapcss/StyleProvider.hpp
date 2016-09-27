@@ -6,6 +6,7 @@
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/Style.hpp"
+#include "mapcss/TextureAtlas.hpp"
 
 #include <string>
 #include <memory>
@@ -38,6 +39,9 @@ public:
 
     // Returns color gradient for given key.
     const ColorGradient& getGradient(const std::string& key) const;
+
+    /// Returns texture group for given key and seed.
+    const TextureGroup& getTexture(const std::string& key) const;
 
 private:
     class StyleProviderImpl;

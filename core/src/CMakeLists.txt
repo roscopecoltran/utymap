@@ -73,6 +73,7 @@ set(HEADER_FILES
         mapcss/StyleEvaluator.hpp
         mapcss/StyleDeclaration.hpp
         mapcss/StyleProvider.hpp
+        mapcss/TextureAtlas.hpp
         meshing/MeshBuilder.hpp
         meshing/MeshTypes.hpp
         meshing/Polygon.hpp

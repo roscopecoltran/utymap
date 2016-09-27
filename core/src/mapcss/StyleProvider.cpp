@@ -93,7 +93,7 @@ private:
     }
 
     // checks tag's value assuming that the key is already checked.
-    bool match_tag(const Tag& tag, const ConditionType& condition)
+    bool matchTag(const Tag& tag, const ConditionType& condition)
     {
         switch (condition.type) {
             case OpType::Exists:
@@ -120,12 +120,12 @@ private:
     }
 
     // tries to find tag which satisfy condition using binary search.
-    bool match_tags(TagIterator begin, TagIterator end, const ConditionType& condition)
+    bool matchTags(TagIterator begin, TagIterator end, const ConditionType& condition)
     {
         while (begin < end) {
             const TagIterator middle = begin + (std::distance(begin, end) / 2);
             if (middle->key == condition.key)
-                return match_tag(*middle, condition);
+                return matchTag(*middle, condition);
             else if (middle->key > condition.key)
                 end = middle;
             else
@@ -142,7 +142,7 @@ private:
             for (const Filter& filter : iter->second) {
                 bool isMatched = true;
                 for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                    isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                    isMatched &= matchTags(tags.cbegin(), tags.cend(), *it);
                 }
                 // merge declarations to style
                 if (isMatched) {
@@ -163,7 +163,7 @@ private:
             for (const Filter& filter : iter->second) {
                 bool isMatched = true;
                 for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                    isMatched &= match_tags(tags.cbegin(), tags.cend(), *it);
+                    isMatched &= matchTags(tags.cbegin(), tags.cend(), *it);
                 }
                 if (isMatched) {
                     canBuild_ = true;
@@ -189,7 +189,9 @@ public:
 
     FilterCollection filters;
     StringTable& stringTable;
-    std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
+
+    std::unordered_map<std::string, ColorGradient> gradients;
+    TextureAtlas textureAtlas;
 
     StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         filters(),
@@ -260,11 +262,17 @@ public:
             if (gradient->empty())
                 throw MapCssException("Invalid gradient: " + key);
             std::lock_guard<std::mutex> lock(lock_);
-            gradients.emplace(key, std::move(gradient));
+            gradients.emplace(key, *gradient);
             gradientPair = gradients.find(key);
         }
-        return *gradientPair->second;
+        return gradientPair->second;
     }
+
+    const TextureGroup& getTexture(const std::string& key) const
+    {
+        return textureAtlas.get(key);
+    }
+
 private:
 
     void addGradient(const std::string& key)
@@ -272,7 +280,7 @@ private:
         if (gradients.find(key) == gradients.end()) {
             auto gradient = utymap::utils::GradientUtils::parseGradient(key);
             if (!gradient->empty())
-                gradients.emplace(std::make_pair(key, std::move(gradient)));
+                gradients.emplace(key, *gradient);
         }
     }
 
@@ -320,4 +328,9 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
 const ColorGradient& StyleProvider::getGradient(const std::string& key) const
 {
     return pimpl_->getGradient(key);
+}
+
+const TextureGroup& StyleProvider::getTexture(const std::string& key) const
+{
+    return pimpl_->getTexture(key);
 }
