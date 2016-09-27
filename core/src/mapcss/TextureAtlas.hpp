@@ -32,7 +32,7 @@ private:
 struct TextureGroup final
 {
     /// Adds specific region to the group.
-    void add(int x, int y, int width, int height)
+    void add(double x, double y, double width, double height)
     {
         regions_.emplace_back(x, y, width, height);
     }
