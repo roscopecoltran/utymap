@@ -37,7 +37,7 @@ public:
         return *this;
     }
 
-    inline utymap::mapcss::Color evaluate(double time) const
+    utymap::mapcss::Color evaluate(double time) const
     {
         if (colors_.empty())
             return utymap::mapcss::Color();
@@ -57,14 +57,14 @@ public:
     }
 
     // Returns true if there is no color specified.
-    inline bool empty() const { return colors_.empty(); }
+    bool empty() const { return colors_.empty(); }
 
 private:
 
     // So far, use linear interpolation algorithm as the fastest.
-    inline utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a,
+    static utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a,
                                              const utymap::mapcss::Color& b,
-                                             double r) const
+                                             double r)
     {
         return a * (1.0 - r) + b * r;
     }
