@@ -49,9 +49,15 @@ private:
 
 struct TextureAtlas final
 {
+    TextureAtlas(double width, double height) :
+        width_(width), height_(height), texturePack_()
+    {
+    }
+
     /// Adds texture group to atlas.
     void add(const std::string& key, const TextureGroup& pack)
     {
+        // TODO propogate widht and height
         texturePack_.emplace(key, pack);
     }
 
@@ -63,6 +69,8 @@ struct TextureAtlas final
     }
 
 private:
+    double width_;
+    double height_;
     std::unordered_map<std::string, TextureGroup> texturePack_;
 };
 

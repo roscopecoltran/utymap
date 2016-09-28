@@ -45,7 +45,7 @@ public:
             utymap::mapcss::MapCssParser parser;
             styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(
                 parser.parse(stylesheetStr), 
-                utymap::mapcss::TextureAtlas(), 
+                utymap::mapcss::TextureAtlas(0, 0), 
                 *getStringTable());
         }
         return styleProvider_;

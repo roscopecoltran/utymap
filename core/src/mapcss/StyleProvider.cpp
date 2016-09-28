@@ -198,7 +198,8 @@ public:
                       StringTable& stringTable) :
         filters(),
         stringTable(stringTable),
-        gradients()
+        gradients(),
+        textureAtlas(textureAtlas)
     {
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
