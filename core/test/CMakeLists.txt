@@ -62,6 +62,7 @@ add_executable(${TEST}
         mapcss/StyleDeclarationTest.cpp
         mapcss/StyleProviderTest.cpp
         mapcss/StyleTest.cpp
+        mapcss/TextureAtlasParserTest.cpp
         meshing/MeshBuilderTest.cpp
         utils/GeometryUtilsTest.cpp
         utils/GeoUtilsTest.cpp
