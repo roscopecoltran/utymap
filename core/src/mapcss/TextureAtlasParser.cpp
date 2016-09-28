@@ -129,7 +129,7 @@ Atlas parse(Iterator begin, Iterator end)
 
 TextureAtlas TextureAtlasParser::parse(const std::string& content)
 {
-    Atlas atlas = ::parse(content.begin(), content.end());
+    //Atlas atlas = ::parse(content.begin(), content.end());
     // TODO convert to TextureAtlas
     return {0, 0};
 }
