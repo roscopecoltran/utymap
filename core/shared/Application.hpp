@@ -17,6 +17,7 @@
 #include "index/PersistentElementStore.hpp"
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleSheet.hpp"
+#include "mapcss/TextureAtlasParser.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
@@ -191,8 +192,8 @@ private:
         utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
 
-        // TODO parse texture atlas
-        utymap::mapcss::TextureAtlas textureAtlas;
+        // TODO pass texture atlas string
+        auto textureAtlas = utymap::mapcss::TextureAtlasParser::parse("");
         
         styleProviders_.emplace(filePath, utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(
             stylesheet, textureAtlas, stringTable_));
