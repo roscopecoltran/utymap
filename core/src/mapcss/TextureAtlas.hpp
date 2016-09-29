@@ -46,7 +46,13 @@ struct TextureGroup final
     /// Adds specific region to the group.
     void add(std::uint16_t width, std::uint16_t height, utymap::meshing::Rectangle rect)
     {
-        regions_.emplace_back(width, height, rect.xMin, rect.yMin, rect.width(), rect.height());
+        regions_.emplace_back(
+            width,
+            height,
+            static_cast<std::uint16_t>(rect.xMin),
+            static_cast<std::uint16_t>(rect.yMin),
+            static_cast<std::uint16_t>(rect.width()),
+            static_cast<std::uint16_t>(rect.height()));
     }
 
     /// Returns pseudo random region.
