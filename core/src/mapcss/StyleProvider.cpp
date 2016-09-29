@@ -194,12 +194,11 @@ public:
     TextureAtlas textureAtlas;
 
     StyleProviderImpl(const StyleSheet& stylesheet, 
-                      const TextureAtlas& textureAtlas,
                       StringTable& stringTable) :
         filters(),
         stringTable(stringTable),
         gradients(),
-        textureAtlas(textureAtlas)
+        textureAtlas(stylesheet.atlas)
     {
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
@@ -290,8 +289,8 @@ private:
     std::mutex lock_;
 };
 
-StyleProvider::StyleProvider(const StyleSheet& stylesheet, const TextureAtlas& textureAtlas, StringTable& stringTable) :
-    pimpl_(utymap::utils::make_unique<StyleProviderImpl>(stylesheet, textureAtlas, stringTable))
+StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
+    pimpl_(utymap::utils::make_unique<StyleProviderImpl>(stylesheet, stringTable))
 {
 }
 

@@ -17,7 +17,6 @@
 #include "index/PersistentElementStore.hpp"
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleSheet.hpp"
-#include "mapcss/TextureAtlasParser.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
@@ -25,10 +24,8 @@
 #include "Callbacks.hpp"
 #include "ExportElementVisitor.hpp"
 
-#include <cstdint>
 #include <exception>
 #include <fstream>
-#include <string>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -177,28 +174,26 @@ private:
             : static_cast<utymap::heightmap::ElevationProvider&>(srtmEleProvider_);
     }
 
-    const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& filePath)
+    const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& stylePath)
     {
-        auto pair = styleProviders_.find(filePath);
+        auto pair = styleProviders_.find(stylePath);
         if (pair != styleProviders_.end())
             return *pair->second;
 
-        std::ifstream styleFile(filePath);
+        std::ifstream styleFile(stylePath);
         if (!styleFile.good())
-            throw std::invalid_argument(std::string("Cannot read mapcss file:") + filePath);
+            throw std::invalid_argument(std::string("Cannot read mapcss file:") + stylePath);
 
         // NOTE not safe, but don't want to use boost filesystem only for this task.
-        std::string dir = filePath.substr(0, filePath.find_last_of("\\/") + 1);
+        std::string dir = stylePath.substr(0, stylePath.find_last_of("\\/") + 1);
         utymap::mapcss::MapCssParser parser(dir);
         utymap::mapcss::StyleSheet stylesheet = parser.parse(styleFile);
+      
+        styleProviders_.emplace(
+            stylePath, 
+            utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(stylesheet, stringTable_));
 
-        // TODO pass texture atlas string
-        auto textureAtlas = utymap::mapcss::TextureAtlasParser::parse("");
-        
-        styleProviders_.emplace(filePath, utymap::utils::make_unique<const utymap::mapcss::StyleProvider>(
-            stylesheet, textureAtlas, stringTable_));
-
-        return *styleProviders_[filePath];
+        return *styleProviders_[stylePath];
     }
 
     void registerDefaultBuilders()

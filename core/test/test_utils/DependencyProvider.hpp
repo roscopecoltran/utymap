@@ -5,7 +5,6 @@
 #include "heightmap/FlatElevationProvider.hpp"
 #include "index/StringTable.hpp"
 #include "mapcss/MapCssParser.hpp"
-#include "mapcss/StyleSheet.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <cstdio>
@@ -45,7 +44,6 @@ public:
             utymap::mapcss::MapCssParser parser;
             styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(
                 parser.parse(stylesheetStr), 
-                utymap::mapcss::TextureAtlas(),
                 *getStringTable());
         }
         return styleProvider_;

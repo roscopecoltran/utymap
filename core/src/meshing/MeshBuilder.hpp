@@ -4,7 +4,7 @@
 #include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "mapcss/TextureAtlas.hpp"
+#include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 

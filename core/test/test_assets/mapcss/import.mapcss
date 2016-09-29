@@ -1,4 +1,5 @@
 canvas|z1-2 { import_file: root; }
 
+@texture url("import.txt");
 @import url("import/import1.mapcss");
 @import url("import/import2.mapcss");

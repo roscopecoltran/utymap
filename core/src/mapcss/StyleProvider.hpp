@@ -6,7 +6,6 @@
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/Style.hpp"
-#include "mapcss/TextureAtlas.hpp"
 
 #include <string>
 #include <memory>
@@ -19,7 +18,6 @@ class StyleProvider final
 public:
 
     StyleProvider(const StyleSheet&, 
-                  const TextureAtlas& textureAtlas,
                   utymap::index::StringTable&);
 
     ~StyleProvider();

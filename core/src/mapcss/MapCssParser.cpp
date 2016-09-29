@@ -24,6 +24,39 @@ namespace phoenix = boost::phoenix;
 
 using namespace utymap::mapcss;
 
+namespace {
+struct Region
+{
+    std::string groupName;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+struct Atlas
+{
+    int width;
+    int height;
+    std::vector<Region> regions;
+};
+}
+BOOST_FUSION_ADAPT_STRUCT(
+    Region,
+    (std::string, groupName)
+    (int, x)
+    (int, y)
+    (int, width)
+    (int, height)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+    Atlas,
+    (int, width)
+    (int, height)
+    (std::vector<Region>, regions)
+)
+
 BOOST_FUSION_ADAPT_STRUCT(
     Condition,
     (std::string, key)
@@ -77,6 +110,40 @@ struct CommentSkipper : public qi::grammar<Iterator>
         start.name("comment");
     }
     qi::rule<Iterator> start;
+};
+
+template <typename Iterator>
+struct RegionGrammar : qi::grammar < Iterator, Region(), CommentSkipper<Iterator> >
+{
+    RegionGrammar() : RegionGrammar::base_type(start, "region")
+    {
+        start =
+            qi::lexeme[+(ascii::char_ - ',')] >> ',' >>
+            qi::int_ >> ',' >>
+            qi::int_ >> ',' >>
+            qi::int_ >> ',' >>
+            qi::int_
+            ;
+
+        start.name("region");
+    }
+    qi::rule<Iterator, Region(), CommentSkipper<Iterator> > start;
+};
+
+template <typename Iterator>
+struct AtlasGrammar : qi::grammar < Iterator, Atlas(), CommentSkipper<Iterator>>
+{
+    AtlasGrammar() : AtlasGrammar::base_type(start, "atlas")
+    {
+        start =
+            qi::int_ >> ',' >>
+            qi::int_ >>
+            +(region)
+        ;
+    }
+
+    RegionGrammar<Iterator> region;
+    qi::rule<Iterator, Atlas(), CommentSkipper<Iterator>> start;
 };
 
 template <typename Iterator>
@@ -207,7 +274,7 @@ struct ImportGrammar : qi::grammar < Iterator, CommentSkipper<Iterator>>
 
 private:
 
-    void readImport(const std::string& url)
+    void readImport(const std::string& url) const
     {
         std::ifstream importFile(directory + url);
         std::string content((std::istreambuf_iterator<char>(importFile)), std::istreambuf_iterator<char>());
@@ -221,17 +288,67 @@ private:
 };
 
 template <typename Iterator>
+struct TextureGrammar : qi::grammar < Iterator, CommentSkipper<Iterator> >
+{
+    TextureGrammar(const std::string& directory, StyleSheet& stylesheet) : TextureGrammar::base_type(start, "texture"),
+        directory(directory),  stylesheet(stylesheet)
+    {
+        start =
+            ascii::string("@texture url(\"") >
+            qi::as_string[qi::lexeme[+(ascii::char_ - (qi::lit('"')))]]
+              [boost::bind(&TextureGrammar::parseAtlas, this, _1)]
+            > "\");"
+                ;
+            start.name("texture");
+    }
+
+private:
+    void parseAtlas(const std::string& url)
+    {
+        std::ifstream atlasFile(directory + url);
+        if (!atlasFile.good()) {
+            stylesheet.atlas = TextureAtlas();
+             return;
+        }
+        std::string atlasContent((std::istreambuf_iterator<char>(atlasFile)), std::istreambuf_iterator<char>());
+
+        Atlas atlas;
+        AtlasGrammar<Iterator> grammar;
+        CommentSkipper<Iterator> skipper;
+
+        if (!phrase_parse(atlasContent.begin(), atlasContent.end(), grammar, skipper, atlas))
+            throw utymap::MapCssException(std::string("Cannot parse:") + url);
+
+        std::unordered_map<std::string, TextureGroup> groups;
+        for (const auto& region : atlas.regions) {
+            groups[region.groupName]
+                .add(static_cast<std::uint16_t>(atlas.width),
+                     static_cast<std::uint16_t>(atlas.height),
+                     utymap::meshing::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
+        }
+
+        stylesheet.atlas = TextureAtlas(groups);
+    }
+
+    qi::rule<Iterator, CommentSkipper<Iterator>> start;
+    const std::string directory;
+    StyleSheet& stylesheet;
+};
+
+template <typename Iterator>
 struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<Iterator>>
 {
     // NOTE stylesheet is passed here only because of import grammar: I simply don't know
     // how to get stylesheet instance from attributes or context of import grammar. However, 
     // it seems to be possible somehow.
-    StyleSheetGrammar(const std::string& directory, StyleSheet& stylesheet) : StyleSheetGrammar::base_type(start, "stylesheet"),
-        import(directory, stylesheet)
+    StyleSheetGrammar(const std::string& directory, StyleSheet& stylesheet) : 
+        StyleSheetGrammar::base_type(start, "stylesheet"),
+        import(directory, stylesheet),
+        texture(directory, stylesheet)
     {
         start =
             qi::eps
-            > *(rule | import)
+            > *(rule | import | texture)
         ;
 
         start.name("stylesheet");
@@ -251,6 +368,7 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
     qi::rule<Iterator, StyleSheet(), CommentSkipper<Iterator>> start;
     RuleGrammar<Iterator> rule;
     ImportGrammar<Iterator> import;
+    TextureGrammar<Iterator> texture;
 };
 
 MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)

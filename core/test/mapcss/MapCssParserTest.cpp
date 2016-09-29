@@ -6,8 +6,10 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::mapcss;
+using namespace utymap::meshing;
 
 namespace {
+    const double precision = 1E-9;
     typedef std::string::const_iterator StringIterator;
 
     struct MapCss_MapCssParserFixture {
@@ -307,6 +309,34 @@ BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
     StyleSheet stylesheet = parser.parse(styleFile);
 
     BOOST_CHECK_EQUAL(stylesheet.rules.size(), 5);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoTextureRegions_WhenGetFirstTexture_ThenMapReturnsValidCoordinate)
+{
+    std::ifstream styleFile(TEST_MAPCSS_PATH "import.mapcss");
+    MapCssParser parser(TEST_MAPCSS_PATH);
+    StyleSheet stylesheet = parser.parse(styleFile);
+
+    auto coord = stylesheet.atlas.get("simple")
+                                  .random(0)
+                                  .map(Vector2(0.5, 0.5));
+
+    BOOST_CHECK_CLOSE(coord.x, 0.25, precision);
+    BOOST_CHECK_CLOSE(coord.y, 0.5, precision);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoTextureRegions_WhenGetSecondTexture_ThenMapReturnsValidCoordinate)
+{
+    std::ifstream styleFile(TEST_MAPCSS_PATH "import.mapcss");
+    MapCssParser parser(TEST_MAPCSS_PATH);
+    StyleSheet stylesheet = parser.parse(styleFile);
+
+    auto coord = stylesheet.atlas.get("simple")
+        .random(1)
+        .map(Vector2(0.5, 0.5));
+
+    BOOST_CHECK_CLOSE(coord.x, 0.75, precision);
+    BOOST_CHECK_CLOSE(coord.y, 0.5, precision);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
