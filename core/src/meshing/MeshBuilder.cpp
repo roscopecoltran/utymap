@@ -8,8 +8,6 @@
 #include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
-#include <functional>
-
 using namespace utymap::heightmap;
 using namespace utymap::meshing;
 using namespace utymap::utils;
@@ -154,12 +152,11 @@ private:
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        bool hasTexture = !appearanceOptions.textureRegion.isEmpty();
+        auto region = appearanceOptions.textureRegion;
+        bool hasTexture = !region.isEmpty();
 
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
             static_cast<std::size_t>(io->numberoftriangles), hasTexture);
-
-        auto toUv = createMapFunc(appearanceOptions);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
@@ -181,7 +178,7 @@ private:
             mesh.colors.push_back(color);
 
             if (hasTexture) {
-                auto uv = toUv(x, y);
+                auto uv = region.map(Vector2(x, y));
                 mesh.uvs.push_back(uv.x);
                 mesh.uvs.push_back(uv.y);
             }
@@ -206,33 +203,6 @@ private:
 
         if (hasTexture)
             mesh.uvs.reserve(mesh.uvs.size() + pointCount);
-    }
-
-    /// Creates function which maps geocoordinate to texture coordinate.
-    std::function<Vector2(double, double)> createMapFunc(const AppearanceOptions& appearanceOptions) const
-    {
-        // TODO
-        /*// Precalculate mapping values
-        double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
-        double geoWidth = bbox.maxPoint.longitude - bbox.minPoint.longitude;
-        double geoX = bbox.minPoint.longitude;
-        double geoY = bbox.minPoint.latitude;
-        
-        double uvHeight = appearanceOptions.textureMap.height();
-        double uvWidth = appearanceOptions.textureMap.width();
-        double uvX = appearanceOptions.textureMap.xMin;
-        double uvY = appearanceOptions.textureMap.yMin;
-
-        double scale = appearanceOptions.textureScale;
-
-        return [=](double x, double y) {
-            double percentX = (x - geoX) / geoWidth * scale;
-            double percentY = (y - geoY) / geoHeight * scale;
-            return Vector2(uvX + uvWidth * percentX, uvY + uvHeight * percentY);
-        };*/
-        return [=](double x, double y) {
-            return Vector2();
-        };
     }
 
     const utymap::BoundingBox bbox;
