@@ -13,6 +13,10 @@ namespace utymap { namespace mapcss {
 /// Represents a single texture region inside texture atlas.
 struct TextureRegion final
 {
+    TextureRegion() : TextureRegion(0, 0, 0, 0, 0, 0)
+    {
+    }
+
     TextureRegion(std::uint16_t atlasWidth,
                   std::uint16_t atlasHeight,
                   std::uint16_t x,

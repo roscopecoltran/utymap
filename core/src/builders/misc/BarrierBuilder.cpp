@@ -73,7 +73,7 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
-    MeshContext meshContext(mesh, style, gradient);
+    MeshContext meshContext(mesh, style, gradient, TextureRegion());
 
     // NOTE: Reuse building builders.
     FlatRoofBuilder(context_, meshContext)

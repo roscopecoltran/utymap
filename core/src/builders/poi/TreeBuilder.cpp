@@ -25,7 +25,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
     Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
     Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
-    MeshContext meshContext(mesh, style, utymap::mapcss::ColorGradient());
+    MeshContext meshContext(mesh, style, utymap::mapcss::ColorGradient(), utymap::mapcss::TextureRegion());
 
     auto generator = createGenerator(context_, meshContext);
 
@@ -41,7 +41,7 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
     Mesh treeMesh("");
     Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
-    MeshContext meshContext(treeMesh, style, utymap::mapcss::ColorGradient());
+    MeshContext meshContext(treeMesh, style, utymap::mapcss::ColorGradient(), utymap::mapcss::TextureRegion());
 
     auto generator = TreeBuilder::createGenerator(context_, meshContext);
     generator->setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later

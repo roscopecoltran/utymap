@@ -117,8 +117,8 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
     MeshBuilder::AppearanceOptions apperanceOptions(
             context_.styleProvider.getGradient(style.getString(prefix + GradientKey)),
             style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
-            Rectangle(),    // texture map
-            0               // texture scale
+            utymap::mapcss::TextureRegion(),
+            0 // texture scale
         );
 
     return TerraGenerator::RegionContext(style, prefix, geometryOptions, apperanceOptions);

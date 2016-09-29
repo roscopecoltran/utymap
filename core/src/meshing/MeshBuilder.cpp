@@ -154,9 +154,7 @@ private:
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        bool hasTexture = appearanceOptions.textureScale > 0 &&
-                          appearanceOptions.textureMap.width() > 0 &&
-                          appearanceOptions.textureMap.height() > 0;
+        bool hasTexture = !appearanceOptions.textureRegion.isEmpty();
 
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
             static_cast<std::size_t>(io->numberoftriangles), hasTexture);
@@ -213,7 +211,8 @@ private:
     /// Creates function which maps geocoordinate to texture coordinate.
     std::function<Vector2(double, double)> createMapFunc(const AppearanceOptions& appearanceOptions) const
     {
-        // Precalculate mapping values
+        // TODO
+        /*// Precalculate mapping values
         double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
         double geoWidth = bbox.maxPoint.longitude - bbox.minPoint.longitude;
         double geoX = bbox.minPoint.longitude;
@@ -230,6 +229,9 @@ private:
             double percentX = (x - geoX) / geoWidth * scale;
             double percentY = (y - geoY) / geoHeight * scale;
             return Vector2(uvX + uvWidth * percentX, uvY + uvHeight * percentY);
+        };*/
+        return [=](double x, double y) {
+            return Vector2();
         };
     }
 

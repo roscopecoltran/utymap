@@ -37,7 +37,7 @@ namespace {
             *dependencyProvider.getElevationProvider(),
             [](const Mesh&) {},
             [](const Element&) {}),
-            meshContext(mesh, style, gradient)
+            meshContext(mesh, style, gradient, TextureRegion())
         {
         }
 

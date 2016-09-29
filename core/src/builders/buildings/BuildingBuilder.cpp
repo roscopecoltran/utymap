@@ -256,7 +256,7 @@ private:
 
     void build(const Element& element, const Style& style)
     {
-        MeshContext meshContext(*mesh_, style, utymap::mapcss::ColorGradient());
+        MeshContext meshContext(*mesh_, style, utymap::mapcss::ColorGradient(), utymap::mapcss::TextureRegion());
 
         auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);
 
@@ -285,7 +285,7 @@ private:
     void attachRoof(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
-        MeshContext roofMeshContext(meshContext.mesh, meshContext.style, gradient);
+        MeshContext roofMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -300,7 +300,7 @@ private:
     void attachFloors(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
-        MeshContext floorMeshContext(meshContext.mesh, meshContext.style, gradient);
+        MeshContext floorMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -312,7 +312,7 @@ private:
     void attachFacade(MeshContext& meshContext, double elevation, double height) const
     {
         const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, FacadeColorKey);
-        MeshContext facadeMeshContext(meshContext.mesh, meshContext.style, gradient);
+        MeshContext facadeMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);

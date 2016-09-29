@@ -15,7 +15,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 {
     // generate tree mesh
     Mesh treeMesh("");
-    MeshContext meshContext(treeMesh, extrasContext.style, utymap::mapcss::ColorGradient());
+    MeshContext meshContext(treeMesh, extrasContext.style, utymap::mapcss::ColorGradient(), utymap::mapcss::TextureRegion());
     auto generator = TreeBuilder::createGenerator(builderContext, meshContext);
     generator->setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
     generator->generate();

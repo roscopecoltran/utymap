@@ -16,8 +16,8 @@ public:
                   const utymap::builders::MeshContext& meshContext,
                   const utymap::mapcss::ColorGradient& trunkGradient,
                   const utymap::mapcss::ColorGradient& foliageGradient) :
-            trunkGeneratorMeshContext(meshContext.mesh, meshContext.style, trunkGradient),
-            foliageGeneratorMeshContext(meshContext.mesh, meshContext.style, foliageGradient),
+            trunkGeneratorMeshContext(meshContext.mesh, meshContext.style, trunkGradient, utymap::mapcss::TextureRegion()),
+            foliageGeneratorMeshContext(meshContext.mesh, meshContext.style, foliageGradient, utymap::mapcss::TextureRegion()),
 
             trunkGenerator(builderContext, trunkGeneratorMeshContext),
             foliageGenerator(builderContext, foliageGeneratorMeshContext),

@@ -4,6 +4,7 @@
 #include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/ColorGradient.hpp"
+#include "mapcss/TextureAtlas.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "meshing/Polygon.hpp"
 
@@ -64,18 +65,18 @@ public:
         double colorNoiseFreq;
 
         // Texture coordinates map inside atlas.
-        Rectangle textureMap;
+        utymap::mapcss::TextureRegion textureRegion;
 
         // Texture scale.
         double textureScale;
 
         AppearanceOptions(const utymap::mapcss::ColorGradient& gradient,
                          double colorNoiseFreq,
-                         const Rectangle& textureMap,
+                         const utymap::mapcss::TextureRegion& textureRegion,
                          double textureScale) :
             gradient(gradient),
             colorNoiseFreq(colorNoiseFreq),
-            textureMap(textureMap),
+            textureRegion(std::move(textureRegion)),
             textureScale(textureScale)
         {
         }

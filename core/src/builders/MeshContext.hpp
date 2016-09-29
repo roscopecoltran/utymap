@@ -18,11 +18,12 @@ struct MeshContext
 
   MeshContext(utymap::meshing::Mesh& mesh,
               const utymap::mapcss::Style& style,
-              const utymap::mapcss::ColorGradient& gradient) :
+              const utymap::mapcss::ColorGradient& gradient,
+              const utymap::mapcss::TextureRegion& region) :
       mesh(mesh), 
       style(style),
       geometryOptions(0, 0, std::numeric_limits<double>::lowest(), 0),
-      appearanceOptions(gradient, 0, utymap::meshing::Rectangle(), 0)
+      appearanceOptions(gradient, 0, region, 0)
   {
   }
 };
