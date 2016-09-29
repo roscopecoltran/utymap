@@ -19,6 +19,7 @@ namespace ascii = boost::spirit::ascii;
 namespace phoenix = boost::phoenix;
 
 using namespace utymap::mapcss;
+using namespace utymap::meshing;
 
 struct Region
 {
@@ -129,9 +130,20 @@ Atlas parse(Iterator begin, Iterator end)
 
 TextureAtlas TextureAtlasParser::parse(const std::string& content)
 {
-    //Atlas atlas = ::parse(content.begin(), content.end());
-    // TODO convert to TextureAtlas
-    return {0, 0};
+    if (content.empty())
+        return TextureAtlas();
+
+    Atlas atlas = ::parse(content.begin(), content.end());
+    std::unordered_map<std::string, TextureGroup> groups;
+
+    for (const auto& region: atlas.regions) {
+        groups[region.groupName]
+                .add(static_cast<std::uint16_t>(atlas.width),
+                     static_cast<std::uint16_t>(atlas.height),
+                     Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
+    }
+
+    return TextureAtlas(groups);
 }
 
 TextureAtlas TextureAtlasParser::parse(std::istream& istream)

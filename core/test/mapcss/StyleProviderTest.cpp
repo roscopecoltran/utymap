@@ -35,7 +35,7 @@ namespace {
             stylesheet->rules[0].selectors.push_back(selector);
             styleProvider = std::make_shared<StyleProvider>(
                 *stylesheet, 
-                TextureAtlas(0, 0),
+                TextureAtlas(),
                 *dependencyProvider.getStringTable());
         }
 
