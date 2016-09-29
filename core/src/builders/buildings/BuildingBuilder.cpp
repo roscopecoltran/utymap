@@ -256,8 +256,6 @@ private:
 
     void build(const Element& element, const Style& style)
     {
-        MeshContext meshContext(*mesh_, style, utymap::mapcss::ColorGradient(), utymap::mapcss::TextureRegion());
-
         auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);
 
         double height = style.getValue(HeightKey);
@@ -271,21 +269,21 @@ private:
 
         height -= minHeight;
 
-        attachRoof(meshContext, elevation, height);
+        attachRoof(*mesh_, style, elevation, height);
 
         // NOTE so far, attach floors only for buildings with minHeight
         if (minHeight > 0)
-            attachFloors(meshContext, elevation, height);
+            attachFloors(*mesh_, style, elevation, height);
 
-        attachFacade(meshContext, elevation, height);
+        attachFacade(*mesh_, style, elevation, height);
 
         polygon_.reset();
     }
 
-    void attachRoof(MeshContext& meshContext, double elevation, double height) const
+    void attachRoof(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
-        MeshContext roofMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
+        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, RoofColorKey);
+        MeshContext roofMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -297,10 +295,10 @@ private:
         roofBuilder->build(*polygon_);
     }
 
-    void attachFloors(MeshContext& meshContext, double elevation, double height) const
+    void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, RoofColorKey);
-        MeshContext floorMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
+        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, RoofColorKey);
+        MeshContext floorMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -309,10 +307,10 @@ private:
         floorBuilder.build(*polygon_);
     }
 
-    void attachFacade(MeshContext& meshContext, double elevation, double height) const
+    void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, meshContext.style, FacadeColorKey);
-        MeshContext facadeMeshContext(meshContext.mesh, meshContext.style, gradient, utymap::mapcss::TextureRegion());
+        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, FacadeColorKey);
+        MeshContext facadeMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);
