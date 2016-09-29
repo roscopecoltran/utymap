@@ -23,7 +23,7 @@ public:
     {
     }
      
-    void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+    void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         triangulateio in, mid;
 
@@ -49,7 +49,7 @@ public:
 
         // do not refine mesh if area is not set.
         if (std::abs(geometryOptions.area) < std::numeric_limits<double>::epsilon()) {
-            fillMesh(&mid, mesh, geometryOptions, apperanceOptions);
+            fillMesh(&mid, mesh, geometryOptions, appearanceOptions);
             mid.trianglearealist = nullptr;
         }
         else {
@@ -72,7 +72,7 @@ public:
             }
             ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
 
-            fillMesh(&out, mesh, geometryOptions, apperanceOptions);
+            fillMesh(&out, mesh, geometryOptions, appearanceOptions);
 
             free(out.pointlist);
             free(out.pointattributelist);
@@ -91,8 +91,7 @@ public:
         free(mid.segmentmarkerlist);
     }
 
-
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         double ele1 = eleProvider_.getElevation(p1.y, p1.x);
         double ele2 = eleProvider_.getElevation(p2.y, p2.x);
@@ -100,12 +99,12 @@ public:
         ele1 += NoiseUtils::perlin2D(p1.x, p1.y, geometryOptions.eleNoiseFreq);
         ele2 += NoiseUtils::perlin2D(p2.x, p2.y, geometryOptions.eleNoiseFreq);
 
-        addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, apperanceOptions);
+        addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
     }
 
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
-        auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, apperanceOptions.colorNoiseFreq) + 1) / 2);
+        auto color = appearanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, appearanceOptions.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
         addVertex(mesh, p1, ele1, color, index);
@@ -118,7 +117,7 @@ public:
         addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1);
     }
 
-    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& apperanceOptions) const
     {
         auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, apperanceOptions.colorNoiseFreq) + 1) / 2);
         int startIndex = static_cast<int>(mesh.vertices.size() / 3);
@@ -151,18 +150,18 @@ private:
         addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
 
-    void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+    void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        bool hasTexture = apperanceOptions.textureScale > 0 && 
-                          apperanceOptions.textureMap.width() > 0 &&  
-                          apperanceOptions.textureMap.height() > 0;
+        bool hasTexture = appearanceOptions.textureScale > 0 &&
+                          appearanceOptions.textureMap.width() > 0 &&
+                          appearanceOptions.textureMap.height() > 0;
 
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
             static_cast<std::size_t>(io->numberoftriangles), hasTexture);
 
-        auto toUv = createMapFunc(apperanceOptions);
+        auto toUv = createMapFunc(appearanceOptions);
 
         for (int i = 0; i < io->numberofpoints; i++) {
             double x = io->pointlist[i * 2 + 0];
@@ -180,7 +179,7 @@ private:
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
-            int color = GradientUtils::getColor(apperanceOptions.gradient, x, y, apperanceOptions.colorNoiseFreq);
+            int color = GradientUtils::getColor(appearanceOptions.gradient, x, y, appearanceOptions.colorNoiseFreq);
             mesh.colors.push_back(color);
 
             if (hasTexture) {
@@ -212,7 +211,7 @@ private:
     }
 
     /// Creates function which maps geocoordinate to texture coordinate.
-    std::function<Vector2(double, double)> createMapFunc(const ApperanceOptions& apperanceOptions) const
+    std::function<Vector2(double, double)> createMapFunc(const AppearanceOptions& appearanceOptions) const
     {
         // Precalculate mapping values
         double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
@@ -220,12 +219,12 @@ private:
         double geoX = bbox.minPoint.longitude;
         double geoY = bbox.minPoint.latitude;
         
-        double uvHeight = apperanceOptions.textureMap.height();
-        double uvWidth = apperanceOptions.textureMap.width();
-        double uvX = apperanceOptions.textureMap.xMin;
-        double uvY = apperanceOptions.textureMap.yMin;
+        double uvHeight = appearanceOptions.textureMap.height();
+        double uvWidth = appearanceOptions.textureMap.width();
+        double uvX = appearanceOptions.textureMap.xMin;
+        double uvY = appearanceOptions.textureMap.yMin;
 
-        double scale = apperanceOptions.textureScale;
+        double scale = appearanceOptions.textureScale;
 
         return [=](double x, double y) {
             double percentX = (x - geoX) / geoWidth * scale;
@@ -245,22 +244,22 @@ MeshBuilder::MeshBuilder(const utymap::QuadKey& quadKey, const ElevationProvider
 
 MeshBuilder::~MeshBuilder() { }
 
-void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    pimpl_->addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addPlane(mesh, p1, p2, geometryOptions, apperanceOptions);
+    pimpl_->addPlane(mesh, p1, p2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, apperanceOptions);
+    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addTriangle(Mesh& mesh, const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, const GeometryOptions& geometryOptions, const ApperanceOptions& apperanceOptions) const
+void MeshBuilder::addTriangle(Mesh& mesh, const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addTriangle(mesh, v0, v1, v2, geometryOptions, apperanceOptions);
+    pimpl_->addTriangle(mesh, v0, v1, v2, geometryOptions, appearanceOptions);
 }

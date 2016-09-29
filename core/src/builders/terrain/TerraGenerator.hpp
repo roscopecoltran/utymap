@@ -28,12 +28,12 @@ public:
         const std::string prefix;
 
         const utymap::meshing::MeshBuilder::GeometryOptions geometryOptions;
-        const utymap::meshing::MeshBuilder::ApperanceOptions appearanceOptions;
+        const utymap::meshing::MeshBuilder::AppearanceOptions appearanceOptions;
 
         RegionContext(const utymap::mapcss::Style& style,
                       const std::string& prefix,
                       const utymap::meshing::MeshBuilder::GeometryOptions& geometryOptions,
-                      const utymap::meshing::MeshBuilder::ApperanceOptions& appearanceOptions) :
+                      const utymap::meshing::MeshBuilder::AppearanceOptions& appearanceOptions) :
             style(style), 
             prefix(prefix), 
             geometryOptions(std::move(geometryOptions)), 

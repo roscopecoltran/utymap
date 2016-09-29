@@ -114,7 +114,7 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
             1      // no new vertices on boundaries 
         );
 
-    MeshBuilder::ApperanceOptions apperanceOptions(
+    MeshBuilder::AppearanceOptions apperanceOptions(
             context_.styleProvider.getGradient(style.getString(prefix + GradientKey)),
             style.getValue(prefix + ColorNoiseFreqKey, quadKeyWidth),
             Rectangle(),    // texture map

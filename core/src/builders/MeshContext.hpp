@@ -14,7 +14,7 @@ struct MeshContext
   utymap::meshing::Mesh& mesh;
   const utymap::mapcss::Style& style;
   utymap::meshing::MeshBuilder::GeometryOptions geometryOptions;
-  utymap::meshing::MeshBuilder::ApperanceOptions appearanceOptions;
+  utymap::meshing::MeshBuilder::AppearanceOptions appearanceOptions;
 
   MeshContext(utymap::meshing::Mesh& mesh,
               const utymap::mapcss::Style& style,

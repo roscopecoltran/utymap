@@ -55,7 +55,7 @@ public:
         int segmentSplit;
     };
 
-    struct ApperanceOptions final
+    struct AppearanceOptions final
     {
         // Gradient used to calculate color at every vertex.
         const utymap::mapcss::ColorGradient& gradient;
@@ -69,7 +69,7 @@ public:
         // Texture scale.
         double textureScale;
 
-        ApperanceOptions(const utymap::mapcss::ColorGradient& gradient,
+        AppearanceOptions(const utymap::mapcss::ColorGradient& gradient,
                          double colorNoiseFreq,
                          const Rectangle& textureMap,
                          double textureScale) :
@@ -91,14 +91,14 @@ public:
     void addPolygon(Mesh& mesh, 
                     Polygon& polygon, 
                     const GeometryOptions& geometryOptions, 
-                    const ApperanceOptions& apperanceOptions) const;
+                    const AppearanceOptions& appearanceOptions) const;
 
     // Adds simple plane to existing mesh using options provided.
     void addPlane(Mesh& mesh, 
                   const Vector2& p1,
                   const Vector2& p2, 
                   const GeometryOptions& geometryOptions, 
-                  const ApperanceOptions& apperanceOptions) const;
+                  const AppearanceOptions& appearanceOptions) const;
 
     // Adds simple plane to existing mesh using elevation and options provided.
     void addPlane(Mesh& mesh, 
@@ -107,7 +107,7 @@ public:
                   double ele1, 
                   double ele2, 
                   const GeometryOptions& geometryOptions, 
-                  const ApperanceOptions& apperanceOptions) const;
+                  const AppearanceOptions& appearanceOptions) const;
 
     // Adds triangle to mesh using options provided.
     void addTriangle(Mesh& mesh,
@@ -115,7 +115,7 @@ public:
                      const utymap::meshing::Vector3& v1,
                      const utymap::meshing::Vector3& v2,
                      const GeometryOptions& geometryOptions,
-                     const ApperanceOptions& apperanceOptions) const;
+                     const AppearanceOptions& appearanceOptions) const;
 
 private:
     class MeshBuilderImpl;

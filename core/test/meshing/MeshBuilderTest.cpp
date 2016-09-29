@@ -22,7 +22,7 @@ namespace {
             builder(utymap::QuadKey(1, 1, 0), eleProvider), 
             gradient(),
             geometryOptions(0, 0, 0, 0),
-            apperanceOptions(gradient, 0, Rectangle(), 0)
+            appearanceOptions(gradient, 0, Rectangle(), 0)
         {
         }
 
@@ -30,7 +30,7 @@ namespace {
         MeshBuilder builder;
         ColorGradient gradient;
         MeshBuilder::GeometryOptions geometryOptions;
-        MeshBuilder::ApperanceOptions apperanceOptions;
+        MeshBuilder::AppearanceOptions appearanceOptions;
     };
 }
 
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygon_WhenAddPolygon_ThenRefinesCorrectly)
         DPoint(0, 10)
     });
 
-    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK_EQUAL(mesh.vertices.size() / 3, 23);
     BOOST_CHECK_EQUAL(mesh.triangles.size() / 3, 34);
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithHole_WhenAddPolygon_ThenRefinesCorrectly)
         DPoint(3, 6)
     });
 
-    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonProcessedByGridSplitter_WhenAddPolygon_ThenRefi
     polygon.addContour(contour);
 
     Mesh mesh("");
-    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
     BOOST_CHECK(mesh.triangles.size() > 0);
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_ThenRefinesCorrec
     Mesh mesh("");
     geometryOptions.area = 1;
 
-    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK(mesh.vertices.size() > 0);
 }
@@ -130,10 +130,10 @@ BOOST_AUTO_TEST_CASE(GivenSimpleSquareWithTextureOptions_WhenAddPolygon_ThenText
     Mesh mesh("");
     Polygon polygon(4, 0);
     polygon.addContour(std::vector<DPoint> { {0, 0}, { 10, 0 }, { 10, 10 }, { 0, 10 } });
-    apperanceOptions.textureMap = Rectangle(0, 0, 1, 1);
-    apperanceOptions.textureScale = 1;
+    appearanceOptions.textureMap = Rectangle(0, 0, 1, 1);
+    appearanceOptions.textureScale = 1;
 
-    builder.addPolygon(mesh, polygon, geometryOptions, apperanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK(mesh.uvs.size() > 0);
     BOOST_CHECK_EQUAL(mesh.vertices.size() * 2 / 3, mesh.uvs.size());
