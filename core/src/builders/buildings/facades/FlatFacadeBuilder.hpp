@@ -33,9 +33,9 @@ private:
     void buildRange(const utymap::meshing::Polygon& polygon,
                     const utymap::meshing::Polygon::Range& range) const
     {
-        auto first = range.first;
-        auto last = range.second - 2;
-        for (auto i = last; i >= first; i -= 2) {
+        std::int64_t first = static_cast<std::int64_t>(range.first);
+        std::int64_t last = static_cast<std::int64_t>(range.second) - 2;
+        for (auto  i = last; i >= first; i -= 2) {
             utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
             auto j = i == first ? last : i - 2;
             utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);

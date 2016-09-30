@@ -177,7 +177,7 @@ GeoStore::GeoStore(StringTable& stringTable) : pimpl_(utymap::utils::make_unique
 
 GeoStore::~GeoStore()
 {
-    /// according to docs, should be called only once on app end.
+    // according to docs, should be called only once on app end.
     google::protobuf::ShutdownProtobufLibrary();
 }
 
