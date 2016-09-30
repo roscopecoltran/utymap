@@ -19,6 +19,7 @@ namespace {
     const std::string ColorNoiseFreqKey = "color-noise-freq";
     const std::string EleNoiseFreqKey = "ele-noise-freq";
     const std::string GradientKey = "color";
+    const std::string TextureKey = "texture";
     const std::string MaterialKey = "material";
     const std::string MaxAreaKey = "max-area";
     const std::string HeightOffsetKey = "height-offset";
@@ -117,7 +118,8 @@ TerraGenerator::RegionContext TerraGenerator::createRegionContext(const Style& s
 
     // TODO use seed for randomization
     auto textureRegion = context_.styleProvider
-            .getTexture(style.getString(prefix + MaterialKey))
+            .getTexture(style.getString(prefix + TextureKey),
+                        style.getString(prefix + MaterialKey))
             .random(0);
 
     MeshBuilder::AppearanceOptions appearanceOptions(

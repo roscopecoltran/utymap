@@ -17,6 +17,8 @@ using namespace utymap::mapcss;
 
 namespace {
 
+const std::string DefaultTextureName = "";
+
 // Contains operation types supported by mapcss parser.
 enum class OpType { Exists, Equals, NotEquals, Less, Greater };
 
@@ -191,14 +193,14 @@ public:
     StringTable& stringTable;
 
     std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
-    TextureAtlas textureAtlas;
+    std::unordered_map<std::string, std::unique_ptr<const TextureAtlas>> textures;
 
     StyleProviderImpl(const StyleSheet& stylesheet, 
                       StringTable& stringTable) :
         filters(),
         stringTable(stringTable),
         gradients(),
-        textureAtlas(stylesheet.atlas)
+        textures()
     {
         filters.nodes.reserve(24);
         filters.ways.reserve(24);
@@ -254,6 +256,11 @@ public:
                 }
             }
         }
+
+        textures.emplace(DefaultTextureName, utymap::utils::make_unique<const TextureAtlas>());
+        for (const auto& texture: stylesheet.textures) {
+            textures.emplace(texture.name(), utymap::utils::make_unique<const TextureAtlas>(texture));
+        }
     }
 
     const ColorGradient& getGradient(const std::string& key)
@@ -270,9 +277,14 @@ public:
         return *gradientPair->second;
     }
 
-    const TextureGroup& getTexture(const std::string& key) const
+    const TextureGroup& getTexture(const std::string& texture, const std::string& key) const
     {
-        return textureAtlas.get(key);
+        auto texturePair = textures.find(texture);
+        if (texturePair == textures.end()) {
+            texturePair = textures.find(DefaultTextureName);
+        }
+
+        return texturePair->second->get(key);
     }
 
 private:
@@ -332,7 +344,7 @@ const ColorGradient& StyleProvider::getGradient(const std::string& key) const
     return pimpl_->getGradient(key);
 }
 
-const TextureGroup& StyleProvider::getTexture(const std::string& key) const
+const TextureGroup& StyleProvider::getTexture(const std::string& texture, const std::string& key) const
 {
-    return pimpl_->getTexture(key);
+    return pimpl_->getTexture(texture, key);
 }

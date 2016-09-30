@@ -74,15 +74,22 @@ struct TextureAtlas final
 {
     using Groups = std::unordered_map<std::string, TextureGroup>;
 
-    TextureAtlas() : TextureAtlas(Groups())
+    TextureAtlas() : TextureAtlas("", Groups())
     {
     }
 
-    TextureAtlas(const Groups& textureGroups) :
+    TextureAtlas(const std::string& name, const Groups& textureGroups) :
+        name_(name),
         textureGroups_(std::move(textureGroups)),
         emptyGroup_()
     {
         emptyGroup_.add(0, 0, utymap::meshing::Rectangle());
+    }
+
+    /// Returns name of atlas.
+    const std::string& name() const
+    {
+        return name_;
     }
 
     /// Returns a reference to texture group.
@@ -98,6 +105,7 @@ struct TextureAtlas final
     }
 
 private:
+    const std::string name_;
     Groups textureGroups_;
     TextureGroup emptyGroup_;
 };
@@ -142,7 +150,7 @@ struct Rule final
 // Represents stylesheet.
 struct StyleSheet final
 {
-    TextureAtlas atlas;
+    std::vector<TextureAtlas> textures;
     std::vector<Rule> rules;
 };
 

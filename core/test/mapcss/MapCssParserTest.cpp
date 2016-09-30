@@ -317,9 +317,10 @@ BOOST_AUTO_TEST_CASE(GivenTwoTextureRegions_WhenGetFirstTexture_ThenMapReturnsVa
     MapCssParser parser(TEST_MAPCSS_PATH);
     StyleSheet stylesheet = parser.parse(styleFile);
 
-    auto coord = stylesheet.atlas.get("simple")
-                                  .random(0)
-                                  .map(Vector2(0.5, 0.5));
+    auto coord = stylesheet.textures[0]
+                           .get("simple")
+                           .random(0)
+                           .map(Vector2(0.5, 0.5));
 
     BOOST_CHECK_CLOSE(coord.x, 0.25, precision);
     BOOST_CHECK_CLOSE(coord.y, 0.5, precision);
@@ -331,9 +332,10 @@ BOOST_AUTO_TEST_CASE(GivenTwoTextureRegions_WhenGetSecondTexture_ThenMapReturnsV
     MapCssParser parser(TEST_MAPCSS_PATH);
     StyleSheet stylesheet = parser.parse(styleFile);
 
-    auto coord = stylesheet.atlas.get("simple")
-        .random(1)
-        .map(Vector2(0.5, 0.5));
+    auto coord = stylesheet.textures[0]
+                           .get("simple")
+                           .random(1)
+                           .map(Vector2(0.5, 0.5));
 
     BOOST_CHECK_CLOSE(coord.x, 0.75, precision);
     BOOST_CHECK_CLOSE(coord.y, 0.5, precision);

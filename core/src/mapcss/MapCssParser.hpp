@@ -19,7 +19,7 @@ public:
     // Parses stylesheet from string.
     StyleSheet parse(const std::string& content) const;
 
-    // Parses stylsheet from input stream (e.g. file). 
+    // Parses stylsheet from input stream (e.g. file).
     StyleSheet parse(std::istream& istream) const;
 
 private:

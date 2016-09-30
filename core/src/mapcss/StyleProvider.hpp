@@ -39,8 +39,8 @@ public:
     // Returns color gradient for given key.
     const ColorGradient& getGradient(const std::string& key) const;
 
-    /// Returns texture group for given key and seed.
-    const TextureGroup& getTexture(const std::string& key) const;
+    /// Returns texture group from given atlas using key.
+    const TextureGroup& getTexture(const std::string& atlas, const std::string& key) const;
 
 private:
     class StyleProviderImpl;
