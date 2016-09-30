@@ -99,6 +99,9 @@ BOOST_FUSION_ADAPT_STRUCT(
 template<typename Iterator>
 void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet);
 
+template<typename Iterator>
+void parse(const std::string& path, Iterator begin, Iterator end, Atlas& atlas);
+
 template <typename Iterator>
 struct CommentSkipper : public qi::grammar<Iterator>
 {
@@ -212,7 +215,7 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
         ;
 
         start =
-              (name % ',' >> zoom >> +condition) 
+              (name % ',' >> zoom >> +condition)
             | (+ascii::string("canvas") > zoom )
         ;
 
@@ -315,11 +318,7 @@ private:
         std::string atlasContent((std::istreambuf_iterator<char>(atlasFile)), std::istreambuf_iterator<char>());
 
         Atlas atlas;
-        AtlasGrammar<Iterator> grammar;
-        CommentSkipper<Iterator> skipper;
-
-        if (!phrase_parse(atlasContent.begin(), atlasContent.end(), grammar, skipper, atlas))
-            throw utymap::MapCssException(std::string("Cannot parse:") + url);
+        ::parse(url, atlasContent.begin(), atlasContent.end(), atlas);
 
         std::unordered_map<std::string, TextureGroup> groups;
         for (const auto& region : atlas.regions) {
@@ -341,9 +340,9 @@ template <typename Iterator>
 struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<Iterator>>
 {
     // NOTE stylesheet is passed here only because of import grammar: I simply don't know
-    // how to get stylesheet instance from attributes or context of import grammar. However, 
+    // how to get stylesheet instance from attributes or context of import grammar. However,
     // it seems to be possible somehow.
-    StyleSheetGrammar(const std::string& directory, StyleSheet& stylesheet) : 
+    StyleSheetGrammar(const std::string& directory, StyleSheet& stylesheet) :
         StyleSheetGrammar::base_type(start, "stylesheet"),
         import(directory, stylesheet),
         texture(directory, stylesheet)
@@ -375,6 +374,16 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
 
 MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)
 {
+}
+
+template<typename Iterator>
+void parse(const std::string& path, Iterator begin, Iterator end, Atlas& atlas)
+{
+    AtlasGrammar<Iterator> grammar;
+    CommentSkipper<Iterator> skipper;
+
+    if (!phrase_parse(begin, end, grammar, skipper, atlas))
+        throw utymap::MapCssException(std::string("Cannot parse: '") + path);
 }
 
 template<typename Iterator>
