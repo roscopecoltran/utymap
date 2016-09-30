@@ -34,7 +34,6 @@
 class Application
 {
     const int SrtmElevationLodStart = 42; // NOTE: disable for initial MVP
-
 public:
 
     /// Composes object graph.
@@ -142,7 +141,8 @@ public:
                     meshCallback(mesh.name.data(),
                         mesh.vertices.data(), static_cast<int>(mesh.vertices.size()),
                         mesh.triangles.data(), static_cast<int>(mesh.triangles.size()),
-                        mesh.colors.data(), static_cast<int>(mesh.colors.size()));
+                        mesh.colors.data(), static_cast<int>(mesh.colors.size()),
+                        mesh.uvs.data(), static_cast<int>(mesh.uvs.size()));
                 }
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);

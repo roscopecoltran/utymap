@@ -30,8 +30,8 @@ namespace UtyMap.Unity.Tests.Maps.Data
         {
             name += ":42";
 
-            _adapter.AdaptMesh(name, new[] {.0, 0, 0}, 3, new[] {0, 0, 0}, 3, new[] {0, 0, 0}, 3);
-            _adapter.AdaptMesh(name, new[] { .0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3);
+            _adapter.AdaptMesh(name, new[] { .0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3, new[] { .0, 0, 0 }, 3);
+            _adapter.AdaptMesh(name, new[] { .0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3, new[] { 0, 0, 0 }, 3, new[] { .0, 0, 0 }, 3);
 
             _observer.Verify(o => o.OnNext(It.IsAny<Union<Element, Mesh>>()), Times.Once);
         }

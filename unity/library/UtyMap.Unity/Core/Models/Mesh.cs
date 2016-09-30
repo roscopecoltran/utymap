@@ -9,13 +9,15 @@ namespace UtyMap.Unity.Core.Models
         public readonly Vector3[] Vertices;
         public readonly int[] Triangles;
         public readonly Color[] Colors;
+        public readonly Vector2[] Textures;
 
-        public Mesh(string name, Vector3[] vertices, int[] triangles, Color[] colors)
+        public Mesh(string name, Vector3[] vertices, int[] triangles, Color[] colors, Vector2[] textures)
         {
             Name = name;
             Vertices = vertices;
             Triangles = triangles;
             Colors = colors;
+            Textures = textures;
         }
 
     }

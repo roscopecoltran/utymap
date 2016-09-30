@@ -33,11 +33,13 @@ namespace UtyMap.Unity.Maps.Data
         }
 
         /// <summary> Adapts mesh data received from utymap. </summary>
-        public void AdaptMesh(string name, double[] vertices, int vertexCount, int[] triangles, 
-            int triangleCount, int[] colors, int colorCount)
+        public void AdaptMesh(string name, double[] vertices, int vertexCount,
+            int[] triangles, int triangleCount, int[] colors, int colorCount,
+            double[] uvs, int uvCount)
         {
             Vector3[] worldPoints;
             Color[] unityColors;
+            Vector2[] unityUvs;
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
@@ -45,12 +47,24 @@ namespace UtyMap.Unity.Maps.Data
             {
                 worldPoints = new Vector3[triangleCount];
                 unityColors = new Color[triangleCount];
+                unityUvs = new Vector2[triangleCount];
+
                 for (int i = 0; i < triangles.Length; ++i)
                 {
                     int vertIndex = triangles[i] * 3;
                     worldPoints[i] = _tile.Projection
                         .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
+
                     unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
+
+                    if (uvCount > 0)
+                    {
+                        int uvIndex = triangles[i]*2;
+                        unityUvs[i] = new Vector2((float) uvs[uvIndex], (float) uvs[uvIndex + 1]);
+                    }
+                    else
+                        unityUvs[i] = new Vector2();
+
                     triangles[i] = i;
                 }
             }
@@ -69,6 +83,15 @@ namespace UtyMap.Unity.Maps.Data
                 for (int i = 0; i < colorCount; ++i)
                     unityColors[i] = ColorUtils.FromInt(colors[i]);
 
+                if (uvCount > 0)
+                {
+                    unityUvs = new Vector2[uvCount/2];
+                    for (int i = 0; i < uvCount; i += 2)
+                        unityUvs[i/2] = new Vector2((float) uvs[i], (float) uvs[i + 1]);
+                }
+                else
+                    unityUvs = new Vector2[worldPoints.Length];
+
                 _tile.Register(id);
             }
 
@@ -77,7 +100,7 @@ namespace UtyMap.Unity.Maps.Data
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
 
-            Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors);
+            Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors, unityUvs);
             _observer.OnNext(new Union<Element, Mesh>(mesh));
         }
 

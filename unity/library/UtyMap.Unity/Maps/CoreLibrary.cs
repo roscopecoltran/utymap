@@ -19,7 +19,7 @@ namespace UtyMap.Unity.Maps
 
         // NOTE: protection flag against multiple configuration.
         // TODO: maybe support multiple calls?
-        private volatile static bool _isConfigured;
+        private static volatile bool _isConfigured;
 
         /// <summary> Configure utymap. Should be called before any core API usage. </summary>
         /// <param name="stringPath"> Path to string table. </param>
@@ -149,7 +149,8 @@ namespace UtyMap.Unity.Maps
         internal delegate void OnMeshBuilt([In] string name,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] [In] double[] vertices, [In] int vertexCount,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In] int[] triangles, [In] int triangleCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] [In] int[] colors, [In] int colorCount);
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] [In] int[] colors, [In] int colorCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)] [In] double[] uvs, [In] int uvCount);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void OnElementLoaded([In] long id,

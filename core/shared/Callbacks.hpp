@@ -7,7 +7,8 @@
 typedef void OnMeshBuilt(const char* name,
                          const double* vertices, int vertexSize,
                          const int* triangles, int triSize,
-                         const int* colors, int colorSize);
+                         const int* colors, int colorSize,
+                         const double* uvs, int uvSize);
 
 /// Callback which is called when element is loaded.
 typedef void OnElementLoaded(std::uint64_t id, const char** tags, int tagsSize,

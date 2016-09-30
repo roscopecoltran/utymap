@@ -29,12 +29,16 @@ namespace {
                 for (int j = startY; j <= endY; ++j) {
                     ::preloadElevation(i, j, levelOfDetails);
                     ::loadQuadKey(TEST_MAPCSS_DEFAULT, i, j, levelOfDetails,
-                        [](const char* name, const double* vertices, int vertexCount,
-                        const int* triangles, int triCount, const int* colors, int colorCount) {
+                        [](const char* name, 
+                           const double* vertices, int vertexCount,
+                           const int* triangles, int triCount,
+                           const int* colors, int colorCount,
+                           const double* uvs, int uvCount) {
                         isCalled = true;
                         BOOST_CHECK_GT(vertexCount, 0);
                         BOOST_CHECK_GT(triCount, 0);
                         BOOST_CHECK_GT(colorCount, 0);
+                        // NOTE uvs is not required
                     },
                         [](uint64_t id, const char** tags, int size, const double* vertices,
                         int vertexCount, const char** style, int styleSize) {

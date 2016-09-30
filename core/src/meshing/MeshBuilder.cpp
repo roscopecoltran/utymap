@@ -140,6 +140,11 @@ private:
         mesh.vertices.push_back(p.y);
         mesh.vertices.push_back(ele);
         mesh.colors.push_back(color);
+        
+        // TODO
+        mesh.uvs.push_back(0);
+        mesh.uvs.push_back(0);
+
         mesh.triangles.push_back(triIndex);
     }
 
@@ -152,16 +157,16 @@ private:
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        auto region = appearanceOptions.textureRegion;
-        bool hasTexture = !region.isEmpty();
+        // prepare texture data
+        const auto map = createMapFunc(appearanceOptions);
 
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
-            static_cast<std::size_t>(io->numberoftriangles), hasTexture);
+            static_cast<std::size_t>(io->numberoftriangles));
 
         for (int i = 0; i < io->numberofpoints; i++) {
+            // get coordinates
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-
             double ele = geometryOptions.heightOffset + (geometryOptions.elevation > std::numeric_limits<double>::lowest()
                 ? geometryOptions.elevation
                 : eleProvider_.getElevation(y, x));
@@ -170,20 +175,22 @@ private:
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
                 ele += NoiseUtils::perlin2D(x, y, geometryOptions.eleNoiseFreq);
 
+            // set vertices
             mesh.vertices.push_back(x);
             mesh.vertices.push_back(y);
             mesh.vertices.push_back(ele);
 
+            // set colors
             int color = GradientUtils::getColor(appearanceOptions.gradient, x, y, appearanceOptions.colorNoiseFreq);
             mesh.colors.push_back(color);
 
-            if (hasTexture) {
-                auto uv = region.map(Vector2(x, y));
-                mesh.uvs.push_back(uv.x);
-                mesh.uvs.push_back(uv.y);
-            }
+            // set textures
+            const auto uv = map(x, y);
+            mesh.uvs.push_back(uv.x);
+            mesh.uvs.push_back(uv.y);
         }
 
+        // set triangles
         int first = geometryOptions.flipSide ? 2 : 1;
         int second = 0;
         int third = geometryOptions.flipSide ? 1 : 2;
@@ -195,14 +202,36 @@ private:
           }
     }
 
-    static void ensureMeshCapacity(Mesh& mesh, std::size_t pointCount, std::size_t triCount, bool hasTexture)
+    /// Creates texture mapping function.
+    std::function<Vector2(double, double)> createMapFunc(const AppearanceOptions& appearanceOptions) const
+    {
+        if (appearanceOptions.textureRegion.isEmpty()) {
+            return [](double x, double y) {
+                return Vector2(0, 0);
+            };
+        }
+
+        double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
+        double geoWidth = bbox.maxPoint.longitude - bbox.minPoint.longitude;
+        double geoX = bbox.minPoint.longitude;
+        double geoY = bbox.minPoint.latitude;
+
+        auto region = appearanceOptions.textureRegion;
+        auto scale = appearanceOptions.textureScale;
+
+        return [=](double x, double y) {
+            double relX = (x - geoX) / geoWidth * scale;
+            double relY = (y - geoY) / geoHeight * scale;
+            return region.map(Vector2(relX, relY));
+        };
+    }
+
+    static void ensureMeshCapacity(Mesh& mesh, std::size_t pointCount, std::size_t triCount)
     {
         mesh.vertices.reserve(mesh.vertices.size() + pointCount * 3 / 2);
         mesh.triangles.reserve(mesh.triangles.size() + triCount * 3);
         mesh.colors.reserve(mesh.colors.size() + pointCount);
-
-        if (hasTexture)
-            mesh.uvs.reserve(mesh.uvs.size() + pointCount);
+        mesh.uvs.reserve(mesh.uvs.size() + pointCount * 2);
     }
 
     const utymap::BoundingBox bbox;
