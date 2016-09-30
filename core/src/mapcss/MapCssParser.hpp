@@ -8,18 +8,18 @@
 
 namespace utymap { namespace mapcss {
 
-// Provides the way to parse mapcss data into stylesheets object graph.
+/// Provides the way to parse mapcss data into stylesheets object graph.
 class MapCssParser final
 {
 public:
 
-    // Directory parameter specifies root path for import lookup.
+    /// Directory parameter specifies root path for import lookup.
     explicit MapCssParser(const std::string& directory = "");
 
-    // Parses stylesheet from string.
+    /// Parses stylesheet from string.
     StyleSheet parse(const std::string& content) const;
 
-    // Parses stylsheet from input stream (e.g. file).
+    /// Parses stylesheet from input stream (e.g. file).
     StyleSheet parse(std::istream& istream) const;
 
 private:

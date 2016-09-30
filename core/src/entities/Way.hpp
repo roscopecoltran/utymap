@@ -9,13 +9,13 @@
 
 namespace utymap { namespace entities {
 
-// Represents open polyline on map.
+/// Represents open polyline on map.
 struct Way final : public Element
 {
-    // Returns way's coordinates on map.
+    /// Returns way's coordinates on map.
     std::vector<GeoCoordinate> coordinates;
 
-    // Accepts visitor.
+    /// Accepts visitor.
     void accept(ElementVisitor& visitor) const override
     {
         visitor.visitWay(*this);

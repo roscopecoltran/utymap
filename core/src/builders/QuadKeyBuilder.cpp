@@ -55,13 +55,12 @@ public:
     }
 
 private:
-
-    // Calls appropriate visitor for given element
+    /// Calls appropriate visitor for given element
     void visitElement(const Element& element)
     {
         Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
 
-        // We don't know how to build it. Skip.
+        // we don't know how to build it. Skip.
         if (!style.has(builderKeyId_))
             return;
 
@@ -98,7 +97,6 @@ private:
 };
 
 public:
-
     QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable) :
         geoStore_(geoStore),
         stringTable_(stringTable),

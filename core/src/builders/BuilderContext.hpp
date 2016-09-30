@@ -13,24 +13,24 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to access all dependencies needed by various element builders.
+/// Provides the way to access all dependencies needed by various element builders.
 struct BuilderContext final
 {
-    // Current quadkey.
+    /// Current quadkey.
     const utymap::QuadKey quadKey;
-    // Bounding box if the quadkey.
+    /// Bounding box if the quadkey.
     const utymap::BoundingBox boundingBox;
-    // Current style provider.
+    /// Current style provider.
     const utymap::mapcss::StyleProvider& styleProvider;
-    // String table.
+    /// String table.
     utymap::index::StringTable& stringTable;
-    // Current elevation provider.
+    /// Current elevation provider.
     const utymap::heightmap::ElevationProvider& eleProvider;
-    // Mesh callback should be called once mesh is constructed.
+    /// Mesh callback should be called once mesh is constructed.
     std::function<void(const utymap::meshing::Mesh&)> meshCallback;
-    // Element callback is called to process original element by external logic.
+    /// Element callback is called to process original element by external logic.
     std::function<void(const utymap::entities::Element&)> elementCallback;
-    // Mesh builder.
+    /// Mesh builder.
     const utymap::meshing::MeshBuilder meshBuilder;
 
     BuilderContext(const utymap::QuadKey& quadKey,

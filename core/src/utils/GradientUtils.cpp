@@ -234,7 +234,7 @@ namespace
             : colorMap.find("grey")->second;
     }
 
-    // Gets integer representation of color from color string.
+    /// Gets integer representation of color from color string.
     inline Color fromHex(const std::string& colorStr)
     {
         auto r = hexToInt(colorStr[2]) + hexToInt(colorStr[1]) * 16;
@@ -244,7 +244,7 @@ namespace
     }
 }
 
-// TODO assume that regex is thread safe
+/// TODO assume that regex is thread safe
 const std::regex GradientUtils::gradientRegEx = 
     std::regex("rgb ?\\([ 0-9.%,]+?\\)|#[0-9a-fA-F]{3,6}\\s[0-9]{1,3}[%|px]|#[0-9a-fA-F]{3,6}|([a-zA-Z]+){1}(\\s[0-9]{1,3}\\s*[%|px]?)?");
 

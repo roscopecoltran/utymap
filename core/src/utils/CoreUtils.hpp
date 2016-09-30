@@ -51,7 +51,7 @@ struct measure
     }
 };
 
-// Custom implementation of missing function in C++11
+/// Custom implementation of missing function in C++11
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args)
 {

@@ -14,13 +14,13 @@
 
 namespace utymap { namespace utils {
 
-// Provides the way to save polygon to svg file which is helpful for debugging.
-// Ported from C# implementation.
+/// Provides the way to save polygon to svg file which is helpful for debugging.
+/// Ported from C# implementation.
 class SvgBuilder final
 {
 public:
 
-    // adds path to save.
+    /// Adds path to save.
     void addPaths(const ClipperLib::Paths& poly)
     {
         if (poly.empty())
@@ -168,7 +168,7 @@ private:
         StyleInfo si;
     };
 
-    // TODO rewrite this function
+    /// TODO rewrite this function
     static std::string string_format(const std::string& fmt, ...)
     {
         int size = static_cast<int>(fmt.size()) * 2 + 50;

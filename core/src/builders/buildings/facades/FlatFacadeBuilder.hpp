@@ -6,7 +6,7 @@
 
 namespace utymap { namespace builders {
 
-// Responsible for building facade wall in low poly quality.
+/// Responsible for building facade wall in low poly quality.
 class FlatFacadeBuilder : public FacadeBuilder
 {
 public:
@@ -33,9 +33,9 @@ private:
     void buildRange(const utymap::meshing::Polygon& polygon,
                     const utymap::meshing::Polygon::Range& range) const
     {
-        std::int64_t first = range.first;
-        std::int64_t last = range.second - 2;
-        for (std::int64_t i = last; i >= first; i -= 2) {
+        auto first = range.first;
+        auto last = range.second - 2;
+        for (auto i = last; i >= first; i -= 2) {
             utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
             auto j = i == first ? last : i - 2;
             utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);

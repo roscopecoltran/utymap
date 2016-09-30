@@ -28,9 +28,9 @@ struct MultipolygonProcessor::CoordinateSequence final
     {
     }
 
-    // Tries to add another sequence onto the start or end of this one.
-    // If it succeeds, the other sequence may also be modified and
-    // should be considered "spent".
+    /// Tries to add another sequence onto the start or end of this one.
+    /// If it succeeds, the other sequence may also be modified and
+    /// should be considered "spent".
     bool tryAdd(CoordinateSequence& other)
     {
         //add the sequence at the end
@@ -96,7 +96,7 @@ MultipolygonProcessor::MultipolygonProcessor(Relation& relation,
 {
 }
 
-// see http://wiki.openstreetmap.org/wiki/Relation:multipolygon/Algorithm
+/// For algorithm details, see http://wiki.openstreetmap.org/wiki/Relation:multipolygon/Algorithm
 void MultipolygonProcessor::process()
 {
     bool allClosed = true;

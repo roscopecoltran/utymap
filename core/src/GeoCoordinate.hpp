@@ -6,11 +6,12 @@
 
 namespace utymap {
 
+/// Represents geocoordinate.
 struct GeoCoordinate final
 {
-    // Latitude.
+    /// Latitude.
     double latitude;
-    // Longitude.
+    /// Longitude.
     double longitude;
 
     GeoCoordinate() : 

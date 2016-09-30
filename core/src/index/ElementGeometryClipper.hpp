@@ -16,13 +16,13 @@
 
 namespace utymap { namespace index {
 
-// Modifies geometry of element by bounding box clipping.
+/// Modifies geometry of element by bounding box clipping.
 class ElementGeometryClipper final : private utymap::entities::ElementVisitor
 {
 public:
-    // Defines callback
+    /// Defines callback
     typedef std::function<void(const utymap::entities::Element& element, const utymap::QuadKey& quadKey)> Callback;
-    // Defines polygon points location relative to current quadkey.
+    /// Defines polygon points location relative to current quadkey.
     enum class PointLocation { AllInside, AllOutside, Mixed };
 
     explicit ElementGeometryClipper(Callback callback);

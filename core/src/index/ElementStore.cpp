@@ -18,7 +18,7 @@ namespace {
     const std::string SkipKey = "skip";
     const std::string SizeKey = "size";
 
-    // Creates bounding box of given element.
+    /// Creates bounding box of given element.
     class BoundingBoxVisitor : public ElementVisitor
     {
     public:

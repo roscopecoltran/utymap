@@ -10,7 +10,7 @@
 
 namespace utymap { namespace builders {
 
-// Specifies basic behaviour of mesh generators.
+/// Specifies basic behaviour of mesh generators.
 class AbstractGenerator
 {
 public:
@@ -25,17 +25,17 @@ public:
 
     virtual ~AbstractGenerator() = default;
 
-    // Generates mesh data and updates given mesh.
+    /// Generates mesh data and updates given mesh.
     virtual void generate() = 0;
 
-    // Sets vertex noise frequency
+    /// Sets vertex noise frequency
     AbstractGenerator& setVertexNoiseFreq(double vertNoiseFreq)
     {
         vertNoiseFreq_ = vertNoiseFreq;
         return *this;
     }
 
-    // Sets color noise frequency
+    /// Sets color noise frequency
     AbstractGenerator& setColorNoiseFreq(double colorNoiseFreq)
     {
         meshContext_.appearanceOptions.colorNoiseFreq = colorNoiseFreq;
@@ -43,8 +43,7 @@ public:
     }
 
 protected:
-
-    // Adds triangle to mesh.
+    /// Adds triangle to mesh.
     void addTriangle(const utymap::meshing::Vector3& v0,
                      const utymap::meshing::Vector3& v1,
                      const utymap::meshing::Vector3& v2) const

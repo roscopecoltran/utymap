@@ -13,7 +13,7 @@
 
 namespace utymap { namespace builders {
 
-// Builds mansard roof.
+/// Builds mansard roof.
 class MansardRoofBuilder final : public FlatRoofBuilder
 {
     const double Scale = 1E7;

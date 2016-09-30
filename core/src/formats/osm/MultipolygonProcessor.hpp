@@ -11,11 +11,11 @@
 
 namespace utymap { namespace formats {
 
-// Builds relation from multipolygon (see http://wiki.openstreetmap.org/wiki/Talk:Relation:multipolygon)
+/// Builds relation from multipolygon (see http://wiki.openstreetmap.org/wiki/Talk:Relation:multipolygon)
 struct MultipolygonProcessor final
 {
 private:
-    // Helper class which provides the way to handle coordinate sequences.
+    /// Helper class which provides the way to handle coordinate sequences.
     struct CoordinateSequence;
     typedef std::vector<std::shared_ptr<MultipolygonProcessor::CoordinateSequence>> CoordinateSequences;
     typedef utymap::entities::Tag ElementTag;
@@ -27,7 +27,7 @@ public:
                           OsmDataContext& context,
                           std::function<void(utymap::entities::Relation&)> resolve);
 
-    // Builds relation from multipolygon relation.
+    /// Builds relation from multipolygon relation.
     void process();
 
 private:

@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to access mesh specific data.
+/// Provides the way to access mesh specific data.
 struct MeshContext
 {
   utymap::meshing::Mesh& mesh;

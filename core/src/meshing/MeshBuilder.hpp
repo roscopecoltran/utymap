@@ -12,7 +12,7 @@
 
 namespace utymap { namespace meshing {
 
-// Provides the way to build mesh in 3D space.
+/// Provides the way to build mesh in 3D space.
 class MeshBuilder final
 {
 public:
@@ -31,43 +31,43 @@ public:
         {
         }
 
-        // Max area of triangle in refined mesh.
+        /// Max area of triangle in refined mesh.
         double area;
         
-        // Elevation noise frequency.
+        /// Elevation noise frequency.
         double eleNoiseFreq;
         
-        // Fixed elevation. If specified elevation provider is not used.
+        /// Fixed elevation. If specified elevation provider is not used.
         double elevation;
         
-        // Height offset.
+        /// Height offset.
         double heightOffset;
         
-        // If set then triangle side is flipped.
+        /// If set then triangle side is flipped.
         bool flipSide;
 
-        // If set then backside should be generated too.
+        /// If set then backside should be generated too.
         bool hasBackSide;
 
-        // Flag indicating whether to suppress boundary segment splitting.
-        //     0 = split segments (default)
-        //     1 = no new vertices on the boundary
-        //     2 = prevent all segment splitting, including internal boundaries
+        /// Flag indicating whether to suppress boundary segment splitting.
+        ///     0 = split segments (default)
+        ///     1 = no new vertices on the boundary
+        ///     2 = prevent all segment splitting, including internal boundaries
         int segmentSplit;
     };
 
     struct AppearanceOptions final
     {
-        // Gradient used to calculate color at every vertex.
+        /// Gradient used to calculate color at every vertex.
         const utymap::mapcss::ColorGradient& gradient;
 
-        // Color noise frequency.
+        /// Color noise frequency.
         double colorNoiseFreq;
 
-        // Texture coordinates map inside atlas.
+        /// Texture coordinates map inside atlas.
         utymap::mapcss::TextureRegion textureRegion;
 
-        // Texture scale.
+        /// Texture scale.
         double textureScale;
 
         AppearanceOptions(const utymap::mapcss::ColorGradient& gradient,
@@ -82,26 +82,26 @@ public:
         }
     };
 
-    // Creates builder with given elevation provider.
+    /// Creates builder with given elevation provider.
     MeshBuilder(const utymap::QuadKey& quadKey, 
                 const utymap::heightmap::ElevationProvider& eleProvider);
 
     ~MeshBuilder();
 
-    // Adds polygon to existing mesh using options provided.
+    /// Adds polygon to existing mesh using options provided.
     void addPolygon(Mesh& mesh, 
                     Polygon& polygon, 
                     const GeometryOptions& geometryOptions, 
                     const AppearanceOptions& appearanceOptions) const;
 
-    // Adds simple plane to existing mesh using options provided.
+    /// Adds simple plane to existing mesh using options provided.
     void addPlane(Mesh& mesh, 
                   const Vector2& p1,
                   const Vector2& p2, 
                   const GeometryOptions& geometryOptions, 
                   const AppearanceOptions& appearanceOptions) const;
 
-    // Adds simple plane to existing mesh using elevation and options provided.
+    /// Adds simple plane to existing mesh using elevation and options provided.
     void addPlane(Mesh& mesh, 
                   const Vector2& p1, 
                   const Vector2& p2, 
@@ -110,7 +110,7 @@ public:
                   const GeometryOptions& geometryOptions, 
                   const AppearanceOptions& appearanceOptions) const;
 
-    // Adds triangle to mesh using options provided.
+    /// Adds triangle to mesh using options provided.
     void addTriangle(Mesh& mesh,
                      const utymap::meshing::Vector3& v0,
                      const utymap::meshing::Vector3& v1,

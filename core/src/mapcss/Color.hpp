@@ -6,6 +6,7 @@
 
 namespace utymap { namespace mapcss {
 
+/// Represents RGBA color.
 struct Color final
 {
     unsigned char r, g, b, a;

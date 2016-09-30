@@ -7,7 +7,7 @@
 
 namespace utymap { namespace builders {
 
-// Specifies base roof builder functionality.
+/// Specifies base roof builder functionality.
 class FacadeBuilder
 {
  public:
@@ -22,20 +22,20 @@ class FacadeBuilder
 
   virtual ~FacadeBuilder() = default;
 
-  // Sets facade height.
+  /// Sets facade height.
   FacadeBuilder& setHeight(double height) { height_ = height; return *this; }
 
-  // Sets height above ground level.
+  /// Sets height above ground level.
   FacadeBuilder& setMinHeight(double minHeight) { minHeight_ = minHeight; return *this; }
 
-  // Sets color noise freq.
+  /// Sets color noise freq.
   FacadeBuilder& setColorNoiseFreq(double colorNoiseFreq)
   {
       meshContext_.appearanceOptions.colorNoiseFreq = colorNoiseFreq;
       return *this;
   }
 
-  // Builds roof from polygon.
+  /// Builds roof from polygon.
   virtual void build(utymap::meshing::Polygon& polygon) = 0;
 
  protected:

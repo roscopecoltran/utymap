@@ -7,7 +7,7 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to build barrier.
+/// Provides the way to build barrier.
 class BarrierBuilder final : public ElementBuilder
 {
 

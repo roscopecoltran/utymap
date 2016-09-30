@@ -7,13 +7,13 @@
 
 namespace utymap { namespace entities {
 
-// Represents point on map.
- struct Node final: public Element
+/// Represents point on map.
+struct Node final: public Element
 {
-    // Returns coordinate on map.
+    /// Returns coordinate on map.
     GeoCoordinate coordinate;
 
-    // Accepts visitor.
+    /// Accepts visitor.
     void accept(ElementVisitor& visitor) const override
     {
         visitor.visitNode(*this);

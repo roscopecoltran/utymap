@@ -66,7 +66,7 @@ void TerraGenerator::generate(Path& tileRect)
     context_.meshCallback(mesh_);
 }
 
-// process all found layers.
+/// process all found layers.
 void TerraGenerator::buildLayers()
 {
     // 1. process layers: regions with shared properties.
@@ -90,7 +90,7 @@ void TerraGenerator::buildLayers()
         }
 }
 
-// process the rest area.
+/// process the rest area.
 void TerraGenerator::buildBackground(Path& tileRect)
 {
     backGroundClipper_.AddPath(tileRect, ptSubject, true);

@@ -16,32 +16,32 @@ using namespace utymap::mapcss;
 using namespace utymap::utils;
 
 namespace {
-    //                                      Index file format
-    //   DESCRIPTION    |                       DETAILS                                                     |
-    //------------------------------------------------------------------------------------------------------|
-    //     Element      |  List of entries, each is represented by element id (8b) and file offset (4b)     |
-    //------------------------------------------------------------------------------------------------------|
+    ///                                      Index file format
+    ///   DESCRIPTION    |                       DETAILS                                                     |
+    ///------------------------------------------------------------------------------------------------------|
+    ///     Element      |  List of entries, each is represented by element id (8b) and file offset (4b)     |
+    ///------------------------------------------------------------------------------------------------------|
     const std::string IndexFileExtension = ".idf";
 
-    //                                      Data file format
-    //------------------------------------------------------------------------------------------------------|
-    //   DESCRIPTION    |                       DETAILS                                                     |
-    //------------------------------------------------------------------------------------------------------|
-    //  (1b) Flags      |  00 00 00 AA, where:                                                              |
-    //                  |    AA - Element type (00 - Node, 01 - Way, 10 - Area, 11 - Relation)              |
-    //------------------------------------------------------------------------------------------------------|
-    //  (2b) Tags Size  |  Size of tag list where each tag represented by key-value pair (4b + 4b)          |
-    //------------------------------------------------------------------------------------------------------|
-    //      Tags        |               Tags data with size (2b)                                            |
-    //------------------------------------------------------------------------------------------------------|
-    //    Geometry      |             Geometry for Node, Way or Area                                        |
-    //       or         |                                                                                   |
-    //    Element List  |             Element list in the same format + id                                  |
-    //                  |                                                                                   |
-    //------------------------------------------------------------------------------------------------------|
+    ///                                      Data file format
+    ///------------------------------------------------------------------------------------------------------|
+    ///   DESCRIPTION    |                       DETAILS                                                     |
+    ///------------------------------------------------------------------------------------------------------|
+    ///  (1b) Flags      |  00 00 00 AA, where:                                                              |
+    ///                  |    AA - Element type (00 - Node, 01 - Way, 10 - Area, 11 - Relation)              |
+    ///------------------------------------------------------------------------------------------------------|
+    ///  (2b) Tags Size  |  Size of tag list where each tag represented by key-value pair (4b + 4b)          |
+    ///------------------------------------------------------------------------------------------------------|
+    ///      Tags        |               Tags data with size (2b)                                            |
+    ///------------------------------------------------------------------------------------------------------|
+    ///    Geometry      |             Geometry for Node, Way or Area                                        |
+    ///       or         |                                                                                   |
+    ///    Element List  |             Element list in the same format + id                                  |
+    ///                  |                                                                                   |
+    ///------------------------------------------------------------------------------------------------------|
     const std::string DataFileExtension = ".dat";
 
-    // Writes element to file stream.
+    /// Writes element to file stream.
     class ElementWriter final : public ElementVisitor
     {
     public:
@@ -117,7 +117,7 @@ namespace {
         std::fstream& dataFile_;
     };
 
-    // Reads element from file stream.
+    /// Reads element from file stream.
     class ElementReader final
     {
     public:
@@ -293,7 +293,7 @@ public:
     }
 
 private:
-    // gets full file path for given quadkey
+    /// Gets full file path for given quadkey
     inline std::string getFilePath(const QuadKey& quadKey, const std::string& extension) const
     {
         std::stringstream ss;
@@ -301,7 +301,7 @@ private:
         return ss.str();
     }
 
-    // Ensures that open/close function is called on files.
+    /// Ensures that open/close function is called on files.
     inline void ensureFiles(const QuadKey& quadKey)
     {
         if (quadKey == currentQuadKey_)

@@ -17,7 +17,7 @@ public:
     static const int MinLevelOfDetails = 1;
     static const int MaxLevelOfDetails = 19;
 
-    // Converts Latitude/Longitude to quadkey
+    /// Converts Latitude/Longitude to quadkey
     static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
         return QuadKey(levelOfDetail,
@@ -25,7 +25,7 @@ public:
                        latToTileY(clamp(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail));
     }
 
-    // Converts quadkey to bounding box
+    /// Converts quadkey to bounding box
     static BoundingBox quadKeyToBoundingBox(const QuadKey& quadKey)
     {
         GeoCoordinate minPoint, maxPoint;
@@ -56,7 +56,7 @@ public:
         return code;
     }
 
-    // Visits all tiles which are intersecting with given bounding box at given level of details
+    /// Visits all tiles which are intersecting with given bounding box at given level of details
     template<typename Visitor>
     static void visitTileRange(const BoundingBox& bbox, int levelOfDetail, const Visitor& visitor)
     {
@@ -76,7 +76,7 @@ public:
         }
     }
 
-    // Checks whether given point inside polygon.
+    /// Checks whether given point inside polygon.
     template <typename Iter>
     static bool isPointInPolygon(const GeoCoordinate& point, Iter begin, Iter end)
     {
@@ -90,7 +90,7 @@ public:
         return c;
     }
 
-    // gets offset in degrees
+    /// Gets offset in degrees
     static double getOffset(const GeoCoordinate& point, double offsetInMeters)
     {
         double lat = deg2Rad(point.latitude);
@@ -99,7 +99,7 @@ public:
         return rad2Deg(offsetInMeters / radius);
     }
 
-    // Gets distance in meters for given coordinate
+    /// Gets distance in meters for given coordinate
     static double distance(const GeoCoordinate& p1, const GeoCoordinate& p2)
     {
         double dLat = deg2Rad(p1.latitude - p2.latitude);
@@ -118,7 +118,7 @@ public:
         return radius * c;
     }
 
-    // Returns point between two at given distance in percents.
+    /// Returns point between two at given distance in percents.
     static GeoCoordinate newPoint(const GeoCoordinate& p1, const GeoCoordinate& p2, double distanceInProcents)
     {
         return GeoCoordinate(p1.latitude + (p2.latitude - p1.latitude) * distanceInProcents,

@@ -12,7 +12,7 @@ static Application* applicationPtr = nullptr;
 
 extern "C"
 {
-    // Composes object graph.
+    /// Composes object graph.
     void EXPORT_API configure(const char* stringPath,  // path to string table directory
                               const char* elePath,     // path to elevation directory
                               OnError* errorCallback)  // completion callback.
@@ -20,19 +20,19 @@ extern "C"
         applicationPtr = new Application(stringPath, elePath, errorCallback);
     }
 
-    // Performs cleanup.
+    /// Performs cleanup.
     void EXPORT_API cleanup()
     {
         delete applicationPtr;
     }
 
-    // Register stylesheet.
+    /// Register stylesheet.
     void EXPORT_API registerStylesheet(const char* path)
     {
         applicationPtr->registerStylesheet(path);
     }
 
-    // Preloads elevation data.
+    /// Preloads elevation data.
     void EXPORT_API preloadElevation(int tileX,        // tile x
                                      int tileY,        // tile y
                                      int levelOfDetail) // level of detail
@@ -40,19 +40,19 @@ extern "C"
         applicationPtr->preloadElevation(utymap::QuadKey(levelOfDetail, tileX, tileY));
     }
 
-    // Registers new in-memory store.
+    /// Registers new in-memory store.
     void EXPORT_API registerInMemoryStore(const char* key)
     {
         applicationPtr->registerInMemoryStore(key);
     }
 
-    // Registers new persistent store.
+    /// Registers new persistent store.
     void EXPORT_API registerPersistentStore(const char* key, const char* dataPath)
     {
         applicationPtr->registerPersistentStore(key, dataPath);
     }
 
-    // Adds data to store to specific level of details range.
+    /// Adds data to store to specific level of details range.
     void EXPORT_API addToStoreInRange(const char* key,           // store key
                                       const char* styleFile,     // style file
                                       const char* path,          // path to data
@@ -63,7 +63,7 @@ extern "C"
         applicationPtr->addToStore(key, styleFile, path, utymap::LodRange(startLod, endLod), errorCallback);
    }
 
-    // Adds data to store to specific level of details range.
+    /// Adds data to store to specific level of details range.
     void EXPORT_API addToStoreInBoundingBox(const char* key,           // store key
                                             const char* styleFile,     // style file
                                             const char* path,          // path to data
@@ -80,7 +80,7 @@ extern "C"
         applicationPtr->addToStore(key, styleFile, path, bbox, lod, errorCallback);
     }
 
-    // Adds data to store to specific quadkey only.
+    /// Adds data to store to specific quadkey only.
     void EXPORT_API addToStoreInQuadKey(const char* key,           // store key
                                         const char* styleFile,     // style file
                                         const char* path,          // path to data
@@ -92,7 +92,7 @@ extern "C"
         applicationPtr->addToStore(key, styleFile, path, utymap::QuadKey(levelOfDetail, tileX, tileY), errorCallback);
     }
 
-    // Adds element to store. NOTE: relation is not yet supported.
+    /// Adds element to store. NOTE: relation is not yet supported.
     void EXPORT_API addToStoreElement(const char* key,           // store key
                                       const char* styleFile,     // style file
                                       std::uint64_t id,          // element id
@@ -106,7 +106,7 @@ extern "C"
     {
         utymap::LodRange lod(startLod, endLod);
         std::vector<utymap::entities::Tag> elementTags;
-        elementTags.reserve(tagLength / 2);
+        elementTags.reserve(static_cast<std::size_t>(tagLength / 2));
         for (std::size_t i = 0; i < tagLength; i += 2) {
             auto keyId = applicationPtr->getStringId(tags[i]);
             auto valueId = applicationPtr->getStringId(tags[i + 1]);
@@ -124,7 +124,7 @@ extern "C"
         }
 
         std::vector<utymap::GeoCoordinate> coordinates;
-        coordinates.reserve(vertexLength / 2);
+        coordinates.reserve(static_cast<std::size_t>(vertexLength / 2));
         for (int i = 0; i < vertexLength; i+=2) {
             coordinates.push_back(utymap::GeoCoordinate(vertices[i], vertices[i + 1]));
         }
@@ -145,7 +145,7 @@ extern "C"
         }
     }
 
-    // Loads quadkey.
+    /// Loads quadkey.
     void EXPORT_API loadQuadKey(const char* styleFile,                   // style file
                                 int tileX, int tileY, int levelOfDetail, // quadkey info
                                 OnMeshBuilt* meshCallback,               // mesh callback
@@ -156,8 +156,8 @@ extern "C"
         applicationPtr->loadQuadKey(styleFile, quadKey, meshCallback, elementCallback, errorCallback);
     }
 
-    // Checks whether there is data for given quadkey
-    bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail) // quadkey info
+    /// Checks whether there is data for given quadkey
+    bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail)
     {
         return applicationPtr->hasData(utymap::QuadKey(levelOfDetail, tileX, tileY));
     }

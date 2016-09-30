@@ -10,7 +10,7 @@
 
 namespace utymap { namespace utils {
 
-// Gets area of polygon
+/// Gets area of polygon
 template <typename T>
 double getArea(const T& coordinates)
 {
@@ -21,14 +21,14 @@ double getArea(const T& coordinates)
     return area;
 }
 
-// Checks whether geocoordinates are in clockwise oreder
+/// Checks whether geocoordinates are in clockwise oreder
 template <typename T>
 bool isClockwise(const T& coordinates)
 {
     return getArea(coordinates) < 0;
 }
 
-// Gets circle parameters from geocoordinates
+/// Gets circle parameters from geocoordinates
 inline void getCircle(const std::vector<utymap::GeoCoordinate>& coordinates, utymap::GeoCoordinate& center, double& radius) 
 {
     auto minMaxLong = std::minmax_element(coordinates.begin(), coordinates.end(),
@@ -48,7 +48,7 @@ inline void getCircle(const std::vector<utymap::GeoCoordinate>& coordinates, uty
     center = utymap::GeoCoordinate(centerLat, centerLon);
 }
 
-// Gets circle parameters from rectangle.
+/// Gets circle parameters from rectangle.
 inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshing::Vector2& center, double& radius)
 {
     double radiusX = (rectangle.xMax - rectangle.xMin) / 2;
@@ -61,7 +61,7 @@ inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshi
     center = utymap::meshing::Vector2(centerX, centerY);
 }
 
-// Gets centroid.
+/// Gets centroid.
 inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& polygon, const utymap::meshing::Polygon::Range& range)
 {
     double centroidX = 0.0;
@@ -79,7 +79,7 @@ inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& poly
     return utymap::meshing::Vector2(centroidX, centroidY);
 }
 
-// Iterates through polygon outers and call visitor with rectangle of this outer
+/// Iterates through polygon outers and call visitor with rectangle of this outer
 template <typename Visitor>
 void outerRectangles(const utymap::meshing::Polygon& polygon, const Visitor& visitor)
 {

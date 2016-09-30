@@ -6,7 +6,7 @@
 
 namespace utymap {
 
-// Thrown when exception is occured due to mapcss stylsheet processing.
+/// Thrown when exception is occured due to mapcss stylsheet processing.
 class MapCssException final: public std::invalid_argument
 {
 public:

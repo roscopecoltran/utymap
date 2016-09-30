@@ -9,7 +9,7 @@
 
 namespace utymap { namespace meshing {
 
-// Represents vector2 which can be used as point or direction in 2d space
+/// Represents vector2 which can be used as point or direction in 2d space
 struct Vector2
 {
     double x;
@@ -36,7 +36,7 @@ struct Vector2
     }
 };
 
-// Represents vector3 which can be used as point or direction in 3d space
+/// Represents vector3 which can be used as point or direction in 3d space
 struct Vector3
 {
     double x;
@@ -86,7 +86,7 @@ struct LineLinear final
         C = p1.x * p2.y - p2.x * p1.y;
     }
 
-    // Linear line represented by coefficients.
+    /// Linear line represented by coefficients.
     LineLinear(double pA, double pB, double pC)
     {
         A = pA;
@@ -123,7 +123,7 @@ struct LineLinear final
     }
 };
 
-// Represents axis aligned rectangle in 2D space.
+/// Represents axis aligned rectangle in 2D space.
 struct Rectangle final
 {
     double xMin, xMax, yMin, yMax;
@@ -167,7 +167,7 @@ struct Rectangle final
         return ((pt.x >= xMin) && (pt.x <= xMax) && (pt.y >= yMin) && (pt.y <= yMax));
     }
 
-    // Checks whether point is on border of rectangle.
+    /// Checks whether point is on border of rectangle.
     bool isOnBorder(const Vector2& point) const
     {
         return _left.contains(point) || _right.contains(point) ||
@@ -185,7 +185,7 @@ struct Rectangle final
     }
 };
 
-// Represents mesh which uses only primitive types to store data due to interoperability.
+/// Represents mesh which uses only primitive types to store data due to interoperability.
 struct Mesh final
 {
     std::string name;
@@ -199,7 +199,7 @@ struct Mesh final
     {
     }
 
-    // disable copying to prevent accidental copy
+    /// disable copying to prevent accidental copy
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
 };

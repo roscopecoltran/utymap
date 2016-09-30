@@ -14,7 +14,7 @@
 
 namespace utymap { namespace mapcss {
 
-// Represents style for element.
+/// Represents style for element.
 struct Style final
 {    
     Style(const std::vector<utymap::entities::Tag>& tags,
@@ -71,14 +71,14 @@ struct Style final
         return decs;
     }
 
-    // Gets string by given key. Empty string by default
+    /// Gets string by given key. Empty string by default
     std::string getString(const std::string& key) const
     {
         std::uint32_t keyId = stringTable_.getId(key);
         return getString(keyId);
     }
     
-    // Gets string by given key. Empty string by default
+    /// Gets string by given key. Empty string by default
     std::string getString(std::uint32_t keyId) const
     {
         if (!has(keyId))
@@ -91,7 +91,7 @@ struct Style final
                : declaration.value();
     }
 
-    // Gets double value or zero.
+    /// Gets double value or zero.
     double getValue(const std::string& key,
                     double size = 1,
                     const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
@@ -100,7 +100,7 @@ struct Style final
         return getValue(keyId, size, coordinate);
     }
 
-    // Gets double value or zero.
+    /// Gets double value or zero.
     double getValue(std::uint32_t keyId,
                     double size = 1,
                     const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const

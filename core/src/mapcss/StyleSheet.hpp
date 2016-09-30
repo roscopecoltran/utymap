@@ -110,7 +110,7 @@ private:
     TextureGroup emptyGroup_;
 };
 
-// Represents condition.
+/// Represents condition.
 struct Condition final
 {
     std::string key;
@@ -118,14 +118,14 @@ struct Condition final
     std::string value;
 };
 
-// Represents map zoom level.
+/// Represents map zoom level.
 struct Zoom final
 {
     std::uint8_t start;
     std::uint8_t end;
 };
 
-// Represents selector.
+/// Represents selector.
 struct Selector final
 {
     std::vector<std::string> names;
@@ -133,21 +133,21 @@ struct Selector final
     std::vector<Condition> conditions;
 };
 
-// Represents declaration.
+/// Represents declaration.
 struct Declaration final
 {
     std::string key;
     std::string value;
 };
 
-// Represents rule.
+/// Represents rule.
 struct Rule final
 {
     std::vector<Selector> selectors;
     std::vector<Declaration> declarations;
 };
 
-// Represents stylesheet.
+/// Represents stylesheet.
 struct StyleSheet final
 {
     std::vector<TextureAtlas> textures;

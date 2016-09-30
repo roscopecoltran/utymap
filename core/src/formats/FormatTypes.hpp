@@ -22,7 +22,7 @@ struct Tag final
     std::string value;
 };
 
-// this type is specific for osm formats
+/// this type is specific for osm formats
 struct RelationMember final
 {
     std::uint64_t refId;
@@ -30,7 +30,7 @@ struct RelationMember final
     std::string role;
 };
 
-// this type is specific for shapefile format
+/// this type is specific for shapefile format
 struct PolygonMember final
 {
     bool isRing;

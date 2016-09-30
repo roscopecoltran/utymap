@@ -3,14 +3,14 @@
 
 namespace utymap {
 
-// Represents quadkey: a node of quadtree
+/// Represents quadkey: a node of quadtree
 struct QuadKey final
 {
-    // Level of details (zoom).
+    /// Level of details (zoom).
     int levelOfDetail;
-    // Tile x at given LOD
+    /// Tile x
     int tileX;
-    // Tile y at given LOD
+    /// Tile y
     int tileY;
 
     QuadKey() : QuadKey(0, 0, 0)

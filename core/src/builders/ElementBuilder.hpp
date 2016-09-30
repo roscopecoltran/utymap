@@ -6,7 +6,7 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to build specific meshes from map data for given quadkey.
+/// Provides the way to build specific meshes from map data for given quadkey.
 class ElementBuilder : public utymap::entities::ElementVisitor
 {
 public:
@@ -15,7 +15,7 @@ public:
     {
     }
 
-    // Called when all objects for the corresponding quadkey are processed.
+    /// Called when all objects for the corresponding quadkey are processed.
     virtual void complete() = 0;
 
 protected:

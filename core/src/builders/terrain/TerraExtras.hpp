@@ -8,11 +8,11 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to extend terrain mesh with additional data.
+/// Provides the way to extend terrain mesh with additional data.
 class TerraExtras final
 {
 public:
-    // Specifies mesh region which should be used.
+    /// Specifies mesh region which should be used.
     struct Context
     {
         std::size_t startVertex;
@@ -32,13 +32,13 @@ public:
         }
     };
 
-    // Specifies Extras function signature.
+    /// Specifies Extras function signature.
     typedef std::function<void(const utymap::builders::BuilderContext&, TerraExtras::Context&)> ExtrasFunc;
 
-    // Extends mesh with trees.
+    /// Extends mesh with trees.
     static void addForest(const utymap::builders::BuilderContext& builderContext, TerraExtras::Context& extrasContext);
 
-    // Extends mesh with water surface.
+    /// Extends mesh with water surface.
     static void addWater(const utymap::builders::BuilderContext& builderContext, TerraExtras::Context& extrasContext);
 };
 

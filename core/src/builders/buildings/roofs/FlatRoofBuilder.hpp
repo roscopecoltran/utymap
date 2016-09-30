@@ -7,7 +7,7 @@
 
 namespace utymap { namespace builders {
 
-// Builds flat roof in low poly.
+/// Builds flat roof in low poly.
 class FlatRoofBuilder : public RoofBuilder
 {
 public:

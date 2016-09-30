@@ -17,10 +17,10 @@
 
 namespace utymap { namespace mapcss {
 
-// Represents style declaration which support evaluation.
+/// Represents style declaration which support evaluation.
 struct StyleEvaluator final
 {
-    // NOTE has to put these declarations here due to evaluate function implementation
+    /// NOTE has to put these declarations here due to evaluate function implementation
     struct Nil {};
     struct Signed;
     struct Tree;
@@ -46,10 +46,10 @@ struct StyleEvaluator final
 
     StyleEvaluator() = delete;
 
-    // Parses expression into AST.
+    /// Parses expression into AST.
     static std::unique_ptr<Tree> parse(const std::string& expression);
 
-    // Evaluates expression using tags.
+    /// Evaluates expression using tags.
     template <typename T>
     static T evaluate(const Tree& tree,
                       const std::vector<utymap::entities::Tag>& tags,
@@ -61,7 +61,7 @@ struct StyleEvaluator final
 
 private:
 
-    // Specifies default AST evaluator behaviour.
+    /// Specifies default AST evaluator behaviour.
     template <typename T>
     struct Evaluator
     {
@@ -78,7 +78,7 @@ private:
         utymap::index::StringTable& stringTable_;
     };
 
-    // Evaluates double from AST.
+    /// Evaluates double from AST.
     struct DoubleEvaluator : public Evaluator<double>
     {
         DoubleEvaluator(const std::vector<utymap::entities::Tag>& tags,
@@ -125,7 +125,7 @@ private:
         }
     };
 
-    // Evaluates string from AST.
+    /// Evaluates string from AST.
     struct StringEvaluator : public Evaluator<std::string>
     {
         StringEvaluator(const std::vector<utymap::entities::Tag>& tags,

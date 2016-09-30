@@ -5,8 +5,8 @@
 
 namespace utymap { namespace meshing {
 
-// Represents polygon in 2D space.
-// NOTE this class is designed to work with Triangle library
+/// Represents polygon in 2D space.
+/// NOTE this class is designed to work with Triangle library
 class Polygon final
 {
 public:
@@ -16,9 +16,9 @@ public:
     std::vector<double> holes;
     std::vector<int> segments;
 
-    // defines outer shape
+    /// defines outer shape
     std::vector<Range> outers;
-    // defines inner shape (holes)
+    /// defines inner shape (holes)
     std::vector<Range> inners;
 
     Rectangle rectangle;
@@ -75,7 +75,7 @@ private:
         }
     }
 
-    // tries to find point in polygon.
+    /// Tries to find point in polygon.
     static bool findPointInPolygon(const std::vector<Vector2>& contour, Vector2& point)
     {
         Rectangle bounds;
@@ -121,7 +121,7 @@ private:
         return false;
     }
 
-    // checks whether point in polygon using ray casting algorithm
+    /// Checks whether point in polygon using ray casting algorithm
     static bool isPointInPolygon(const Vector2& point, const std::vector<Vector2>& poly)
     {
         bool inside = false;

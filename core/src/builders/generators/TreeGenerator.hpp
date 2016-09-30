@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Generates tree.
+/// Generates tree.
 class TreeGenerator
 {
 public:
@@ -32,28 +32,28 @@ public:
 
     TreeGenerator(const TreeGenerator&) = delete;
 
-    // Sets position of tree
+    /// Sets position of tree
     TreeGenerator& setPosition(const utymap::meshing::Vector3& position)
     {
         position_ = position;
         return *this;
     }
 
-    // Sets heigh of trunk
+    /// Sets heigh of trunk
     TreeGenerator& setTrunkHeight(double height)
     {
         trunkHeight_ = height;
         return *this;
     }
 
-    // Sets radius of trunk
+    /// Sets radius of trunk
     TreeGenerator& setTrunkRadius(double radius)
     {
         trunkRadius_ = radius;
         return *this;
     }
 
-    // Sets radius of foliage
+    /// Sets radius of foliage
     TreeGenerator& setFoliageRadius(double radius, double height = 1)
     {
         foliageRadius_ = radius;
@@ -61,14 +61,14 @@ public:
         return *this;
     }
 
-    // Sets trunk color noise freq
+    /// Sets trunk color noise freq
     TreeGenerator& setTrunkColorNoiseFreq(double noiseFreq)
     {
         trunkGenerator.setColorNoiseFreq(noiseFreq);
         return *this;
     }
 
-    // Sets foliage color noise freq.
+    /// Sets foliage color noise freq.
     TreeGenerator& setFoliageColorNoiseFreq(double noiseFreq)
     {
         foliageGenerator.setColorNoiseFreq(noiseFreq);

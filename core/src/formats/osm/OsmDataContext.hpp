@@ -8,7 +8,7 @@
 
 namespace utymap { namespace formats {
 
-// Specifies visitor context which stores elements.
+/// Specifies visitor context which stores elements.
 struct OsmDataContext
 {
     typedef std::unordered_map<std::uint64_t, std::shared_ptr<utymap::entities::Node>> NodeMapType;

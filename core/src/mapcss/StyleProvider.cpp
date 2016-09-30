@@ -19,7 +19,7 @@ namespace {
 
 const std::string DefaultTextureName = "";
 
-// Contains operation types supported by mapcss parser.
+/// Contains operation types supported by mapcss parser.
 enum class OpType { Exists, Equals, NotEquals, Less, Greater };
 
 struct ConditionType final
@@ -44,7 +44,7 @@ struct Filter final
     }
 };
 
-// key: level of details, value: filters for specific element type.
+/// Key: level of details, value: filters for specific element type.
 typedef std::unordered_map<int, std::vector<Filter>> FilterMap;
 
 struct FilterCollection final
@@ -94,7 +94,7 @@ private:
             build(tags, filters);
     }
 
-    // checks tag's value assuming that the key is already checked.
+    /// checks tag's value assuming that the key is already checked.
     bool matchTag(const Tag& tag, const ConditionType& condition)
     {
         switch (condition.type) {
@@ -111,7 +111,7 @@ private:
         }
     }
 
-    // Compares two raw string values using double conversion.
+    /// Compares two raw string values using double conversion.
     template<typename Func>
     bool compareDoubles(std::uint32_t left, std::uint32_t right, Func binaryOp)
     {
@@ -121,7 +121,7 @@ private:
         return binaryOp(leftValue, rightValue);
     }
 
-    // tries to find tag which satisfy condition using binary search.
+    /// Tries to find tag which satisfy condition using binary search.
     bool matchTags(TagIterator begin, TagIterator end, const ConditionType& condition)
     {
         while (begin < end) {
@@ -136,7 +136,7 @@ private:
         return false;
     }
 
-    // Builds style object. More expensive to call than check.
+    /// Builds style object. More expensive to call than check.
     void build(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
@@ -157,7 +157,7 @@ private:
         }
     }
 
-    // Just checks whether style can be created without constructing actual style.
+    /// Just checks whether style can be created without constructing actual style.
     void check(const std::vector<Tag>& tags, const FilterMap& filters)
     {
         FilterMap::const_iterator iter = filters.find(levelOfDetails_);
@@ -184,7 +184,7 @@ private:
 
 }
 
-// Converts mapcss stylesheet to index optimized representation to speed search query up.
+/// Converts mapcss stylesheet to index optimized representation to speed search query up.
 class StyleProvider::StyleProviderImpl
 {
 public:

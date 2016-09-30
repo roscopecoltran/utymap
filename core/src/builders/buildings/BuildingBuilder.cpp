@@ -40,7 +40,7 @@ namespace {
 
     const std::string MeshNamePrefix = "building:";
 
-    // Defines roof builder which does nothing.
+    /// Defines roof builder which does nothing.
     class EmptyRoofBuilder : public RoofBuilder {
     public:
         EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc)
@@ -106,7 +106,7 @@ namespace {
         }
     };
 
-    // Creates points for polygon
+    /// Creates points for polygon
     std::vector<Vector2> toPoints(const std::vector<GeoCoordinate>& coordinates)
     {
         std::vector<Vector2> points;
@@ -118,11 +118,11 @@ namespace {
         return std::move(points);
     }
 
-    // NOTE this method exists due to special processing of all buildings parts of the 
-    // one relation. In general, we want to have ability to render complex building 
-    // as one game object. If area/relation is already part of relation then we
-    // should avoid processing it as independent element. We cannot just delete 
-    // element from store as it might be a part of other relation.
+    /// NOTE this method exists due to special processing of all buildings parts of the
+    /// one relation. In general, we want to have ability to render complex building
+    /// as one game object. If area/relation is already part of relation then we
+    /// should avoid processing it as independent element. We cannot just delete
+    /// element from store as it might be a part of other relation.
     bool shouldBeIgnored(const Element& element)
     {
         return hasTag(std::numeric_limits<std::uint32_t>::max(),
@@ -130,7 +130,7 @@ namespace {
                       element.tags);
     }
 
-    // Responsible for processing multipolygon relation.
+    /// Responsible for processing multipolygon relation.
     class MultiPolygonVisitor final: public ElementVisitor
     {
     public:

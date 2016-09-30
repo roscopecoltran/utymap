@@ -5,15 +5,15 @@
 
 namespace utymap { namespace utils {
 
-// Provides noise generation functions.
-// Ported from C# code from here : http ://catlikecoding.com/unity/tutorials/noise/
+/// Provides noise generation functions.
+/// Ported from C# code from here : http ://catlikecoding.com/unity/tutorials/noise/
 class NoiseUtils final
 {
 public:
-    // Calculates perlin 2D noise.
+    /// Calculates perlin 2D noise.
     static double perlin2D(double x, double y, double frequency);
 
-    // Calculates perlin 3D noise.
+    /// Calculates perlin 3D noise.
     static double perlin3D(double x, double y, double z, double freq);
 
 private:

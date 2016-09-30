@@ -20,7 +20,7 @@ using namespace utymap::mapcss;
 
 class GeoStore::GeoStoreImpl final
 {
-    // Prevents to visit element twice if it exists in multiply stores.
+    /// Prevents to visit element twice if it exists in multiply stores.
     class FilterElementVisitor : public ElementVisitor
     {
     public:
@@ -177,7 +177,7 @@ GeoStore::GeoStore(StringTable& stringTable) : pimpl_(utymap::utils::make_unique
 
 GeoStore::~GeoStore()
 {
-    // according to docs, should be called only once on app end.
+    /// according to docs, should be called only once on app end.
     google::protobuf::ShutdownProtobufLibrary();
 }
 

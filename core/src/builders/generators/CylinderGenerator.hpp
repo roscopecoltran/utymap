@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Generates cylinder.
+/// Generates cylinder.
 class CylinderGenerator : public AbstractGenerator
 {
 public:
@@ -20,21 +20,21 @@ public:
     {
     }
 
-    // Sets center of cylinder.
+    /// Sets center of cylinder.
     CylinderGenerator& setCenter(const utymap::meshing::Vector3& center)
     {
         center_ = center;
         return *this;
     }
 
-    // Sets radius of cylinder.
+    /// Sets radius of cylinder.
     CylinderGenerator& setRadius(double radius)
     {
         radius_ = radius;
         return *this;
     }
 
-    // Sets radius of cylinder.
+    /// Sets radius of cylinder.
     CylinderGenerator& setHeight(double height)
     {
         height_ = height;
@@ -98,7 +98,6 @@ public:
     }
 
 private:
-
     utymap::meshing::Vector3 center_;
     int radialSegments_;
     double radius_, height_, maxSegmentHeight_;

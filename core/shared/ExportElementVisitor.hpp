@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-// Exports elements to external code using element callback.
+/// Exports elements to external code using element callback.
 struct ExportElementVisitor : public utymap::entities::ElementVisitor
 {
     using Tags = std::vector<utymap::formats::Tag>;

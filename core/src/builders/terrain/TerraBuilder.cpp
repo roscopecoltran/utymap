@@ -26,13 +26,13 @@ namespace {
     const std::string TerrainLayerKey = "terrain-layer";
     const std::string WidthKey = "width";
 
-    // Converts coordinate to clipper's IntPoint.
+    /// Converts coordinate to clipper's IntPoint.
     IntPoint toIntPoint(double x, double y)
     {
         return IntPoint(static_cast<cInt>(x * Scale), static_cast<cInt>(y * Scale));
     }
 
-    // Visits relation and fills region.
+    /// Visits relation and fills region.
     struct RelationVisitor : public ElementVisitor
     {
         const Relation& relation;
@@ -146,7 +146,7 @@ public:
         }
     }
 
-    // builds tile mesh using data provided.
+    /// builds tile mesh using data provided.
     void complete() override
     {
         clipper_.Clear();

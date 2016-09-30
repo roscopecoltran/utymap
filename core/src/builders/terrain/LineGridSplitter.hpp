@@ -12,7 +12,7 @@
 
 namespace utymap { namespace builders {
 
-// Splits line to segments on axis aligned grid intersections.
+/// Splits line to segments on axis aligned grid intersections.
 class LineGridSplitter final
 {
     typedef utymap::meshing::Vector2 Point;
@@ -49,7 +49,7 @@ public:
         step_ = step;
     }
 
-    // Splits line to segments.
+    /// Splits line to segments.
     void split(const ClipperLib::IntPoint& start, const ClipperLib::IntPoint& end, Points& result) const
     {
         Point s(start.X / scale_, start.Y / scale_);

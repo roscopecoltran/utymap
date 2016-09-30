@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Specifies base roof builder functionality.
+/// Specifies base roof builder functionality.
 class RoofBuilder
 {
 public:

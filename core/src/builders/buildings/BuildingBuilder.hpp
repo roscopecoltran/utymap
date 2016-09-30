@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Responsible for building generation.
+/// Responsible for building generation.
 class BuildingBuilder final: public utymap::builders::ElementBuilder
 {
 public:

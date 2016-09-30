@@ -12,7 +12,7 @@
 
 namespace utymap { namespace utils {
 
-// Sets tags to element.
+/// Sets tags to element.
 inline void setTags(utymap::index::StringTable& stringTable,
                     utymap::entities::Element& element,
                     const utymap::formats::Tags& tags)
@@ -27,7 +27,7 @@ inline void setTags(utymap::index::StringTable& stringTable,
     std::sort(element.tags.begin(), element.tags.end());
 }
 
-// Convert format specific tags to entity ones.
+/// Convert format specific tags to entity ones.
 inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable& stringTable, 
                                                       const utymap::formats::Tags& tags)
 {
@@ -81,7 +81,7 @@ inline std::string getTagValue(std::uint32_t key,
     throw std::domain_error("Cannot find tag:" + stringTable.getString(key));
 }
 
-// Gets mesh name
+///Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
     return prefix + utymap::utils::toString(element.id);
 }

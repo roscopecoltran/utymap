@@ -9,12 +9,12 @@
 
 namespace utymap { namespace mapcss {
 
-// Represents color gradient.
+/// Represents color gradient.
 class ColorGradient final
 {
 public:
 
-    // gradient data: first - time, second - color.
+    /// gradient data: first - time, second - color.
     typedef std::vector<std::pair<double, utymap::mapcss::Color>> GradientData;
 
     ColorGradient() {}
@@ -56,12 +56,12 @@ public:
         return interpolate(pairA.second, pairB.second, mu);
     }
 
-    // Returns true if there is no color specified.
+    /// Returns true if there is no color specified.
     bool empty() const { return colors_.empty(); }
 
 private:
 
-    // So far, use linear interpolation algorithm as the fastest.
+    /// So far, use linear interpolation algorithm as the fastest.
     static utymap::mapcss::Color interpolate(const utymap::mapcss::Color& a,
                                              const utymap::mapcss::Color& b,
                                              double r)

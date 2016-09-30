@@ -14,7 +14,7 @@ using namespace utymap::entities;
 using namespace utymap::mapcss;
 
 namespace {
-    // Max precision for Lat/Lon
+    /// Max precision for Lat/Lon
     const double Scale = 1E7;
 
     using PointLocation = utymap::index::ElementGeometryClipper::PointLocation;
@@ -183,7 +183,7 @@ namespace {
 
     std::shared_ptr<Element> processRelation(ClipperLib::ClipperEx& clipper, const BoundingBox& bbox, const Relation& relation);
  
-    // Visits relation and collects clipped elements
+    /// Visits relation and collects clipped elements
     struct RelationVisitor : public ElementVisitor
     {
         RelationVisitor(ClipperLib::ClipperEx& clipper, const BoundingBox& quadKeyBbox) :

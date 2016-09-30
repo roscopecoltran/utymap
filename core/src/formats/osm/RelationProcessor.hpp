@@ -69,9 +69,9 @@ private:
         return it != relation_.elements.end();
     }
 
-    // Checks whether relation has reference to current. If yes, it should not be 
-    // processed because of recursion. 
-    // NOTE This check finds only simple cases.
+    /// Checks whether relation has reference to current. If yes, it should not be
+    /// processed because of recursion.
+    /// NOTE This check finds only simple cases.
     bool hasReferenceToParent(const utymap::entities::Relation& rel)
     {
         auto parentId = relation_.id;

@@ -12,7 +12,7 @@
 
 namespace utymap { namespace index {
 
-// Defines API to store elements.
+/// Defines API to store elements.
 class ElementStore
 {
 public:
@@ -20,34 +20,34 @@ public:
 
     virtual ~ElementStore() = default;
 
-    // Searches for elements for given quadKey
+    /// Searches for elements for given quadKey
     virtual void search(const utymap::QuadKey& quadKey,
                         utymap::entities::ElementVisitor& visitor) = 0;
 
-    // Checks whether there is data for given quadkey.
+    /// Checks whether there is data for given quadkey.
     virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;
 
-    // Stores element in storage in all affected tiles at given level of details range.
+    /// Stores element in storage in all affected tiles at given level of details range.
     bool store(const utymap::entities::Element& element, 
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
 
-    // Stores element in storage only in given quadkey.
+    /// Stores element in storage only in given quadkey.
     bool store(const utymap::entities::Element& element,
                const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider);
 
-    // Stores element in storage only in given bounding box.
+    /// Stores element in storage only in given bounding box.
     bool store(const utymap::entities::Element& element,
                const utymap::BoundingBox& bbox,
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
 
-    // Commits changes done in element store.
+    /// Commits changes done in element store.
     virtual void commit() = 0;
 
 protected:
-    // Stores element in given quadkey.
+    /// Stores element in given quadkey.
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;
 
 private:

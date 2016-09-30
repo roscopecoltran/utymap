@@ -15,12 +15,11 @@
 
 namespace utymap { namespace builders {
 
-// Provides the way to generate terrain mesh.
+/// Provides the way to generate terrain mesh.
 class TerraGenerator final
 {
 public:
-
-    // Region context encapsulates information about given region.
+    /// Region context encapsulates information about given region.
     struct RegionContext final
     {
         const utymap::mapcss::Style style;
@@ -42,7 +41,7 @@ public:
         }
     };
 
-    // Represents terrain region.
+    /// Represents terrain region.
     struct Region final
     {
         Region() : 
@@ -70,13 +69,13 @@ public:
                    const utymap::mapcss::Style& style,
                    ClipperLib::ClipperEx& foregroundClipper_);
 
-    // Adds region
+    /// Adds region
     void addRegion(const std::string& type, std::unique_ptr<Region> region);
 
-    // Generates mesh and calls callback from context.
+    /// Generates mesh and calls callback from context.
     void generate(ClipperLib::Path& tileRect);
 
-    // Creates region  context.
+    /// Creates region  context.
     RegionContext createRegionContext(const utymap::mapcss::Style& style,
                                       const std::string& prefix) const;
 
@@ -96,10 +95,10 @@ private:
     typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Regions;
     typedef std::unordered_map<std::string, Regions> Layers;
 
-    // Builds all objects for quadkey organized by layers
+    /// Builds all objects for quadkey organized by layers
     void buildLayers();
 
-    // Builds background as clip area of layers
+    /// Builds background as clip area of layers
     void buildBackground(ClipperLib::Path& tileRect);
 
     void buildFromRegions(Regions& regions, const RegionContext& regionContext);
@@ -112,7 +111,7 @@ private:
 
     void fillMesh(utymap::meshing::Polygon& polygon, const RegionContext& regionContext);
 
-    // Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
+    /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
                               TerraExtras::Context& extrasContext,
                               const RegionContext& regionContext) const;

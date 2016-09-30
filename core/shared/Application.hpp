@@ -30,14 +30,14 @@
 #include <vector>
 #include <unordered_map>
 
-// Exposes API for external usage.
+/// Exposes API for external usage.
 class Application
 {
     const int SrtmElevationLodStart = 42; // NOTE: disable for initial MVP
 
 public:
 
-    // Composes object graph.
+    /// Composes object graph.
     Application(const char* stringPath, 
                 const char* elePath, 
                 OnError* errorCallback) :
@@ -47,29 +47,31 @@ public:
         registerDefaultBuilders();
     }
 
-    // Register stylesheet.
+    /// Registers stylesheet.
     void registerStylesheet(const char* path)
     {
         getStyleProvider(path);
     }
 
+    /// Registers new in-memory store.
     void registerInMemoryStore(const char* key)
     {
         geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::InMemoryElementStore>(stringTable_));
     }
 
+    /// Registers new persistent store.
     void registerPersistentStore(const char* key, const char* dataPath)
     {
         geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::PersistentElementStore>(dataPath, stringTable_));
     }
 
-    // Preload elevation data. Not thread safe.
+    /// Preloads elevation data. Not thread safe.
     void preloadElevation(const utymap::QuadKey& quadKey)
     {
         getElevationProvider(quadKey).preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
     }
 
-    // Adds data to store.
+    /// Adds data to store.
     void addToStore(const char* key, 
                     const char* styleFile, 
                     const char* path, 
@@ -81,7 +83,7 @@ public:
         }, errorCallback);
     }
 
-    // Adds data to store.
+    /// Adds data to store.
     void addToStore(const char* key, 
                     const char* styleFile, 
                     const char* path, 
@@ -94,7 +96,7 @@ public:
         }, errorCallback);
     }
 
-    // Adds data to store.
+    /// Adds data to store.
     void addToStore(const char* key, 
                     const char* styleFile, 
                     const char* path, 
@@ -106,7 +108,7 @@ public:
         }, errorCallback);
     }
 
-    // Adds element to in-memory store.
+    /// Adds element to store.
     void addToStore(const char* key,
                     const char* styleFile, 
                     const utymap::entities::Element& element, 
@@ -123,7 +125,7 @@ public:
         return geoStore_.hasData(quadKey);
     }
 
-    // Loads quadKey.
+    /// Loads given quadKey.
     void loadQuadKey(const char* styleFile, 
                      const utymap::QuadKey& quadKey, 
                      OnMeshBuilt* meshCallback,
@@ -148,7 +150,7 @@ public:
         }, errorCallback);
     }
 
-    // Gets id for the string.
+    /// Gets id for the string.
     std::uint32_t getStringId(const char* str) const
     {
         return stringTable_.getId(str);

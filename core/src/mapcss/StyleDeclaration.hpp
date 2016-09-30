@@ -14,7 +14,7 @@
 
 namespace utymap { namespace mapcss {
 
-// Represents style declaration which support evaluation.
+/// Represents style declaration which support evaluation.
 struct StyleDeclaration final
 {
     StyleDeclaration(std::uint32_t key, const std::string& value) :
@@ -34,16 +34,16 @@ struct StyleDeclaration final
     StyleDeclaration&operator=(StyleDeclaration&& other) = delete;
     StyleDeclaration&operator=(const StyleDeclaration&) = delete;
 
-    // Gets declaration key.
+    /// Gets declaration key.
     std::uint32_t key() const { return key_; };
 
-    // Gets declaration value.
+    /// Gets declaration value.
     const std::string& value() const { return value_; };
 
-    // Gets true if declaration should be evaluated
+    /// Gets true if declaration should be evaluated
     bool isEval() const { return tree_ != nullptr; }
 
-    // Evaluates expression using tags
+    /// Evaluates expression using tags
     template <typename T>
     T evaluate(const std::vector<utymap::entities::Tag>& tags,
                utymap::index::StringTable& stringTable) const

@@ -12,7 +12,7 @@
 
 namespace utymap { namespace mapcss {
 
-// This class responsible for filtering elements.
+/// This class responsible for filtering elements.
 class StyleProvider final
 {
 public:
@@ -27,16 +27,16 @@ public:
     StyleProvider&operator=(const StyleProvider&) = delete;
     StyleProvider&operator=(StyleProvider&&) = delete;
 
-    // Checks whether style is defined for the element.
+    /// Checks whether style is defined for the element.
     bool hasStyle(const utymap::entities::Element&, int levelOfDetails) const;
 
-    // Returs style for given element at given level of details.
+    /// Returns style for given element at given level of details.
     utymap::mapcss::Style forElement(const utymap::entities::Element&, int levelOfDetails) const;
 
-    // Returs style for canvas at given level of details.
+    /// Returns style for canvas at given level of details.
     utymap::mapcss::Style forCanvas(int levelOfDetails) const;
 
-    // Returns color gradient for given key.
+    /// Returns color gradient for given key.
     const ColorGradient& getGradient(const std::string& key) const;
 
     /// Returns texture group from given atlas using key.

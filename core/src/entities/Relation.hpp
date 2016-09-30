@@ -9,12 +9,12 @@
 
 namespace utymap { namespace entities {
 
-// Represents union of elements on map.
+/// Represents union of elements on map.
 struct Relation final : public Element
 {
     std::vector<std::shared_ptr<Element>> elements;
 
-    // Accepts visitor.
+    /// Accepts visitor.
     void accept(ElementVisitor& visitor) const override
     {
         visitor.visitRelation(*this);

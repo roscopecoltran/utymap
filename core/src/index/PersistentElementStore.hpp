@@ -10,7 +10,7 @@
 
 namespace utymap { namespace index {
 
-// Provides API to store elements in persistent store.
+/// Provides API to store elements in persistent store.
 class PersistentElementStore final : public ElementStore
 {
 public:

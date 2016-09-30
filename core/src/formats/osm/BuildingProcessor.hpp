@@ -12,7 +12,7 @@
 
 namespace utymap { namespace formats {
 
-// Provides the way to process buildings parts as single mesh.
+/// Provides the way to process buildings parts as single mesh.
 class BuildingProcessor
 {
 public:

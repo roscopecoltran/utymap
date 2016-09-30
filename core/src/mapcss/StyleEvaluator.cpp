@@ -20,7 +20,7 @@ namespace {
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
-    // Grammar for parsing string into AST.
+    /// Grammar for parsing string into AST.
     template <typename Iterator>
     struct EvalGrammar : qi::grammar<Iterator, Tree(), ascii::space_type>
     {

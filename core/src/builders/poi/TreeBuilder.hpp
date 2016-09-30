@@ -14,13 +14,12 @@
 
 namespace utymap { namespace builders {
 
-// Builds single tree.
+/// Builds single tree.
 class TreeBuilder final : public utymap::builders::ElementBuilder
 {
 public:
-
     explicit TreeBuilder(const utymap::builders::BuilderContext& context) :
-                utymap::builders::ElementBuilder(context)
+                         utymap::builders::ElementBuilder(context)
     {
     }
 
@@ -34,7 +33,7 @@ public:
 
     void complete() override { }
 
-    // Creates tree generator which can be used to produce multiple trees inside mesh.
+    /// Creates tree generator which can be used to produce multiple trees inside mesh.
     static std::unique_ptr<TreeGenerator> createGenerator(const utymap::builders::BuilderContext& builderContext,
                                                           const utymap::builders::MeshContext& meshContext);
 };

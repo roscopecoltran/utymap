@@ -10,7 +10,7 @@
 
 namespace utymap { namespace index {
 
-// Provides API to store elements in memory.
+/// Provides API to store elements in memory.
 class InMemoryElementStore final : public ElementStore
 {
 public:

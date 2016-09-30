@@ -11,12 +11,12 @@
 
 namespace utymap { namespace entities {
 
-// Represents tag
+/// Represents tag
 struct Tag
 {
-    // Returns key string id.
+    /// Returns key string id.
     std::uint32_t key;
-    // Returns value string id.
+    /// Returns value string id.
     std::uint32_t value;
 
     Tag() : Tag(0, 0) { }
@@ -26,20 +26,20 @@ struct Tag
     bool operator<(const Tag& a) const { return key < a.key; }
 };
 
-// Represents element stored in index.
+/// Represents element stored in index.
 struct Element
 {
-    // Returns id of given element.
+    /// Returns id of given element.
     std::uint64_t id;
-    // Returns tag collection represented by vector of tuple<uint,uint>.
+    /// Returns tag collection represented by vector of tuple<uint,uint>.
     std::vector<Tag> tags;
 
     virtual ~Element() = default;
 
-    // Visitor method.
+    /// Visitor method.
     virtual void accept(ElementVisitor&) const = 0;
 
-    // Returns string representation of element.
+    /// Returns string representation of element.
     virtual std::string toString(utymap::index::StringTable& st) const
     {
         std::ostringstream stm;

@@ -10,11 +10,11 @@
 
 namespace utymap { namespace builders {
 
-// Builds icosphere.
-// See http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+/// Builds icosphere.
+/// See http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
 class IcoSphereGenerator final : public AbstractGenerator
 {
-    // Helper class for calculations
+    /// Helper class for calculations
     struct TriangleIndices
     {
         std::size_t V1, V2, V3;
@@ -32,14 +32,14 @@ public:
     {
     }
 
-    // Sets center of icosphere.
+    /// Sets center of icosphere.
     IcoSphereGenerator& setCenter(const utymap::meshing::Vector3& center)
     {
         center_ = center;
         return *this;
     }
 
-    // Sets radius of icosphere.
+    /// Sets radius of icosphere.
     IcoSphereGenerator& setRadius(double radius, double height = 1)
     {
         radius_ = radius;
@@ -47,14 +47,14 @@ public:
         return *this;
     }
 
-    // Sets recursion level.
+    /// Sets recursion level.
     IcoSphereGenerator& setRecursionLevel(int recursionLevel)
     {
         recursionLevel_ = recursionLevel;
         return *this;
     }
 
-    // If true than only half will be generated.
+    /// If true than only half will be generated.
     IcoSphereGenerator& isSemiSphere(bool value)
     {
         isSemiSphere_ = value;
@@ -141,8 +141,7 @@ public:
     }
 
 private:
-
-    //  Returns index of point in the middle of p1 and p2.
+    ///  Returns index of point in the middle of p1 and p2.
     std::size_t getMiddlePoint(std::size_t p1, std::size_t p2)
     {
         // first check if we have it already

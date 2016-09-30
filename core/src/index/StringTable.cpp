@@ -12,8 +12,8 @@
 using std::ios;
 using namespace utymap::index;
 
-// Naive implementation of string table: reads all the time string from file; acquires lock
-// TODO optimize it to avoid locks and expensive file reads.
+/// Naive implementation of string table: reads all the time string from file; acquires lock
+/// TODO optimize it to avoid locks and expensive file reads.
 class StringTable::StringTableImpl
 {
     typedef std::vector<std::uint32_t> IdList;
@@ -77,7 +77,7 @@ public:
 
 private:
 
-    // reads string by id.
+    /// Reads string by id.
     void readString(std::uint32_t id, std::string& data)
     {
         if (id < offsets_.size()) {
@@ -90,7 +90,7 @@ private:
         }
     }
 
-    // write string to index.
+    /// Writes string to index.
     void writeString(std::uint32_t hash, const std::string& data)
     {
         // get offset as file size
@@ -115,7 +115,7 @@ private:
     std::uint32_t seed_;
     std::uint32_t nextId_;
 
-    // TODO think about better data structure alternatives
+    /// TODO think about better data structure alternatives
     HashIdMap map_;
     std::vector<std::uint32_t> offsets_;
 

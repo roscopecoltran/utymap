@@ -8,7 +8,7 @@
 
 namespace utymap { namespace builders {
 
-// Responsible for building cylinder shaped facade.
+/// Responsible for building cylinder shaped facade.
 class SphereFacadeBuilder : public FacadeBuilder
 {
 public:

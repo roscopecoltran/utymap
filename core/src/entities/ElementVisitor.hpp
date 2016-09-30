@@ -8,19 +8,20 @@ struct Way;
 struct Area;
 struct Relation;
 
+/// A base class for visiting entities - elements.
 class ElementVisitor
 {
 public:
-    // Visits node.
+    /// Visits node.
     virtual void visitNode(const Node&) = 0;
 
-    // Visits way.
+    /// Visits way.
     virtual void visitWay(const Way&) = 0;
 
-    // Visits area.
+    /// Visits area.
     virtual void visitArea(const Area&) = 0;
 
-    // Visits relation.
+    /// Visits relation.
     virtual void visitRelation(const Relation&) = 0;
 
     virtual ~ElementVisitor() = default;

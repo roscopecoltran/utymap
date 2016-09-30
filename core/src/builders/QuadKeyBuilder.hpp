@@ -16,14 +16,13 @@
 
 namespace utymap { namespace builders {
 
-// Responsible for building single quadkey.
+/// Responsible for building single quadkey.
 class QuadKeyBuilder final
 {
 public:
-
     typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
-    // Factory of element builders
+    /// Factory of element builders
     typedef std::function<std::unique_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
     QuadKeyBuilder(utymap::index::GeoStore& geoStore,
@@ -31,10 +30,10 @@ public:
 
     ~QuadKeyBuilder();
 
-    // Registers factory method for element builder.
+    /// Registers factory method for element builder.
     void registerElementBuilder(const std::string& name, ElementBuilderFactory factory);
 
-    // Builds tile for given quadkey.
+    /// Builds tile for given quadkey.
     void build(const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider,
                const utymap::heightmap::ElevationProvider& eleProvider,

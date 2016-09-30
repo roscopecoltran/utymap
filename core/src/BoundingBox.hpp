@@ -7,12 +7,12 @@
 
 namespace utymap {
 
-// Represents geo bounding box
+/// Represents geo bounding box
 struct BoundingBox final
 {
-    // Point with minimal latitude and longitude.
+    /// Point with minimal latitude and longitude.
     GeoCoordinate minPoint;
-    // Point with maximum latitude and longitude.
+    /// Point with maximum latitude and longitude.
     GeoCoordinate maxPoint;
 
     BoundingBox() : 
@@ -38,7 +38,7 @@ struct BoundingBox final
                minPoint.longitude <= maxPoint.longitude;
     }
 
-    // Expands bounding box using another bounding box.
+    /// Expands bounding box using another bounding box.
     void expand(const BoundingBox& rhs)
     {
         minPoint.latitude = std::min(minPoint.latitude, rhs.minPoint.latitude);
@@ -48,7 +48,7 @@ struct BoundingBox final
         maxPoint.longitude = std::max(maxPoint.longitude, rhs.maxPoint.longitude);
     }
 
-    // Expands bounding box using given coordinate.
+    /// Expands bounding box using given coordinate.
     void expand(const GeoCoordinate& c)
     {
         minPoint = GeoCoordinate(
@@ -60,7 +60,7 @@ struct BoundingBox final
             std::max(maxPoint.longitude, c.longitude));
     }
 
-    // Expands bounging box from collection of geo data.
+    /// Expands bounging box from collection of geo data.
     template<typename ForwardIterator>
     void expand(ForwardIterator begin, ForwardIterator end)
     {
@@ -68,20 +68,20 @@ struct BoundingBox final
             expand(*begin);
     }
 
-    // Checks whether given bounding box inside the current one.
+    /// Checks whether given bounding box inside the current one.
     bool contains(const BoundingBox& bbox) const
     {
         return contains(bbox.minPoint) && contains(bbox.maxPoint);
     }
 
-    // Checks whether given coordinate inside the bounding box.
+    /// Checks whether given coordinate inside the bounding box.
     bool contains(const GeoCoordinate& coordinate) const
     {
         return coordinate.latitude > minPoint.latitude && coordinate.longitude > minPoint.longitude &&
                coordinate.latitude < maxPoint.latitude && coordinate.longitude < maxPoint.longitude;
     }
 
-    // Checks whether given bounding box intersects the current one.
+    /// Checks whether given bounding box intersects the current one.
     bool intersects(const BoundingBox& rhs) const
     {
         double minLat = std::max(rhs.minPoint.latitude, minPoint.latitude);
@@ -92,7 +92,7 @@ struct BoundingBox final
         return minLat <= maxLat && minLon <= maxLon;
     }
 
-    // Returns center of bounding box.
+    /// Returns center of bounding box.
     GeoCoordinate center() const
     {
         return GeoCoordinate(
@@ -100,7 +100,7 @@ struct BoundingBox final
             minPoint.longitude + (maxPoint.longitude - minPoint.longitude) / 2);
     }
 
-    // Returns width.
+    /// Returns width.
     double width() const
     {
         return maxPoint.longitude - minPoint.longitude;

@@ -7,7 +7,7 @@
 
 namespace utymap {
 
-// Represents level of details range.
+/// Represents level of details range.
 struct LodRange final
 {
     int start;
