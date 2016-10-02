@@ -39,7 +39,11 @@ namespace UtyMap.Unity.Maps.Data
         {
             Vector3[] worldPoints;
             Color[] unityColors;
+
             Vector2[] unityUvs;
+            Vector2[] unityUvs2;
+            Vector2[] unityUvs3;
+
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
@@ -47,7 +51,12 @@ namespace UtyMap.Unity.Maps.Data
             {
                 worldPoints = new Vector3[triangleCount];
                 unityColors = new Color[triangleCount];
+
                 unityUvs = new Vector2[triangleCount];
+                unityUvs2 = new Vector2[triangleCount];
+                unityUvs3 = new Vector2[triangleCount];
+
+                var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
 
                 for (int i = 0; i < triangles.Length; ++i)
                 {
@@ -56,15 +65,7 @@ namespace UtyMap.Unity.Maps.Data
                         .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
 
                     unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
-
-                    if (uvCount > 0)
-                    {
-                        int uvIndex = triangles[i]*2;
-                        unityUvs[i] = new Vector2((float) uvs[uvIndex], (float) uvs[uvIndex + 1]);
-                    }
-                    else
-                        unityUvs[i] = new Vector2();
-
+                    textureMapper.SetUvs(i, triangles[i] * 2);
                     triangles[i] = i;
                 }
             }
@@ -92,6 +93,9 @@ namespace UtyMap.Unity.Maps.Data
                 else
                     unityUvs = new Vector2[worldPoints.Length];
 
+                unityUvs2 = new Vector2[worldPoints.Length];
+                unityUvs3 = new Vector2[worldPoints.Length];
+
                 _tile.Register(id);
             }
 
@@ -100,7 +104,7 @@ namespace UtyMap.Unity.Maps.Data
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
 
-            Mesh mesh = new Mesh(name, worldPoints, triangles, unityColors, unityUvs);
+            Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
             _observer.OnNext(new Union<Element, Mesh>(mesh));
         }
 
@@ -145,6 +149,80 @@ namespace UtyMap.Unity.Maps.Data
 
             id = long.Parse(match.Groups[2].Value);
             return !_tile.Has(id);
+        }
+
+        private static TextureAtlasMapper CreateTextureAtlasMapper(Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3,
+                double[] uvs, int[] uvMap)
+        {
+            const int infoEntrySize = 8;
+            var count = uvMap == null ? 0 : uvMap.Length / infoEntrySize;
+            List<TextureAtlasInfo> infos = new List<TextureAtlasInfo>(count);
+            for (int i = 0; i < count;)
+            {
+                var info = new TextureAtlasInfo();
+                info.UvIndexRange = new Range<int>(i == 0 ? 0 : infos[i - 1].UvIndexRange.Maximum, uvMap[i++]);
+                info.TextureIndex = uvMap[i++];
+
+                float atlasWidth = uvMap[i++];
+                float atlasHeight = uvMap[i++];
+                float x = uvMap[i++];
+                float y = uvMap[i++];
+                float width = uvMap[i++];
+                float height = uvMap[i++];
+
+                info.TextureSize = new Vector2(width/atlasWidth, height/atlasHeight);
+                info.TextureOffset = new Vector2(x / atlasWidth, y / atlasHeight);
+
+                infos.Add(info);
+            }
+
+            return new TextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, infos);
+        }
+
+        #endregion
+
+        #region Nested class
+
+        private class TextureAtlasMapper
+        {
+            private readonly Vector2[] _unityUvs;
+            private readonly Vector2[] _unityUvs2;
+            private readonly Vector2[] _unityUvs3;
+            private readonly double[] _uvs;
+            private readonly List<TextureAtlasInfo> _infos;
+
+            public TextureAtlasMapper(Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3, double[] uvs,
+                List<TextureAtlasInfo> infos)
+            {
+                _unityUvs = unityUvs;
+                _unityUvs2 = unityUvs2;
+                _unityUvs3 = unityUvs3;
+                _uvs = uvs;
+                _infos = infos;
+            }
+
+            public void SetUvs(int resultIndex, int origIindex)
+            {
+                for (int i = 0; i < _infos.Count; ++i)
+                {
+                    var info = _infos[i];
+                    if (info.UvIndexRange.Contains(origIindex))
+                    {
+                        _unityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
+                        _unityUvs2[resultIndex] = info.TextureSize;
+                        _unityUvs3[resultIndex] = info.TextureOffset;
+                        return;
+                    }
+                }
+            }
+        }
+
+        private struct TextureAtlasInfo
+        {
+            public int TextureIndex;
+            public Range<int> UvIndexRange;
+            public Vector2 TextureSize;
+            public Vector2 TextureOffset;
         }
 
         #endregion

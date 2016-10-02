@@ -164,20 +164,6 @@ private:
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
                                  static_cast<std::size_t>(io->numberoftriangles));
 
-        // store information about used atlas
-        // NOTE we want to support tiling with atlas textures. It requires to write some 
-        // specific logic in shader. So, this code passes all information needed by it.
-        if (io->numberofpoints > 0) {
-            mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
-            mesh.uvMap.push_back(appearanceOptions.textureId);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasHeight);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.x);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.y);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.width);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.height);
-        }
-
         for (int i = 0; i < io->numberofpoints; i++) {
             // get coordinates
             double x = io->pointlist[i * 2 + 0];
@@ -203,6 +189,20 @@ private:
             const auto uv = map(x, y);
             mesh.uvs.push_back(uv.x);
             mesh.uvs.push_back(uv.y);
+        }
+
+        // store information about used atlas
+        // NOTE we want to support tiling with atlas textures. It requires to write some 
+        // specific logic in shader. So, this code passes all information needed by it.
+        if (io->numberofpoints > 0) {
+            mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
+            mesh.uvMap.push_back(appearanceOptions.textureId);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasHeight);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.x);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.y);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.width);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.height);
         }
 
         // set triangles

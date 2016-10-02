@@ -44,7 +44,9 @@ namespace Assets.Scripts
             uMesh.vertices = mesh.Vertices;
             uMesh.triangles = mesh.Triangles;
             uMesh.colors = mesh.Colors;
-            uMesh.uv = mesh.Textures;
+            uMesh.uv = mesh.Uvs;
+            uMesh.uv2 = mesh.Uvs2;
+            uMesh.uv3 = mesh.Uvs3;
 
             uMesh.RecalculateNormals();
 

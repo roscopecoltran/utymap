@@ -19,15 +19,16 @@ struct TextureRegion final
     }
 
     TextureRegion(std::uint16_t atlasWidth, std::uint16_t atlasHeight,
-                  std::uint16_t x, std::uint16_t y, 
-                  std::uint16_t width, std::uint16_t height) :
+        std::uint16_t x, std::uint16_t y,
+        std::uint16_t width, std::uint16_t height) :
         atlasWidth(atlasWidth), atlasHeight(atlasHeight),
-        x(x), y(y), 
+        x(x), y(y),
         width(width), height(height)
     {
     }
 
-    bool isEmpty() const {
+    bool isEmpty() const 
+    {
         return atlasWidth == 0 || atlasHeight == 0;
     }
 
@@ -50,7 +51,7 @@ struct TextureGroup final
     }
 
     /// Returns pseudo random region.
-    TextureRegion random(std::uint32_t seed) const
+    const TextureRegion& random(std::uint32_t seed) const
     {
         return regions_[seed % regions_.size()];
     }
