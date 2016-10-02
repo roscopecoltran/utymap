@@ -40,7 +40,7 @@ public:
     const ColorGradient& getGradient(const std::string& key) const;
 
     /// Returns texture group from given atlas using key.
-    const TextureGroup& getTexture(const std::string& atlas, const std::string& key) const;
+    const TextureGroup& getTexture(std::uint16_t index, const std::string& key) const;
 
 private:
     class StyleProviderImpl;

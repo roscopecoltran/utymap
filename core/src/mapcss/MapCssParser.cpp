@@ -36,7 +36,7 @@ struct Region
 
 struct Atlas
 {
-    std::string name;
+    int index;
     int width;
     int height;
     std::vector<Region> regions;
@@ -53,7 +53,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
     Atlas,
-    (std::string, name)
+    (int, index)
     (int, width)
     (int, height)
     (std::vector<Region>, regions)
@@ -141,7 +141,7 @@ struct AtlasGrammar : qi::grammar < Iterator, Atlas(), CommentSkipper<Iterator>>
     AtlasGrammar() : AtlasGrammar::base_type(start, "atlas")
     {
         start =
-            qi::lexeme[+(ascii::char_ - ',')] >> ',' >>
+            qi::int_ >> ',' >>
             qi::int_ >> ',' >>
             qi::int_ >>
             +(region)
@@ -328,7 +328,7 @@ private:
                      utymap::meshing::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
         }
 
-        stylesheet.textures.emplace_back(atlas.name, groups);
+        stylesheet.textures.emplace_back(atlas.index, groups);
     }
 
     qi::rule<Iterator, CommentSkipper<Iterator>> start;

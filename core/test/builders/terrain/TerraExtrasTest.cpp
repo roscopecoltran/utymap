@@ -43,7 +43,7 @@ namespace {
             MeshBuilder builder(QuadKey(16, 0, 0), *dependencyProvider.getElevationProvider());
             builder.addPolygon(*mesh, polygon, 
                 MeshBuilder::GeometryOptions(5, 0 ,0, 0), 
-                MeshBuilder::AppearanceOptions(gradient, 0, TextureRegion(), 0));
+                MeshBuilder::AppearanceOptions(gradient, 0, 0, TextureRegion(), 0));
             return mesh;
         }
 

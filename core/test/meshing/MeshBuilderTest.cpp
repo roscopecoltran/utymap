@@ -22,7 +22,7 @@ namespace {
             builder(utymap::QuadKey(1, 1, 0), eleProvider), 
             gradient(),
             geometryOptions(0, 0, 0, 0),
-            appearanceOptions(gradient, 0, TextureRegion(), 0)
+            appearanceOptions(gradient, 0, 0, TextureRegion(), 0)
         {
         }
 
@@ -134,6 +134,21 @@ BOOST_AUTO_TEST_CASE(GivenSimpleSquareWithTextureOptions_WhenAddPolygon_ThenText
     appearanceOptions.textureScale = 1;
 
     builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
+
+    BOOST_CHECK(mesh.uvs.size() > 0);
+    BOOST_CHECK_EQUAL(mesh.vertices.size() * 2 / 3, mesh.uvs.size());
+}
+
+BOOST_AUTO_TEST_CASE(GivenSimpleSquareWithScale_WhenAddPolygon_ThenScaledTextureIsApplied)
+{
+    Mesh mesh("");
+    Polygon polygon(4, 0);
+    MeshBuilder localBuilder(utymap::QuadKey(16, 35205, 21489), eleProvider);
+    polygon.addContour(std::vector<DPoint> { {13.3874549, 52.530385}, { 13.38747790, 52.53038981 }, { 13.38764498, 52.53042475 }, { 13.38781206, 52.53045970 } });
+    appearanceOptions.textureRegion = TextureRegion(1025, 1025, 513, 513, 512, 512);
+    appearanceOptions.textureScale = 100;
+
+    localBuilder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 
     BOOST_CHECK(mesh.uvs.size() > 0);
     BOOST_CHECK_EQUAL(mesh.vertices.size() * 2 / 3, mesh.uvs.size());

@@ -153,6 +153,7 @@ private:
         addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
     }
 
+    /// Fills mesh with all data needed to render object correctly outside core library.
     void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
@@ -161,7 +162,21 @@ private:
         const auto map = createMapFunc(appearanceOptions);
 
         ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
-            static_cast<std::size_t>(io->numberoftriangles));
+                                 static_cast<std::size_t>(io->numberoftriangles));
+
+        // store information about used atlas
+        // NOTE we want to support tiling with atlas textures. It requires to write some 
+        // specific logic in shader. So, this code passes all information needed by it.
+        if (io->numberofpoints > 0) {
+            mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
+            mesh.uvMap.push_back(appearanceOptions.textureId);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasHeight);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.x);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.y);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.width);
+            mesh.uvMap.push_back(appearanceOptions.textureRegion.height);
+        }
 
         for (int i = 0; i < io->numberofpoints; i++) {
             // get coordinates
@@ -216,13 +231,12 @@ private:
         double geoX = bbox.minPoint.longitude;
         double geoY = bbox.minPoint.latitude;
 
-        auto region = appearanceOptions.textureRegion;
         auto scale = appearanceOptions.textureScale;
 
         return [=](double x, double y) {
-            double relX = (x - geoX) / geoWidth * scale;
-            double relY = (y - geoY) / geoHeight * scale;
-            return region.map(Vector2(relX, relY));
+            double relX =  (x - geoX) / geoWidth;
+            double relY =  (y - geoY) / geoHeight;
+            return Vector2(relX, relY) * scale;
         };
     }
 

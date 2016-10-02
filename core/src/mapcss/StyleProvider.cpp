@@ -17,7 +17,7 @@ using namespace utymap::mapcss;
 
 namespace {
 
-const std::string DefaultTextureName = "";
+const int DefaultTextureIndex = -1;
 
 /// Contains operation types supported by mapcss parser.
 enum class OpType { Exists, Equals, NotEquals, Less, Greater };
@@ -32,7 +32,7 @@ struct ConditionType final
 struct Filter final
 {
     std::vector<ConditionType> conditions;
-    std::unordered_map<uint32_t, std::unique_ptr<const StyleDeclaration>> declarations;
+    std::unordered_map<int, std::unique_ptr<const StyleDeclaration>> declarations;
 
     Filter() = default;
     Filter(const Filter& other) = delete;
@@ -193,7 +193,7 @@ public:
     StringTable& stringTable;
 
     std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
-    std::unordered_map<std::string, std::unique_ptr<const TextureAtlas>> textures;
+    std::unordered_map<std::uint16_t, std::unique_ptr<const TextureAtlas>> textures;
 
     StyleProviderImpl(const StyleSheet& stylesheet, 
                       StringTable& stringTable) :
@@ -257,9 +257,9 @@ public:
             }
         }
 
-        textures.emplace(DefaultTextureName, utymap::utils::make_unique<const TextureAtlas>());
+        textures.emplace(DefaultTextureIndex, utymap::utils::make_unique<const TextureAtlas>());
         for (const auto& texture: stylesheet.textures) {
-            textures.emplace(texture.name(), utymap::utils::make_unique<const TextureAtlas>(texture));
+            textures.emplace(texture.index(), utymap::utils::make_unique<const TextureAtlas>(texture));
         }
     }
 
@@ -277,13 +277,12 @@ public:
         return *gradientPair->second;
     }
 
-    const TextureGroup& getTexture(const std::string& texture, const std::string& key) const
+    const TextureGroup& getTexture(std::uint16_t index, const std::string& key) const
     {
-        auto texturePair = textures.find(texture);
+        auto texturePair = textures.find(index);
         if (texturePair == textures.end()) {
-            texturePair = textures.find(DefaultTextureName);
+            texturePair = textures.find(DefaultTextureIndex);
         }
-
         return texturePair->second->get(key);
     }
 
@@ -344,7 +343,7 @@ const ColorGradient& StyleProvider::getGradient(const std::string& key) const
     return pimpl_->getGradient(key);
 }
 
-const TextureGroup& StyleProvider::getTexture(const std::string& texture, const std::string& key) const
+const TextureGroup& StyleProvider::getTexture(std::uint16_t index, const std::string& key) const
 {
-    return pimpl_->getTexture(texture, key);
+    return pimpl_->getTexture(index, key);
 }

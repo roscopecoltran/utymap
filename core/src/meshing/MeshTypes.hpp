@@ -28,6 +28,13 @@ struct Vector2
         return !(*this == rhs);
     }
 
+    Vector2& operator*(double scale)
+    {
+        x *= scale;
+        y *= scale;
+        return *this;
+    }
+
     static double distance(const Vector2& v1, const Vector2& v2)
     {
         double dx = v1.x - v2.x;
@@ -192,7 +199,9 @@ struct Mesh final
     std::vector<double> vertices;
     std::vector<int> triangles;
     std::vector<int> colors;
+
     std::vector<double> uvs;
+    std::vector<int> uvMap;
 
     explicit Mesh(const std::string& name) :
        name(name)

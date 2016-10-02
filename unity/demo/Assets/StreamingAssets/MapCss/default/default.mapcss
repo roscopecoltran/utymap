@@ -2,6 +2,8 @@
 @import url("default.z14.mapcss");
 @import url("default.z16.mapcss");
 
+@texture url("default.z16.txt");
+
 /* always ignore some elements. */
 way|z1-16[level<0],
 way|z1-16[layer<0],

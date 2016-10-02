@@ -23,7 +23,7 @@ struct MeshContext
       mesh(mesh), 
       style(style),
       geometryOptions(0, 0, std::numeric_limits<double>::lowest(), 0),
-      appearanceOptions(gradient, 0, region, 0)
+      appearanceOptions(gradient, 0, 0, region, 0)
   {
   }
 };

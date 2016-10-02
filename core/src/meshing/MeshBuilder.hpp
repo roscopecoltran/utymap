@@ -64,6 +64,9 @@ public:
         /// Color noise frequency.
         double colorNoiseFreq;
 
+        /// Atlas id.
+        std::uint16_t textureId;
+
         /// Texture coordinates map inside atlas.
         utymap::mapcss::TextureRegion textureRegion;
 
@@ -71,11 +74,13 @@ public:
         double textureScale;
 
         AppearanceOptions(const utymap::mapcss::ColorGradient& gradient,
-                         double colorNoiseFreq,
-                         const utymap::mapcss::TextureRegion& textureRegion,
-                         double textureScale) :
+                          double colorNoiseFreq,
+                          std::uint16_t textureId,
+                          const utymap::mapcss::TextureRegion& textureRegion,
+                          double textureScale) :
             gradient(gradient),
             colorNoiseFreq(colorNoiseFreq),
+            textureId(textureId),
             textureRegion(std::move(textureRegion)),
             textureScale(textureScale)
         {

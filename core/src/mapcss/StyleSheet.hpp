@@ -13,35 +13,25 @@ namespace utymap { namespace mapcss {
 /// Represents a single texture region inside texture atlas.
 struct TextureRegion final
 {
-    TextureRegion() : TextureRegion(0, 0, 0, 0, 0, 0)
+    TextureRegion() : 
+        TextureRegion(0, 0, 0, 0, 0, 0)
     {
     }
 
-    TextureRegion(std::uint16_t atlasWidth,
-        std::uint16_t atlasHeight,
-        std::uint16_t x,
-        std::uint16_t y,
-        std::uint16_t width,
-        std::uint16_t height) :
-        atlasWidth_(atlasWidth), atlasHeight_(atlasHeight),
-        x_(x), y_(y), width_(width), height_(height)
+    TextureRegion(std::uint16_t atlasWidth, std::uint16_t atlasHeight,
+                  std::uint16_t x, std::uint16_t y, 
+                  std::uint16_t width, std::uint16_t height) :
+        atlasWidth(atlasWidth), atlasHeight(atlasHeight),
+        x(x), y(y), 
+        width(width), height(height)
     {
-    }
-
-    /// Maps relative uv coordinate to absolute one in texture atlas.
-    utymap::meshing::Vector2 map(const utymap::meshing::Vector2& uv) const
-    {
-        return utymap::meshing::Vector2(
-            (x_ + width_ * uv.x) / atlasWidth_,
-            (y_ + height_ * uv.y) / atlasHeight_);
     }
 
     bool isEmpty() const {
-        return atlasWidth_ == 0 || atlasHeight_ == 0;
+        return atlasWidth == 0 || atlasHeight == 0;
     }
 
-private:
-    std::uint16_t atlasWidth_, atlasHeight_, x_, y_, width_, height_;
+    std::uint16_t atlasWidth, atlasHeight, x, y, width, height;
 };
 
 /// Holds list of textures which represent the same material.
@@ -74,12 +64,12 @@ struct TextureAtlas final
 {
     using Groups = std::unordered_map<std::string, TextureGroup>;
 
-    TextureAtlas() : TextureAtlas("", Groups())
+    TextureAtlas() : TextureAtlas(0, Groups())
     {
     }
 
-    TextureAtlas(const std::string& name, const Groups& textureGroups) :
-        name_(name),
+    TextureAtlas(std::uint16_t index, const Groups& textureGroups) :
+        index_(index),
         textureGroups_(std::move(textureGroups)),
         emptyGroup_()
     {
@@ -87,9 +77,9 @@ struct TextureAtlas final
     }
 
     /// Returns name of atlas.
-    const std::string& name() const
+    std::uint16_t index() const
     {
-        return name_;
+        return index_;
     }
 
     /// Returns a reference to texture group.
@@ -105,7 +95,7 @@ struct TextureAtlas final
     }
 
 private:
-    const std::string name_;
+    std::uint16_t index_;
     Groups textureGroups_;
     TextureGroup emptyGroup_;
 };
