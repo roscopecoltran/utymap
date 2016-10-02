@@ -310,14 +310,14 @@ BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenAllRulesAreMerged)
     BOOST_CHECK_EQUAL(stylesheet.rules.size(), 5);
 }
 
-BOOST_AUTO_TEST_CASE(GivenTwoTextureRegions_WhenParse_ThenHasTwoRegions)
+BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenHasOneTexture)
 {
     std::ifstream styleFile(TEST_MAPCSS_PATH "import.mapcss");
     MapCssParser parser(TEST_MAPCSS_PATH);
 
     StyleSheet stylesheet = parser.parse(styleFile);
 
-    BOOST_CHECK_EQUAL(stylesheet.textures.size(), 2);
+    BOOST_CHECK_EQUAL(stylesheet.textures.size(), 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
