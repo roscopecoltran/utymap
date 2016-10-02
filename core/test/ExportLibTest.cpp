@@ -33,12 +33,13 @@ namespace {
                            const double* vertices, int vertexCount,
                            const int* triangles, int triCount,
                            const int* colors, int colorCount,
-                           const double* uvs, int uvCount) {
+                           const double* uvs, int uvCount,
+                           const int* uvMap, int uvMapCount) {
                         isCalled = true;
                         BOOST_CHECK_GT(vertexCount, 0);
                         BOOST_CHECK_GT(triCount, 0);
                         BOOST_CHECK_GT(colorCount, 0);
-                        // NOTE uvs is not required
+                        // NOTE ignore uvs as it is optional
                     },
                         [](uint64_t id, const char** tags, int size, const double* vertices,
                         int vertexCount, const char** style, int styleSize) {

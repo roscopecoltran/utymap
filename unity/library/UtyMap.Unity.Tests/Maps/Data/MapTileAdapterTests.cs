@@ -31,7 +31,8 @@ namespace UtyMap.Unity.Tests.Maps.Data
             name += ":42";
 
             for (int i = 0; i < 2; ++i)
-                _adapter.AdaptMesh(name, new[] {.0, 0, 0}, 3, new[] {0, 0, 0}, 3, new[] {0, 0, 0}, 3, new[] {.0, 0, 0, .0, 0, 0}, 6);
+                _adapter.AdaptMesh(name, new[] {.0, 0, 0}, 3, new[] {0, 0, 0}, 3, new[] {0, 0, 0}, 3, 
+                    new[] {.0, 0, 0, .0, 0, 0}, 6, new int[0], 0);
 
             _observer.Verify(o => o.OnNext(It.IsAny<Union<Element, Mesh>>()), Times.Once);
         }

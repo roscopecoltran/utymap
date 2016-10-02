@@ -35,7 +35,7 @@ namespace UtyMap.Unity.Maps.Data
         /// <summary> Adapts mesh data received from utymap. </summary>
         public void AdaptMesh(string name, double[] vertices, int vertexCount,
             int[] triangles, int triangleCount, int[] colors, int colorCount,
-            double[] uvs, int uvCount)
+            double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
         {
             Vector3[] worldPoints;
             Color[] unityColors;

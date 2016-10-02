@@ -150,7 +150,8 @@ namespace UtyMap.Unity.Maps
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] [In] double[] vertices, [In] int vertexCount,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In] int[] triangles, [In] int triangleCount,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] [In] int[] colors, [In] int colorCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)] [In] double[] uvs, [In] int uvCount);
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)] [In] double[] uvs, [In] int uvCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 10)] [In] int[] uvMap, [In] int uvMapCount);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void OnElementLoaded([In] long id,

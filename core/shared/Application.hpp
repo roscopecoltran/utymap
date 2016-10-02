@@ -142,7 +142,8 @@ public:
                         mesh.vertices.data(), static_cast<int>(mesh.vertices.size()),
                         mesh.triangles.data(), static_cast<int>(mesh.triangles.size()),
                         mesh.colors.data(), static_cast<int>(mesh.colors.size()),
-                        mesh.uvs.data(), static_cast<int>(mesh.uvs.size()));
+                        mesh.uvs.data(), static_cast<int>(mesh.uvs.size()),
+                        mesh.uvMap.data(), static_cast<int>(mesh.uvMap.size()));
                 }
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);
