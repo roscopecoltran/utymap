@@ -217,6 +217,8 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
                                         polygon, 
                                         regionContext.geometryOptions, 
                                         regionContext.appearanceOptions);
+        context_.meshBuilder.writeTextureMappingInfo(polygonMesh, regionContext.appearanceOptions);
+
         addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
@@ -226,6 +228,8 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
                                         polygon, 
                                         regionContext.geometryOptions, 
                                         regionContext.appearanceOptions);
+        context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
+
         addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
 }

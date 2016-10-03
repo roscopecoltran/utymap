@@ -132,6 +132,18 @@ public:
         }
     }
 
+    void writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions) const
+    {
+        mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
+        mesh.uvMap.push_back(appearanceOptions.textureId);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasHeight);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.x);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.y);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.width);
+        mesh.uvMap.push_back(appearanceOptions.textureRegion.height);
+    }
+
 private:
 
     static void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex)
@@ -189,20 +201,6 @@ private:
             const auto uv = map(x, y);
             mesh.uvs.push_back(uv.x);
             mesh.uvs.push_back(uv.y);
-        }
-
-        // store information about used atlas
-        // NOTE we want to support tiling with atlas textures. It requires to write some 
-        // specific logic in shader. So, this code passes all information needed by it.
-        if (io->numberofpoints > 0) {
-            mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
-            mesh.uvMap.push_back(appearanceOptions.textureId);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasHeight);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.x);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.y);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.width);
-            mesh.uvMap.push_back(appearanceOptions.textureRegion.height);
         }
 
         // set triangles
@@ -277,4 +275,9 @@ void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, dou
 void MeshBuilder::addTriangle(Mesh& mesh, const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addTriangle(mesh, v0, v1, v2, geometryOptions, appearanceOptions);
+}
+
+void MeshBuilder::writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions) const
+{
+    pimpl_->writeTextureMappingInfo(mesh, appearanceOptions);
 }

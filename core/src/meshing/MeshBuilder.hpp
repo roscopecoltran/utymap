@@ -123,6 +123,14 @@ public:
                      const GeometryOptions& geometryOptions,
                      const AppearanceOptions& appearanceOptions) const;
 
+    /// Writes texture mapping info into mesh. 
+    /// NOTE we want to support tiling with atlas textures. It requires to write some 
+    /// specific logic in shader. So, this code passes all information needed by it.
+    /// This method exists because of performance optimization: you need to call it manually
+    /// after all geometry related to one specific texture has been added.
+    void writeTextureMappingInfo(Mesh& mesh, 
+                                 const AppearanceOptions& appearanceOptions) const;
+
 private:
     class MeshBuilderImpl;
     std::unique_ptr<MeshBuilderImpl> pimpl_;
