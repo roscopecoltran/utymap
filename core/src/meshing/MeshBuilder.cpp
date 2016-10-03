@@ -17,7 +17,10 @@ class MeshBuilder::MeshBuilderImpl
 public:
 
     MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
-        bbox(GeoUtils::quadKeyToBoundingBox(quadKey)), eleProvider_(eleProvider)
+        bbox_(GeoUtils::quadKeyToBoundingBox(quadKey)), 
+        geoWidth_(bbox_.maxPoint.longitude - bbox_.minPoint.longitude),
+        geoHeight_(bbox_.maxPoint.latitude - bbox_.minPoint.latitude),
+        eleProvider_(eleProvider)
     {
     }
      
@@ -105,34 +108,38 @@ public:
         auto color = appearanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, appearanceOptions.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
-        addVertex(mesh, p1, ele1, color, index);
-        addVertex(mesh, p2, ele2, color, index + 2);
-        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1);
+        double size = geoWidth_ / appearanceOptions.textureScale;
+        double scaleX = Vector2::distance(p2, p1) / size;
+        double scaleY = GeoUtils::getOffset(GeoCoordinate(p1.y, p1.x), geometryOptions.heightOffset) / size;
+
+        addVertex(mesh, p1, ele1, color, index, Vector2(0, 0));
+        addVertex(mesh, p2, ele2, color, index + 2, Vector2(scaleX, 0));
+        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1, Vector2(scaleX, scaleY));
         index += 3;
 
-        addVertex(mesh, p1, ele1 + geometryOptions.heightOffset, color, index);
-        addVertex(mesh, p1, ele1, color, index + 2);
-        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1);
+        addVertex(mesh, p1, ele1 + geometryOptions.heightOffset, color, index, Vector2(0, scaleY));
+        addVertex(mesh, p1, ele1, color, index + 2, Vector2(0, 0));
+        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1, Vector2(scaleX, scaleY));
     }
 
-    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& apperanceOptions) const
+    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, const GeometryOptions& geometryOptions, const AppearanceOptions& apperanceOptions) const
     {
         auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, apperanceOptions.colorNoiseFreq) + 1) / 2);
         int startIndex = static_cast<int>(mesh.vertices.size() / 3);
 
-        addVertex(mesh, v0, color, startIndex);
-        addVertex(mesh, v1, color, ++startIndex);
-        addVertex(mesh, v2, color, ++startIndex);
+        addVertex(mesh, v0, color, startIndex, uv0);
+        addVertex(mesh, v1, color, ++startIndex, uv1);
+        addVertex(mesh, v2, color, ++startIndex, uv2);
 
         if (geometryOptions.hasBackSide) {
             // TODO check indices
-            addVertex(mesh, v2, color, startIndex);
-            addVertex(mesh, v1, color, ++startIndex);
-            addVertex(mesh, v0, color, ++startIndex);
+            addVertex(mesh, v2, color, startIndex, uv0);
+            addVertex(mesh, v1, color, ++startIndex, uv1);
+            addVertex(mesh, v0, color, ++startIndex, uv2);
         }
     }
 
-    void writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions) const
+    static void writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions)
     {
         mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
         mesh.uvMap.push_back(appearanceOptions.textureId);
@@ -146,23 +153,22 @@ public:
 
 private:
 
-    static void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex)
+    static void addVertex(Mesh& mesh, const Vector2& p, double ele, int color, int triIndex, const Vector2& uv)
     {
         mesh.vertices.push_back(p.x);
         mesh.vertices.push_back(p.y);
         mesh.vertices.push_back(ele);
         mesh.colors.push_back(color);
         
-        // TODO
-        mesh.uvs.push_back(0);
-        mesh.uvs.push_back(0);
+        mesh.uvs.push_back(uv.x);
+        mesh.uvs.push_back(uv.y);
 
         mesh.triangles.push_back(triIndex);
     }
 
-    static void addVertex(Mesh& mesh, const Vector3& vertex, int color, int triIndex)
+    static void addVertex(Mesh& mesh, const Vector3& vertex, int color, int triIndex, const Vector2& uv)
     {
-        addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex);
+        addVertex(mesh, Vector2(vertex.x, vertex.z), vertex.y, color, triIndex, uv);
     }
 
     /// Fills mesh with all data needed to render object correctly outside core library.
@@ -224,10 +230,10 @@ private:
             };
         }
 
-        double geoHeight = bbox.maxPoint.latitude - bbox.minPoint.latitude;
-        double geoWidth = bbox.maxPoint.longitude - bbox.minPoint.longitude;
-        double geoX = bbox.minPoint.longitude;
-        double geoY = bbox.minPoint.latitude;
+        double geoWidth = geoWidth_;
+        double geoHeight = geoHeight_;
+        double geoX = bbox_.minPoint.longitude;
+        double geoY = bbox_.minPoint.latitude;
 
         auto scale = appearanceOptions.textureScale;
 
@@ -246,7 +252,9 @@ private:
         mesh.uvs.reserve(mesh.uvs.size() + pointCount * 2);
     }
 
-    const utymap::BoundingBox bbox;
+    const utymap::BoundingBox bbox_;
+    double geoWidth_;
+    double geoHeight_;
     const ElevationProvider& eleProvider_;
 };
 
@@ -272,9 +280,14 @@ void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, dou
     pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addTriangle(Mesh& mesh, const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addTriangle(mesh, v0, v1, v2, geometryOptions, appearanceOptions);
+    pimpl_->addTriangle(mesh, v0, v1, v2, Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), geometryOptions, appearanceOptions);
+}
+
+void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+{
+    pimpl_->addTriangle(mesh, v0, v1, v2, uv0, uv1, uv2, geometryOptions, appearanceOptions);
 }
 
 void MeshBuilder::writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions) const

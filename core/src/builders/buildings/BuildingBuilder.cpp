@@ -28,6 +28,10 @@ using namespace utymap::index;
 using namespace utymap::utils;
 
 namespace {
+    const std::string FacadeTextureIndexKey = "facade-texture-index";
+    const std::string FacadeTextureTypeKey = "facade-texture-type";
+    const std::string FacadeTextureScaleKey = "facade-texture-scale";
+
     const std::string RoofTypeKey = "roof-type";
     const std::string RoofHeightKey = "roof-height";
     const std::string RoofColorKey = "roof-color";
@@ -309,8 +313,15 @@ private:
 
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, FacadeColorKey);
-        MeshContext facadeMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
+        auto textureIndex = static_cast<std::uint16_t>(style.getValue(FacadeTextureIndexKey));
+        MeshContext facadeMeshContext(mesh, style,
+            GradientUtils::evaluateGradient(context_.styleProvider, style, FacadeColorKey),
+            context_.styleProvider
+               .getTexture(textureIndex, style.getString(FacadeTextureTypeKey))
+               .random(0));
+
+        facadeMeshContext.appearanceOptions.textureId = textureIndex;
+        facadeMeshContext.appearanceOptions.textureScale = style.getValue(FacadeTextureScaleKey);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);

@@ -20,6 +20,9 @@ area,relation|z16[building:part] {
 
     facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     facade-type: flat;
+    facade-texture-index: 0;
+    facade-texture-type: pedestrian;
+    facade-texture-scale: 200;
 
     roof-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     roof-type: flat;

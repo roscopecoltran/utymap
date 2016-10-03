@@ -45,7 +45,6 @@ namespace UtyMap.Unity.Maps.Data
             Vector2[] unityUvs2;
             Vector2[] unityUvs3;
 
-
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
             if (name.Contains("terrain"))
@@ -88,14 +87,22 @@ namespace UtyMap.Unity.Maps.Data
                 if (uvCount > 0)
                 {
                     unityUvs = new Vector2[uvCount/2];
+                    unityUvs2 = new Vector2[uvCount/2];
+                    unityUvs3 = new Vector2[uvCount/2];
+
+                    var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
                     for (int i = 0; i < uvCount; i += 2)
+                    {
                         unityUvs[i/2] = new Vector2((float) uvs[i], (float) uvs[i + 1]);
+                        textureMapper.SetUvs(i/2, i);
+                    }
                 }
                 else
+                {
                     unityUvs = new Vector2[worldPoints.Length];
-
-                unityUvs2 = new Vector2[worldPoints.Length];
-                unityUvs3 = new Vector2[worldPoints.Length];
+                    unityUvs2 = new Vector2[worldPoints.Length];
+                    unityUvs3 = new Vector2[worldPoints.Length];
+                }
 
                 _tile.Register(id);
             }
@@ -161,7 +168,7 @@ namespace UtyMap.Unity.Maps.Data
             for (int i = 0; i < count;)
             {
                 var info = new TextureAtlasInfo();
-                info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos[i - 1].UvIndexRange.Maximum, uvMap[i++]);
+                info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos.Last().UvIndexRange.Maximum, uvMap[i++]);
                 info.TextureIndex = uvMap[i++];
 
                 int atlasWidth = uvMap[i++];

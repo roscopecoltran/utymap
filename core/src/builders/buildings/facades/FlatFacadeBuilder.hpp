@@ -48,6 +48,9 @@ private:
                 meshContext_.geometryOptions,
                 meshContext_.appearanceOptions);
         }
+
+        builderContext_.meshBuilder
+            .writeTextureMappingInfo(meshContext_.mesh, meshContext_.appearanceOptions);
     }
 };
 
