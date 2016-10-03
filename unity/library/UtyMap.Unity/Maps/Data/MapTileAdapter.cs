@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
@@ -160,11 +161,14 @@ namespace UtyMap.Unity.Maps.Data
             for (int i = 0; i < count;)
             {
                 var info = new TextureAtlasInfo();
-                info.UvIndexRange = new Range<int>(i == 0 ? 0 : infos[i - 1].UvIndexRange.Maximum, uvMap[i++]);
+                info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos[i - 1].UvIndexRange.Maximum, uvMap[i++]);
                 info.TextureIndex = uvMap[i++];
 
-                float atlasWidth = uvMap[i++];
-                float atlasHeight = uvMap[i++];
+                int atlasWidth = uvMap[i++];
+                int atlasHeight = uvMap[i++];
+                if (atlasHeight == 0 || atlasWidth == 0)
+                    continue;
+
                 float x = uvMap[i++];
                 float y = uvMap[i++];
                 float width = uvMap[i++];
