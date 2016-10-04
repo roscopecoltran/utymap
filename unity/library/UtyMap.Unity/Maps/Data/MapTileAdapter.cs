@@ -163,9 +163,9 @@ namespace UtyMap.Unity.Maps.Data
                 double[] uvs, int[] uvMap)
         {
             const int infoEntrySize = 8;
-            var count = uvMap == null ? 0 : uvMap.Length / infoEntrySize;
-            List<TextureAtlasInfo> infos = new List<TextureAtlasInfo>(count);
-            for (int i = 0; i < count;)
+            var count = uvMap == null ? 0 : uvMap.Length;
+            List<TextureAtlasInfo> infos = new List<TextureAtlasInfo>(count / infoEntrySize);
+            for (int i = 0; i < count; )
             {
                 var info = new TextureAtlasInfo();
                 info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos.Last().UvIndexRange.Maximum, uvMap[i++]);
@@ -173,16 +173,14 @@ namespace UtyMap.Unity.Maps.Data
 
                 int atlasWidth = uvMap[i++];
                 int atlasHeight = uvMap[i++];
-                if (atlasHeight == 0 || atlasWidth == 0)
-                    continue;
-
                 float x = uvMap[i++];
                 float y = uvMap[i++];
                 float width = uvMap[i++];
                 float height = uvMap[i++];
 
-                info.TextureSize = new Vector2(width/atlasWidth, height/atlasHeight);
-                info.TextureOffset = new Vector2(x / atlasWidth, y / atlasHeight);
+                bool isEmpty = atlasWidth == 0 || atlasHeight == 0;
+                info.TextureSize = new Vector2(isEmpty ? 0 : width / atlasWidth, isEmpty ? 0 : height / atlasHeight);
+                info.TextureOffset = new Vector2(isEmpty ? 0 : x / atlasWidth, isEmpty ? 0 : y / atlasHeight);
 
                 infos.Add(info);
             }

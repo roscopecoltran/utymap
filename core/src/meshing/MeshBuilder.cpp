@@ -139,8 +139,23 @@ public:
         }
     }
 
-    static void writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions)
+    void writeTextureMappingInfo(Mesh& mesh, const AppearanceOptions& appearanceOptions) const
     {
+        if (!mesh.uvMap.empty()) {
+            // NOTE: performance optimization: merge neighbours with the same texture.
+            auto size = mesh.uvMap.size();
+            if (mesh.uvMap[--size] == appearanceOptions.textureRegion.height &&
+                mesh.uvMap[--size] == appearanceOptions.textureRegion.width &&
+                mesh.uvMap[--size] == appearanceOptions.textureRegion.y &&
+                mesh.uvMap[--size] == appearanceOptions.textureRegion.x &&
+                mesh.uvMap[--size] == appearanceOptions.textureRegion.atlasHeight &&
+                mesh.uvMap[--size] == appearanceOptions.textureRegion.atlasWidth &&
+                mesh.uvMap[--size] == appearanceOptions.textureId) {
+                mesh.uvMap[--size] = mesh.uvs.size();
+                return;
+            }
+        }
+
         mesh.uvMap.push_back(static_cast<int>(mesh.uvs.size()));
         mesh.uvMap.push_back(appearanceOptions.textureId);
         mesh.uvMap.push_back(appearanceOptions.textureRegion.atlasWidth);

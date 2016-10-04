@@ -297,6 +297,8 @@ private:
         roofBuilder->setMinHeight(elevation + height);
         roofBuilder->setColorNoiseFreq(0);
         roofBuilder->build(*polygon_);
+
+        context_.meshBuilder.writeTextureMappingInfo(mesh, roofMeshContext.appearanceOptions);
     }
 
     void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
@@ -309,6 +311,8 @@ private:
         floorBuilder.setColorNoiseFreq(0);
         floorBuilder.flipSide();
         floorBuilder.build(*polygon_);
+
+        context_.meshBuilder.writeTextureMappingInfo(mesh, floorMeshContext.appearanceOptions);
     }
 
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
@@ -330,6 +334,8 @@ private:
         facadeBuilder->setMinHeight(elevation);
         facadeBuilder->setColorNoiseFreq(0);
         facadeBuilder->build(*polygon_);
+
+        context_.meshBuilder.writeTextureMappingInfo(mesh, facadeMeshContext.appearanceOptions);
     }
 
     std::unique_ptr<Polygon> polygon_;
