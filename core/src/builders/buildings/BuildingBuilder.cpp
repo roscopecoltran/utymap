@@ -28,16 +28,18 @@ using namespace utymap::index;
 using namespace utymap::utils;
 
 namespace {
-    const std::string FacadeTextureIndexKey = "facade-texture-index";
-    const std::string FacadeTextureTypeKey = "facade-texture-type";
-    const std::string FacadeTextureScaleKey = "facade-texture-scale";
-
     const std::string RoofTypeKey = "roof-type";
     const std::string RoofHeightKey = "roof-height";
     const std::string RoofColorKey = "roof-color";
+    const std::string RoofTextureIndexKey = "roof-texture-index";
+    const std::string RoofTextureTypeKey = "roof-texture-type";
+    const std::string RoofTextureScaleKey = "roof-texture-scale";
 
     const std::string FacadeTypeKey = "facade-type";
     const std::string FacadeColorKey = "facade-color";
+    const std::string FacadeTextureIndexKey = "facade-texture-index";
+    const std::string FacadeTextureTypeKey = "facade-texture-type";
+    const std::string FacadeTextureScaleKey = "facade-texture-scale";
 
     const std::string HeightKey = "height";
     const std::string MinHeightKey = "min-height";
@@ -286,8 +288,8 @@ private:
 
     void attachRoof(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, RoofColorKey);
-        MeshContext roofMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
+        MeshContext roofMeshContext = createMeshContext(mesh, style, RoofColorKey,
+            RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -303,8 +305,8 @@ private:
 
     void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, RoofColorKey);
-        MeshContext floorMeshContext(mesh, style, gradient, utymap::mapcss::TextureRegion());
+        MeshContext floorMeshContext = createMeshContext(mesh, style, RoofColorKey,
+            RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -317,15 +319,8 @@ private:
 
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        auto textureIndex = static_cast<std::uint16_t>(style.getValue(FacadeTextureIndexKey));
-        MeshContext facadeMeshContext(mesh, style,
-            GradientUtils::evaluateGradient(context_.styleProvider, style, FacadeColorKey),
-            context_.styleProvider
-               .getTexture(textureIndex, style.getString(FacadeTextureTypeKey))
-               .random(0));
-
-        facadeMeshContext.appearanceOptions.textureId = textureIndex;
-        facadeMeshContext.appearanceOptions.textureScale = style.getValue(FacadeTextureScaleKey);
+        MeshContext facadeMeshContext = createMeshContext(mesh, style, FacadeColorKey, 
+            FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);
@@ -336,6 +331,26 @@ private:
         facadeBuilder->build(*polygon_);
 
         context_.meshBuilder.writeTextureMappingInfo(mesh, facadeMeshContext.appearanceOptions);
+    }
+
+    MeshContext createMeshContext(Mesh& mesh, 
+                                  const Style& style,
+                                  const std::string& colorKey,
+                                  const std::string& textureIndexKey,
+                                  const std::string& textureTypeKey,
+                                  const std::string& textureScaleKey) const
+    {
+        auto textureIndex = static_cast<std::uint16_t>(style.getValue(textureIndexKey));
+        MeshContext meshContext(mesh, style,
+            GradientUtils::evaluateGradient(context_.styleProvider, style, colorKey),
+            context_.styleProvider
+            .getTexture(textureIndex, style.getString(textureTypeKey))
+            .random(0));
+
+        meshContext.appearanceOptions.textureId = textureIndex;
+        meshContext.appearanceOptions.textureScale = style.getValue(textureScaleKey);
+
+        return std::move(meshContext);
     }
 
     std::unique_ptr<Polygon> polygon_;

@@ -27,6 +27,9 @@ area,relation|z16[building:part] {
     roof-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     roof-type: flat;
     roof-height: 0m;
+    roof-texture-index: 0;
+    roof-texture-type: pedestrian;
+    roof-texture-scale: 200;
 }
 
 area,relation|z16[building:levels] {
