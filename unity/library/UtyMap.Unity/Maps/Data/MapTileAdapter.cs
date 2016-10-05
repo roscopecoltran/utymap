@@ -219,14 +219,15 @@ namespace UtyMap.Unity.Maps.Data
                 while (begin < end)
                 {
                     int middle = begin + (end - begin) / 2;
-                    if (_infos[middle].UvIndexRange.Contains(resultIndex))
+                    var info = _infos[middle];
+                    if (info.UvIndexRange.Contains(resultIndex))
                     {
                         _unityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
-                        _unityUvs2[resultIndex] = _infos[middle].TextureSize;
-                        _unityUvs3[resultIndex] = _infos[middle].TextureOffset;
+                        _unityUvs2[resultIndex] = info.TextureSize;
+                        _unityUvs3[resultIndex] = info.TextureOffset;
                         return;
                     }
-                    if (_infos[middle].UvIndexRange.Minimum > resultIndex)
+                    if (info.UvIndexRange.Minimum > resultIndex)
                         end = middle;
                     else
                         begin = middle + 1;
