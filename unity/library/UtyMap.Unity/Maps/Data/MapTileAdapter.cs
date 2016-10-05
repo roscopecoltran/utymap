@@ -111,7 +111,6 @@ namespace UtyMap.Unity.Maps.Data
                 _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed: {1}. " +
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
-
             Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
             _observer.OnNext(new Union<Element, Mesh>(mesh));
         }
@@ -165,10 +164,11 @@ namespace UtyMap.Unity.Maps.Data
             const int infoEntrySize = 8;
             var count = uvMap == null ? 0 : uvMap.Length;
             List<TextureAtlasInfo> infos = new List<TextureAtlasInfo>(count / infoEntrySize);
+            int lastIndex = 0;
             for (int i = 0; i < count; )
             {
                 var info = new TextureAtlasInfo();
-                info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos.Last().UvIndexRange.Maximum, uvMap[i++]);
+                info.UvIndexRange = new Range<int>(lastIndex == 0 ? 0 : infos[lastIndex].UvIndexRange.Maximum, uvMap[i++]);
                 info.TextureIndex = uvMap[i++];
 
                 int atlasWidth = uvMap[i++];
@@ -183,6 +183,7 @@ namespace UtyMap.Unity.Maps.Data
                 info.TextureOffset = new Vector2(isEmpty ? 0 : x / atlasWidth, isEmpty ? 0 : y / atlasHeight);
 
                 infos.Add(info);
+                lastIndex++;
             }
 
             return new TextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, infos);
@@ -212,16 +213,23 @@ namespace UtyMap.Unity.Maps.Data
 
             public void SetUvs(int resultIndex, int origIindex)
             {
-                for (int i = 0; i < _infos.Count; ++i)
+                int begin = 0;
+                int end = _infos.Count;
+
+                while (begin < end)
                 {
-                    var info = _infos[i];
-                    if (info.UvIndexRange.Contains(origIindex))
+                    int middle = begin + (end - begin) / 2;
+                    if (_infos[middle].UvIndexRange.Contains(resultIndex))
                     {
                         _unityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
-                        _unityUvs2[resultIndex] = info.TextureSize;
-                        _unityUvs3[resultIndex] = info.TextureOffset;
+                        _unityUvs2[resultIndex] = _infos[middle].TextureSize;
+                        _unityUvs3[resultIndex] = _infos[middle].TextureOffset;
                         return;
                     }
+                    if (_infos[middle].UvIndexRange.Minimum > resultIndex)
+                        end = middle;
+                    else
+                        begin = middle + 1;
                 }
             }
         }
