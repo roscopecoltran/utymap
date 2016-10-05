@@ -220,14 +220,14 @@ namespace UtyMap.Unity.Maps.Data
                 {
                     int middle = begin + (end - begin) / 2;
                     var info = _infos[middle];
-                    if (info.UvIndexRange.Contains(resultIndex))
+                    if (info.UvIndexRange.Contains(origIindex))
                     {
                         _unityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
                         _unityUvs2[resultIndex] = info.TextureSize;
                         _unityUvs3[resultIndex] = info.TextureOffset;
                         return;
                     }
-                    if (info.UvIndexRange.Minimum > resultIndex)
+                    if (info.UvIndexRange.Minimum > origIindex)
                         end = middle;
                     else
                         begin = middle + 1;
