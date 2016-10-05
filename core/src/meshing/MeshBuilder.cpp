@@ -151,7 +151,7 @@ public:
                 mesh.uvMap[--size] == appearanceOptions.textureRegion.atlasHeight &&
                 mesh.uvMap[--size] == appearanceOptions.textureRegion.atlasWidth &&
                 mesh.uvMap[--size] == appearanceOptions.textureId) {
-                mesh.uvMap[--size] = mesh.uvs.size();
+                mesh.uvMap[--size] = static_cast<int>(mesh.uvs.size());
                 return;
             }
         }
