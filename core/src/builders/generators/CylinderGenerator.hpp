@@ -85,14 +85,7 @@ public:
             for (int i = 0; i < heightSegments; i++) {
                 double bottomHeight = i * heightStep + center_.y;
                 double topHeight = (i + 1) * heightStep + center_.y;
-
-                utymap::meshing::Vector3 v0(first.x, bottomHeight, first.y);
-                utymap::meshing::Vector3 v1(second.x, bottomHeight, second.y);
-                utymap::meshing::Vector3 v2(second.x, topHeight, second.y);
-                utymap::meshing::Vector3 v3(first.x, topHeight, first.y);
-
-                addTriangle(v0, v2, v1);
-                addTriangle(v3, v2, v0);
+                addPlane(first, second, bottomHeight, topHeight);
             }
         }
     }

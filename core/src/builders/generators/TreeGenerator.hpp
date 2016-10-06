@@ -13,15 +13,17 @@ class TreeGenerator
 {
 public:
     TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  const utymap::builders::MeshContext& meshContext,
+                  utymap::meshing::Mesh& mesh,
+                  const utymap::mapcss::Style& style,
                   const utymap::mapcss::ColorGradient& trunkGradient,
-                  const utymap::mapcss::ColorGradient& foliageGradient) :
-            trunkGeneratorMeshContext(meshContext.mesh, meshContext.style, trunkGradient, utymap::mapcss::TextureRegion()),
-            foliageGeneratorMeshContext(meshContext.mesh, meshContext.style, foliageGradient, utymap::mapcss::TextureRegion()),
-
+                  const utymap::mapcss::ColorGradient& foliageGradient,
+                  const utymap::mapcss::TextureRegion& trunkTextureRegion,
+                  const utymap::mapcss::TextureRegion& foliageTextureRegion) :
+            builderContext_(builderContext),
+            trunkGeneratorMeshContext(mesh, style, trunkGradient, trunkTextureRegion),
+            foliageGeneratorMeshContext(mesh, style, foliageGradient, foliageTextureRegion),
             trunkGenerator(builderContext, trunkGeneratorMeshContext),
             foliageGenerator(builderContext, foliageGeneratorMeshContext),
-
             position_(),
             trunkHeight_(0),
             trunkRadius_(0),
@@ -75,6 +77,20 @@ public:
         return *this;
     }
 
+    /// Sets trunk texture scale
+    TreeGenerator& setTrunkTextureScale(double scale)
+    {
+        trunkGeneratorMeshContext.appearanceOptions.textureScale = scale;
+        return *this;
+    }
+
+    /// Sets foliage texture scale.
+    TreeGenerator& setFoliageTextureScale(double scale)
+    {
+        foliageGeneratorMeshContext.appearanceOptions.textureScale = scale;
+        return *this;
+    }
+
     void generate()
     {
         // generate trunk
@@ -87,6 +103,9 @@ public:
             .setVertexNoiseFreq(0.1f)
             .generate();
 
+        builderContext_.meshBuilder.writeTextureMappingInfo(trunkGeneratorMeshContext.mesh, 
+                                                            trunkGeneratorMeshContext.appearanceOptions);
+
         // generate foliage
         foliageGenerator
             .setCenter(utymap::meshing::Vector3(
@@ -97,9 +116,13 @@ public:
             .setRecursionLevel(1)
             .setVertexNoiseFreq(0.1f)
             .generate();
+
+        builderContext_.meshBuilder.writeTextureMappingInfo(foliageGeneratorMeshContext.mesh,
+                                                            foliageGeneratorMeshContext.appearanceOptions);
     }
 
 private:
+    const utymap::builders::BuilderContext& builderContext_;
     utymap::builders::MeshContext trunkGeneratorMeshContext;
     utymap::builders::MeshContext foliageGeneratorMeshContext;
     CylinderGenerator trunkGenerator;

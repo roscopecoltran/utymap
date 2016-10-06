@@ -48,6 +48,7 @@ protected:
                      const utymap::meshing::Vector3& v1,
                      const utymap::meshing::Vector3& v2) const
     {
+        // TODO check noise here.
         double noise = std::abs(vertNoiseFreq_) < 1E-5
                        ? utymap::utils::NoiseUtils::perlin2D(v0.x, v0.z, vertNoiseFreq_)
                        : 0;
@@ -56,8 +57,28 @@ protected:
                                  utymap::meshing::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
                                  utymap::meshing::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
                                  utymap::meshing::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
+                                 utymap::meshing::Vector2(0, 0),
+                                 utymap::meshing::Vector2(1, 0),
+                                 utymap::meshing::Vector2(1, 1),
                                  meshContext_.geometryOptions,
                                  meshContext_.appearanceOptions);
+    }
+
+    void addPlane(const utymap::meshing::Vector2& v0, 
+                  const utymap::meshing::Vector2& v1,
+                  double bottom,
+                  double top) const
+    {
+        meshContext_.geometryOptions.elevation = bottom;
+        meshContext_.geometryOptions.heightOffset = top - bottom;
+
+        builderContext_.meshBuilder.addPlane(meshContext_.mesh,
+                                    v0,
+                                    v1,
+                                    bottom,
+                                    bottom,
+                                    meshContext_.geometryOptions,
+                                    meshContext_.appearanceOptions);
     }
 
 private:

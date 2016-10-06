@@ -281,8 +281,15 @@ node|z16[natural=tree] {
     clip: true;
     tree-step: 10m;
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
-    trunk-color: gradient(#f4a460, #614126 50%, #302013);
     foliage-radius: 3m;
+    foliage-texture-index: 0;
+    foliage-texture-type: pedestrian;
+    foliage-texture-scale: 200;
+
+    trunk-color: gradient(#f4a460, #614126 50%, #302013);
     trunk-radius: 0.2m;
     trunk-height: 4m;
+    trunk-texture-index: 0;
+    trunk-texture-type: pedestrian;
+    trunk-texture-scale: 200;
 }

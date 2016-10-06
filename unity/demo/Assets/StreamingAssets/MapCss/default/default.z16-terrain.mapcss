@@ -97,11 +97,19 @@ area,relation|z16[landuse=forest] {
     mesh-name: terrain_forest;
     tree-frequency: 30;
     color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
+    
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
-    trunk-color: gradient(#f4a460, #614126 50%, #302013);
     foliage-radius: 3m;
+    foliage-texture-index: 0;
+    foliage-texture-type: pedestrian;
+    foliage-texture-scale: 200;
+
+    trunk-color: gradient(#f4a460, #614126 50%, #302013);
     trunk-radius: 0.2m;
     trunk-height: 4m;
+    trunk-texture-index: 0;
+    trunk-texture-type: pedestrian;
+    trunk-texture-scale: 200;
 }
 area,relation|z16[landuse=farmland],
 area,relation|z16[landuse=scrub] {

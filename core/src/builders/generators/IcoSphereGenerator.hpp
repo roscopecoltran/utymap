@@ -182,7 +182,6 @@ private:
                 scale(vertexList_[face.V1]) + center_,
                 scale(vertexList_[face.V2]) + center_,
                 scale(vertexList_[face.V3]) + center_);
-
         }
     }
 

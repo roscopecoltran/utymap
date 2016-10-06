@@ -288,8 +288,8 @@ private:
 
     void attachRoof(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        MeshContext roofMeshContext = createMeshContext(mesh, style, RoofColorKey,
-            RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
+        MeshContext roofMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
+            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -305,8 +305,8 @@ private:
 
     void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        MeshContext floorMeshContext = createMeshContext(mesh, style, RoofColorKey,
-            RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
+        MeshContext floorMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
+            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -319,8 +319,8 @@ private:
 
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        MeshContext facadeMeshContext = createMeshContext(mesh, style, FacadeColorKey, 
-            FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey);
+        MeshContext facadeMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
+            FacadeColorKey, FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);
@@ -331,26 +331,6 @@ private:
         facadeBuilder->build(*polygon_);
 
         context_.meshBuilder.writeTextureMappingInfo(mesh, facadeMeshContext.appearanceOptions);
-    }
-
-    MeshContext createMeshContext(Mesh& mesh, 
-                                  const Style& style,
-                                  const std::string& colorKey,
-                                  const std::string& textureIndexKey,
-                                  const std::string& textureTypeKey,
-                                  const std::string& textureScaleKey) const
-    {
-        auto textureIndex = static_cast<std::uint16_t>(style.getValue(textureIndexKey));
-        MeshContext meshContext(mesh, style,
-            GradientUtils::evaluateGradient(context_.styleProvider, style, colorKey),
-            context_.styleProvider
-            .getTexture(textureIndex, style.getString(textureTypeKey))
-            .random(0));
-
-        meshContext.appearanceOptions.textureId = textureIndex;
-        meshContext.appearanceOptions.textureScale = style.getValue(textureScaleKey);
-
-        return std::move(meshContext);
     }
 
     std::unique_ptr<Polygon> polygon_;

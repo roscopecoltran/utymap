@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    TreeGenerator treeGenerator(builderContext, meshContext, ColorGradient(), ColorGradient());
+    TreeGenerator treeGenerator(builderContext, mesh, style, 
+        ColorGradient(), ColorGradient(), TextureRegion(), TextureRegion());
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
             .setTrunkHeight(5)

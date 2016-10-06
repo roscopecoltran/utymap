@@ -74,19 +74,10 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     double minHeight = style.getValue(MinHeightKey);
     double elevation = context_.eleProvider.getElevation(way.coordinates[0]) + minHeight;
 
-    const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
-
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
 
-    auto textureIndex = static_cast<std::uint16_t>(style.getValue(TextureIndexKey));
-    MeshContext meshContext(mesh, style,
-        GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey),
-        context_.styleProvider
-            .getTexture(textureIndex, style.getString(TextureTypeKey))
-            .random(static_cast<std::uint32_t>(way.id)));
-
-    meshContext.appearanceOptions.textureId = textureIndex;
-    meshContext.appearanceOptions.textureScale = style.getValue(TextureScaleKey);
+    MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider, 
+        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey);
 
     // NOTE: Reuse building builders.
     FlatRoofBuilder(context_, meshContext)
