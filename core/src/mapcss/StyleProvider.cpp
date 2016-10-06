@@ -8,6 +8,7 @@
 #include "utils/CoreUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
+#include <climits>
 #include <functional>
 #include <mutex>
 
@@ -17,7 +18,7 @@ using namespace utymap::mapcss;
 
 namespace {
 
-const int DefaultTextureIndex = -1;
+const std::uint16_t DefaultTextureIndex = std::numeric_limits<std::uint16_t>::max();
 
 /// Contains operation types supported by mapcss parser.
 enum class OpType { Exists, Equals, NotEquals, Less, Greater };
@@ -221,38 +222,9 @@ public:
                         throw std::domain_error("Unexpected selector name:" + name);
 
                     Filter filter;
-                    filter.conditions.reserve(selector.conditions.size());
-                    for (const Condition& condition : selector.conditions) {
-                        ConditionType c;
-                        if (condition.operation == "") c.type = OpType::Exists;
-                        else if (condition.operation == "=") c.type = OpType::Equals;
-                        else if (condition.operation == "!=") c.type = OpType::NotEquals;
-                        else if (condition.operation == "<") c.type = OpType::Less;
-                        else if (condition.operation == ">") c.type = OpType::Greater;
-                        else
-                            throw std::domain_error("Unexpected condition operation:" + condition.operation);
-
-                        c.key = stringTable.getId(condition.key);
-                        c.value = stringTable.getId(condition.value);
-                        filter.conditions.push_back(c);
-                    }
-
-                    filter.declarations.reserve(rule.declarations.size());
-                    for (auto i = 0; i < rule.declarations.size(); ++i) {
-                        Declaration declaration = rule.declarations[i];
-                        uint32_t key = stringTable.getId(declaration.key);
-
-                        if (utymap::utils::GradientUtils::isGradient(declaration.value))
-                            addGradient(declaration.value);
-
-                        filter.declarations[key] = utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value);
-                    }
-
-                    std::sort(filter.conditions.begin(), filter.conditions.end(),
-                        [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
-                    for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
-                        (*filtersPtr)[i].push_back(std::move(filter));
-                    }
+                    addConditions(filter, selector);
+                    addDeclarations(filter, rule);
+                    addToFilterMap(filtersPtr, filter, selector);
                 }
             }
         }
@@ -287,6 +259,48 @@ public:
     }
 
 private:
+
+    void addConditions(Filter& filter, const Selector& selector)
+    {
+        filter.conditions.reserve(selector.conditions.size());
+        for (const Condition &condition : selector.conditions) {
+            ConditionType c;
+            if (condition.operation == "") c.type = OpType::Exists;
+            else if (condition.operation == "=") c.type = OpType::Equals;
+            else if (condition.operation == "!=") c.type = OpType::NotEquals;
+            else if (condition.operation == "<") c.type = OpType::Less;
+            else if (condition.operation == ">") c.type = OpType::Greater;
+            else
+                throw std::domain_error("Unexpected condition operation:" + condition.operation);
+
+            c.key = stringTable.getId(condition.key);
+            c.value = stringTable.getId(condition.value);
+            filter.conditions.push_back(c);
+        }
+    }
+
+    void addDeclarations(Filter& filter, const Rule& rule)
+    {
+        filter.declarations.reserve(rule.declarations.size());
+        for (auto i = 0; i < rule.declarations.size(); ++i) {
+            Declaration declaration = rule.declarations[i];
+            uint32_t key = stringTable.getId(declaration.key);
+
+            if (utymap::utils::GradientUtils::isGradient(declaration.value))
+                addGradient(declaration.value);
+
+            filter.declarations[key] = utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value);
+        }
+    }
+
+    void addToFilterMap(FilterMap* filtersPtr, Filter& filter, const Selector& selector)
+    {
+        std::sort(filter.conditions.begin(), filter.conditions.end(),
+                  [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
+        for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
+            (*filtersPtr)[i].push_back(std::move(filter));
+        }
+    }
 
     void addGradient(const std::string& key)
     {

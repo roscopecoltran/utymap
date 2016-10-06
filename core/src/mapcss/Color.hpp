@@ -16,19 +16,19 @@ struct Color final
     }
 
     Color(int r, int g, int b, int a) :
-        r(std::max(0, std::min(r, 0xff))),
-        g(std::max(0, std::min(g, 0xff))),
-        b(std::max(0, std::min(b, 0xff))),
-        a(std::max(0, std::min(a, 0xff)))
+        r(static_cast<unsigned char>(std::max(0, std::min(r, 0xff)))),
+        g(static_cast<unsigned char>(std::max(0, std::min(g, 0xff)))),
+        b(static_cast<unsigned char>(std::max(0, std::min(b, 0xff)))),
+        a(static_cast<unsigned char>(std::max(0, std::min(a, 0xff))))
     {
     };
 
     Color(int rgba)
     {
-        r = (rgba >> 24) & 0xff;
-        g = (rgba >> 16) & 0xff;
-        b = (rgba >>  8) & 0xff;
-        a = (rgba >>  0) & 0xff;
+        r = static_cast<unsigned char>((rgba >> 24) & 0xff);
+        g = static_cast<unsigned char>((rgba >> 16) & 0xff);
+        b = static_cast<unsigned char>((rgba >>  8) & 0xff);
+        a = static_cast<unsigned char>((rgba >>  0) & 0xff);
     }
 
     operator std::uint32_t() const

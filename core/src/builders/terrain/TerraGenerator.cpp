@@ -12,7 +12,8 @@ using namespace utymap::utils;
 using namespace std::placeholders;
 
 namespace {
-    const double AreaTolerance = 1000; // Tolerance for meshing
+    /// Tolerance for meshing
+    const double AreaTolerance = 1000;
     const double Scale = 1E7;
 
     const std::string TerrainMeshName = "terrain";
@@ -195,7 +196,7 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
         fillMesh(polygon, regionContext);
 }
 
-// restores mesh points from clipper points and injects new ones according to grid.
+/// restores mesh points from clipper points and injects new ones according to grid.
 TerraGenerator::Points TerraGenerator::restorePoints(const Path& path) const
 {
     auto lastItemIndex = path.size() - 1;

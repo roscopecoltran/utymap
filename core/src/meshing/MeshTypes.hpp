@@ -206,6 +206,11 @@ struct Mesh final
     explicit Mesh(const std::string& name) :
        name(name)
     {
+        vertices.reserve(512);
+        triangles.reserve(512);
+        colors.reserve(512);
+        uvs.reserve(512);
+        uvMap.reserve(8);
     }
 
     /// disable copying to prevent accidental copy

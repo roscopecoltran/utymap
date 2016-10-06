@@ -120,9 +120,9 @@ double NoiseUtils::perlin3D(double x, double y, double z, double frequency)
     if (frequency < 1E-5) return 0;
 
     Vector3 point(x * frequency, y* frequency, z* frequency);
-    int ix0 = std::floor(point.x);
-    int iy0 = std::floor(point.y);
-    int iz0 = std::floor(point.z);
+    int ix0 = static_cast<int>(std::floor(point.x));
+    int iy0 = static_cast<int>(std::floor(point.y));
+    int iz0 = static_cast<int>(std::floor(point.z));
     double tx0 = point.x - ix0;
     double ty0 = point.y - iy0;
     double tz0 = point.z - iz0;
