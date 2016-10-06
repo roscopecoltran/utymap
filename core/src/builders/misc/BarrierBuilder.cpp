@@ -20,6 +20,10 @@ namespace {
     const std::string ColorKey = "color";
     const std::string OffsetKey = "offset";
     const std::string MeshNamePrefix = "barrier:";
+
+    const std::string TextureIndexKey = "texture-index";
+    const std::string TextureTypeKey = "texture-type";
+    const std::string TextureScaleKey = "texture-scale";
 }
 
 void BarrierBuilder::visitWay(const Way& way)
@@ -73,7 +77,16 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     const auto& gradient = GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey);
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
-    MeshContext meshContext(mesh, style, gradient, TextureRegion());
+
+    auto textureIndex = static_cast<std::uint16_t>(style.getValue(TextureIndexKey));
+    MeshContext meshContext(mesh, style,
+        GradientUtils::evaluateGradient(context_.styleProvider, style, ColorKey),
+        context_.styleProvider
+            .getTexture(textureIndex, style.getString(TextureTypeKey))
+            .random(static_cast<std::uint32_t>(way.id)));
+
+    meshContext.appearanceOptions.textureId = textureIndex;
+    meshContext.appearanceOptions.textureScale = style.getValue(TextureScaleKey);
 
     // NOTE: Reuse building builders.
     FlatRoofBuilder(context_, meshContext)
@@ -87,6 +100,8 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
         .setMinHeight(elevation)
         .setColorNoiseFreq(0)
         .build(polygon);
+
+    context_.meshBuilder.writeTextureMappingInfo(mesh, meshContext.appearanceOptions);
 
     context_.meshCallback(mesh);
 }
