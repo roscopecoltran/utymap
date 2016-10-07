@@ -60,7 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\NmeaPositionMockerTests.cs" />
     <Compile Include="Integration\TileLoadingTests.cs" />
     <Compile Include="Integration\ElementEditorTests.cs" />
     <Compile Include="Maps\Data\MapTileAdapterTests.cs" />
