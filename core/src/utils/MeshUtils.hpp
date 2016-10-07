@@ -24,6 +24,15 @@ inline void copyMesh(const utymap::meshing::Vector3& position, const utymap::mes
 
     // copy colors
     std::copy(source.colors.begin(), source.colors.end(), std::back_inserter(destination.colors));
+
+    // copy adjusted uvs
+    std::copy(source.uvs.begin(), source.uvs.end(), std::back_inserter(destination.uvs));
+    std::copy(source.uvMap.begin(), source.uvMap.end(), std::back_inserter(destination.uvMap));
+
+    startIndex = static_cast<int>(destination.uvs.size() - source.uvs.size());
+    for (std::size_t i = destination.uvMap.size() - source.uvMap.size(); i < destination.uvMap.size(); i += 8) {
+        destination.uvMap[i] += startIndex;
+    }
 }
 
 }}

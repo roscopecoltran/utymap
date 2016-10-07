@@ -164,11 +164,10 @@ namespace UtyMap.Unity.Maps.Data
             const int infoEntrySize = 8;
             var count = uvMap == null ? 0 : uvMap.Length;
             List<TextureAtlasInfo> infos = new List<TextureAtlasInfo>(count / infoEntrySize);
-            int lastIndex = 0;
             for (int i = 0; i < count; )
             {
                 var info = new TextureAtlasInfo();
-                info.UvIndexRange = new Range<int>(lastIndex == 0 ? 0 : infos[lastIndex].UvIndexRange.Maximum, uvMap[i++]);
+                info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos.Last().UvIndexRange.Maximum, uvMap[i++]);
                 info.TextureIndex = uvMap[i++];
 
                 int atlasWidth = uvMap[i++];
@@ -183,7 +182,6 @@ namespace UtyMap.Unity.Maps.Data
                 info.TextureOffset = new Vector2(isEmpty ? 0 : x / atlasWidth, isEmpty ? 0 : y / atlasHeight);
 
                 infos.Add(info);
-                lastIndex++;
             }
 
             return new TextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, infos);
