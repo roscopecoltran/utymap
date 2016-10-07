@@ -99,6 +99,12 @@ public:
         return rad2Deg(offsetInMeters / radius);
     }
 
+    /// Gets scaled value.
+    static double getScaled(const BoundingBox& bbox, double scale, double value)
+    {
+        return getOffset(bbox.center(), value) * scale / bbox.width();
+    }
+
     /// Gets distance in meters for given coordinate
     static double distance(const GeoCoordinate& p1, const GeoCoordinate& p2)
     {

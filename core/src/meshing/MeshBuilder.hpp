@@ -115,15 +115,6 @@ public:
                   const GeometryOptions& geometryOptions, 
                   const AppearanceOptions& appearanceOptions) const;
 
-    /// Deprecated
-    /// Adds triangle to mesh using options provided.
-    void addTriangle(Mesh& mesh,
-                     const utymap::meshing::Vector3& v0,
-                     const utymap::meshing::Vector3& v1,
-                     const utymap::meshing::Vector3& v2,
-                     const GeometryOptions& geometryOptions,
-                     const AppearanceOptions& appearanceOptions) const;
-
     /// Adds triangle to mesh using options provided.
     void addTriangle(Mesh& mesh,
                      const utymap::meshing::Vector3& v0,

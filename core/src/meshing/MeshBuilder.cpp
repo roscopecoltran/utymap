@@ -18,8 +18,8 @@ public:
 
     MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
         bbox_(GeoUtils::quadKeyToBoundingBox(quadKey)), 
-        geoWidth_(bbox_.maxPoint.longitude - bbox_.minPoint.longitude),
-        geoHeight_(bbox_.maxPoint.latitude - bbox_.minPoint.latitude),
+        geoWidth_(bbox_.width()),
+        geoHeight_(bbox_.height()),
         eleProvider_(eleProvider)
     {
     }
@@ -293,11 +293,6 @@ void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, con
 void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
-}
-
-void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
-{
-    pimpl_->addTriangle(mesh, v0, v1, v2, Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), geometryOptions, appearanceOptions);
 }
 
 void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const

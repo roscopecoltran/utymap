@@ -3,6 +3,7 @@
 
 #include "builders/buildings/roofs/RoofBuilder.hpp"
 #include "utils/GeometryUtils.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <vector>
 
@@ -20,6 +21,10 @@ public:
 
     void build(utymap::meshing::Polygon& polygon) override
     {
+        double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox,
+                                                          meshContext_.appearanceOptions.textureScale,
+                                                          height_);
+
         for (const auto& range : polygon.outers) {
             auto center = utymap::utils::getCentroid(polygon, range);
             auto lastPointIndex = range.second - 2;
@@ -32,9 +37,14 @@ public:
                 utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
 
                 builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, 
+                    utymap::meshing::Vector2(0, 0),
+                    utymap::meshing::Vector2(scale, 0),
+                    utymap::meshing::Vector2(scale, scale),
                     meshContext_.geometryOptions, meshContext_.appearanceOptions);
             }
-        }   
+        }  
+        builderContext_.meshBuilder
+            .writeTextureMappingInfo(meshContext_.mesh, meshContext_.appearanceOptions);
     }
 };
 

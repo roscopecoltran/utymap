@@ -105,6 +105,12 @@ struct BoundingBox final
     {
         return maxPoint.longitude - minPoint.longitude;
     }
+
+    /// Returns height.
+    double height() const
+    {
+        return maxPoint.latitude - minPoint.latitude;
+    }
 };
 
 }

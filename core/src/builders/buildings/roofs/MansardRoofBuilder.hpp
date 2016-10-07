@@ -84,6 +84,10 @@ private:
                                                meshContext_.geometryOptions, 
                                                meshContext_.appearanceOptions);
 
+        double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox, 
+                                                          meshContext_.appearanceOptions.textureScale, 
+                                                          height_);
+
         // build sides
         meshContext_.geometryOptions.elevation = std::numeric_limits<double>::lowest();
         meshContext_.geometryOptions.heightOffset = 0;
@@ -102,9 +106,15 @@ private:
             auto v3 = utymap::meshing::Vector3(topShape.points[topIndex], topHeight, topShape.points[topIndex + 1]);
 
             builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v3, 
+                utymap::meshing::Vector2(scale, scale),
+                utymap::meshing::Vector2(0, 0),
+                utymap::meshing::Vector2(0, scale),
                 meshContext_.geometryOptions, meshContext_.appearanceOptions);
 
-            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1, 
+            builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1,
+                utymap::meshing::Vector2(0, 0),
+                utymap::meshing::Vector2(scale, scale),
+                utymap::meshing::Vector2(scale, 0),
                 meshContext_.geometryOptions, meshContext_.appearanceOptions);
         }
     }
