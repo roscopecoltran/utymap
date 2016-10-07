@@ -5,6 +5,9 @@ canvas|z16 {
     water-ele-noise-freq: 100000;
     water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-1m;
+    water-texture-index: 0;
+    water-texture-type: pedestrian;
+    water-texture-scale: 200;
 }
 
 area,relation|z16[natural=water],
