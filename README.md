@@ -7,17 +7,17 @@
 
 UtyMap is a library which provides highly customizable API for procedural world generation based on real map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. You can use it to create interactive world at different zoom levels, including globe and ground:
 
-<img src="https://cloud.githubusercontent.com/assets/1611077/17153076/0af03596-537b-11e6-8368-b047c4933210.jpg" />
+<img src="https://cloud.githubusercontent.com/assets/1611077/19216383/4c10f3ee-8db9-11e6-8877-b652aa846734.png" />
 
 <h2> Project structure </h2>
 Project consists of two sub-projects:
 <ul>
-    <li><b>core</b> contains essential logic written on C++11 to build library for constructing of map based apps: terrain/buildings/osm-objects mesh generators, mapcss parser, spatial geo index, etc. </li>
-    <li><b>unity</b> contains examples written on C# which can be reused to build map oriented Unity apps using core library. It will demonstrate basic use cases: globe zoom level rendering, 3D scene with all details.</li>
+    <li><b>core</b> contains essential logic written on C++11 to build library for constructing of map based apps: terrain/buildings/osm-objects mesh generators, mapcss parser, spatial geo index, etc. It does not depend on any 3D render framework or game engine. </li>
+    <li><b>unity</b> contains examples written on C# which can be reused to build map oriented Unity3D apps using core library. It will demonstrate basic use cases: globe zoom level rendering, 3D scene with all details.</li>
 </ul>
 
 <h2> Project status </h2>
-<p> Project is under development, more details will be given later. </p>
+<p> Project is under development. Check release page to get the latest stable version and compiled binaries. </p>
 
 <h2> Documentation </h2>
 [Wiki](https://github.com/reinterpretcat/utymap/wiki)
