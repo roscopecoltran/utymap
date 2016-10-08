@@ -2,7 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Positioning;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Maps.Geocoding;

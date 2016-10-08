@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine;
 using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Positioning;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 
