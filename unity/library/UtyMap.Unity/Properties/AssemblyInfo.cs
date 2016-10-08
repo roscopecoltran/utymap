@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("97791a51-a81b-45d4-a6fc-5dfa9ebcc603")]
 
-[assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyFileVersion("1.1.*")]
 
 [assembly: InternalsVisibleTo("UtyMap.Unity.Tests")]

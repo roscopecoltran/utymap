@@ -10,6 +10,7 @@ namespace Assets.Scripts.Environment
     /// <summary> Provides installation API. </summary>
     internal static class InstallationApi
     {
+        private const string Version = "1.1";
         private const string MarkerFileName = "install_log.txt";
 
         /// <summary> Ensures required filesystem structure. Should be called from main thread. </summary>
@@ -41,6 +42,7 @@ namespace Assets.Scripts.Environment
                 "z14.mapcss",
                 "z14-lines.mapcss",
                 "z14-polygons.mapcss",
+                "z16.txt",
                 "z16.mapcss",
                 "z16-buildings.mapcss",
                 "z16-misc.mapcss",
@@ -90,12 +92,13 @@ namespace Assets.Scripts.Environment
 
         private static bool IsInstalled()
         {
-            return File.Exists(Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName));
+            var file = Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName);
+            return File.Exists(file) && File.ReadAllText(file) == Version;
         }
 
         private static void MarkAsInstalled()
         {
-            File.Create(Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName));
+            File.WriteAllText(Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName), Version);
         }
 
         private static void CopyFiles(IEnumerable<string> files, ITrace trace)

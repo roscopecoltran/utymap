@@ -21,8 +21,8 @@
 
         struct Input {
             float2 uv_MainTex;
-            float2 uv2_MainTex2;
-            float2 uv3_MainTex3;
+            float2 uv2_MainTex2 : TEXCOORD1;
+            float2 uv3_MainTex3 : TEXCOORD2;
             float4 color : COLOR;
         };
 
