@@ -77,7 +77,7 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey);
+        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey, way.id);
 
     // NOTE: Reuse building builders.
     FlatRoofBuilder(context_, meshContext)

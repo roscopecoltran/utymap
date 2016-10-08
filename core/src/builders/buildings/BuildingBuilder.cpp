@@ -236,6 +236,7 @@ private:
 
         if (mesh_ == nullptr) {
             mesh_ = utymap::utils::make_unique<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
+            id_ = element.id;
             return true;
         }
 
@@ -289,7 +290,7 @@ private:
     void attachRoof(Mesh& mesh, const Style& style, double elevation, double height) const
     {
         MeshContext roofMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
+            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -306,7 +307,7 @@ private:
     void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
     {
         MeshContext floorMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey);
+            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -320,7 +321,7 @@ private:
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
         MeshContext facadeMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            FacadeColorKey, FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey);
+            FacadeColorKey, FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey, id_);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);
@@ -335,6 +336,7 @@ private:
 
     std::unique_ptr<Polygon> polygon_;
     std::unique_ptr<Mesh> mesh_;
+    std::uint64_t id_;
 };
 
 BuildingBuilder::BuildingBuilder(const BuilderContext& context)

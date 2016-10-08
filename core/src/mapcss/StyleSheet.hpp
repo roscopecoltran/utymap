@@ -51,7 +51,7 @@ struct TextureGroup final
     }
 
     /// Returns pseudo random region.
-    const TextureRegion& random(std::uint32_t seed) const
+    const TextureRegion& random(std::uint64_t seed) const
     {
         return regions_[seed % regions_.size()];
     }
