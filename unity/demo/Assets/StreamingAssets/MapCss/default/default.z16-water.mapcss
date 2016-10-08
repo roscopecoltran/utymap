@@ -6,8 +6,8 @@ canvas|z16 {
     water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-1m;
     water-texture-index: 0;
-    water-texture-type: pedestrian;
-    water-texture-scale: 200;
+    water-texture-type: water;
+    water-texture-scale: 100;
 }
 
 area,relation|z16[natural=water],

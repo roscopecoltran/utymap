@@ -4,12 +4,12 @@ relation|z16[type=multipolygon] {
 
 way,relation|z16[barrier] {
     builders: barrier;
-    color: gradient(#15c0c0, #0a5a5a 50%, #000000);
+    color: gradient(#c0c0c0);
     texture-index: 0;
-    texture-type: pedestrian;
+    texture-type: barrier;
     texture-scale: 200;
 
-    height: 2m;
+    height: 1.8m;
     min-height: 0m;
-    offset: 0.2m;
+    offset: 0.05m;
 }
