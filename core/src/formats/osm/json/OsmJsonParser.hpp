@@ -11,10 +11,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include <array>
-
-#include <iostream>
-
 namespace utymap { namespace formats {
 
 template<typename Visitor>
@@ -33,22 +29,23 @@ public:
     /// Parses osm json data from stream calling visitor.
     void parse(std::istream& istream, Visitor& visitor) const
     {
-        static const std::array<std::string, 9> Features =  { "boundaries", "buildings", "earth", 
-            "landuse",  "places", "pois", "roads", "transit", "water" };
-
         ptree pt;
         read_json(istream, pt);
-        for (const auto& feature : Features) {
-            for (const ptree::value_type &f : pt.get_child(feature).get_child("features")) {
+
+        for (const ptree::value_type &feature : pt) {
+            std::string featureName = feature.first;
+            std::uint64_t featureId = stringTable_.getId(featureName);
+            for (const ptree::value_type &f : pt.get_child(featureName).get_child("features")) {
                 const auto& type = f.second.get_child("geometry.type").data();
                 if (type == "Polygon")
-                    parsePolygon(visitor, f.second);
+                    parsePolygon(visitor, featureId, f.second);
             }
         }
     }
+
 private:
     /// Parses polygon.
-    void parsePolygon(Visitor& visitor, const ptree &feature) const
+    void parsePolygon(Visitor& visitor, std::uint64_t featureId, const ptree &feature) const
     {
         utymap::entities::Relation relation;
         parseProperties(relation, feature.get_child("properties"));
