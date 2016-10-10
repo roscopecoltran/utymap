@@ -2,6 +2,7 @@
 #include "LodRange.hpp"
 #include "formats/shape/ShapeDataVisitor.hpp"
 #include "formats/shape/ShapeParser.hpp"
+#include "formats/osm/json/OsmJsonParser.hpp"
 #include "formats/osm/xml/OsmXmlParser.hpp"
 #include "formats/osm/pbf/OsmPbfParser.hpp"
 #include "formats/osm/OsmDataVisitor.hpp"
@@ -127,6 +128,14 @@ public:
                 visitor.complete();
                 break;
             }
+            case FormatType::Json: {
+                OsmJsonParser<OsmDataVisitor> parser(stringTable_);
+                std::ifstream jsonFile(path);
+                OsmDataVisitor visitor(stringTable_, functor);
+                parser.parse(jsonFile, visitor);
+                visitor.complete();
+                break;
+            }
             default:
                 throw std::domain_error("Not implemented.");
         }
@@ -166,6 +175,8 @@ private:
             return FormatType::Pbf;
         if (utymap::utils::endsWith(path, "xml"))
             return FormatType::Xml;
+        if (utymap::utils::endsWith(path, "json"))
+            return FormatType::Json;
 
         return FormatType::Shape;
     }

@@ -51,6 +51,7 @@ add_executable(${TEST}
         formats/shape/ShapeDataVisitorTest.cpp
         formats/osm/MultipolygonProcessorTest.cpp
         formats/osm/OsmDataVisitorTest.cpp
+        formats/osm/json/OsmJsonParserTest.cpp
         formats/osm/pbf/OsmPbfParserTest.cpp
         formats/osm/xml/OsmXmlParserTest.cpp
         heightmap/SrtmElevationProviderTest.cpp

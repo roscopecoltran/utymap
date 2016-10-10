@@ -52,6 +52,7 @@ set(HEADER_FILES
         formats/osm/OsmDataContext.hpp
         formats/osm/OsmDataVisitor.hpp
         formats/osm/RelationProcessor.hpp
+        formats/osm/json/OsmJsonParser.hpp
         formats/osm/pbf/OsmPbfParser.hpp
         formats/osm/xml/OsmXmlParser.hpp
         formats/shape/ShapeParser.hpp

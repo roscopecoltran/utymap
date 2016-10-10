@@ -114,6 +114,11 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
     context_.relationMap[id] = relation;
 }
 
+void OsmDataVisitor::add(utymap::entities::Element& element)
+{
+    add_(element);
+}
+
 bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
 {
     for (const auto& tag : tags) {

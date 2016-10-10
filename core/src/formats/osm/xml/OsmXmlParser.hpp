@@ -18,7 +18,7 @@ class OsmXmlParser
     using ptree = boost::property_tree::ptree;
 
 public:
-    // Parses osm xml data from stream calling visitor
+    /// Parses osm xml data from stream calling visitor.
     void parse(std::istream& istream, Visitor& visitor)
     {
         ptree pt;
@@ -55,11 +55,7 @@ private:
     static void parseTag(ptree::value_type const& node, Tags& tags)
     {
         const ptree & attributes = node.second.get_child("<xmlattr>");
-
-        Tag tag;
-        tag.key = attributes.get_child("k").data();
-        tag.value = attributes.get_child("v").data();
-        tags.push_back(tag);
+        tags.push_back(Tag(attributes.get_child("k").data(), attributes.get_child("v").data()));
     }
 
     static void parseNode(Visitor& visitor, ptree::value_type const& node)

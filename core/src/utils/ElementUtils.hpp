@@ -22,7 +22,6 @@ inline void setTags(utymap::index::StringTable& stringTable,
         std::uint32_t value = stringTable.getId(tag.value);
         element.tags.push_back(utymap::entities::Tag(key, value));
     }
-    stringTable.flush();
     // NOTE: tags should be sorted to speed up mapcss styling
     std::sort(element.tags.begin(), element.tags.end());
 }

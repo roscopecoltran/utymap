@@ -20,6 +20,12 @@ inline double toDouble(const std::string& value)
     return boost::lexical_cast<double>(value);
 }
 
+template<typename T>
+inline T lexicalCast(const std::string& value)
+{
+    return boost::lexical_cast<T>(value);
+}
+
 inline bool endsWith(std::string const & value, std::string const & ending)
 {
     if (ending.size() > value.size()) 

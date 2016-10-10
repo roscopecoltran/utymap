@@ -13,13 +13,24 @@ enum class FormatType
 {
     Pbf = 0,
     Xml = 1,
-    Shape = 2
+    Shape = 2,
+    Json = 3
 };
 
 struct Tag final
 {
     std::string key;
     std::string value;
+
+    Tag()
+    {
+    }
+
+    Tag(const std::string& key, const std::string& value) :
+        key(std::move(key)),
+        value(std::move(value))
+    {
+    }
 };
 
 /// this type is specific for osm formats

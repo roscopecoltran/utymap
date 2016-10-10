@@ -30,6 +30,8 @@ public:
 
     void visitRelation(std::uint64_t id, utymap::formats::RelationMembers& members, utymap::formats::Tags& tags);
 
+    void add(utymap::entities::Element& element);
+    
     void complete();
 
 private:
