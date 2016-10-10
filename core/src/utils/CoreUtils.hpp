@@ -15,13 +15,8 @@ std::string toString(T t)
     return boost::lexical_cast<std::string>(t);
 }
 
-inline double toDouble(const std::string& value)
-{
-    return boost::lexical_cast<double>(value);
-}
-
 template<typename T>
-inline T lexicalCast(const std::string& value)
+T lexicalCast(const std::string& value)
 {
     return boost::lexical_cast<T>(value);
 }

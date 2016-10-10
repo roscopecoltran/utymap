@@ -272,7 +272,7 @@ std::unique_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
             }
             // NOTE assume that for all intermediate colors time is always defined
             // and skipped for first and last.
-            pair.first = utymap::utils::toDouble(partStr.substr(0, partStr.size() - 1)) / 100.;
+            pair.first = utymap::utils::lexicalCast<double>(partStr.substr(0, partStr.size() - 1)) / 100.;
         }
         data.push_back(pair);
     }
