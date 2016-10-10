@@ -33,8 +33,8 @@ public:
     /// Parses osm json data from stream calling visitor.
     void parse(std::istream& istream, Visitor& visitor) const
     {
-        static const std::array<std::string, 9> Features = { "buildings" };
-            //{ "boundaries", "buildings", "earth", "landuse",  "places", "pois", "roads", "transit", "water" };
+        static const std::array<std::string, 9> Features =  { "boundaries", "buildings", "earth", 
+            "landuse",  "places", "pois", "roads", "transit", "water" };
 
         ptree pt;
         read_json(istream, pt);
