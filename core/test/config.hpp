@@ -5,6 +5,7 @@
 #define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
 #define TEST_MAPCSS_DEFAULT TEST_EXTERNAL_ASSETS_PATH "MapCss/default/default.mapcss"
 
+#define TEST_JSON_FILE TEST_EXTERNAL_ASSETS_PATH "Osm/moscow.osm.json"
 #define TEST_PBF_FILE TEST_EXTERNAL_ASSETS_PATH "Osm/berlin.osm.pbf"
 #define TEST_XML_FILE TEST_EXTERNAL_ASSETS_PATH "Osm/berlin.osm.xml"
 
