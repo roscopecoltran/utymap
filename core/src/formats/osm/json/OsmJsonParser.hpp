@@ -17,12 +17,14 @@ template<typename Visitor>
 class OsmJsonParser
 {
     const std::string IdAttributeName = "id";
+    const std::string TrueTagValueName = "true";
     using ptree = boost::property_tree::ptree;
 public:
 
     OsmJsonParser(utymap::index::StringTable& stringTable) :
         stringTable_(stringTable),
-        idKey_(stringTable.getId(IdAttributeName))
+        idKey_(stringTable.getId(IdAttributeName)),
+        trueKey_(stringTable.getId(TrueTagValueName))
     {
     }
 
@@ -34,7 +36,7 @@ public:
 
         for (const ptree::value_type &feature : pt) {
             std::string featureName = feature.first;
-            std::uint64_t featureId = stringTable_.getId(featureName);
+            std::uint32_t featureId = stringTable_.getId(featureName);
             for (const ptree::value_type &f : pt.get_child(featureName).get_child("features")) {
                 const auto& type = f.second.get_child("geometry.type").data();
                 if (type == "Polygon")
@@ -45,10 +47,10 @@ public:
 
 private:
     /// Parses polygon.
-    void parsePolygon(Visitor& visitor, std::uint64_t featureId, const ptree &feature) const
+    void parsePolygon(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
         utymap::entities::Relation relation;
-        parseProperties(relation, feature.get_child("properties"));
+        parseProperties(relation, featureId, feature.get_child("properties"));
 
         for (const ptree::value_type &geometry : feature.get_child("geometry.coordinates")) {
             auto area = std::make_shared<utymap::entities::Area>();
@@ -84,7 +86,7 @@ private:
         return true;
     }
 
-    void parseProperties(utymap::entities::Element& element, const ptree &properties) const
+    void parseProperties(utymap::entities::Element& element, std::uint32_t featureId, const ptree &properties) const
     {
         for (const ptree::value_type &property : properties) {
             std::uint32_t key = stringTable_.getId(property.first);
@@ -93,6 +95,9 @@ private:
             else
                 element.tags.emplace_back(key, stringTable_.getId(property.second.data()));
         }
+        
+        // NOTE add artificial tag for mapcss processing.
+        element.tags.emplace_back(featureId, trueKey_);
 
         std::sort(element.tags.begin(), element.tags.end());
     }
@@ -111,6 +116,7 @@ private:
 
 const utymap::index::StringTable& stringTable_;
 const std::uint32_t idKey_;
+const std::uint32_t trueKey_;
 };
 
 }}
