@@ -4,7 +4,6 @@
 #include "BoundingBox.hpp"
 #include "formats/FormatTypes.hpp"
 
-#include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
@@ -24,8 +23,7 @@ public:
         ptree pt;
         read_xml(istream, pt);
 
-        BOOST_FOREACH(ptree::value_type const& child, pt.get_child("osm"))
-        {
+        for (const ptree::value_type& child : pt.get_child("osm")) {
             if (child.first == "node")
                 parseNode(visitor, child);
             else if (child.first == "way")
@@ -69,8 +67,7 @@ private:
 
         Tags tags;
         tags.reserve(2);
-        BOOST_FOREACH(ptree::value_type const& child, node.second)
-        {
+        for (const ptree::value_type& child : node.second) {
             if (child.first == "tag")
                 parseTag(child, tags);
         }
@@ -88,10 +85,8 @@ private:
         Tags tags;
         nodeIds.reserve(4);
         tags.reserve(2);
-        BOOST_FOREACH(ptree::value_type const& child, node.second)
-        {
-            if (child.first == "nd")
-            {
+        for (const ptree::value_type& child : node.second) {
+            if (child.first == "nd") {
                 uint64_t refId = child.second.get_child("<xmlattr>")
                     .get_child("ref")
                     .get_value<uint64_t>();
@@ -114,10 +109,8 @@ private:
         RelationMembers members;
         tags.reserve(2);
         members.reserve(2);
-        BOOST_FOREACH(ptree::value_type const& child, node.second)
-        {
-            if (child.first == "member")
-            {
+        for(const ptree::value_type& child : node.second) {
+            if (child.first == "member") {
                 RelationMember member;
                 const ptree& attributes = child.second.get_child("<xmlattr>");
 
