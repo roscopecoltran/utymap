@@ -19,6 +19,32 @@ class OsmJsonParser
     const std::string IdAttributeName = "id";
     const std::string FeatureAttributeName = "feature";
     using ptree = boost::property_tree::ptree;
+
+    struct FoldRelation final : public utymap::entities::ElementVisitor
+    {
+        std::shared_ptr<utymap::entities::Element> element;
+
+        void visitNode(const utymap::entities::Node& n) override 
+        { 
+            element = std::make_shared<utymap::entities::Node>(n);
+        }
+
+        void visitWay(const utymap::entities::Way& w) override
+        {
+            element = std::make_shared<utymap::entities::Way>(w);
+        }
+
+        void visitArea(const utymap::entities::Area& a) override
+        {
+            element = std::make_shared<utymap::entities::Area>(a);
+        }
+
+        void visitRelation(const utymap::entities::Relation& r) override
+        {
+            element = std::make_shared<utymap::entities::Relation>(r);
+        }
+    };
+
 public:
 
     OsmJsonParser(utymap::index::StringTable& stringTable) :
@@ -47,27 +73,47 @@ public:
                     parsePolygon(visitor, featureId, f.second);
                 else if (type == "MultiLineString")
                     parseMultiLineString(visitor, featureId, f.second);
-                //else 
-                //    throw std::invalid_argument(std::string("Unknown geometry type:") + type);
+                else if (type == "MultiPolygon")
+                    parseMultiPolygon(visitor, featureId, f.second);
+                else 
+                    throw std::invalid_argument(std::string("Unknown geometry type:") + type);
             }
         }
     }
 
 private:
 
-    /// Parses relation with areas from polygon.
+    /// Parses relation with relations from multipolygon and notifies visitor.
+    void parseMultiPolygon(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
+    {
+        utymap::entities::Relation relation;
+        parseProperties(relation, featureId, feature.get_child("properties"));
+        for (const ptree::value_type &geometry : feature.get_child("geometry.coordinates")) {
+            auto child = parseRelation(featureId, geometry.second);
+            if (child.elements.size() == 1) {
+                FoldRelation fold;
+                child.elements[0]->accept(fold);
+                relation.elements.push_back(fold.element);
+            } else {
+                relation.elements.push_back(std::make_shared<utymap::entities::Relation>(child));
+            }
+        }
+        visitor.add(relation);
+    }
+
+    /// Parses relation with areas from polygon (first is outer, nexts are inner) and notifies visitor.
     void parsePolygon(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
-        parseRelation<utymap::entities::Area>(visitor, featureId, feature);
+        processSimpleRelation(visitor, featureId, feature);
     }
 
-    /// Parses relation with ways from multiline string.
+    /// Parses relation with ways from multiline string and notifies visitor.
     void parseMultiLineString(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
-        parseRelation<utymap::entities::Way>(visitor, featureId, feature);
+        processSimpleRelation(visitor, featureId, feature);
     }
 
-    /// Parses way from line string.
+    /// Parses way from line string and notifies visitor.
     void parseLineString(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
         utymap::entities::Way way;
@@ -76,7 +122,7 @@ private:
         visitor.add(way);
     }
 
-    /// Parses node from point.
+    /// Parses node from point and notifies visitor.
     void parsePoint(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
         utymap::entities::Node node;
@@ -85,22 +131,43 @@ private:
         visitor.add(node);
     }
 
-    template<typename T>
-    void parseRelation(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
+    /// Parses relation as simple relation with non-relation children. If child is single, then
+    /// calls visitor with this child instead of relation.
+    void processSimpleRelation(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
+    {
+        auto relation = parseRelation(featureId, feature.get_child("geometry.coordinates"));
+        if (relation.elements.size() == 1) {
+            parseProperties(*relation.elements[0], featureId, feature.get_child("properties"));
+            visitor.add(*relation.elements[0]);
+        } else
+        {
+            parseProperties(relation, featureId, feature.get_child("properties"));
+            visitor.add(relation);
+        }
+    }
+
+    /// Returns parsed relation.
+    utymap::entities::Relation parseRelation(std::uint32_t featureId, const ptree &geometry) const
     {
         utymap::entities::Relation relation;
-        parseProperties(relation, featureId, feature.get_child("properties"));
 
-        for (const ptree::value_type &geometry : feature.get_child("geometry.coordinates")) {
-            auto element = std::make_shared<T>();
-            element->id = 0;
-            element->tags = relation.tags;
-            element->coordinates = parseCoordinates(geometry.second);
-
-            relation.elements.push_back(element);
+        for (const ptree::value_type &coordTree : geometry) {
+            auto coordinates = parseCoordinates(coordTree.second);
+            if (coordinates.size() > 3 && coordinates[0] == coordinates[coordinates.size() - 1])
+                addToRelation<utymap::entities::Area>(relation, coordinates);
+            else
+                addToRelation<utymap::entities::Way>(relation, coordinates);
         }
+        return relation;
+    }
 
-        visitor.add(relation);
+    template<typename T>
+    void addToRelation(utymap::entities::Relation& relation, std::vector<utymap::GeoCoordinate>& coordinates) const
+    {
+        auto element = std::make_shared<T>();
+        element->id = 0;
+        element->coordinates = std::move(coordinates);
+        relation.elements.push_back(element);
     }
 
     /// Parses coordinates list. If input data is invalid, return false.

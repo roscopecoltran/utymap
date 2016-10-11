@@ -32,7 +32,8 @@ BOOST_AUTO_TEST_CASE(GivenDefaultJson_WhenParserParse_ThenHasExpectedElementCoun
 
     BOOST_CHECK_EQUAL(161, visitor.nodes);
     BOOST_CHECK_EQUAL(120, visitor.ways);
-    BOOST_CHECK_EQUAL(460, visitor.relations);
+    BOOST_CHECK_EQUAL(453, visitor.areas);
+    BOOST_CHECK_EQUAL(16, visitor.relations);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
