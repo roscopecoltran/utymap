@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(GivenDefaultJson_WhenParserParse_ThenHasExpectedElementCoun
 {
     parser.parse(istream, visitor);
 
-    //BOOST_CHECK_EQUAL(7653, visitor.nodes);
+    BOOST_CHECK_EQUAL(161, visitor.nodes);
     BOOST_CHECK_EQUAL(120, visitor.ways);
     BOOST_CHECK_EQUAL(460, visitor.relations);
 }

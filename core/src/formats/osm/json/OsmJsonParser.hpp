@@ -43,6 +43,10 @@ public:
                     parsePolygon(visitor, featureId, f.second);
                 else if (type == "LineString")
                     parseLineString(visitor, featureId, f.second);
+                else if (type == "Point")
+                    parsePoint(visitor, featureId, f.second);
+                //else 
+                //    throw std::invalid_argument(std::string("Unknown geometry type:") + type);
             }
         }
     }
@@ -56,11 +60,9 @@ private:
 
         for (const ptree::value_type &geometry : feature.get_child("geometry.coordinates")) {
             auto area = std::make_shared<utymap::entities::Area>();
-            if (!parseCoordinates(geometry.second, area->coordinates))
-                throw std::invalid_argument("Invalid geometry.");
-            
             area->id = 0;
             area->tags = relation.tags;
+            area->coordinates = parseCoordinates(geometry.second);
 
             relation.elements.push_back(area);
         }
@@ -72,30 +74,40 @@ private:
     {
         utymap::entities::Way way;
         parseProperties(way, featureId, feature.get_child("properties"));
-        if (!parseCoordinates(feature.get_child("geometry.coordinates"), way.coordinates))
-            throw std::invalid_argument("Invalid geometry.");
-
+        way.coordinates = parseCoordinates(feature.get_child("geometry.coordinates"));
         visitor.add(way);
     }
 
-    /// Parses coordinates list. If input data is invalid, return false.
-    static bool parseCoordinates(const ptree &geometry, std::vector<utymap::GeoCoordinate>& coordinates)
+    void parsePoint(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
-        for (const ptree::value_type &coordinate : geometry) {
-            // skip invalid geometry
-            if (std::distance(coordinate.second.begin(), coordinate.second.end()) != 2)
-                return false;
+        utymap::entities::Node node;
+        parseProperties(node, featureId, feature.get_child("properties"));
+        node.coordinate = parseCoordinate(feature.get_child("geometry.coordinates"));
+        visitor.add(node);
+    }
 
-            auto iter = coordinate.second.begin();
-            double longitude = iter->second.get_value<double>();
-            double latitude = (++iter)->second.get_value<double>();
-            coordinates.push_back(utymap::GeoCoordinate(latitude, longitude));
+    /// Parses coordinates list. If input data is invalid, return false.
+    static std::vector<utymap::GeoCoordinate> parseCoordinates(const ptree &geometry)
+    {
+        std::vector<utymap::GeoCoordinate> coordinates;
+        for (const ptree::value_type &coordinate : geometry) {
+            coordinates.emplace_back(parseCoordinate(coordinate.second));
         }
 
         // TODO check orientation
         std::reverse(coordinates.begin(), coordinates.end());
+        return coordinates;
+    }
 
-        return true;
+    static utymap::GeoCoordinate parseCoordinate(const ptree &coordinate)
+    {
+        if (std::distance(coordinate.begin(), coordinate.end()) != 2)
+            throw std::invalid_argument("Invalid geometry.");
+
+        auto iter = coordinate.begin();
+        double longitude = iter->second.get_value<double>();
+        double latitude = (++iter)->second.get_value<double>();
+        return utymap::GeoCoordinate(latitude, longitude);
     }
 
     void parseProperties(utymap::entities::Element& element, std::uint32_t featureId, const ptree &properties) const
