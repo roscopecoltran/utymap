@@ -17,14 +17,14 @@ template<typename Visitor>
 class OsmJsonParser
 {
     const std::string IdAttributeName = "id";
-    const std::string TrueTagValueName = "true";
+    const std::string FeatureAttributeName = "feature";
     using ptree = boost::property_tree::ptree;
 public:
 
     OsmJsonParser(utymap::index::StringTable& stringTable) :
         stringTable_(stringTable),
         idKey_(stringTable.getId(IdAttributeName)),
-        trueKey_(stringTable.getId(TrueTagValueName))
+        featureKey_(stringTable.getId(FeatureAttributeName))
     {
     }
 
@@ -41,12 +41,14 @@ public:
                 const auto& type = f.second.get_child("geometry.type").data();
                 if (type == "Polygon")
                     parsePolygon(visitor, featureId, f.second);
+                else if (type == "LineString")
+                    parseLineString(visitor, featureId, f.second);
             }
         }
     }
 
 private:
-    /// Parses polygon.
+    /// Parses polygon which represents Area.
     void parsePolygon(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
     {
         utymap::entities::Relation relation;
@@ -64,6 +66,16 @@ private:
         }
 
         visitor.add(relation);
+    }
+
+    void parseLineString(Visitor& visitor, std::uint32_t featureId, const ptree &feature) const
+    {
+        utymap::entities::Way way;
+        parseProperties(way, featureId, feature.get_child("properties"));
+        if (!parseCoordinates(feature.get_child("geometry.coordinates"), way.coordinates))
+            throw std::invalid_argument("Invalid geometry.");
+
+        visitor.add(way);
     }
 
     /// Parses coordinates list. If input data is invalid, return false.
@@ -97,7 +109,7 @@ private:
         }
         
         // NOTE add artificial tag for mapcss processing.
-        element.tags.emplace_back(featureId, trueKey_);
+        element.tags.emplace_back(featureKey_, featureId);
 
         std::sort(element.tags.begin(), element.tags.end());
     }
@@ -116,7 +128,7 @@ private:
 
 const utymap::index::StringTable& stringTable_;
 const std::uint32_t idKey_;
-const std::uint32_t trueKey_;
+const std::uint32_t featureKey_;
 };
 
 }}
