@@ -39,12 +39,12 @@ public:
             std::uint32_t featureId = stringTable_.getId(featureName);
             for (const ptree::value_type &f : pt.get_child(featureName).get_child("features")) {
                 const auto& type = f.second.get_child("geometry.type").data();
-                if (type == "Polygon")
-                    parsePolygon(visitor, featureId, f.second);
+                if (type == "Point")
+                    parsePoint(visitor, featureId, f.second);
                 else if (type == "LineString")
                     parseLineString(visitor, featureId, f.second);
-                else if (type == "Point")
-                    parsePoint(visitor, featureId, f.second);
+                else if (type == "Polygon")
+                    parsePolygon(visitor, featureId, f.second);
                 else if (type == "MultiLineString")
                     parseMultiLineString(visitor, featureId, f.second);
                 //else 
