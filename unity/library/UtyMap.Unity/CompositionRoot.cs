@@ -6,7 +6,6 @@ using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Maps.Data;
-using UtyMap.Unity.Maps.Elevation;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyDepend;
 using UtyDepend.Config;
@@ -64,7 +63,6 @@ namespace UtyMap.Unity
             // core services 
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
             _container.Register(Component.For<IElementEditor>().Use<ElementEditor>());
-            _container.Register(Component.For<IElevationProvider>().Use<SrtmElevationProvider>().SetConfig(_configSection));
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));

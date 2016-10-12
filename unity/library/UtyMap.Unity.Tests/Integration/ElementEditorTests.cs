@@ -6,9 +6,7 @@ using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
-using UtyMap.Unity.Maps.Elevation;
 using NUnit.Framework;
-using UtyDepend;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
 
@@ -26,8 +24,7 @@ namespace UtyMap.Unity.Tests.Integration
         [TestFixtureSetUp]
         public void Setup()
         {
-            _compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint,
-                (container, _) => container.Register(Component.For<IElevationProvider>().Use<FlatElevationProvider>()));
+            _compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint);
             _elementEditor = _compositionRoot.GetService<IElementEditor>();
             _dataLoader = _compositionRoot.GetService<IMapDataLoader>();
             _stylesheet = _compositionRoot.GetService<Stylesheet>();

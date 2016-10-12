@@ -6,7 +6,6 @@ using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Maps.Elevation;
 using UtyDepend;
 using UtyDepend.Config;
 using UtyRx;
@@ -35,7 +34,6 @@ namespace UtyMap.Unity.Maps.Data
         private const string TraceCategory = "mapdata.loader";
         private readonly object _lockObj = new object();
 
-        private readonly IElevationProvider _elevationProvider;
         private readonly IPathResolver _pathResolver;
         private string _mapDataServerUri;
         private string _mapDataServerQuery;
@@ -48,10 +46,8 @@ namespace UtyMap.Unity.Maps.Data
         public ITrace Trace { get; set; }
 
         [Dependency]
-        public MapDataLoader(IElevationProvider elevationProvider, IFileSystemService fileSystemService,
-            INetworkService networkService, IPathResolver pathResolver)
+        public MapDataLoader(IFileSystemService fileSystemService, INetworkService networkService, IPathResolver pathResolver)
         {
-            _elevationProvider = elevationProvider;
             _fileSystemService = fileSystemService;
             _networkService = networkService;
             _pathResolver = pathResolver;
@@ -78,7 +74,6 @@ namespace UtyMap.Unity.Maps.Data
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
             return CreateDownloadSequence(tile)
-                //.SelectMany(CreateElevationSequence(tile))
                 .SelectMany(CreateLoadSequence);
         }
 
@@ -107,14 +102,6 @@ namespace UtyMap.Unity.Maps.Data
         }
 
         #region Private methods
-
-        /// <summary> Downloads elevation data for given tile. </summary>
-        private IObservable<Tile> CreateElevationSequence(Tile tile)
-        {
-            return _elevationProvider.HasElevation(tile.BoundingBox)
-                ? Observable.Return(tile)
-                : _elevationProvider.Download(tile.BoundingBox).Select(_ => tile);
-        }
 
         /// <summary> Downloads map data for given tile. </summary>
         private IObservable<Tile> CreateDownloadSequence(Tile tile)

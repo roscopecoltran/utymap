@@ -5,10 +5,10 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
-namespace UtyMap.Unity.Maps.Elevation
+namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> Downloads SRTM data from NASA server. </summary>
-    internal class SrtmDownloader
+    internal class SrtmElevationDataProvider
     {
         private const string TraceCategory = "mapdata.srtm";
         private readonly IFileSystemService _fileSystemService;
@@ -26,8 +26,8 @@ namespace UtyMap.Unity.Maps.Elevation
             {5, "Islands"},
         };
 
-        /// <summary> Creates instance of <see cref="SrtmDownloader"/>. </summary>
-        public SrtmDownloader(string server, 
+        /// <summary> Creates instance of <see cref="SrtmElevationDataProvider"/>. </summary>
+        public SrtmElevationDataProvider(string server, 
                               string schemaPath, 
                               IFileSystemService fileSystemService, 
                               INetworkService networkService,
