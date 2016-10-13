@@ -67,7 +67,6 @@ namespace UtyMap.Unity
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
 
             _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
-            _container.Register(Component.For<OpenStreetMapDataProvider>().Use<OpenStreetMapDataProvider>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
 
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
