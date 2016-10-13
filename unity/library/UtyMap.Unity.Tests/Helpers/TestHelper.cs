@@ -20,7 +20,6 @@ namespace UtyMap.Unity.Tests.Helpers
         
         public const string BerlinXmlData = TestAssetsFolder + @"/Osm/berlin.osm.xml";
         public const string BerlinPbfData = TestAssetsFolder + @"/Osm/berlin.osm.pbf";
-        public const string NmeaFilePath = TestAssetsFolder + @"/Nmea/invalidenstrasse_borsigstrasse.nme";
         public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
 
         public const string NaturalEarth110mAdmin = TestAssetsFolder + @"/NaturalEarth/ne_110m_admin_0_scale_rank";
