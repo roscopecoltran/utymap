@@ -9,6 +9,7 @@ using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyDepend;
 using UtyDepend.Config;
+using UtyMap.Unity.Maps.Providers;
 
 namespace UtyMap.Unity
 {
@@ -64,7 +65,11 @@ namespace UtyMap.Unity
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
             _container.Register(Component.For<IElementEditor>().Use<ElementEditor>());
             _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
+
+            _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
+            _container.Register(Component.For<OpenStreetMapDataProvider>().Use<OpenStreetMapDataProvider>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
+
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 
             // go through all actions to add/override services.

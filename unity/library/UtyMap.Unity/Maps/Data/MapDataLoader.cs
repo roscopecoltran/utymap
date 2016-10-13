@@ -8,6 +8,7 @@ using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyDepend;
 using UtyDepend.Config;
+using UtyMap.Unity.Maps.Providers;
 using UtyRx;
 using Mesh = UtyMap.Unity.Core.Models.Mesh;
 
@@ -29,29 +30,24 @@ namespace UtyMap.Unity.Maps.Data
     }
 
     /// <summary> Default implementation of tile loader. </summary>
-    internal class MapDataLoader : IMapDataLoader, IConfigurable, IDisposable
+    internal class MapDataLoader : IMapDataLoader, IDisposable, IConfigurable
     {
         private const string TraceCategory = "mapdata.loader";
-        private readonly object _lockObj = new object();
 
+        private readonly IMapDataProvider _mapDataProvider;
         private readonly IPathResolver _pathResolver;
-        private string _mapDataServerUri;
-        private string _mapDataServerQuery;
-        private string _mapDataFormatExtension;
-        private string _cachePath;
-        private readonly IFileSystemService _fileSystemService;
-        private readonly INetworkService _networkService;
 
         [Dependency]
         public ITrace Trace { get; set; }
 
         [Dependency]
-        public MapDataLoader(IFileSystemService fileSystemService, INetworkService networkService, IPathResolver pathResolver)
+        public MapDataLoader(IMapDataProvider mapDataProvider, IPathResolver pathResolver)
         {
-            _fileSystemService = fileSystemService;
-            _networkService = networkService;
+            _mapDataProvider = mapDataProvider;
             _pathResolver = pathResolver;
         }
+
+        #region Interface implementations
 
         /// <inheritdoc />
         public void AddToStore(MapStorageType storageType, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails)
@@ -73,18 +69,21 @@ namespace UtyMap.Unity.Maps.Data
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            return CreateDownloadSequence(tile)
-                .SelectMany(CreateLoadSequence);
+            if (CoreLibrary.HasData(tile.QuadKey))
+                return CreateLoadSequence(tile);
+
+            return _mapDataProvider
+                    .Get(tile)
+                    .SelectMany(filePath =>
+                    {
+                        SaveTileDataInMemory(tile, filePath);
+                        return CreateLoadSequence(tile);
+                    });
         }
 
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _mapDataServerUri = configSection.GetString(@"data/remote/server", null);
-            _mapDataServerQuery = configSection.GetString(@"data/remote/query", null);
-            _mapDataFormatExtension = "." + configSection.GetString(@"data/remote/format", "xml");
-            _cachePath = configSection.GetString(@"data/cache", null);
-
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings"));
             var mapDataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial"));
             var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local"));
@@ -101,61 +100,9 @@ namespace UtyMap.Unity.Maps.Data
             CoreLibrary.Dispose();
         }
 
+        #endregion
+
         #region Private methods
-
-        /// <summary> Downloads map data for given tile. </summary>
-        private IObservable<Tile> CreateDownloadSequence(Tile tile)
-        {
-            // data exists in store
-            if (CoreLibrary.HasData(tile.QuadKey))
-                return Observable.Return(tile);
-
-            // data exists in cache
-            var filePath = GetCacheFilePath(tile);
-            if (_fileSystemService.Exists(filePath))
-            {
-                var errorMsg = SaveTileDataInMemory(tile, filePath);
-                return errorMsg == null
-                    ? Observable.Return(tile)
-                    : Observable.Throw<Tile>(new MapDataException(Strings.CannotAddDataToInMemoryStore, errorMsg));
-            }
-
-            // need to download from remote server
-            return Observable.Create<Tile>(observer =>
-            {
-                double padding = 0.001;
-                BoundingBox query = tile.BoundingBox;
-                var queryString = String.Format(_mapDataServerQuery,
-                    query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
-                    query.MaxPoint.Latitude + padding, query.MaxPoint.Longitude + padding);
-                var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
-                Trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, tile.QuadKey.ToString(), uri);
-                _networkService.GetAndGetBytes(uri)
-                    .ObserveOn(Scheduler.ThreadPool)
-                    .Subscribe(bytes =>
-                    {
-                        Trace.Debug(TraceCategory, "saving bytes: {0}", bytes.Length.ToString());
-                        lock (_lockObj)
-                        {
-                            if (!_fileSystemService.Exists(filePath))
-                                using (var stream = _fileSystemService.WriteStream(filePath))
-                                    stream.Write(bytes, 0, bytes.Length);
-                        }
-
-                        // try to add in memory store
-                        var errorMsg = SaveTileDataInMemory(tile, filePath);
-                        if (errorMsg != null)
-                            observer.OnError(new MapDataException(String.Format(Strings.CannotAddDataToInMemoryStore, errorMsg)));
-                        else
-                        {
-                            observer.OnNext(tile);
-                            observer.OnCompleted();
-                        }
-                    });
-
-                return Disposable.Empty;
-            });
-        }
 
         /// <summary> Creates <see cref="IObservable{T}"/> for loading element of given tile. </summary>
         private IObservable<Union<Element, Mesh>> CreateLoadSequence(Tile tile)
@@ -168,7 +115,7 @@ namespace UtyMap.Unity.Maps.Data
                 var adapter = new MapTileAdapter(tile, observer, Trace);
 
                 CoreLibrary.LoadQuadKey(
-                    stylesheetPathResolved, 
+                    stylesheetPathResolved,
                     tile.QuadKey,
                     adapter.AdaptMesh,
                     adapter.AdaptElement,
@@ -181,13 +128,12 @@ namespace UtyMap.Unity.Maps.Data
             });
         }
 
-        /// <summary> Adds tile data into in memory storage. </summary>
-        private string SaveTileDataInMemory(Tile tile, string filePath)
+        private void SaveTileDataInMemory(Tile tile, string filePath)
         {
             var filePathResolved = _pathResolver.Resolve(filePath);
             var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
-            
-            Trace.Info(TraceCategory, String.Format("save tile data {0} from {1} using style: {2}", 
+
+            Trace.Info(TraceCategory, String.Format("save tile data {0} from {1} using style: {2}",
                 tile, filePathResolved, stylesheetPathResolved));
 
             string errorMsg = null;
@@ -197,14 +143,8 @@ namespace UtyMap.Unity.Maps.Data
                 tile.QuadKey,
                 error => errorMsg = error);
 
-            return errorMsg;
-        }
-
-        /// <summary> Returns cache file name for given tile. </summary>
-        private string GetCacheFilePath(Tile tile)
-        {
-            var cacheFileName = tile.QuadKey + _mapDataFormatExtension;
-            return Path.Combine(_cachePath, cacheFileName);
+            if (errorMsg != null)
+                throw new MapDataException(String.Format(Strings.CannotAddDataToInMemoryStore, errorMsg));
         }
 
         #endregion

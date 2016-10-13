@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
@@ -8,7 +9,7 @@ using UtyRx;
 namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> Downloads SRTM data from NASA server. </summary>
-    internal class SrtmElevationDataProvider
+    internal class SrtmElevationDataProvider : IMapDataProvider
     {
         private const string TraceCategory = "mapdata.srtm";
         private readonly IFileSystemService _fileSystemService;
@@ -80,6 +81,11 @@ namespace UtyMap.Unity.Maps.Providers
             return String.Format("{0}{1:00}{2}{3:000}",
                 coordinate.Latitude > 0 ? 'N' : 'S', Math.Abs((int)coordinate.Latitude),
                 coordinate.Longitude > 0 ? 'E' : 'W', Math.Abs((int)coordinate.Longitude));
+        }
+
+        public IObservable<string> Get(Tile tile)
+        {
+            throw new NotImplementedException();
         }
     }
 }
