@@ -76,7 +76,7 @@ namespace Assets.Scripts
 
             try
             {
-                var config = ConfigBuilder.GetDefault()
+                var config = configBuilder
                     .SetStringIndex("Index/")
                     .SetSpatialIndex("Index/")
                     .Build();

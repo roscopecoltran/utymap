@@ -90,6 +90,7 @@
     <Compile Include="Maps\Data\MapStorageType.cs" />
     <Compile Include="Maps\Providers\AggregateMapDataProvider.cs" />
     <Compile Include="Maps\Providers\IMapDataProvider.cs" />
+    <Compile Include="Maps\Providers\MapzenMapDataProvider.cs" />
     <Compile Include="Maps\Providers\OpenStreetMapDataProvider.cs" />
     <Compile Include="Maps\Providers\SrtmElevationDataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

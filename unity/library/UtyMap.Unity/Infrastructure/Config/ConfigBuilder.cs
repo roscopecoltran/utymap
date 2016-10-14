@@ -61,12 +61,22 @@ namespace UtyMap.Unity.Infrastructure.Config
             return this;
         }
 
-        /// <summary> Sets remote server parameters. </summary>
-        public ConfigBuilder SetRemoteMapData(string url, string schema, string format)
+        /// <summary> Sets osm map data provider. </summary>
+        public ConfigBuilder SetOsmMapData(string url, string schema, string format)
         {
-            Add<string>("data/remote/server", url);
-            Add<string>("data/remote/query", schema);
-            Add<string>("data/remote/format", format);
+            Add<string>("data/osm/server", url);
+            Add<string>("data/osm/query", schema);
+            Add<string>("data/osm/format", format);
+            return this;
+        }
+
+        /// <summary> Sets mapzen map data provider. </summary>
+        public ConfigBuilder SetMapzenMapData(string url, string layers, string format, string apiKey)
+        {
+            Add<string>("data/mapzen/server", url);
+            Add<string>("data/mapzen/layers", layers);
+            Add<string>("data/mapzen/format", format);
+            Add<string>("data/mapzen/apikey", apiKey);
             return this;
         }
 
@@ -95,7 +105,8 @@ namespace UtyMap.Unity.Infrastructure.Config
             return new ConfigBuilder()
                 .SetLocalElevationData("Elevation/")
                 .SetRemoteElevationData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
-                .SetRemoteMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
+                .SetOsmMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
+                .SetMapzenMapData("http://tile.mapzen.com/mapzen/vector/v1/{0}/{1}/{2}/{3}.json?api_key={4}", "all", "json", "")
                 .SetCache("Cache")
                 .SetGeocodingServer("http://nominatim.openstreetmap.org/search?");
         }
