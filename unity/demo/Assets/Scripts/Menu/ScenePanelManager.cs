@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UtyMap.Unity.Infrastructure;
 
 namespace Assets.Scripts.Menu
 {
@@ -10,8 +11,11 @@ namespace Assets.Scripts.Menu
         public Button ZoomInButton;
         public Button ZoomOutButton;
 
+        private IMessageBus _messageBus;
+
         void Start()
         {
+            _messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
         }
 
         public void OnBackClick()
@@ -21,10 +25,12 @@ namespace Assets.Scripts.Menu
 
         public void OnZoomIn()
         {
+            _messageBus.Send(new OnZoom(false));
         }
 
         public void OnZoomOut()
         {
+            _messageBus.Send(new OnZoom(true));
         }
     }
 }

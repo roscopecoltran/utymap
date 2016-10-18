@@ -15,7 +15,6 @@ namespace Assets.Scripts
 
         private ITrace _trace;
         private IMessageBus _messageBus;
-        private bool _isInitialized;
 
         void Start()
         {

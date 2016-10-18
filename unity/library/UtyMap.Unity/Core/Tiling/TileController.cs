@@ -109,11 +109,8 @@ namespace UtyMap.Unity.Core.Tiling
 
         private void OnPosition(GeoCoordinate geoPosition, Vector3 position, int levelOfDetails)
         {
-            if (!IsValidLevelOfDetails(levelOfDetails))
-                throw new ArgumentException(String.Format("Invalid level of details: {0}", levelOfDetails), "levelOfDetails");
-
             // call update logic only if threshold is reached
-            if (Vector3.Distance(position, _lastUpdatePosition) > _moveSensitivity)
+            if (Vector3.Distance(position, _lastUpdatePosition) > _moveSensitivity || _currentQuadKey.LevelOfDetail != levelOfDetails)
             {
                 lock (_lockObj)
                 {
@@ -231,21 +228,6 @@ namespace UtyMap.Unity.Core.Tiling
         {
             foreach (var tileObserver in _tileObservers)
                 tileObserver.OnNext(tile);
-        }
-
-        /// <summary>
-        ///     Checks that passed level of details is greater than zero and it equals last used quadkey's one. 
-        /// </summary>
-        /// <remarks>
-        ///     This class is not designed to support dynamic level of details changes.
-        /// </remarks>
-        private bool IsValidLevelOfDetails(int levelOfDetails)
-        {
-            var currentLevelOfDetails = _currentQuadKey.LevelOfDetail == 0
-                ? levelOfDetails
-                : _currentQuadKey.LevelOfDetail;
-
-            return levelOfDetails > 0 && currentLevelOfDetails == levelOfDetails;
         }
 
         /// <summary>

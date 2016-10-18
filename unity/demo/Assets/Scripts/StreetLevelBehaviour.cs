@@ -2,6 +2,7 @@
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
+using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -19,8 +20,9 @@ namespace Assets.Scripts
     sealed class StreetLevelBehaviour : MonoBehaviour
     {
         private const string LogCategory = "scene.street";
-        private const int LevelOfDetails = 16;
         private const float PositionUpdateThreshold = 10;
+
+        private int _levelOfDetails = 16;
 
         private ApplicationManager _appManager;
         private ITileController _tileController;
@@ -81,10 +83,15 @@ namespace Assets.Scripts
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(t => t.Item2.Match(e => _modelBuilder.BuildElement(t.Item1, e), m => _modelBuilder.BuildMesh(t.Item1, m)));
 
+            _appManager
+                .GetService<IMessageBus>()
+                .AsObservable<OnZoom>()
+                .Subscribe(msg => OnNewLevelOfDetail(msg.IsZoomOut));
+
             // NOTE: code below loads region tile by tile.
             // The region is specified by rectangle defined in world coordinates.
             //float size = 600; // square side size (in meters)
-            //Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-size / 2, -size / 2, size, size), LevelOfDetails));
+            //Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-size / 2, -size / 2, size, size), _levelOfDetails));
         }
 
         /// <summary> Listens for position changes to notify library. </summary>
@@ -93,7 +100,7 @@ namespace Assets.Scripts
             if (_appManager.IsInitialized && Vector3.Distance(_position, transform.position) > PositionUpdateThreshold)
             {
                 _position = transform.position;
-                Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(_position, LevelOfDetails));
+                Scheduler.ThreadPool.Schedule(() => _tileController.OnPosition(_position, _levelOfDetails));
             }
         }
 
@@ -105,6 +112,16 @@ namespace Assets.Scripts
         private GeoCoordinate GetWorldZeroPoint()
         {
             return PositionConfiguration.StartPosition;
+        }
+
+        /// <summary> Applies new lod triggered by user. </summary>
+        private void OnNewLevelOfDetail(bool isZoomOut)
+        {
+            _levelOfDetails = isZoomOut ? 14 : 16;
+
+            // Force update
+            _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            Update();
         }
 
         #endregion
