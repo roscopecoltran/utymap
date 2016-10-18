@@ -19,11 +19,16 @@ namespace Assets.Scripts.Extensions
         private AutoCam _autoCam;
         private CameraAnimation _camAnimation;
         private ThirdPersonCharacter _character;
+
+        private float _originalSpeed;
         private int _levelOfDetails = 16;
 
         void Start()
         {
             _autoCam = FindObjectOfType<AutoCam>();
+            
+            _character = FindObjectOfType<ThirdPersonCharacter>();
+            _originalSpeed = _character.m_MoveSpeedMultiplier;
 
             _camAnimation = FindObjectOfType<CameraAnimation>();
             _camAnimation.Finished += (sender, args) => _autoCam.enabled = true;
@@ -36,9 +41,13 @@ namespace Assets.Scripts.Extensions
                     if (msg.LevelOfDetails == _levelOfDetails)
                         return;
 
+                    bool isZoomOut = msg.LevelOfDetails < _levelOfDetails;
+
                     _autoCam.enabled = false;
-                    _camAnimation.Play(CameraAnimationDuration, msg.LevelOfDetails < _levelOfDetails);
+                    _camAnimation.Play(CameraAnimationDuration, isZoomOut);
                     _levelOfDetails = msg.LevelOfDetails;
+
+                    _character.m_MoveSpeedMultiplier = isZoomOut ? _originalSpeed * SpeedMultiplier : _originalSpeed;
                 });
         }
     }
