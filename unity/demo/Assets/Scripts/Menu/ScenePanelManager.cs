@@ -25,12 +25,12 @@ namespace Assets.Scripts.Menu
 
         public void OnZoomIn()
         {
-            _messageBus.Send(new OnZoom(false));
+            _messageBus.Send(new OnZoomRequested(false));
         }
 
         public void OnZoomOut()
         {
-            _messageBus.Send(new OnZoom(true));
+            _messageBus.Send(new OnZoomRequested(true));
         }
     }
 }

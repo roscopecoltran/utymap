@@ -1,12 +1,22 @@
 ﻿namespace Assets.Scripts
 {
-    internal class OnZoom
+    internal class OnZoomRequested
     {
         public readonly bool IsZoomOut;
 
-        public OnZoom(bool isZoomOut)
+        public OnZoomRequested(bool isZoomOut)
         {
             IsZoomOut = isZoomOut;
+        }
+    }
+
+    internal class OnZoomChanged
+    {
+        public readonly int LevelOfDetails;
+
+        public OnZoomChanged(int levelOfDetails)
+        {
+            LevelOfDetails = levelOfDetails;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Extensions;
+using UnityEngine;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
@@ -32,6 +33,7 @@ namespace Assets.Scripts
         private Vector3 _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         private IModelBuilder _modelBuilder;
         private IMapDataLoader _mapDataLoader;
+        private IMessageBus _messageBus;
 
         #region Unity lifecycle events
 
@@ -52,6 +54,7 @@ namespace Assets.Scripts
             _tileController = _appManager.GetService<ITileController>();
             _modelBuilder = _appManager.GetService<IModelBuilder>();
             _mapDataLoader = _appManager.GetService<IMapDataLoader>();
+            _messageBus = _appManager.GetService<IMessageBus>();
         }
 
         void Start()
@@ -83,10 +86,19 @@ namespace Assets.Scripts
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(t => t.Item2.Match(e => _modelBuilder.BuildElement(t.Item1, e), m => _modelBuilder.BuildMesh(t.Item1, m)));
 
-            _appManager
-                .GetService<IMessageBus>()
-                .AsObservable<OnZoom>()
-                .Subscribe(msg => OnNewLevelOfDetail(msg.IsZoomOut));
+            _messageBus
+                .AsObservable<OnZoomRequested>()
+                .Subscribe(msg =>
+                {
+                    var newLevel = msg.IsZoomOut ? 14 : 16;
+                    if (newLevel == _levelOfDetails)
+                        return;
+                    
+                    _levelOfDetails = newLevel;
+                    _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+                    _messageBus.Send(new OnZoomChanged(newLevel));
+                });
 
             // NOTE: code below loads region tile by tile.
             // The region is specified by rectangle defined in world coordinates.
@@ -112,16 +124,6 @@ namespace Assets.Scripts
         private GeoCoordinate GetWorldZeroPoint()
         {
             return PositionConfiguration.StartPosition;
-        }
-
-        /// <summary> Applies new lod triggered by user. </summary>
-        private void OnNewLevelOfDetail(bool isZoomOut)
-        {
-            _levelOfDetails = isZoomOut ? 14 : 16;
-
-            // Force update
-            _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-            Update();
         }
 
         #endregion
