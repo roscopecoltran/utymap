@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Extensions
 {
     /// <summary> This class is workaround for slow tile loading. </summary>
     /// <remarks> 

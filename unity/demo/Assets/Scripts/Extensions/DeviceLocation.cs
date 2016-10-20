@@ -5,7 +5,7 @@ using UtyMap.Unity.Core;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Extensions
 {
     internal class DeviceLocation : MonoBehaviour
     {

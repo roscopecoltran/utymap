@@ -5,7 +5,7 @@ using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Extensions
 {
     /// <summary> Display current address using reverse geocoding API. </summary>
     internal class AddressBehaviour : MonoBehaviour
