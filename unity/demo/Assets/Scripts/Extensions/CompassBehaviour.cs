@@ -1,37 +1,28 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Extensions
 {
     public class CompassBehaviour : MonoBehaviour
     {
-        public Texture BackgroundTexture;
-        public Texture PointerTexture;
+        public Image Pointer;
+        public int Scale = 25;
 
         private Transform _target;
+        private RectTransform _rectTransform;
 
         void Start()
         {
             _target = gameObject.transform;
+            _rectTransform = Pointer.rectTransform;
         }
 
-        void OnGUI()
+        void FixedUpdate()
         {
-            GUI.DrawTexture(new Rect(0, 0, 120, 120), BackgroundTexture);
-            GUI.DrawTexture(CreateBlip(), PointerTexture);
-        }
-
-        private Rect CreateBlip()
-        {
-            float angDeg = _target.eulerAngles.y - 90;
+            float angDeg = _target.eulerAngles.y + 90;
             float angRed = angDeg * Mathf.Deg2Rad;
 
-            float blipX = 25 * Mathf.Cos(angRed);
-            float blipY = 25 * Mathf.Sin(angRed);
-
-            blipX += 55;
-            blipY += 55;
-
-            return new Rect(blipX, blipY, 10, 10);
+            _rectTransform.anchoredPosition = new Vector2(Mathf.Cos(angRed) * Scale, Mathf.Sin(angRed) * Scale);
         }
     }
 }
