@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
@@ -18,7 +17,7 @@ namespace Assets.Scripts
     ///     level of detalization. Add it to Character. 
     ///     In general, it performs some initialization and listens for position changes of character.
     /// </summary>
-    sealed class StreetLevelBehaviour : MonoBehaviour
+    sealed class GroundLevelBehaviour : MonoBehaviour
     {
         private const string LogCategory = "scene.street";
         private const float PositionUpdateThreshold = 10;

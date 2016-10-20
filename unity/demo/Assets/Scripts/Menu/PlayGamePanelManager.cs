@@ -113,13 +113,7 @@ namespace Assets.Scripts.Menu
         public void OnStreetLevelPlayClick()
         {
             ParseCoordinate();
-            SceneManager.LoadScene("StreetLevelScene");
-        }
-
-        public void OnBirdEyeLevelPlayClick()
-        {
-            ParseCoordinate();
-            SceneManager.LoadScene("BirdEyeLevelScene");
+            SceneManager.LoadScene("GroundLevelScene");
         }
 
         public void OnGlobeLevelPlayClick()
