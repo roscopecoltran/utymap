@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Maps.Geocoding;
@@ -13,10 +14,10 @@ namespace Assets.Scripts.Extensions
         // NOTE we cannot request frequently: geo coding server may ban application
         public int UpdateFrequencyInSeconds = 20;
         public int DistanceThreshold = 75;
+        public Text AddressText;
 
         private IGeocoder _geoCoder;
         private GeoCoordinate _startCoordinate;
-        private GeocoderResult _currentAddress;
         private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         void Start()
@@ -38,20 +39,10 @@ namespace Assets.Scripts.Extensions
                     _lastPosition = position;
                     _geoCoder
                         .Search(GeoUtils.ToGeoCoordinate(_startCoordinate, position.x, position.z))
-                        .Subscribe(r => _currentAddress = r);
+                        .Subscribe(r => AddressText.text = r.DisplayName);
                 }
 
                 yield return new WaitForSeconds(UpdateFrequencyInSeconds);
-            }
-        }
-
-        void OnGUI()
-        {
-            var currentAddress = _currentAddress;
-            if (currentAddress != null)
-            {
-                var offset = Screen.width/6;
-                GUI.Box(new Rect(offset, 0, Screen.width - offset * 2, 30), currentAddress.DisplayName);
             }
         }
     }
