@@ -19,6 +19,7 @@ canvas|z14 {
 }
 
 area,relation|z14[kind=water],
+area,relation|z14[kind=river],
 area,relation|z14[natural=water],
 area,relation|z14[landuse=basin],
 area,relation|z14[waterway=riverbank],

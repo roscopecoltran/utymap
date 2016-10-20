@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UtyMap.Unity.Infrastructure;
 using UtyRx;
 
@@ -13,10 +9,9 @@ namespace Assets.Scripts.Extensions
 {
     public class ZoomBehaviour : MonoBehaviour
     {
-        private const int CameraAnimationDuration = 3;
+        private const int CameraAnimationDuration = 2;
         private const float SpeedMultiplier = 10;
 
-        private AutoCam _autoCam;
         private CameraAnimation _camAnimation;
         private ThirdPersonCharacter _character;
 
@@ -25,13 +20,9 @@ namespace Assets.Scripts.Extensions
 
         void Start()
         {
-            _autoCam = FindObjectOfType<AutoCam>();
-            
+            _camAnimation = FindObjectOfType<CameraAnimation>();
             _character = FindObjectOfType<ThirdPersonCharacter>();
             _originalSpeed = _character.m_MoveSpeedMultiplier;
-
-            _camAnimation = FindObjectOfType<CameraAnimation>();
-            _camAnimation.Finished += (sender, args) => _autoCam.enabled = true;
 
             var messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
 
@@ -43,11 +34,12 @@ namespace Assets.Scripts.Extensions
 
                     bool isZoomOut = msg.LevelOfDetails < _levelOfDetails;
 
-                    _autoCam.enabled = false;
                     _camAnimation.Play(CameraAnimationDuration, isZoomOut);
                     _levelOfDetails = msg.LevelOfDetails;
 
-                    _character.m_MoveSpeedMultiplier = isZoomOut ? _originalSpeed * SpeedMultiplier : _originalSpeed;
+                    _character.m_MoveSpeedMultiplier = isZoomOut 
+                        ? _originalSpeed * SpeedMultiplier 
+                        : _originalSpeed;
                 });
         }
     }

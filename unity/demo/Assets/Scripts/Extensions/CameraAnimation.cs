@@ -12,7 +12,7 @@ namespace Assets.Scripts.Extensions
     {
         public Camera Camera;
         public GameObject Target;
-        public float Distance = 500;
+        public float Distance = 400;
 
         public event EventHandler Finished;
 
@@ -36,13 +36,13 @@ namespace Assets.Scripts.Extensions
         {
             // Create 'S' shaped curve to adjust pitch
             // Varies from 0 (looking forward) at 0, to 90 (looking straight down) at 1
-            _pitchCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 90.0f);
+            _pitchCurve = AnimationCurve.EaseInOut(10.0f, 20.0f, 45.0f, 60.0f);
 
             // Create exponential shaped curve to adjust distance
             // So zoom control will be more accurate at closer distances, and more coarse further away
             Keyframe[] ks = new Keyframe[2];
             // At zoom=0, offset by 2 units
-            ks[0] = new Keyframe(0, 2f);
+            ks[0] = new Keyframe(0, 15f);
             ks[0].outTangent = 0;
             // At zoom=1, offset by Distance units
             ks[1] = new Keyframe(1, Distance);

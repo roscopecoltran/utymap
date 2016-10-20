@@ -37,7 +37,7 @@ way,relation|z14[highway=motorway_link] {
     clip:true;
     builders: terrain;
     terrain-layer: drive;
-    width: 0.4%;
+    width: 0.2%;
 }
 
 way,relation|z14[kind_detail=secondary],
@@ -48,5 +48,5 @@ way,relation|z14[highway=secondary_link] {
     clip:true;
     builders: terrain;
     terrain-layer: drive;
-    width: 0.2%;
+    width: 0.1%;
 }

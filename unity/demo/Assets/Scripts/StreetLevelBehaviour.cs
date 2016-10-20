@@ -95,8 +95,6 @@ namespace Assets.Scripts
                         return;
                     
                     _levelOfDetails = newLevel;
-                    _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
                     _messageBus.Send(new OnZoomChanged(newLevel));
                 });
 
