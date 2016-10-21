@@ -46,6 +46,11 @@ struct Style final
         return it != declarations_.end() && it->second->value() == value;
     }
 
+    bool empty() const
+    {
+        return declarations_.empty();
+    }
+
     void put(const StyleDeclaration& declaration)
     {
         declarations_[declaration.key()] = &declaration;

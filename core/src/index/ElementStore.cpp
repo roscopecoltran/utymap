@@ -99,7 +99,8 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
         if (!styleProvider.hasStyle(element, lod))
             continue;
         Style style = styleProvider.forElement(element, lod);
-        if (style.has(skipKeyId_, "true")) continue;
+        if (style.empty() || style.has(skipKeyId_, "true")) 
+            continue;
 
         // initialize bounding box and size only once
         if (!bboxVisitor.boundingBox.isValid()) {
