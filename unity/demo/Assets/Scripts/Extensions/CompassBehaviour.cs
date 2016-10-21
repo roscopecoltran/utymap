@@ -6,8 +6,6 @@ namespace Assets.Scripts.Extensions
     public class CompassBehaviour : MonoBehaviour
     {
         public Image Pointer;
-        public int Scale = 25;
-
         private Transform _target;
         private RectTransform _rectTransform;
 
@@ -19,10 +17,8 @@ namespace Assets.Scripts.Extensions
 
         void FixedUpdate()
         {
-            float angDeg = _target.eulerAngles.y + 90;
-            float angRed = angDeg * Mathf.Deg2Rad;
-
-            _rectTransform.anchoredPosition = new Vector2(Mathf.Cos(angRed) * Scale, Mathf.Sin(angRed) * Scale);
+            var direction = _target.rotation.eulerAngles;
+            _rectTransform.transform.eulerAngles = new Vector3(0, 0, -direction.y);
         }
     }
 }
