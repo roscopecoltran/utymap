@@ -29,7 +29,7 @@ namespace UtyMap.Unity.Maps.Providers
         public IObservable<string> Get(Tile tile)
         {
             if (OsmTileRange.Contains(tile.QuadKey.LevelOfDetail)) 
-                _osmMapDataProvider.Get(tile);
+                return _osmMapDataProvider.Get(tile);
 
             return _mapzenMapDataProvider.Get(tile);
         }
