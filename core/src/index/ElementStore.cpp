@@ -96,8 +96,6 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
     bool wasStored = false;
     double size = -1; // match all by default
     for (int lod = range.start; lod <= range.end; ++lod) {
-        if (!styleProvider.hasStyle(element, lod))
-            continue;
         Style style = styleProvider.forElement(element, lod);
         if (style.empty() || style.has(skipKeyId_, "true")) 
             continue;
