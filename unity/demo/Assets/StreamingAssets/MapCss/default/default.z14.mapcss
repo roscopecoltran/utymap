@@ -1,5 +1,5 @@
 canvas|z14 {
-    layer-priority: water,drive,green;
+    layer-priority: drive,water,green;
 }
 
 @import url("default.z14-lines.mapcss");
