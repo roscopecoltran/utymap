@@ -25,6 +25,8 @@ namespace Assets.Scripts.Extensions
         private float _animationDuration;
         private bool _isInversed;
 
+        private Vector3 _pivot;
+
         public void Play(float duration, bool awayFromTarget)
         {
             _animationTime = 0;
@@ -34,20 +36,16 @@ namespace Assets.Scripts.Extensions
 
         void Start()
         {
-            // Create 'S' shaped curve to adjust pitch
-            // Varies from 0 (looking forward) at 0, to 90 (looking straight down) at 1
-            _pitchCurve = AnimationCurve.EaseInOut(10.0f, 20.0f, 45.0f, 60.0f);
+            _pitchCurve = AnimationCurve.EaseInOut(0.0f, 20.0f, 45.0f, 60.0f);
 
-            // Create exponential shaped curve to adjust distance
-            // So zoom control will be more accurate at closer distances, and more coarse further away
             Keyframe[] ks = new Keyframe[2];
-            // At zoom=0, offset by 2 units
-            ks[0] = new Keyframe(0, 15f);
+            ks[0] = new Keyframe(0, 15);
             ks[0].outTangent = 0;
-            // At zoom=1, offset by Distance units
             ks[1] = new Keyframe(1, Distance);
             ks[1].inTangent = 90;
+
             _distanceCurve = new AnimationCurve(ks);
+            _pivot = Camera.gameObject.transform.localPosition;
         }
 
         void Update()
@@ -60,7 +58,8 @@ namespace Assets.Scripts.Extensions
             var zoom = Math.Min(_animationDuration, _animationTime) / _animationDuration;
             var isLastAnimationFrame = Math.Abs(zoom - 1) < float.Epsilon;
 
-            if (_isInversed) zoom = 1 - zoom;
+            if (_isInversed) 
+                zoom = 1 - zoom;
 
             var targetTransform = Target.transform;
 
@@ -80,6 +79,13 @@ namespace Assets.Scripts.Extensions
             // Then subtract this offset based on the current camera rotation
             Vector3 targetPos = targetTransform.position - targetRot * offset;
 
+            // TODO this is hack to restore local position. It leads to jumpy behaviour.
+            // TODO fix it
+            if (_isInversed)
+                targetPos = new Vector3(Mathf.Max(targetPos.x, _pivot.x), 
+                                        Mathf.Max(targetPos.y, _pivot.y), 
+                                        Mathf.Max(targetPos.z, _pivot.z));
+
             if (Camera.orthographic)
                 Camera.orthographicSize = targetPos.y;
 
@@ -88,6 +94,7 @@ namespace Assets.Scripts.Extensions
 
             if (isLastAnimationFrame)
                 OnFinished();
+ 
         }
 
         private void OnFinished()
