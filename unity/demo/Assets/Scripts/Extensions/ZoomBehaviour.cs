@@ -19,6 +19,7 @@ namespace Assets.Scripts.Extensions
         private float _originalMove;
         private float _originalTurn;
         private float _originalRoll;
+        private float _originalSpinTurn;
 
         private int _levelOfDetails = 16;
 
@@ -32,6 +33,7 @@ namespace Assets.Scripts.Extensions
             _originalMove = _autoCam.m_MoveSpeed;
             _originalTurn = _autoCam.m_TurnSpeed;
             _originalRoll = _autoCam.m_RollSpeed;
+            _originalSpinTurn = _autoCam.m_SpinTurnLimit;
 
             var messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
 
@@ -52,13 +54,14 @@ namespace Assets.Scripts.Extensions
         void TweakMovementValues(bool isZoomOut)
         {
             const float speedMultiplier = 5;
-            const float autoCamMulitplier = 5;
+            const float autoCamMulitplier = 100;
 
             _character.m_MoveSpeedMultiplier = isZoomOut ? _originalSpeed * speedMultiplier : _originalSpeed;
 
             _autoCam.m_MoveSpeed = isZoomOut ? _originalMove * autoCamMulitplier : _originalMove;
             _autoCam.m_TurnSpeed = isZoomOut ? _originalTurn * autoCamMulitplier : _originalTurn;
             _autoCam.m_RollSpeed = isZoomOut ? _originalRoll * autoCamMulitplier : _originalRoll;
+            _autoCam.m_SpinTurnLimit = isZoomOut ? 0 : _originalSpinTurn;
         }
     }
 }
