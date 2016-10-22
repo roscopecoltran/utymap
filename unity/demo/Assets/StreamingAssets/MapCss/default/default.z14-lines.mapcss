@@ -4,6 +4,9 @@ canvas|z14 {
     drive-color-noise-freq: 0;
     drive-ele-noise-freq: 0;
     drive-color: gradient(#4d4d4d);
+    drive-texture-index: 0;
+    drive-texture-type: drive;
+    drive-texture-scale: 100;
 }
 
 way,relation|z14[kind_detail=tertiary],

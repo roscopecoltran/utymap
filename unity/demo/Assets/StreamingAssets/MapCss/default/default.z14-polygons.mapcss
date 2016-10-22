@@ -4,18 +4,27 @@ canvas|z14 {
     color-noise-freq: 0;
     ele-noise-freq: 0;
     color: gradient(#d4d4d4);
+    texture-index: 0;
+    texture-type: background;
+    texture-scale: 100;
 
     water-mesh-name: terrain_water;
     water-max-area: 0%;
     water-color-noise-freq: 0;
     water-ele-noise-freq: 0;
     water-color: gradient(#87cefa);
+    water-texture-index: 0;
+    water-texture-type: water;
+    water-texture-scale: 100;
 
     green-mesh-name: terrain_green;
     green-max-area: 0%;
     green-color-noise-freq: 0;
     green-ele-noise-freq: 0;
     green-color: gradient(#55ab2f);
+    green-texture-index: 0;
+    green-texture-type: grass;
+    green-texture-scale: 100;
 }
 
 area,relation|z14[kind=water],
