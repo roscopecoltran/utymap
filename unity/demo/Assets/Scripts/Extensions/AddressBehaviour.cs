@@ -32,8 +32,9 @@ namespace Assets.Scripts.Extensions
             _trace = ApplicationManager.Instance.GetService<ITrace>() as DebugConsoleTrace;
             if (_trace != null)
                 _trace.SetUIText(StatusText);
-           
-            StartCoroutine(RequestAddress());
+
+            if (AddressText != null)
+                StartCoroutine(RequestAddress());
         }
 
         IEnumerator RequestAddress()

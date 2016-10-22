@@ -16,7 +16,8 @@ namespace Assets.Scripts.Menu
         void Start()
         {
             _messageBus = ApplicationManager.Instance.GetService<IMessageBus>();
-            ZoomInButton.gameObject.SetActive(false);
+            if (ZoomInButton != null)
+                ZoomInButton.gameObject.SetActive(false);
         }
 
         public void OnBackClick()
