@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using Assets.Scripts.Console;
 using UnityEngine;
 using UnityEngine.UI;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Utils;
+using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Maps.Geocoding;
 using UtyRx;
 
@@ -15,16 +17,21 @@ namespace Assets.Scripts.Extensions
         public int UpdateFrequencyInSeconds = 20;
         public int DistanceThreshold = 75;
         public Text AddressText;
+        public Text StatusText;
 
         private IGeocoder _geoCoder;
         private GeoCoordinate _startCoordinate;
         private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        private DebugConsoleTrace _trace;
 
         void Start()
         {
             _startCoordinate = PositionConfiguration.StartPosition;
-
             _geoCoder = ApplicationManager.Instance.GetService<IGeocoder>();
+
+            _trace = ApplicationManager.Instance.GetService<ITrace>() as DebugConsoleTrace;
+            if (_trace != null)
+                _trace.SetUIText(StatusText);
            
             StartCoroutine(RequestAddress());
         }
@@ -44,6 +51,12 @@ namespace Assets.Scripts.Extensions
 
                 yield return new WaitForSeconds(UpdateFrequencyInSeconds);
             }
+        }
+
+        void OnDestroy()
+        {
+            if (_trace != null)
+                _trace.SetUIText(null);
         }
     }
 }

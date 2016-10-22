@@ -51,8 +51,8 @@ namespace Assets.Scripts.Extensions
 
         void TweakMovementValues(bool isZoomOut)
         {
-            const float speedMultiplier = 10;
-            const float autoCamMulitplier = 100;
+            const float speedMultiplier = 5;
+            const float autoCamMulitplier = 5;
 
             _character.m_MoveSpeedMultiplier = isZoomOut ? _originalSpeed * speedMultiplier : _originalSpeed;
 

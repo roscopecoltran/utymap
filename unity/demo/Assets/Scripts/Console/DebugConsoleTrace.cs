@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Text;
 using Assets.Scripts.Console.Utils;
+using UnityEngine;
+using UnityEngine.UI;
 using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyRx;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Console
@@ -9,6 +12,12 @@ namespace Assets.Scripts.Console
     public class DebugConsoleTrace : DefaultTrace
     {
         private DebugConsole _console;
+        private Text _uiText;
+
+        public void SetUIText(Text uiText)
+        {
+            _uiText = uiText;
+        }
 
         public void SetConsole(DebugConsole console)
         {
@@ -22,9 +31,11 @@ namespace Assets.Scripts.Console
         {
             var logMessage = ToLogMessage(type, category, message, exception);
 
-            // NOTE console can be null.
             if (_console != null)
                 _console.LogMessage(logMessage);
+
+            if (_uiText != null)
+                Scheduler.MainThread.Schedule(() => LogUiTextMessage(type, category, message, exception));
 
             switch (type)
             {
@@ -58,6 +69,27 @@ namespace Assets.Scripts.Console
                 default:
                     return ConsoleMessage.Debug(String.Format("[{0}] {1}: {2}", type, category, text));
             }
+        }
+
+        private void LogUiTextMessage(RecordType type, string category, string text, Exception exception)
+        {
+            switch (type)
+            {
+                case RecordType.Error:
+                    _uiText.color = Color.red;
+                    _uiText.text = String.Format("[{0}] {1}:{2}. Exception: {3}", type, category, text, exception);
+                    return;
+                case RecordType.Warn:
+                    _uiText.color = Color.yellow;
+                    break;
+                case RecordType.Info:
+                    _uiText.color = Color.blue;
+                    break;
+                default:
+                    _uiText.color = Color.white;
+                    break;
+            }
+            _uiText.text = String.Format("[{0}] {1}:{2}", type, category, text);
         }
     }
 }
