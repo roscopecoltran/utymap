@@ -10,25 +10,24 @@ namespace Assets.Scripts.Extensions
     /// </remarks>
     public class CameraAnimation : MonoBehaviour
     {
-        public Camera Camera;
-        public GameObject Target;
-        public float Distance = 400;
-
+        public GameObject Pivot;
         public event EventHandler Finished;
 
         // How camera pitch (i.e. rotation about x axis) should vary with zoom
         private AnimationCurve _pitchCurve;
         // How far the camera should be placed back along the chosen pitch based on zoom
         private AnimationCurve _distanceCurve;
+        private Transform _targetTransform;
 
+        private float _distance = 400;
+        private float _angle = 45;
         private float _animationTime = int.MaxValue;
         private float _animationDuration;
         private bool _isInversed;
 
-        private Vector3 _pivot;
-
-        public void Play(float duration, bool awayFromTarget)
+        public void Play(Transform targetTransform, float duration, bool awayFromTarget)
         {
+            _targetTransform = targetTransform;
             _animationTime = 0;
             _animationDuration = duration;
             _isInversed = !awayFromTarget;
@@ -36,16 +35,14 @@ namespace Assets.Scripts.Extensions
 
         void Start()
         {
-            _pitchCurve = AnimationCurve.EaseInOut(0.0f, 20.0f, 45.0f, 60.0f);
-
+            _pitchCurve = AnimationCurve.EaseInOut(0, Pivot.transform.rotation.eulerAngles.x, 1, _angle);
             Keyframe[] ks = new Keyframe[2];
-            ks[0] = new Keyframe(0, 15);
+            ks[0] = new Keyframe(0, Pivot.transform.position.y);
             ks[0].outTangent = 0;
-            ks[1] = new Keyframe(1, Distance);
+            ks[1] = new Keyframe(1, _distance);
             ks[1].inTangent = 90;
 
             _distanceCurve = new AnimationCurve(ks);
-            _pivot = Camera.gameObject.transform.localPosition;
         }
 
         void Update()
@@ -58,16 +55,14 @@ namespace Assets.Scripts.Extensions
             var zoom = Math.Min(_animationDuration, _animationTime) / _animationDuration;
             var isLastAnimationFrame = Math.Abs(zoom - 1) < float.Epsilon;
 
-            if (_isInversed) 
+            if (_isInversed)
                 zoom = 1 - zoom;
 
-            var targetTransform = Target.transform;
-
-            // Calculate the appropriate pitch (x rotation) for the camera based on current zoom       
+            // Calculate the appropriate pitch (x rotation) for the camera based on current zoom
             float targetRotX = _pitchCurve.Evaluate(zoom);
 
             // The desired yaw (y rotation) is to match that of the target object
-            float targetRotY = targetTransform.rotation.eulerAngles.y;
+            float targetRotY = _targetTransform.rotation.eulerAngles.y;
 
             // Create target rotation as quaternion
             // Set z to 0 as we don't want to roll the camera
@@ -77,24 +72,13 @@ namespace Assets.Scripts.Extensions
             Vector3 offset = Vector3.forward * _distanceCurve.Evaluate(zoom);
 
             // Then subtract this offset based on the current camera rotation
-            Vector3 targetPos = targetTransform.position - targetRot * offset;
+            Vector3 targetPos = _targetTransform.position - targetRot * offset;
 
-            // TODO this is hack to restore local position. It leads to jumpy behaviour.
-            // TODO fix it
-            if (_isInversed)
-                targetPos = new Vector3(Mathf.Max(targetPos.x, _pivot.x), 
-                                        Mathf.Max(targetPos.y, _pivot.y), 
-                                        Mathf.Max(targetPos.z, _pivot.z));
-
-            if (Camera.orthographic)
-                Camera.orthographicSize = targetPos.y;
-
-            Camera.transform.position = targetPos;
-            Camera.transform.rotation = targetRot;
+            Pivot.transform.position = targetPos;
+            Pivot.transform.rotation = targetRot;
 
             if (isLastAnimationFrame)
                 OnFinished();
- 
         }
 
         private void OnFinished()

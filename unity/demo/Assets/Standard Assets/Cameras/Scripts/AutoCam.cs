@@ -9,9 +9,9 @@ namespace UnityStandardAssets.Cameras
     [ExecuteInEditMode]
     public class AutoCam : PivotBasedCameraRig
     {
-        [SerializeField] private float m_MoveSpeed = 3; // How fast the rig will move to keep up with target's position
-        [SerializeField] private float m_TurnSpeed = 1; // How fast the rig will turn to keep up with target's rotation
-        [SerializeField] private float m_RollSpeed = 0.2f;// How fast the rig will roll (around Z axis) to match target's roll.
+        [SerializeField] public float m_MoveSpeed = 3; // How fast the rig will move to keep up with target's position
+        [SerializeField] public float m_TurnSpeed = 1; // How fast the rig will turn to keep up with target's rotation
+        [SerializeField] public float m_RollSpeed = 0.2f;// How fast the rig will roll (around Z axis) to match target's roll.
         [SerializeField] private bool m_FollowVelocity = false;// Whether the rig will rotate in the direction of the target's velocity.
         [SerializeField] private bool m_FollowTilt = true; // Whether the rig will tilt (around X axis) with the target.
         [SerializeField] private float m_SpinTurnLimit = 90;// The threshold beyond which the camera stops following the target's rotation. (used in situations where a car spins out, for example)
