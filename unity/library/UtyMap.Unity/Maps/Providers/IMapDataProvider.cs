@@ -1,4 +1,5 @@
-﻿using UtyMap.Unity.Core.Tiling;
+﻿using System.IO;
+using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
@@ -49,7 +50,7 @@ namespace UtyMap.Unity.Maps.Providers
                         {
                             if (!_fileSystemService.Exists(filePath))
                                 using (var stream = _fileSystemService.WriteStream(filePath))
-                                    stream.Write(bytes, 0, bytes.Length);
+                                    WriteBytes(stream, bytes);
                         }
                         observer.OnNext(filePath);
                         observer.OnCompleted();
@@ -57,6 +58,12 @@ namespace UtyMap.Unity.Maps.Providers
 
                 return Disposable.Empty;
             });
+        }
+
+        /// <summary> Writes bytes to file with preprocessing if necessary. </summary>
+        protected virtual void WriteBytes(Stream stream, byte[] bytes)
+        {
+            stream.Write(bytes, 0, bytes.Length);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UtyDepend;
 using UtyDepend.Config;
@@ -8,6 +9,7 @@ using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyMap.Unity.Infrastructure.Formats;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
@@ -34,6 +36,23 @@ namespace UtyMap.Unity.Maps.Providers
             var uri = String.Format(_mapDataServerUri, GetJsonPayload(tile.QuadKey), _mapDataApiKey);
 
             return Get(tile, uri, filePath);
+        }
+
+        /// <inheritdoc />
+        protected override void WriteBytes(Stream stream, byte[] bytes)
+        {
+            var content = Encoding.UTF8.GetString(bytes);
+            var json = JSON.Parse(content);
+            var heights = json["height"].AsArray;
+
+            StringBuilder sb = new StringBuilder(1024);
+            foreach (JSONNode jsonHeight in heights)
+                sb.AppendFormat("{0},", jsonHeight.Value);
+            sb.Remove(sb.Length - 1, 1);
+
+            var intBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            
+            stream.Write(intBytes, 0, intBytes.Length);
         }
 
         private string GetJsonPayload(QuadKey quadkey)

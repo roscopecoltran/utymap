@@ -82,11 +82,21 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         }
 
         [Test]
+        public void CanGetElevationFilePath()
+        {
+            var filePath = _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
+
+            Assert.AreEqual(Path.Combine("Cache", "1202102332220103.ele"), filePath);
+        }
+
+        [Test]
         public void CanWriteCorrectEleData()
         {
+            var expectedBytes = Encoding.UTF8.GetBytes("43,38,37,37");
+
             _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
-            _writeStream.Verify(ws => ws.Write(_responseBytes, 0, _responseBytes.Length));
+            _writeStream.Verify(ws => ws.Write(expectedBytes, 0, expectedBytes.Length));
         }
     }
 }
