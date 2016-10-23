@@ -68,7 +68,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanRequestPolyline()
         {
-            _eleProvider.Get(_tile).Wait();
+            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
             _networkService.Verify(ns => ns.GetAndGetBytes("elevation.mapzen.com/height?json={\"range\":false,\"encoded_polyline\":\"kzcecBqdapX?sjDmgBrjD?sjD\"}&api_key=ggg", It.IsAny<Dictionary<string, string>>()));
         }
@@ -76,7 +76,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanCreateDataFile()
         {
-            _eleProvider.Get(_tile).Wait();
+            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
             _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", "1202102332220103.ele")));
         }
@@ -84,7 +84,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanWriteCorrectEleData()
         {
-            _eleProvider.Get(_tile).Wait();
+            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
             _writeStream.Verify(ws => ws.Write(_responseBytes, 0, _responseBytes.Length));
         }
