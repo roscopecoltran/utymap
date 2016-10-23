@@ -27,13 +27,14 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         private Mock<Stream> _writeStream;
         
         private Tile _tile;
-        private byte[] _responseBytes = new byte[8];
+        private byte[] _responseBytes;
 
         private MapzenElevationDataProvider _eleProvider;
 
         [TestFixtureSetUp]
         public void SetUp()
         {
+            //{"encoded_polyline":"kzcecBqdapX?sjDmgBrjD?sjD","height":[43,38,37,37]}
             _fileSystemService = new Mock<IFileSystemService>();
             _networkService = new Mock<INetworkService>();
             _trace = new Mock<ITrace>();
@@ -46,6 +47,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
             _config.Setup(c => c.GetString("data/cache", It.IsAny<string>())).Returns("Cache");
 
             _writeStream = new Mock<Stream>();
+            _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjDmgBrjD?sjD\",\"height\":[43,38,37,37]}");
 
             _tile = new Tile(GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 16), new Stylesheet(""), 
                 new CartesianProjection(TestHelper.WorldZeroPoint));
@@ -76,7 +78,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         {
             _eleProvider.Get(_tile).Wait();
 
-            _fileSystemService.Verify(fs => fs.WriteStream("Cache\\1202102332220103.ele"));
+            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", "1202102332220103.ele")));
         }
 
         [Test]
