@@ -54,6 +54,7 @@ add_executable(${TEST}
         formats/osm/json/OsmJsonParserTest.cpp
         formats/osm/pbf/OsmPbfParserTest.cpp
         formats/osm/xml/OsmXmlParserTest.cpp
+        heightmap/GridElevationProviderTest.cpp
         heightmap/SrtmElevationProviderTest.cpp
         index/ElementStoreTest.cpp
         index/InMemoryElementStoreTest.cpp

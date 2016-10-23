@@ -59,6 +59,7 @@ set(HEADER_FILES
         formats/shape/ShapeDataVisitor.hpp
         heightmap/ElevationProvider.hpp
         heightmap/FlatElevationProvider.hpp
+        heightmap/GridElevationProvider.hpp
         heightmap/SrtmElevationProvider.hpp
         index/ElementGeometryClipper.hpp
         index/ElementStore.hpp
