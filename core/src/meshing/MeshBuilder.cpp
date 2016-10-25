@@ -17,6 +17,7 @@ class MeshBuilder::MeshBuilderImpl
 public:
 
     MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
+        quadKey_(quadKey),
         bbox_(GeoUtils::quadKeyToBoundingBox(quadKey)), 
         geoWidth_(bbox_.width()),
         geoHeight_(bbox_.height()),
@@ -94,8 +95,8 @@ public:
 
     void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
-        double ele1 = eleProvider_.getElevation(p1.y, p1.x);
-        double ele2 = eleProvider_.getElevation(p2.y, p2.x);
+        double ele1 = eleProvider_.getElevation(quadKey_, p1.y, p1.x);
+        double ele2 = eleProvider_.getElevation(quadKey_, p2.y, p2.x);
 
         ele1 += NoiseUtils::perlin2D(p1.x, p1.y, geometryOptions.eleNoiseFreq);
         ele2 += NoiseUtils::perlin2D(p2.x, p2.y, geometryOptions.eleNoiseFreq);
@@ -203,7 +204,7 @@ private:
             double y = io->pointlist[i * 2 + 1];
             double ele = geometryOptions.heightOffset + (geometryOptions.elevation > std::numeric_limits<double>::lowest()
                 ? geometryOptions.elevation
-                : eleProvider_.getElevation(y, x));
+                : eleProvider_.getElevation(quadKey_, y, x));
 
             // do no apply noise on boundaries
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
@@ -267,6 +268,7 @@ private:
         mesh.uvs.reserve(mesh.uvs.size() + pointCount * 2);
     }
 
+    const utymap::QuadKey quadKey_;
     const utymap::BoundingBox bbox_;
     double geoWidth_;
     double geoHeight_;

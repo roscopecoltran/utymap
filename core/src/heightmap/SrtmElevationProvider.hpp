@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <iomanip>
+#include <QuadKey.hpp>
 
 namespace utymap { namespace heightmap {
 
@@ -84,12 +85,17 @@ public:
             }
     }
 
-    double getElevation(const utymap::GeoCoordinate& coordinate) const override 
+    void preload(const utymap::QuadKey&) override
+    {
+        throw std::domain_error("Not implemented.");
+    }
+
+    double getElevation(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& coordinate) const override
     {
         return getElevationImpl(coordinate.latitude, coordinate.longitude); 
     }
 
-    double getElevation(double latitude, double longitude) const override
+    double getElevation(const utymap::QuadKey& quadKey, double latitude, double longitude) const override
     {
         return getElevationImpl(latitude, longitude);
     }
@@ -107,8 +113,8 @@ private:
         auto cell = cells_.find(HgtCellKey(latDec, lonDec))->second;
 
         // load tile
-        //X coresponds to x/y values,
-        //everything easter/norhter (< S) is rounded to X.
+        //X corresponds to x/y values,
+        //everything easter/norther (< S) is rounded to X.
         //
         //  y   ^
         //  3   |       |   S
@@ -146,7 +152,6 @@ private:
     static int readPx(CellPtr cell, int y, int x)
     {
         int pos = cell->offset + 2 * (x - cell->totalPx*y);
-        // TODO ensure that it works on all platforms
         return *((cell->data + pos)) << 8 |
                *((cell->data + pos + 1));
     }

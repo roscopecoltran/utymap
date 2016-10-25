@@ -272,7 +272,7 @@ private:
 
         double minHeight = style.getValue(MinHeightKey);
 
-        double elevation = context_.eleProvider.getElevation(geoCoordinate) + minHeight;
+        double elevation = context_.eleProvider.getElevation(context_.quadKey, geoCoordinate) + minHeight;
 
         height -= minHeight;
 

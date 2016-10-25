@@ -47,7 +47,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
     
     auto generator = createGenerator(context_, mesh, style);
 
-    double elevation = context_.eleProvider.getElevation(node.coordinate);
+    double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
     generator->setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude));
     generator->generate();
 
@@ -76,7 +76,7 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
         for (int j = 0; j < treeCount; ++j) {
             GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / treeCount);
             
-            double elevation = context_.eleProvider.getElevation(position);
+            double elevation = context_.eleProvider.getElevation(context_.quadKey, position);
             utymap::utils::copyMesh(Vector3(position.longitude, elevation, position.latitude), treeMesh, newMesh);
         }
     }

@@ -12,9 +12,17 @@ public:
 
     void preload(const utymap::BoundingBox&) override {}
 
-    double getElevation(const utymap::GeoCoordinate&) const override { return 0; }
+    void preload(const utymap::QuadKey&) override {}
 
-    double getElevation(double, double) const override { return 0; };
+    double getElevation(const utymap::QuadKey&, const utymap::GeoCoordinate&) const override 
+    { 
+        return 0; 
+    }
+
+    double getElevation(const utymap::QuadKey&, double, double) const override 
+    { 
+        return 0; 
+    };
 };
 
 }}

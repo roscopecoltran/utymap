@@ -72,7 +72,7 @@ void BarrierBuilder::buildFromPolygon(const Way& way, const Style& style, Polygo
 {
     double height = style.getValue(HeightKey);
     double minHeight = style.getValue(MinHeightKey);
-    double elevation = context_.eleProvider.getElevation(way.coordinates[0]) + minHeight;
+    double elevation = context_.eleProvider.getElevation(context_.quadKey, way.coordinates[0]) + minHeight;
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
 

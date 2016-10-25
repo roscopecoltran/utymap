@@ -37,7 +37,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
         centroidX /= 3;
         centroidY /= 3;
 
-        double elevation = builderContext.eleProvider.getElevation(centroidX, centroidY);
+        double elevation = builderContext.eleProvider.getElevation(builderContext.quadKey, centroidX, centroidY);
 
         utymap::utils::copyMesh(Vector3(centroidX, elevation, centroidY), treeMesh, forestMesh);
     }

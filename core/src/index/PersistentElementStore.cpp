@@ -294,7 +294,7 @@ public:
 
 private:
     /// Gets full file path for given quadkey
-    inline std::string getFilePath(const QuadKey& quadKey, const std::string& extension) const
+    std::string getFilePath(const QuadKey& quadKey, const std::string& extension) const
     {
         std::stringstream ss;
         ss << dataPath_ << quadKey.levelOfDetail << "/" << GeoUtils::quadKeyToString(quadKey) << extension;
@@ -302,7 +302,7 @@ private:
     }
 
     /// Ensures that open/close function is called on files.
-    inline void ensureFiles(const QuadKey& quadKey)
+    void ensureFiles(const QuadKey& quadKey)
     {
         if (quadKey == currentQuadKey_)
             return;
@@ -316,7 +316,7 @@ private:
         currentQuadKey_ = quadKey;
     }
 
-    inline void closeFiles()
+    void closeFiles()
     {
         if (dataFile_.good()) dataFile_.close();
         if (indexFile_.good()) indexFile_.close();
