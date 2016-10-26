@@ -12,11 +12,10 @@
 #include <map>
 #include <memory>
 #include <iomanip>
-#include <QuadKey.hpp>
 
 namespace utymap { namespace heightmap {
 
-// Provides the way to get elevation for given location from SRTM data.
+/// Provides the way to get elevation for given location from SRTM data.
 class SrtmElevationProvider final : public ElevationProvider
 {
     struct HgtCellKey

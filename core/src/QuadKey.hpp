@@ -6,6 +6,20 @@ namespace utymap {
 /// Represents quadkey: a node of quadtree
 struct QuadKey final
 {
+    struct Comparator
+    {
+        bool operator() (const QuadKey& lhs, const QuadKey& rhs) const
+        {
+            if (lhs.levelOfDetail == rhs.levelOfDetail) {
+                if (lhs.tileX == rhs.tileX) {
+                    return lhs.tileY < rhs.tileY;
+                }
+                return lhs.tileX < rhs.tileX;
+            }
+            return lhs.levelOfDetail < rhs.levelOfDetail;
+        }
+    };
+
     /// Level of details (zoom).
     int levelOfDetail;
     /// Tile x

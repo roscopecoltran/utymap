@@ -65,10 +65,11 @@ private:
             return;
 
         std::stringstream ss(style.get(builderKeyId_).value());
+        std::string name;
         while (ss.good()) {
-            std::string name;
             getline(ss, name, ',');
             element.accept(getBuilder(name));
+            name.clear();
         }
     }
 

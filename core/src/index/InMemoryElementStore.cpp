@@ -12,22 +12,8 @@ using namespace utymap::entities;
 using namespace utymap::mapcss;
 
 namespace {
-    struct QuadKeyComparator
-    {
-        bool operator() (const QuadKey& lhs, const QuadKey& rhs) const
-        {
-            if (lhs.levelOfDetail == rhs.levelOfDetail) {
-                if (lhs.tileX == rhs.tileX) {
-                    return lhs.tileY < rhs.tileY;
-                }
-                return lhs.tileX < rhs.tileX;
-            }
-            return lhs.levelOfDetail < rhs.levelOfDetail;
-        }
-    };
-
     typedef std::vector<std::shared_ptr<Element>> Elements;
-    typedef std::map<QuadKey, Elements, QuadKeyComparator> ElementMap;
+    typedef std::map<QuadKey, Elements, QuadKey::Comparator> ElementMap;
 
     class ElementMapVisitor : public ElementVisitor
     {
