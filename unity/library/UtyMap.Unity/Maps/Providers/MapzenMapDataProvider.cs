@@ -39,7 +39,7 @@ namespace UtyMap.Unity.Maps.Providers
         public void Configure(IConfigSection configSection)
         {
             _mapDataServerUri = configSection.GetString(@"data/mapzen/server", null);
-            _mapDataFormatExtension = "." + configSection.GetString(@"data/mapzen/format", "xml");
+            _mapDataFormatExtension = "." + configSection.GetString(@"data/mapzen/format", "json");
             _mapDataApiKey = configSection.GetString(@"data/mapzen/apikey", null);
             _mapDataLayers = configSection.GetString(@"data/mapzen/layers", null);
 
