@@ -62,7 +62,7 @@ private:
         char title[12];
         int fieldCount = DBFGetFieldCount(dbfFile);
         Tags tags;
-        tags.reserve(fieldCount);
+        tags.reserve(static_cast<std::size_t>(fieldCount));
         for (int i = 0; i < fieldCount; i++) {
             if (DBFIsAttributeNULL(dbfFile, k, i))
                 continue;
@@ -137,7 +137,7 @@ private:
         }
 
         std::vector<utymap::GeoCoordinate> coordinates;
-        coordinates.reserve(shape.nVertices);
+        coordinates.reserve(static_cast<std::size_t>(shape.nVertices));
         for (int i = 0; i < shape.nVertices; ++i) {
             coordinates.push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
@@ -148,23 +148,22 @@ private:
     void visitPolygon(const SHPObject& shape, Tags& tags, Visitor& visitor) const
     {
         PolygonMembers members;
-        members.reserve(shape.nParts);
-        std::vector<GeoCoordinate>* coordinates;
-        for (int i = 0, partNum = 0; i < shape.nVertices; ++i) {
+        members.reserve(static_cast<std::size_t>(shape.nParts));
+        std::size_t coordIndex = 0;
+        for (std::size_t i = 0, partNum = 0; i < shape.nVertices; ++i) {
             int startIndex = shape.panPartStart[partNum];
             if (partNum < shape.nParts && startIndex == i) {
+                coordIndex = static_cast<std::size_t>(partNum);
                 members.push_back(PolygonMember());
                 // TODO check inner/outer? Check whether this flag is true for closed polygon only
                 members[partNum].isRing = shape.panPartType[partNum] == SHPP_RING;
-                coordinates = &members[partNum].coordinates;
                 int endIndex = partNum == shape.nParts - 1
                     ? shape.nVertices
                     : shape.panPartStart[partNum + 1];
-                coordinates->reserve(endIndex - startIndex);
-                partNum++;
+                members[coordIndex].coordinates.reserve(static_cast<std::size_t>(endIndex - startIndex));
+                ++partNum;
             }
-            // FIXME: coordinates might be non-initialized
-            coordinates->push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
+            members[coordIndex].coordinates.push_back(utymap::GeoCoordinate(shape.padfY[i], shape.padfX[i]));
         }
         visitor.visitRelation(members, tags);
     }

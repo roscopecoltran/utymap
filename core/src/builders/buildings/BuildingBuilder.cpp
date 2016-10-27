@@ -175,7 +175,8 @@ class BuildingBuilder::BuildingBuilderImpl : public ElementBuilder
 {
 public:
     explicit BuildingBuilderImpl(const utymap::builders::BuilderContext& context) :
-        ElementBuilder(context)
+        ElementBuilder(context),
+        id_(0)
     {
     }
 

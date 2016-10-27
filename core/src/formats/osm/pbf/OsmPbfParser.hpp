@@ -149,7 +149,7 @@ private:
                 GeoCoordinate coordinate;
                 coordinate.latitude = 0.000000001 * (primblock.lat_offset() + (primblock.granularity() * n.lat()));
                 coordinate.longitude = 0.000000001 * (primblock.lon_offset() + (primblock.granularity() * n.lon()));
-                uint64_t id = n.id();
+                std::uint64_t id = n.id();
                 Tags tags;
                 setTags(n, primblock, tags);
                 visitor.visitNode(id, coordinate, tags);
@@ -238,7 +238,7 @@ private:
     }
 
     template<typename T>
-    void setTags(T object, const OSMPBF::PrimitiveBlock& primblock, Tags& tags)
+    void setTags(const T& object, const OSMPBF::PrimitiveBlock& primblock, Tags& tags)
     {
         tags.reserve(object.keys_size());
         for (int i = 0; i < object.keys_size(); ++i) {

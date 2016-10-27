@@ -72,7 +72,7 @@ inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& poly
         centroidY += polygon.points[i+1];
     }
 
-    auto count = static_cast<double>((range.second - range.first) / 2);
+    auto count = (range.second - range.first) / 2.;
     centroidX /= count;
     centroidY /= count;
 
