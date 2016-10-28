@@ -72,18 +72,16 @@ public:
 
 private:
 
-    inline double ceil(double value) const
+    double ceil(double value) const
     {
         return std::ceil(value / step_) * step_;
     }
 
     void zeroSlope(Point start, Point end, Points& points) const
     {
-        if ((start.x - end.x) == 0)
-        {
+        if ((start.x - end.x) == 0) {
             bool isBottomTop = start.y < end.y;
-            if (!isBottomTop)
-            {
+            if (!isBottomTop) {
                 Point tmp = start;
                 start = end;
                 end = tmp;
@@ -99,11 +97,9 @@ private:
             else
                 std::sort(points.begin(), points.end(), sort_reverse_y());
         }
-        else
-        {
+        else {
             bool isLeftRight = start.x < end.x;
-            if (!isLeftRight)
-            {
+            if (!isLeftRight) {
                 Point tmp = start;
                 start = end;
                 end = tmp;
@@ -127,8 +123,7 @@ private:
         double b = start.y - slope * start.x;
 
         bool isLeftRight = start.x < end.x;
-        if (!isLeftRight)
-        {
+        if (!isLeftRight) {
             Point tmp = start;
             start = end;
             end = tmp;
@@ -140,8 +135,7 @@ private:
             points.push_back(Point(x, slope * x + b));
 
         bool isBottomTop = start.y < end.y;
-        if (!isBottomTop)
-        {
+        if (!isBottomTop) {
             Point tmp = start;
             start = end;
             end = tmp;
