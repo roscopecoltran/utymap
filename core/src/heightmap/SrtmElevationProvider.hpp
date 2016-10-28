@@ -1,9 +1,9 @@
 #ifndef HEIGHTMAP_SRTMELEVATIONPROVIDER_HPP_DEFINED
 #define HEIGHTMAP_SRTMELEVATIONPROVIDER_HPP_DEFINED
 
+#include "BoundingBox.hpp"
 #include "heightmap/ElevationProvider.hpp"
 
-#include <cstdint>
 #include <cmath>
 #include <fstream>
 #include <sstream>
@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <iomanip>
+#include <vector>
 
 namespace utymap { namespace heightmap {
 
@@ -34,29 +35,21 @@ class SrtmElevationProvider final : public ElevationProvider
     {
         int totalPx, secondsPerPx;
         int offset;
-        char* data;
         std::size_t size;
+        std::vector<char> data;
        
-        HgtCell(int totalPx, int secondsPerPx, char* data, std::size_t size) :
-            totalPx(totalPx), secondsPerPx(secondsPerPx), 
-            offset((totalPx * totalPx - totalPx) * 2), data(data), size(size)
+        HgtCell(int totalPx, int secondsPerPx, std::vector<char>& data, std::size_t size) :
+            totalPx(totalPx), secondsPerPx(secondsPerPx),  offset((totalPx * totalPx - totalPx) * 2), size(size),
+            data(std::move(data))
         {
         }
     };
-
-    typedef std::shared_ptr<HgtCell> CellPtr;
 
 public:
 
     SrtmElevationProvider(std::string dataDirectory, int maxCacheSize = 4) :
         dataDirectory_(dataDirectory), maxCacheSize_(maxCacheSize)
     {
-    }
-
-    ~SrtmElevationProvider()
-    {
-        for (const auto& pair : cells_)
-            delete pair.second->data;
     }
 
     void preload(const utymap::BoundingBox& bbox) override
@@ -74,19 +67,17 @@ public:
             for (int i = 0; i <= lonDiff; i++) {
                 HgtCellKey cellKey(minLat + j, minLon + i);
 
-                if (cells_.find(cellKey) != cells_.end()) 
+                if (cells_.find(cellKey) != cells_.end())
                     continue;
 
                 std::string path = getFilePath(cellKey);
-                CellPtr cell = readCell(path);
-                // TODO limit loaded cells.
-                cells_[cellKey] = cell;
+                HgtCell cell = readCell(path);
+                cells_.emplace(cellKey, readCell(path));
             }
     }
 
     void preload(const utymap::QuadKey&) override
     {
-        throw std::domain_error("Not implemented.");
     }
 
     double getElevation(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& coordinate) const override
@@ -123,8 +114,8 @@ private:
         // (sec)    0        3   x  (lon)
 
         //both values are [0; totalPx - 1] (totalPx reserved for interpolating)
-        int y = static_cast<int>(secondsLat / cell->secondsPerPx);
-        int x = static_cast<int>(secondsLon / cell->secondsPerPx);
+        int y = static_cast<int>(secondsLat / cell.secondsPerPx);
+        int x = static_cast<int>(secondsLon / cell.secondsPerPx);
 
         //get norther and easter points
         int height2 = readPx(cell, y, x);
@@ -133,8 +124,8 @@ private:
         int height1 = readPx(cell, y + 1, x + 1);
 
         //ratio where X lays
-        double dy = std::fmod(secondsLat, cell->secondsPerPx) / cell->secondsPerPx;
-        double dx = std::fmod(secondsLon, cell->secondsPerPx) / cell->secondsPerPx;
+        double dy = std::fmod(secondsLat, cell.secondsPerPx) / cell.secondsPerPx;
+        double dx = std::fmod(secondsLon, cell.secondsPerPx) / cell.secondsPerPx;
 
         // Bilinear interpolation
         // h0------------h1
@@ -148,14 +139,13 @@ private:
         return height0*dy*(1 - dx) + height1*dy*(dx)+height2*(1 - dy)*(1 - dx) + height3*(1 - dy)*dx;
     }
 
-    static int readPx(CellPtr cell, int y, int x)
+    static int readPx(HgtCell& cell, int y, int x)
     {
-        int pos = cell->offset + 2 * (x - cell->totalPx*y);
-        return *((cell->data + pos)) << 8 |
-               *((cell->data + pos + 1));
+        int pos = cell.offset + 2 * (x - cell.totalPx*y);
+        return (cell.data[pos]) << 8 | (cell.data[pos + 1]);
     }
 
-   static CellPtr readCell(const std::string& path)
+    static HgtCell readCell(const std::string& path)
     {
         std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
         file.seekg(0, std::ios::end);
@@ -176,12 +166,12 @@ private:
                 throw std::domain_error(std::string("Cannot load srtm file:") + path);
         }
 
-        char* data = new char[size];
         file.seekg(0, std::ios::beg);
-        file.read(data, size);
-        file.close();
 
-        return std::make_shared<HgtCell>(totalPx, secondsPerPx, data, size);
+        std::vector<char> data((std::istreambuf_iterator<char>(file)),
+                               (std::istreambuf_iterator<char>()));
+
+        return HgtCell(totalPx, secondsPerPx, data, size);
     }
 
     std::string getFilePath(const HgtCellKey& key) const
@@ -197,7 +187,7 @@ private:
         return stream.str();
     }
 
-    std::map<HgtCellKey, CellPtr> cells_;
+    std::map<HgtCellKey, HgtCell> cells_;
     std::string dataDirectory_;
     int maxCacheSize_;
 };
