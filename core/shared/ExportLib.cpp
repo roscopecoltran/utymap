@@ -145,7 +145,8 @@ extern "C"
                                 OnError* errorCallback)                  // completion callback
     {
         utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
-        applicationPtr->loadQuadKey(styleFile, quadKey, meshCallback, elementCallback, errorCallback);
+        applicationPtr->loadQuadKey(styleFile, quadKey, Application::ElevationDataType::Flat,
+            meshCallback, elementCallback, errorCallback);
     }
 
     /// Checks whether there is data for given quadkey

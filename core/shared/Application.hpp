@@ -11,6 +11,7 @@
 #include "builders/poi/TreeBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
+#include "heightmap/GridElevationProvider.hpp"
 #include "heightmap/SrtmElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
@@ -19,7 +20,6 @@
 #include "mapcss/StyleSheet.hpp"
 #include "meshing/MeshTypes.hpp"
 #include "utils/CoreUtils.hpp"
-#include "utils/GeoUtils.hpp"
 
 #include "Callbacks.hpp"
 #include "ExportElementVisitor.hpp"
@@ -33,15 +33,22 @@
 /// Exposes API for external usage.
 class Application
 {
-    const int SrtmElevationLodStart = 42; // NOTE: disable for initial MVP
 public:
+
+    enum class ElevationDataType
+    {
+        Flat,
+        Srtm,
+        Grid
+    };
 
     /// Composes object graph.
     Application(const char* stringPath, 
-                const char* elePath, 
+                const char* elePath,
                 OnError* errorCallback) :
-        stringTable_(stringPath), geoStore_(stringTable_), flatEleProvider_(),
-        srtmEleProvider_(elePath), quadKeyBuilder_(geoStore_, stringTable_)
+        stringTable_(stringPath), geoStore_(stringTable_), 
+        flatEleProvider_(), srtmEleProvider_(elePath), gridEleProvider_(elePath),
+        quadKeyBuilder_(geoStore_, stringTable_)
     {
         registerDefaultBuilders();
     }
@@ -121,6 +128,7 @@ public:
     /// Loads given quadKey.
     void loadQuadKey(const char* styleFile, 
                      const utymap::QuadKey& quadKey, 
+                     const ElevationDataType& eleDataType,
                      OnMeshBuilt* meshCallback,
                      OnElementLoaded* elementCallback, 
                      OnError* errorCallback)
@@ -128,7 +136,7 @@ public:
         safeExecute([&]() {
             auto& styleProvider = getStyleProvider(styleFile);
             ExportElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-            quadKeyBuilder_.build(quadKey, styleProvider, getElevationProvider(quadKey),
+            quadKeyBuilder_.build(quadKey, styleProvider, getElevationProvider(quadKey, eleDataType),
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
@@ -153,8 +161,7 @@ public:
 
 private:
 
-    static void safeExecute(const std::function<void()>& action, 
-                     OnError* errorCallback)
+    static void safeExecute(const std::function<void()>& action,  OnError* errorCallback)
     {
         try {
             action();
@@ -164,11 +171,18 @@ private:
         }
     }
 
-    utymap::heightmap::ElevationProvider& getElevationProvider(const utymap::QuadKey& quadKey)
+    const utymap::heightmap::ElevationProvider& getElevationProvider(const utymap::QuadKey& quadKey,
+                                                                     const ElevationDataType& eleDataType) const
     {
-        return quadKey.levelOfDetail <= SrtmElevationLodStart
-            ? flatEleProvider_
-            : static_cast<utymap::heightmap::ElevationProvider&>(srtmEleProvider_);
+        switch (eleDataType)
+        {
+            case ElevationDataType::Flat:
+                return flatEleProvider_;
+            case ElevationDataType::Srtm:
+                return srtmEleProvider_;
+            default:
+                return gridEleProvider_;
+        }
     }
 
     const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& stylePath)
@@ -217,6 +231,7 @@ private:
 
     utymap::heightmap::FlatElevationProvider flatEleProvider_;
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
+    utymap::heightmap::GridElevationProvider gridEleProvider_;
 
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
     std::unordered_map<std::string, std::unique_ptr<const utymap::mapcss::StyleProvider>> styleProviders_;
