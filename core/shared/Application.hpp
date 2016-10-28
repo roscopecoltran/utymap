@@ -64,12 +64,6 @@ public:
         geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::PersistentElementStore>(dataPath, stringTable_));
     }
 
-    /// Preloads elevation data. Not thread safe.
-    void preloadElevation(const utymap::QuadKey& quadKey)
-    {
-        getElevationProvider(quadKey).preload(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey));
-    }
-
     /// Adds data to store.
     void addToStore(const char* key, 
                     const char* styleFile, 

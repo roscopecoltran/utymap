@@ -3,6 +3,7 @@
 
 #include "BoundingBox.hpp"
 #include "heightmap/ElevationProvider.hpp"
+#include "utils/GeoUtils.hpp"
 
 #include <cmath>
 #include <fstream>
@@ -11,6 +12,7 @@
 #include <stdexcept>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <iomanip>
 #include <vector>
 
@@ -33,13 +35,13 @@ class SrtmElevationProvider final : public ElevationProvider
 
     struct HgtCell
     {
-        int totalPx, secondsPerPx;
-        int offset;
-        std::size_t size;
+        int totalPx, secondsPerPx, offset;
         std::vector<char> data;
        
-        HgtCell(int totalPx, int secondsPerPx, std::vector<char>& data, std::size_t size) :
-            totalPx(totalPx), secondsPerPx(secondsPerPx),  offset((totalPx * totalPx - totalPx) * 2), size(size),
+        HgtCell(int totalPx, int secondsPerPx, std::vector<char>& data) :
+            totalPx(totalPx),
+            secondsPerPx(secondsPerPx),
+            offset((totalPx * totalPx - totalPx) * 2),
             data(std::move(data))
         {
         }
@@ -52,11 +54,28 @@ public:
     {
     }
 
-    void preload(const utymap::BoundingBox& bbox) override
+    double getElevation(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& coordinate) const override
     {
+        return getElevationImpl(quadKey, coordinate.latitude, coordinate.longitude);
+    }
+
+    double getElevation(const utymap::QuadKey& quadKey, double latitude, double longitude) const override
+    {
+        return getElevationImpl(quadKey, latitude, longitude);
+    }
+
+private:
+
+    void preload(const utymap::QuadKey& quadKey, HgtCellKey& hgtCellKey) const
+    {
+        std::lock_guard<std::mutex> lock(lock_);
+
+        if (cells_.find(hgtCellKey) != cells_.end())
+            return;
+
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
         int minLat = static_cast<int>(bbox.minPoint.latitude);
         int minLon = static_cast<int>(bbox.minPoint.longitude);
-
         int maxLat = static_cast<int>(bbox.maxPoint.latitude);
         int maxLon = static_cast<int>(bbox.maxPoint.longitude);
 
@@ -76,23 +95,7 @@ public:
             }
     }
 
-    void preload(const utymap::QuadKey&) override
-    {
-    }
-
-    double getElevation(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& coordinate) const override
-    {
-        return getElevationImpl(coordinate.latitude, coordinate.longitude); 
-    }
-
-    double getElevation(const utymap::QuadKey& quadKey, double latitude, double longitude) const override
-    {
-        return getElevationImpl(latitude, longitude);
-    }
-
-private:
-
-    double getElevationImpl(double latitude, double longitude) const
+    double getElevationImpl(const utymap::QuadKey& quadKey, double latitude, double longitude) const
     {
         int latDec = static_cast<int>(latitude);
         int lonDec = static_cast<int>(longitude);
@@ -100,7 +103,14 @@ private:
         double secondsLat = (latitude - latDec) * 3600;
         double secondsLon = (longitude - lonDec) * 3600;
 
-        auto cell = cells_.find(HgtCellKey(latDec, lonDec))->second;
+        HgtCellKey hgtCellKey(latDec, lonDec);
+        auto cellPtr = cells_.find(hgtCellKey);
+        if (cellPtr == cells_.end()) {
+            preload(quadKey, hgtCellKey);
+            cellPtr = cells_.find(hgtCellKey);
+        }
+
+        const auto& cell = cellPtr->second;
 
         // load tile
         //X corresponds to x/y values,
@@ -139,7 +149,7 @@ private:
         return height0*dy*(1 - dx) + height1*dy*(dx)+height2*(1 - dy)*(1 - dx) + height3*(1 - dy)*dx;
     }
 
-    static int readPx(HgtCell& cell, int y, int x)
+    static int readPx(const HgtCell& cell, int y, int x)
     {
         int pos = cell.offset + 2 * (x - cell.totalPx*y);
         return (cell.data[pos]) << 8 | (cell.data[pos + 1]);
@@ -171,7 +181,7 @@ private:
         std::vector<char> data((std::istreambuf_iterator<char>(file)),
                                (std::istreambuf_iterator<char>()));
 
-        return HgtCell(totalPx, secondsPerPx, data, size);
+        return HgtCell(totalPx, secondsPerPx, data);
     }
 
     std::string getFilePath(const HgtCellKey& key) const
@@ -187,7 +197,8 @@ private:
         return stream.str();
     }
 
-    std::map<HgtCellKey, HgtCell> cells_;
+    mutable std::map<HgtCellKey, HgtCell> cells_;
+    mutable std::mutex lock_;
     std::string dataDirectory_;
     int maxCacheSize_;
 };

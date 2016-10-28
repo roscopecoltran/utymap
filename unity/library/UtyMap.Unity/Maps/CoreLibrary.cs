@@ -48,13 +48,6 @@ namespace UtyMap.Unity.Maps
             }
         }
 
-        /// <summary> Preloads elevation data for given quadkey. </summary>
-        /// <param name="quadKey">Quadkey.</param>
-        public static void PreloadElevation(QuadKey quadKey)
-        {
-            preloadElevation(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
-        }
-
         /// <summary>
         ///     Adds map data to in-memory storage to specific level of detail range.
         ///     Supported formats: shapefile, osm xml, osm pbf.
@@ -187,9 +180,6 @@ namespace UtyMap.Unity.Maps
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler);
-
-         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
-        private static extern void preloadElevation(int tileX, int tileY, int levelOfDetails);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void cleanup();

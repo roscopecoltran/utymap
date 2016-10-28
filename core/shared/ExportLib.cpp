@@ -32,14 +32,6 @@ extern "C"
         applicationPtr->registerStylesheet(path);
     }
 
-    /// Preloads elevation data.
-    void EXPORT_API preloadElevation(int tileX,        // tile x
-                                     int tileY,        // tile y
-                                     int levelOfDetail) // level of detail
-    {
-        applicationPtr->preloadElevation(utymap::QuadKey(levelOfDetail, tileX, tileY));
-    }
-
     /// Registers new in-memory store.
     void EXPORT_API registerInMemoryStore(const char* key)
     {

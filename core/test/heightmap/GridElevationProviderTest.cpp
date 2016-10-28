@@ -19,7 +19,6 @@ namespace {
             bbox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
             eleProvider(TEST_ELEVATION_DIRECTORY)
         {
-            eleProvider.preload(quadKey);
         }
 
         QuadKey quadKey;

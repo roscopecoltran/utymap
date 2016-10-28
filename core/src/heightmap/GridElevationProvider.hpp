@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <map>
+#include <mutex>
 #include <vector>
 
 namespace utymap { namespace heightmap {
@@ -40,46 +41,6 @@ public:
     {
     }
 
-    void preload(const utymap::BoundingBox& boundingBox) override
-    {
-        throw std::domain_error("Not implemented.");
-    }
-
-    /// Preloads data for given quadkey.
-    void preload(const utymap::QuadKey& quadKey) override
-    {
-        if (data_.find(quadKey) != data_.end())
-            return;
-
-        std::fstream file(getFilePath(quadKey));
-        if (!file.good())
-            throw std::invalid_argument("Cannot find elevation file.");
-        
-        EleData data;
-
-        std::transform(std::istream_iterator<std::string>(file),
-                       std::istream_iterator<std::string>(),
-                       std::back_inserter(data.heights),
-                       [&](const std::string& heightString) {
-                           return utymap::utils::lexicalCast<int>(heightString);
-        });
-
-        data.heights.shrink_to_fit();
-
-        if (data.heights.empty())
-            throw std::domain_error("Cannot get elevation data.");
-
-        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
-
-        data.resolution = static_cast<int>(std::sqrt(data.heights.size())) - 1;
-        data.xStart = static_cast<int>(bbox.minPoint.longitude * Scale);
-        data.yStart = static_cast<int>(bbox.minPoint.latitude * Scale);
-        data.xStep = static_cast<int>(bbox.width() / data.resolution * Scale);
-        data.yStep = static_cast<int>(bbox.height() / data.resolution * Scale);
-
-        data_.insert(std::make_pair(quadKey, std::move(data)));
-    }
-
     /// Gets elevation for given geocoordinate.
     double getElevation(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& coordinate) const override
     {
@@ -90,8 +51,10 @@ public:
     double getElevation(const utymap::QuadKey& quadKey, double latitude, double longitude) const override
     {
         auto data = data_.find(quadKey);
-        if (data == data_.end())
-            throw std::domain_error("Elevation for given quadkey is not preloaded!");
+        if (data == data_.end()) {
+            preload(quadKey);
+            data = data_.find(quadKey);
+        }
 
         int resolution = data->second.resolution;
 
@@ -127,6 +90,43 @@ public:
 
 private:
 
+    /// Preloads data for given quadkey.
+    void preload(const utymap::QuadKey& quadKey) const
+    {
+        std::lock_guard<std::mutex> lock(lock_);
+
+        if (data_.find(quadKey) != data_.end())
+            return;
+
+        std::fstream file(getFilePath(quadKey));
+        if (!file.good())
+            throw std::invalid_argument("Cannot find elevation file.");
+
+        EleData data;
+
+        std::transform(std::istream_iterator<std::string>(file),
+                       std::istream_iterator<std::string>(),
+                       std::back_inserter(data.heights),
+                       [&](const std::string& heightString) {
+                           return utymap::utils::lexicalCast<int>(heightString);
+                       });
+
+        data.heights.shrink_to_fit();
+
+        if (data.heights.empty())
+            throw std::domain_error("Cannot get elevation data.");
+
+        BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
+
+        data.resolution = static_cast<int>(std::sqrt(data.heights.size())) - 1;
+        data.xStart = static_cast<int>(bbox.minPoint.longitude * Scale);
+        data.yStart = static_cast<int>(bbox.minPoint.latitude * Scale);
+        data.xStep = static_cast<int>(bbox.width() / data.resolution * Scale);
+        data.yStep = static_cast<int>(bbox.height() / data.resolution * Scale);
+
+        data_.emplace(quadKey, std::move(data));
+    }
+
     std::string getFilePath(const QuadKey& quadKey) const
     {
         std::stringstream ss;
@@ -134,8 +134,9 @@ private:
         return ss.str();
     }
 
+    mutable std::map<const QuadKey, EleData, QuadKey::Comparator> data_;
+    mutable std::mutex lock_;
     const std::string dataDirectory_;
-    std::map<const QuadKey, EleData, QuadKey::Comparator> data_;
 };
 
 }}
