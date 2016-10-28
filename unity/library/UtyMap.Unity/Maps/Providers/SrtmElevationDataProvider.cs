@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UtyDepend.Config;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -9,14 +10,14 @@ using UtyRx;
 namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> Downloads SRTM data from NASA server. </summary>
-    internal class SrtmElevationDataProvider : IMapDataProvider
+    internal class SrtmElevationDataProvider : IMapDataProvider, IConfigurable
     {
         private const string TraceCategory = "mapdata.srtm";
         private readonly IFileSystemService _fileSystemService;
         private readonly INetworkService _networkService;
         private readonly ITrace _trace;
-        private readonly string _server;
-        private readonly string _schemaPath;
+        private string _server;
+        private string _schemaPath;
         private static readonly Dictionary<int, string> ContinentMap = new Dictionary<int, string>
         {
             {0, "Eurasia"},
@@ -28,14 +29,8 @@ namespace UtyMap.Unity.Maps.Providers
         };
 
         /// <summary> Creates instance of <see cref="SrtmElevationDataProvider"/>. </summary>
-        public SrtmElevationDataProvider(string server, 
-                              string schemaPath, 
-                              IFileSystemService fileSystemService, 
-                              INetworkService networkService,
-                              ITrace trace)
+        public SrtmElevationDataProvider(IFileSystemService fileSystemService, INetworkService networkService, ITrace trace)
         {
-            _server = server;
-            _schemaPath = schemaPath;
             _fileSystemService = fileSystemService;
             _networkService = networkService;
             _trace = trace;
@@ -86,6 +81,13 @@ namespace UtyMap.Unity.Maps.Providers
         public IObservable<string> Get(Tile tile)
         {
             throw new NotImplementedException();
+        }
+
+        public void Configure(IConfigSection configSection)
+        {
+            // TODO initialize from config
+            // _server = server;
+            // _schemaPath = schemaPath;
         }
     }
 }

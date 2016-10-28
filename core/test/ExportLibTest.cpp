@@ -27,7 +27,7 @@ namespace {
             isCalled = false;
             for (int i = startX; i <= endX; ++i) {
                 for (int j = startY; j <= endY; ++j) {
-                    ::loadQuadKey(TEST_MAPCSS_DEFAULT, i, j, levelOfDetails,
+                    ::loadQuadKey(TEST_MAPCSS_DEFAULT, i, j, levelOfDetails, 0,
                         [](const char* name, 
                            const double* vertices, int vertexCount,
                            const int* triangles, int triCount,

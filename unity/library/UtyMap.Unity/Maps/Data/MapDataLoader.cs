@@ -36,6 +36,7 @@ namespace UtyMap.Unity.Maps.Data
 
         private readonly IMapDataProvider _mapDataProvider;
         private readonly IPathResolver _pathResolver;
+        private ElevationDataType _eleDataType;
 
         [Dependency]
         public ITrace Trace { get; set; }
@@ -87,6 +88,7 @@ namespace UtyMap.Unity.Maps.Data
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings"));
             var mapDataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial"));
             var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local"));
+            _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 0);
 
             string errorMsg = null;
             CoreLibrary.Configure(stringPath, mapDataPath, elePath, error => errorMsg = error);
@@ -117,6 +119,7 @@ namespace UtyMap.Unity.Maps.Data
                 CoreLibrary.LoadQuadKey(
                     stylesheetPathResolved,
                     tile.QuadKey,
+                    _eleDataType,
                     adapter.AdaptMesh,
                     adapter.AdaptElement,
                     adapter.AdaptError);

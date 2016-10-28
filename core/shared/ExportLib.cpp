@@ -140,12 +140,13 @@ extern "C"
     /// Loads quadkey.
     void EXPORT_API loadQuadKey(const char* styleFile,                   // style file
                                 int tileX, int tileY, int levelOfDetail, // quadkey info
+                                int eleDataType,                         // elevation data type to use
                                 OnMeshBuilt* meshCallback,               // mesh callback
                                 OnElementLoaded* elementCallback,        // element callback
                                 OnError* errorCallback)                  // completion callback
     {
         utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
-        applicationPtr->loadQuadKey(styleFile, quadKey, Application::ElevationDataType::Flat,
+        applicationPtr->loadQuadKey(styleFile, quadKey, static_cast<Application::ElevationDataType>(eleDataType),
             meshCallback, elementCallback, errorCallback);
     }
 

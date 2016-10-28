@@ -34,10 +34,9 @@
 class Application
 {
 public:
-
     enum class ElevationDataType
     {
-        Flat,
+        Flat = 0,
         Srtm,
         Grid
     };
@@ -176,12 +175,12 @@ private:
     {
         switch (eleDataType)
         {
-            case ElevationDataType::Flat:
-                return flatEleProvider_;
+            case ElevationDataType::Grid:
+                return gridEleProvider_;
             case ElevationDataType::Srtm:
                 return srtmEleProvider_;
             default:
-                return gridEleProvider_;
+                return flatEleProvider_;
         }
     }
 

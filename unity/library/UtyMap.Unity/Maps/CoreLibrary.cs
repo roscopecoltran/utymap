@@ -109,14 +109,15 @@ namespace UtyMap.Unity.Maps
         /// <summary> Loads quadkey. </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey</param>
+        /// <param name="elevationDataType"> Elevation data type.</param>
         /// <param name="onMeshBuilt"></param>
         /// <param name="onElementLoaded"></param>
         /// <param name="onError"></param>
-        public static void LoadQuadKey(string stylePath, QuadKey quadKey,
+        public static void LoadQuadKey(string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError)
         {
             loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, 
-                onMeshBuilt, onElementLoaded, onError);
+                (int) elevationDataType, onMeshBuilt, onElementLoaded, onError);
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
@@ -178,7 +179,7 @@ namespace UtyMap.Unity.Maps
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
-        private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails,
+        private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
