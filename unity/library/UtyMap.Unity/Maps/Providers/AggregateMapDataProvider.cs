@@ -68,6 +68,9 @@ namespace UtyMap.Unity.Maps.Providers
 
         private IObservable<string> CreateMapDataObservable(Tile tile)
         {
+            if (CoreLibrary.HasData(tile.QuadKey))
+                return Observable.Return("");
+
             if (OsmTileRange.Contains(tile.QuadKey.LevelOfDetail))
                 return _osmMapDataProvider.Get(tile);
 
