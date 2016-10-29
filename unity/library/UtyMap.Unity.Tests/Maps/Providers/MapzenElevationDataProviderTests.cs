@@ -44,7 +44,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
             _config.Setup(c => c.GetString("data/mapzen/api_key", It.IsAny<string>())).Returns("ggg");
             _config.Setup(c => c.GetString("data/mapzen/ele_format", It.IsAny<string>())).Returns("ele");
             _config.Setup(c => c.GetInt("data/mapzen/ele_grid", It.IsAny<int>())).Returns(2);
-            _config.Setup(c => c.GetString("data/cache", It.IsAny<string>())).Returns("Cache");
+            _config.Setup(c => c.GetString("data/elevation/local", It.IsAny<string>())).Returns("Cache");
 
             _writeStream = new Mock<Stream>();
             _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjDmgBrjD?sjD\",\"height\":[43,38,37,37]}");
@@ -78,7 +78,8 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         {
             _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
-            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", "1202102332220103.ele")));
+            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", 
+                Path.Combine("16", "1202102332220103.ele"))));
         }
 
         [Test]
@@ -86,13 +87,13 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         {
             var filePath = _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
-            Assert.AreEqual(Path.Combine("Cache", "1202102332220103.ele"), filePath);
+            Assert.AreEqual(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele")), filePath);
         }
 
         [Test]
         public void CanWriteCorrectEleData()
         {
-            var expectedBytes = Encoding.UTF8.GetBytes("43,38,37,37");
+            var expectedBytes = Encoding.UTF8.GetBytes("43 38 37 37");
 
             _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
