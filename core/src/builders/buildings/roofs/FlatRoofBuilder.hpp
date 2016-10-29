@@ -25,7 +25,8 @@ public:
 
     void build(utymap::meshing::Polygon& polygon) override
     {
-        meshContext_.geometryOptions.heightOffset = minHeight_;
+        meshContext_.geometryOptions.elevation = minHeight_;
+        meshContext_.geometryOptions.heightOffset = 0;
 
         builderContext_.meshBuilder
                        .addPolygon(meshContext_.mesh,
