@@ -172,8 +172,7 @@ private:
     const utymap::heightmap::ElevationProvider& getElevationProvider(const utymap::QuadKey& quadKey,
                                                                      const ElevationDataType& eleDataType) const
     {
-        switch (eleDataType)
-        {
+        switch (eleDataType) {
             case ElevationDataType::Grid:
                 return gridEleProvider_;
             case ElevationDataType::Srtm:
