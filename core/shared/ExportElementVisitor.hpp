@@ -74,7 +74,7 @@ private:
             vertices.push_back(eleProvider_.getElevation(quadKey_, coordinate));
         }
         // convert style
-        utymap::mapcss::Style style = styleProvider_.forElement(element, levelOfDetail_);
+        utymap::mapcss::Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
         std::vector<const char*> cstyles;
         auto declarations = style.declarations();
         styleStrings_.reserve(declarations.size() * 2);
@@ -100,7 +100,6 @@ private:
     utymap::index::StringTable& stringTable_;
     const utymap::mapcss::StyleProvider& styleProvider_;
     const utymap::heightmap::ElevationProvider& eleProvider_;
-    int levelOfDetail_;
     OnElementLoaded* elementCallback_;
     std::vector<std::string> tagStrings_;   // holds temporary tag strings
     std::vector<std::string> styleStrings_; // holds temporary style strings
