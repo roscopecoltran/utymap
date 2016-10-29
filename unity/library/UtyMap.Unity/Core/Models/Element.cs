@@ -6,14 +6,16 @@ namespace UtyMap.Unity.Core.Models
     public class Element
     {
         public readonly long Id;
-        public GeoCoordinate[] Geometry;
+        public readonly GeoCoordinate[] Geometry;
+        public readonly double[] Heights;
         public readonly Dictionary<string, string> Tags;
         public readonly Dictionary<string, string> Styles;
 
-        public Element(long id, GeoCoordinate[] geometry, Dictionary<string, string> tags, Dictionary<string, string> styles)
+        public Element(long id, GeoCoordinate[] geometry, double[] heights, Dictionary<string, string> tags, Dictionary<string, string> styles)
         {
             Id = id;
             Geometry = geometry;
+            Heights = heights;
             Tags = tags;
             Styles = styles;
         }

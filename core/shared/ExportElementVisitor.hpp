@@ -8,6 +8,7 @@
 #include "entities/Area.hpp"
 #include "entities/Way.hpp"
 #include "entities/Relation.hpp"
+#include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
 
 #include <string>
@@ -19,12 +20,13 @@ struct ExportElementVisitor : public utymap::entities::ElementVisitor
     using Tags = std::vector<utymap::formats::Tag>;
     using Coordinates = std::vector<utymap::GeoCoordinate>;
 
-    ExportElementVisitor(utymap::index::StringTable& stringTable,
+    ExportElementVisitor(const utymap::QuadKey& quadKey,
+                         utymap::index::StringTable& stringTable,
                          const utymap::mapcss::StyleProvider& styleProvider,
-                         int levelOfDetail,
+                         const utymap::heightmap::ElevationProvider& eleProvider,
                          OnElementLoaded* elementCallback) :
-        stringTable_(stringTable), styleProvider_(styleProvider), 
-        levelOfDetail_(levelOfDetail), elementCallback_(elementCallback)
+        quadKey_(quadKey), stringTable_(stringTable), styleProvider_(styleProvider), 
+        eleProvider_(eleProvider), elementCallback_(elementCallback)
     {
     }
 
@@ -63,12 +65,13 @@ private:
             ctags.push_back(tagStrings_[tagStrings_.size() - 1].c_str());
         }
         // convert geometry
-        std::vector<double> coords;
-        coords.reserve(coordinates.size() * 2);
+        std::vector<double> vertices;
+        vertices.reserve(coordinates.size() * 3);
         for (std::size_t i = 0; i < coordinates.size(); ++i) {
             const utymap::GeoCoordinate coordinate = coordinates[i];
-            coords.push_back(coordinate.longitude);
-            coords.push_back(coordinate.latitude);
+            vertices.push_back(coordinate.longitude);
+            vertices.push_back(coordinate.latitude);
+            vertices.push_back(eleProvider_.getElevation(quadKey_, coordinate));
         }
         // convert style
         utymap::mapcss::Style style = styleProvider_.forElement(element, levelOfDetail_);
@@ -85,15 +88,18 @@ private:
 
         elementCallback_(element.id,
             ctags.data(), static_cast<int>(ctags.size()),
-            coords.data(), static_cast<int>(coords.size()),
+            vertices.data(), static_cast<int>(vertices.size()),
             cstyles.data(), static_cast<int>(cstyles.size()));
 
         // NOTE clear vectors after raw array data is consumed by external code
         tagStrings_.clear();
         styleStrings_.clear();
     }
+
+    const utymap::QuadKey& quadKey_;
     utymap::index::StringTable& stringTable_;
     const utymap::mapcss::StyleProvider& styleProvider_;
+    const utymap::heightmap::ElevationProvider& eleProvider_;
     int levelOfDetail_;
     OnElementLoaded* elementCallback_;
     std::vector<std::string> tagStrings_;   // holds temporary tag strings

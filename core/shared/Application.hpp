@@ -133,8 +133,9 @@ public:
     {
         safeExecute([&]() {
             auto& styleProvider = getStyleProvider(styleFile);
-            ExportElementVisitor elementVisitor(stringTable_, styleProvider, quadKey.levelOfDetail, elementCallback);
-            quadKeyBuilder_.build(quadKey, styleProvider, getElevationProvider(quadKey, eleDataType),
+            auto& eleProvider = getElevationProvider(quadKey, eleDataType);
+            ExportElementVisitor elementVisitor(quadKey, stringTable_, styleProvider, eleProvider, elementCallback);
+            quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
                 [&meshCallback](const utymap::meshing::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {

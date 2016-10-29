@@ -43,6 +43,7 @@ namespace UtyMap.Unity.Tests.Integration
             var levelOfDetails = new Range<int>(1, 1);
             var node = new Element(7,
                 new GeoCoordinate[] { new GeoCoordinate(5, 5) },
+                new double[] { 0 }, 
                 new Dictionary<string, string>() { { "featurecla", "Populated place" } }, 
                 new Dictionary<string, string>());
 

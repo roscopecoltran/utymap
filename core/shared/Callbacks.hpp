@@ -14,7 +14,7 @@ typedef void OnMeshBuilt(const char* name,                       // name
 /// Callback which is called when element is loaded.
 typedef void OnElementLoaded(std::uint64_t id,                       // element id
                              const char** tags, int tagsSize,        // tags
-                             const double* vertices, int vertexSize, // vertices (x, y)
+                             const double* vertices, int vertexSize, // vertices (x, y, elevation)
                              const char** style, int styleSize);     // mapcss styles (key, value)
 
 /// Callback which is called when operation is completed.

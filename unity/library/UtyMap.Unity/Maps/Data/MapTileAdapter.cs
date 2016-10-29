@@ -119,11 +119,15 @@ namespace UtyMap.Unity.Maps.Data
         public void AdaptElement(long id, string[] tags, int tagCount, double[] vertices, int vertexCount, 
             string[] styles, int styleCount)
         {
-            var geometry = new GeoCoordinate[vertexCount / 2];
-            for (int i = 0; i < vertexCount / 2; i += 2)
-                geometry[i / 2] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+            var geometry = new GeoCoordinate[vertexCount / 3];
+            var heights = new double[vertexCount/3];
+            for (int i = 0; i < vertexCount/3; i += 3)
+            {
+                geometry[i/3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+                heights[i / 3] = vertices[i + 2];
+            }
 
-            Element element = new Element(id, geometry, ReadDict(tags), ReadDict(styles));
+            Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
             _observer.OnNext(new Union<Element, Mesh>(element));
         }
 
