@@ -98,9 +98,10 @@ private:
         if (data_.find(quadKey) != data_.end())
             return;
 
-        std::fstream file(getFilePath(quadKey));
+        std::string filePath = getFilePath(quadKey);
+        std::fstream file(filePath);
         if (!file.good())
-            throw std::invalid_argument("Cannot find elevation file.");
+            throw std::invalid_argument(std::string("Cannot find elevation file:") + filePath);
 
         EleData data;
 
@@ -114,7 +115,7 @@ private:
         data.heights.shrink_to_fit();
 
         if (data.heights.empty())
-            throw std::domain_error("Cannot get elevation data.");
+            throw std::domain_error("Cannot get elevation data from:" + filePath);
 
         BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey);
 
