@@ -106,6 +106,15 @@ namespace UtyMap.Unity.Maps
             return hasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
         }
 
+        /// <summary> Gets elevation for given coordinate using specific elevation data. </summary>
+        /// <returns> Height under sea level. </returns>
+        /// <remarks> Elevation data should be present on disk. </remarks>
+        public static double GetElevation(QuadKey quadKey, ElevationDataType elevationDataType, GeoCoordinate coordinate)
+        {
+            return getElevation(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                (int) elevationDataType, coordinate.Latitude, coordinate.Longitude);
+        }
+
         /// <summary> Loads quadkey. </summary>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey</param>
@@ -177,6 +186,9 @@ namespace UtyMap.Unity.Maps
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
+
+        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        private static extern double getElevation(int tileX, int tileY, int levelOfDetails, int eleDataType, double latitude, double longitude);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,

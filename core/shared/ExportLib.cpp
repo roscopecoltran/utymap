@@ -139,7 +139,7 @@ extern "C"
     /// Loads quadkey.
     void EXPORT_API loadQuadKey(const char* styleFile,                   // style file
                                 int tileX, int tileY, int levelOfDetail, // quadkey info
-                                int eleDataType,                         // elevation data type to use
+                                int eleDataType,                         // elevation data type
                                 OnMeshBuilt* meshCallback,               // mesh callback
                                 OnElementLoaded* elementCallback,        // element callback
                                 OnError* errorCallback)                  // completion callback
@@ -149,9 +149,20 @@ extern "C"
             meshCallback, elementCallback, errorCallback);
     }
 
-    /// Checks whether there is data for given quadkey
+    /// Checks whether there is data for given quadkey.
     bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail)
     {
         return applicationPtr->hasData(utymap::QuadKey(levelOfDetail, tileX, tileY));
+    }
+
+    /// Gets elevation for given point using specific elevation provider.
+    double EXPORT_API getElevation(int tileX, int tileY, int levelOfDetail, // quadkey info
+                                   int eleDataType,                         // elevation data type
+                                   double latitude,                         // point's latitude
+                                   double longitude)                        // point's longitude
+    {
+        return applicationPtr->getElevation(utymap::QuadKey(levelOfDetail, tileX, tileY), 
+                                            static_cast<Application::ElevationDataType>(eleDataType), 
+                                            utymap::GeoCoordinate(latitude, longitude));
     }
 }

@@ -157,6 +157,14 @@ public:
         return stringTable_.getId(str);
     }
 
+    /// Gets elevation for given geocoordinate using specific elevation provider.
+    double getElevation(const utymap::QuadKey& quadKey, 
+                        const ElevationDataType& elevationDataType,
+                        const utymap::GeoCoordinate& coordinate) const
+    {
+        return getElevationProvider(quadKey, elevationDataType).getElevation(quadKey, coordinate);
+    }
+
 private:
 
     static void safeExecute(const std::function<void()>& action,  OnError* errorCallback)
