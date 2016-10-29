@@ -32,7 +32,7 @@ namespace UtyMap.Unity.Maps.Data
     /// <summary> Default implementation of tile loader. </summary>
     internal class MapDataLoader : IMapDataLoader, IDisposable, IConfigurable
     {
-        private readonly object _lockGuard;
+        private readonly object _lockGuard = new object();
 
         private const string TraceCategory = "mapdata.loader";
 
