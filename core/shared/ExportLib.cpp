@@ -13,11 +13,10 @@ static Application* applicationPtr = nullptr;
 extern "C"
 {
     /// Composes object graph.
-    void EXPORT_API configure(const char* stringPath,  // path to string table directory
-                              const char* elePath,     // path to elevation directory
+    void EXPORT_API configure(const char* dataPath,    // path to data directory which stores index/ele data
                               OnError* errorCallback)  // completion callback.
     {
-        applicationPtr = new Application(stringPath, elePath, errorCallback);
+        applicationPtr = new Application(dataPath, errorCallback);
     }
 
     /// Performs cleanup.

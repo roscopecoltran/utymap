@@ -17,8 +17,9 @@ namespace {
     struct ExportLibFixture {
         ExportLibFixture()
         {
-            ::configure(TEST_ASSETS_PATH, TEST_ELEVATION_DIRECTORY,
-                [](const char* message) { BOOST_FAIL(message); });
+            ::configure(TEST_ASSETS_PATH, [](const char* message) {
+                BOOST_FAIL(message);
+            });
             ::registerInMemoryStore(InMemoryStoreKey);
         }
 

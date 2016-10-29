@@ -17,7 +17,7 @@ namespace {
         Heightmap_GridElevationProviderFixture() :
             quadKey(16, 35205, 21489),
             bbox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
-            eleProvider(TEST_ELEVATION_DIRECTORY)
+            eleProvider(TEST_ASSETS_PATH)
         {
         }
 

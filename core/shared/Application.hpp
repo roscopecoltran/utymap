@@ -42,11 +42,10 @@ public:
     };
 
     /// Composes object graph.
-    Application(const char* stringPath, 
-                const char* elePath,
+    Application(const char* dataPath, 
                 OnError* errorCallback) :
-        stringTable_(stringPath), geoStore_(stringTable_), 
-        flatEleProvider_(), srtmEleProvider_(elePath), gridEleProvider_(elePath),
+        stringTable_(dataPath), geoStore_(stringTable_),
+        flatEleProvider_(), srtmEleProvider_(dataPath), gridEleProvider_(dataPath),
         quadKeyBuilder_(geoStore_, stringTable_)
     {
         registerDefaultBuilders();
