@@ -32,6 +32,8 @@ namespace UtyMap.Unity.Maps.Data
     /// <summary> Default implementation of tile loader. </summary>
     internal class MapDataLoader : IMapDataLoader, IDisposable, IConfigurable
     {
+        private readonly object _lockGuard;
+
         private const string TraceCategory = "mapdata.loader";
 
         private readonly IMapDataProvider _mapDataProvider;
@@ -75,7 +77,7 @@ namespace UtyMap.Unity.Maps.Data
                     .SelectMany(filePath =>
                     {
                         if (!CoreLibrary.HasData(tile.QuadKey))
-                            SaveTileDataInMemory(tile, filePath);
+                            SaveTileData(tile, filePath);
 
                         return CreateLoadSequence(tile);
                     });
@@ -130,23 +132,29 @@ namespace UtyMap.Unity.Maps.Data
             });
         }
 
-        private void SaveTileDataInMemory(Tile tile, string filePath)
+        private void SaveTileData(Tile tile, string filePath)
         {
-            var filePathResolved = _pathResolver.Resolve(filePath);
-            var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
+            lock (_lockGuard)
+            {
+                if (CoreLibrary.HasData(tile.QuadKey))
+                return;
 
-            Trace.Info(TraceCategory, String.Format("save tile data {0} from {1} using style: {2}",
-                tile, filePathResolved, stylesheetPathResolved));
+                var filePathResolved = _pathResolver.Resolve(filePath);
+                var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
 
-            string errorMsg = null;
-            CoreLibrary.AddToStore(MapStorageType.Persistent,
-                stylesheetPathResolved,
-                filePathResolved,
-                tile.QuadKey,
-                error => errorMsg = error);
+                Trace.Info(TraceCategory, String.Format("save tile data {0} from {1} using style: {2}",
+                    tile, filePathResolved, stylesheetPathResolved));
 
-            if (errorMsg != null)
-                throw new MapDataException(String.Format(Strings.CannotAddDataToInMemoryStore, errorMsg));
+                string errorMsg = null;
+                CoreLibrary.AddToStore(MapStorageType.Persistent,
+                    stylesheetPathResolved,
+                    filePathResolved,
+                    tile.QuadKey,
+                    error => errorMsg = error);
+
+                if (errorMsg != null)
+                    throw new MapDataException(String.Format(Strings.CannotAddDataToInMemoryStore, errorMsg));
+            }
         }
 
         #endregion
