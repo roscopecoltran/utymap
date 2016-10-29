@@ -61,8 +61,8 @@ public:
         int x = static_cast<int>(longitude * Scale) - data->second.xStart;
         int y = static_cast<int>(latitude * Scale) - data->second.yStart;
 
-        int x0 = x / data->second.xStep;
-        int y0 = y / data->second.yStep;
+        int x0 = clamp(x / data->second.xStep, 0, resolution);
+        int y0 = clamp(y / data->second.yStep, 0, resolution);
 
         int x1 = std::min(x0 + 1, resolution);
         int y1 = std::min(y0 + 1, resolution);
@@ -89,6 +89,11 @@ public:
     }
 
 private:
+
+    static int clamp(int n, int lower, int upper) 
+    {
+        return std::max(lower, std::min(n, upper));
+    }
 
     /// Preloads data for given quadkey.
     void preload(const utymap::QuadKey& quadKey) const
