@@ -19,7 +19,7 @@ namespace UtyMap.Unity.Maps.Providers
     {
         private string _mapDataServerUri;
         private string _mapDataApiKey;
-        private string _cachePath;
+        private string _elePath;
         private int _eleGrid;
         private string _mapDataFormatExtension;
 
@@ -32,7 +32,8 @@ namespace UtyMap.Unity.Maps.Providers
         /// <inheritdoc />
         public override IObservable<string> Get(Tile tile)
         {
-            var filePath = Path.Combine(_cachePath, tile.QuadKey + _mapDataFormatExtension);
+            var directory = Path.Combine(_elePath, tile.QuadKey.LevelOfDetail.ToString());
+            var filePath = Path.Combine(directory, tile.QuadKey + _mapDataFormatExtension);
             var uri = String.Format(_mapDataServerUri, GetJsonPayload(tile.QuadKey), _mapDataApiKey);
 
             return Get(tile, uri, filePath);
@@ -47,7 +48,7 @@ namespace UtyMap.Unity.Maps.Providers
 
             StringBuilder sb = new StringBuilder(1024);
             foreach (JSONNode jsonHeight in heights)
-                sb.AppendFormat("{0},", jsonHeight.Value);
+                sb.AppendFormat("{0} ", jsonHeight.Value);
             sb.Remove(sb.Length - 1, 1);
 
             var intBytes = Encoding.UTF8.GetBytes(sb.ToString());
@@ -115,12 +116,14 @@ namespace UtyMap.Unity.Maps.Providers
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _mapDataServerUri = configSection.GetString(@"data/mapzen/ele_server", null);
-            _mapDataApiKey = configSection.GetString(@"data/mapzen/api_key", null);
+            _mapDataServerUri = configSection.GetString(@"data/mapzen/ele_server");
+            _mapDataApiKey = configSection.GetString(@"data/mapzen/api_key");
             _mapDataFormatExtension = "." + configSection.GetString(@"data/mapzen/ele_format", "ele");
+
+            // TODO this parameter depends on height data precision and tile size
             _eleGrid = configSection.GetInt(@"data/mapzen/ele_grid", 10);
 
-            _cachePath = configSection.GetString(@"data/cache", null);
+            _elePath = configSection.GetString(@"data/elevation/local", null);
         }
     }
 }

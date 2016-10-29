@@ -70,14 +70,13 @@ namespace UtyMap.Unity.Maps.Data
         /// <inheritdoc />
         public IObservable<Union<Element, Mesh>> Load(Tile tile)
         {
-            if (CoreLibrary.HasData(tile.QuadKey))
-                return CreateLoadSequence(tile);
-
             return _mapDataProvider
                     .Get(tile)
                     .SelectMany(filePath =>
                     {
-                        SaveTileDataInMemory(tile, filePath);
+                        if (!CoreLibrary.HasData(tile.QuadKey))
+                            SaveTileDataInMemory(tile, filePath);
+
                         return CreateLoadSequence(tile);
                     });
         }

@@ -47,7 +47,11 @@ namespace UtyMap.Unity.Maps.Providers
         {
             _osmMapDataProvider.Configure(configSection);
             _mapzenMapDataProvider.Configure(configSection);
-            _eleDataType = (ElevationDataType)configSection.GetInt("data/elevation/type", 0);
+
+            _srtmElevationDataProvider.Configure(configSection);
+            _mapzenElevationDataProvider.Configure(configSection);
+
+            _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
         }
 
         private IObservable<string> CreateEleDataObservable(Tile tile)
