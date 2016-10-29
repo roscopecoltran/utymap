@@ -23,7 +23,8 @@ namespace Assets.Scripts
             gameObject.name = GetName(element);
             
             var transform = gameObject.transform;
-            transform.position = tile.Projection.Project(element.Geometry[0], GetMinHeight(element));
+            transform.position = tile.Projection.Project(element.Geometry[0], 
+                GetMinHeight(element) + element.Heights[0]);
             transform.localScale = new Vector3(2, 2, 2);
 
             gameObject.GetComponent<MeshFilter>().mesh.uv = GetUV(element);
