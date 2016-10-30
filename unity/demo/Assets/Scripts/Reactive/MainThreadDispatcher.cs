@@ -380,10 +380,10 @@ namespace Assets.Scripts.Reactive
                 {
                     dispatcher.queueWorker.Enqueue(_ =>
                     {
-                        var distpacher2 = Instance;
-                        if (distpacher2 != null)
+                        var dispatcher2 = Instance;
+                        if (dispatcher2 != null)
                         {
-                            distpacher2.StartCoroutine_Auto(routine);
+                            (dispatcher2 as MonoBehaviour).StartCoroutine(routine);
                         }
                     }, null);
                 }
@@ -438,7 +438,7 @@ namespace Assets.Scripts.Reactive
             var dispatcher = Instance;
             if (dispatcher != null)
             {
-                return dispatcher.StartCoroutine_Auto(routine);
+                return (dispatcher as MonoBehaviour).StartCoroutine(routine);
             }
             else
             {
@@ -550,9 +550,9 @@ namespace Assets.Scripts.Reactive
                 mainThreadToken = new object();
                 initialized = true;
 
-                StartCoroutine_Auto(RunUpdateMicroCoroutine());
-                StartCoroutine_Auto(RunFixedUpdateMicroCoroutine());
-                StartCoroutine_Auto(RunEndOfFrameMicroCoroutine());
+                StartCoroutine(RunUpdateMicroCoroutine());
+                StartCoroutine(RunFixedUpdateMicroCoroutine());
+                StartCoroutine(RunEndOfFrameMicroCoroutine());
 
                 // Added for consistency with Initialize()
                 DontDestroyOnLoad(gameObject);
