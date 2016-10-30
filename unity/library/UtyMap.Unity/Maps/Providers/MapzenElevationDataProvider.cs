@@ -69,10 +69,10 @@ namespace UtyMap.Unity.Maps.Providers
             var latStep = (bbox.MaxPoint.Latitude - bbox.MinPoint.Latitude) / _eleGrid;
             var lonStep = (bbox.MaxPoint.Longitude - bbox.MinPoint.Longitude) / _eleGrid;
 
-            for (int i = 0; i < _eleGrid; ++i)
+            for (int i = 0; i <= _eleGrid; ++i)
             {
                 var lat = bbox.MinPoint.Latitude + i * latStep;
-                for (int j = 0; j < _eleGrid; ++j)
+                for (int j = 0; j <= _eleGrid; ++j)
                 {
                     var lon = bbox.MinPoint.Longitude + j * lonStep;
                     yield return new GeoCoordinate(lat, lon);

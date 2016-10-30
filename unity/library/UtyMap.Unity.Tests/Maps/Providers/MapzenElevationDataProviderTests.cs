@@ -34,7 +34,6 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [TestFixtureSetUp]
         public void SetUp()
         {
-            //{"encoded_polyline":"kzcecBqdapX?sjDmgBrjD?sjD","height":[43,38,37,37]}
             _fileSystemService = new Mock<IFileSystemService>();
             _networkService = new Mock<INetworkService>();
             _trace = new Mock<ITrace>();
@@ -47,7 +46,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
             _config.Setup(c => c.GetString("data/elevation/local", It.IsAny<string>())).Returns("Cache");
 
             _writeStream = new Mock<Stream>();
-            _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjDmgBrjD?sjD\",\"height\":[43,38,37,37]}");
+            _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\",\"height\":[43,38,37,37]}");
 
             _tile = new Tile(GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 16), new Stylesheet(""), 
                 new CartesianProjection(TestHelper.WorldZeroPoint));
@@ -70,7 +69,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         {
             _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
 
-            _networkService.Verify(ns => ns.GetAndGetBytes("elevation.mapzen.com/height?json={\"range\":false,\"encoded_polyline\":\"kzcecBqdapX?sjDmgBrjD?sjD\"}&api_key=ggg", It.IsAny<Dictionary<string, string>>()));
+            _networkService.Verify(ns => ns.GetAndGetBytes("elevation.mapzen.com/height?json={\"range\":false,\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\"}&api_key=ggg", It.IsAny<Dictionary<string, string>>()));
         }
 
         [Test]
