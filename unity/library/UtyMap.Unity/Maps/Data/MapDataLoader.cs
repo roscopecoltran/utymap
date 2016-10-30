@@ -88,11 +88,10 @@ namespace UtyMap.Unity.Maps.Data
         {
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings"));
             var mapDataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial"));
-            var elePath = _pathResolver.Resolve(configSection.GetString("data/elevation/local"));
             _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 0);
 
             string errorMsg = null;
-            CoreLibrary.Configure(stringPath, mapDataPath, elePath, error => errorMsg = error);
+            CoreLibrary.Configure(stringPath, mapDataPath, error => errorMsg = error);
             if (errorMsg != null)
                 throw new MapDataException(errorMsg);
         }

@@ -24,9 +24,8 @@ namespace UtyMap.Unity.Maps
         /// <summary> Configure utymap. Should be called before any core API usage. </summary>
         /// <param name="stringPath"> Path to string table. </param>
         /// <param name="mapDataPath">Path for map data. </param>
-        /// <param name="elePath"> Path to elevation data. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void Configure(string stringPath, string mapDataPath, string elePath, OnError onError)
+        public static void Configure(string stringPath, string mapDataPath, OnError onError)
         {
             lock (__lockObj)
             {
@@ -37,7 +36,7 @@ namespace UtyMap.Unity.Maps
                 if (_isConfigured)
                     return;
 
-                configure(stringPath, elePath, onError);
+                configure(stringPath, onError);
 
                 // NOTE actually, it is possible to have multiple in-memory and persistent 
                 // storages at the same time.
@@ -166,7 +165,7 @@ namespace UtyMap.Unity.Maps
         internal delegate void OnError([In] string message);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
-        private static extern void configure(string stringPath, string elePath, OnError errorHandler);
+        private static extern void configure(string stringPath, OnError errorHandler);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void registerInMemoryStore(string key);
