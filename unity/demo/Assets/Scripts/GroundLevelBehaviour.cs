@@ -2,6 +2,7 @@
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Core.Tiling;
+using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -40,7 +41,8 @@ namespace Assets.Scripts
         void Awake()
         {
             _appManager = ApplicationManager.Instance;
-            _appManager.InitializeFramework(ConfigBuilder.GetDefault(),
+            _appManager.InitializeFramework(ConfigBuilder.GetDefault()
+                    .SetElevationType(ElevationDataType.Flat),
                 (compositionRoot) =>
                 {
                     compositionRoot.RegisterAction((c, _) => 
@@ -79,7 +81,14 @@ namespace Assets.Scripts
                                   .DoOnCompleted(() =>
                                   {
                                       if (rigidBody.isKinematic)
+                                      {
+                                          var position = transform.position;
+                                          var coordinate = GeoUtils.ToGeoCoordinate(GetWorldZeroPoint(), position.x, position.z);
+                                          var height = (float) _appManager.GetService<MapElevationLoader>().Load(tile.QuadKey, coordinate);
+
+                                          transform.position = new Vector3(position.x, height + 2, position.z);
                                           rigidBody.isKinematic = false;
+                                      }
                                   }))
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOn(Scheduler.MainThread)
@@ -99,8 +108,8 @@ namespace Assets.Scripts
 
             // NOTE: code below loads region tile by tile.
             // The region is specified by rectangle defined in world coordinates.
-            //float size = 600; // square side size (in meters)
-            //Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-size / 2, -size / 2, size, size), _levelOfDetails));
+            // float size = 600; // square side size (in meters)
+            // Scheduler.ThreadPool.Schedule(() => _tileController.OnRegion(new Rectangle(-size / 2, -size / 2, size, size), _levelOfDetails));
         }
 
         /// <summary> Listens for position changes to notify library. </summary>

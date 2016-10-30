@@ -68,6 +68,7 @@ namespace UtyMap.Unity
 
             _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
+            _container.Register(Component.For<MapElevationLoader>().Use<MapElevationLoader>().SetConfig(_configSection));
 
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 

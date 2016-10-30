@@ -5,6 +5,7 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyDepend;
 using UtyDepend.Config;
+using UtyMap.Unity.Maps.Data;
 
 namespace UtyMap.Unity.Tests.Helpers
 {
@@ -45,6 +46,7 @@ namespace UtyMap.Unity.Tests.Helpers
             var config = ConfigBuilder.GetDefault()
                 .SetStringIndex("Index/")
                 .SetSpatialIndex("Index/")
+                .SetElevationType(ElevationDataType.Flat)
                 .Build();
 
             // initialize services

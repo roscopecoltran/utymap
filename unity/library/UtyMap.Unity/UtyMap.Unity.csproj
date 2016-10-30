@@ -84,6 +84,7 @@
     <Compile Include="Maps\Data\ElementEditor.cs" />
     <Compile Include="Maps\Data\ElevationDataType.cs" />
     <Compile Include="Maps\Data\MapDataLoader.cs" />
+    <Compile Include="Maps\Data\MapElevationLoader.cs" />
     <Compile Include="Maps\Data\MapTileAdapter.cs" />
     <Compile Include="Maps\Geocoding\IGeocoder.cs" />
     <Compile Include="Maps\Geocoding\NominatimGeocoder.cs" />
