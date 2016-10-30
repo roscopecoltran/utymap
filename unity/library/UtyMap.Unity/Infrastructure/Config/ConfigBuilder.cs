@@ -27,10 +27,10 @@ namespace UtyMap.Unity.Infrastructure.Config
         #region Application specific
 
         /// <summary> Sets settings to get elevation data from remote server. </summary>
-        public ConfigBuilder SetSrtmData(string url, string schema)
+        public ConfigBuilder SetSrtmEleData(string url, string schema)
         {
-            Add<string>("data/elevation/srtm.server", url);
-            Add<string>("data/elevation/srtm.schema", schema);
+            Add<string>("data/srtm/server", url);
+            Add<string>("data/srtm/schema", schema);
             return this;
         }
 
@@ -121,7 +121,7 @@ namespace UtyMap.Unity.Infrastructure.Config
         {
             return new ConfigBuilder()
                 .SetLocalElevationData("Index/")
-                .SetSrtmData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
+                .SetSrtmEleData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
                 .SetOsmMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
                 .SetMapzenMapData("http://tile.mapzen.com/mapzen/vector/v1/{0}/{1}/{2}/{3}.json?api_key={4}", "all", "json", "")
                 .SetMapzenEleData("http://elevation.mapzen.com/height?json={0}&api_key={1}", 4, "ele", "")
