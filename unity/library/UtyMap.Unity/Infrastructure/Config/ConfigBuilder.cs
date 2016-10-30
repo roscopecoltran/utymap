@@ -122,7 +122,7 @@ namespace UtyMap.Unity.Infrastructure.Config
             return new ConfigBuilder()
                 .SetLocalElevationData("Index/")
                 .SetSrtmEleData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
-                .SetOsmMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
+                .SetOsmMapData("http://overpass-api.de/api/interpreter?data=", "(node({0},{1},{2},{3}); <; >;);out body;", "xml")
                 .SetMapzenMapData("http://tile.mapzen.com/mapzen/vector/v1/{0}/{1}/{2}/{3}.json?api_key={4}", "all", "json", "")
                 .SetMapzenEleData("http://elevation.mapzen.com/height?json={0}&api_key={1}", 4, "ele", "")
                 .SetCache("Cache")
