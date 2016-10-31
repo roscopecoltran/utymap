@@ -256,7 +256,7 @@ private:
         return [=](double x, double y) {
             double relX =  (x - geoX) / geoWidth;
             double relY =  (y - geoY) / geoHeight;
-            return Vector2(relX, relY) * scale;
+            return Vector2(relX * scale, relY * scale);
         };
     }
 

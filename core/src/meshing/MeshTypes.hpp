@@ -28,11 +28,32 @@ struct Vector2
         return !(*this == rhs);
     }
 
-    Vector2& operator*(double scale)
+    Vector2 operator*(double scale) const
     {
-        x *= scale;
-        y *= scale;
-        return *this;
+        return Vector2(x * scale, y * scale);
+    }
+
+    Vector2 operator+(const Vector2& rhs) const
+    {
+        return Vector2(x + rhs.x, y + rhs.y);
+    }
+
+    Vector2 operator-(const Vector2& rhs) const
+    {
+        return Vector2(x - rhs.x, y - rhs.y);
+    }
+
+    double magnitude() const
+    {
+        return std::sqrt(x*x + y*y);
+    }
+
+    Vector2 normalized() const
+    {
+        double length = magnitude();
+        return length > std::numeric_limits<double>::epsilon()
+            ? Vector2(x / length, y / length)
+            : Vector2(); // degenerative case
     }
 
     static double distance(const Vector2& v1, const Vector2& v2)
