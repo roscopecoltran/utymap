@@ -2,6 +2,7 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/buildings/roofs/DomeRoofBuilder.hpp"
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
+#include "builders/buildings/roofs/SkillionRoofBuilder.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
@@ -68,6 +69,22 @@ BOOST_AUTO_TEST_CASE(GivenMansard_WhenBuilds_ThenMeshIsBuilt)
     builder.setColorNoiseFreq(0);
     Polygon polygon(0, 0);
     polygon.addContour({ { 13.3873453, 52.5316191 }, { 13.3871987, 52.5317429 }, { 13.3876304, 52.5317804 }, { 13.3876814, 52.5316476 } });
+
+    builder.build(polygon);
+
+    BOOST_CHECK_GT(mesh->vertices.size(), 0);
+    BOOST_CHECK_GT(mesh->triangles.size(), 0);
+    BOOST_CHECK_GT(mesh->colors.size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenSkillionWithSlope_WhenBuilds_ThenMeshIsBuilt)
+{
+    auto builder = createRoofBuilder<SkillionRoofBuilder>();
+    Polygon polygon(0, 0);
+    polygon.addContour({ { 37.618875, 55.7535279 }, { 37.6187893, 55.7534727 }, { 37.6190606, 55.7534625 }, { 37.6190376, 55.7535286} });
+    builder.setMinHeight(30);
+    builder.setHeight(5);
+    builder.setDirection("311.2");
 
     builder.build(polygon);
 

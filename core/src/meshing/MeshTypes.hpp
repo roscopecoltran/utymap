@@ -83,6 +83,11 @@ struct Vector3
         return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
     }
 
+    Vector3 operator-(const Vector3& rhs) const
+    {
+        return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
+    }
+
     double magnitude() const
     {
         return std::sqrt(x*x + y*y + z*z);
@@ -94,6 +99,13 @@ struct Vector3
         return length > std::numeric_limits<double>::epsilon()
             ? Vector3(x / length, y / length, z / length)
             : Vector3(); // degenerative case
+    }
+
+    static Vector3 cross(const Vector3& a, const Vector3& b) 
+    {
+        return Vector3(a.y * b.z - a.z * b.y, 
+                       a.z * b.x - a.x * b.z, 
+                       a.x * b.y - a.y * b.x);
     }
 };
 

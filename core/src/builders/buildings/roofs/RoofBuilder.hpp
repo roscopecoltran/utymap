@@ -44,6 +44,11 @@ public:
         return *this;
     }
 
+    // Sets direction of roof.
+    virtual void setDirection(const std::string& direction)
+    {
+    }
+
     // Builds roof from polygon.
     virtual void build(utymap::meshing::Polygon& polygon) = 0;
 

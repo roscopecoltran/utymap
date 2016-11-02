@@ -96,6 +96,36 @@ void outerRectangles(const utymap::meshing::Polygon& polygon, const Visitor& vis
         visitor(rectangle);
     }
 }
+
+/// Gets intersection point between two segments. If they don't intersect double lowest is returned.
+inline double getIntersection(const utymap::meshing::Vector2& start1, const utymap::meshing::Vector2& end1,
+                              const utymap::meshing::Vector2& start2, const utymap::meshing::Vector2& end2)
+{
+    double denom = ((end1.x - start1.x) * (end2.y - start2.y)) - ((end1.y - start1.y) * (end2.x - start2.x));
+
+    //  AB & CD are parallel 
+    if (denom == 0)
+        return std::numeric_limits<double>::lowest();
+
+    double numer = ((start1.y - start2.y) * (end2.x - start2.x)) - ((start1.x - start2.x) * (end2.y - start2.y));
+
+    double r = numer / denom;
+
+    double numer2 = ((start1.y - start2.y) * (end1.x - start1.x)) - ((start1.x - start2.x) * (end1.y - start1.y));
+
+    double s = numer2 / denom;
+
+    return (r < 0 || r > 1) || (s < 0 || s > 1)
+        ? std::numeric_limits<double>::lowest()
+        : r;
+}
+
+/// Gets point along the line. r is computed by getIntersection
+inline utymap::meshing::Vector2 getPointAlongLine(const utymap::meshing::Vector2& start, const utymap::meshing::Vector2& end, double r)
+{
+    return utymap::meshing::Vector2(start.x + (r * (end.x - start.x)), start.y + (r * (end.y - start.y)));
+}
+
 }}
 
 #endif // UTILS_GEOMETRYUTILS_HPP_DEFINED

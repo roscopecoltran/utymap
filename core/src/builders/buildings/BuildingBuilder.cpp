@@ -12,6 +12,7 @@
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
+#include "builders/buildings/roofs/SkillionRoofBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GradientUtils.hpp"
@@ -34,6 +35,7 @@ namespace {
     const std::string RoofTextureIndexKey = "roof-texture-index";
     const std::string RoofTextureTypeKey = "roof-texture-type";
     const std::string RoofTextureScaleKey = "roof-texture-scale";
+    const std::string RoofDirectionKey = "roof-direction";
 
     const std::string FacadeTypeKey = "facade-type";
     const std::string FacadeColorKey = "facade-color";
@@ -85,6 +87,12 @@ namespace {
             "mansard",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return utymap::utils::make_unique<MansardRoofBuilder>(builderContext, meshContext);
+            }
+        },
+        {
+            "skillion",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return utymap::utils::make_unique<SkillionRoofBuilder>(builderContext, meshContext);
             }
         }
     };
@@ -295,11 +303,13 @@ private:
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
+        auto direction = roofMeshContext.style.getString(RoofDirectionKey);
 
         auto roofBuilder = RoofBuilderFactoryMap.find(roofType)->second(context_, roofMeshContext);
         roofBuilder->setHeight(roofHeight);
         roofBuilder->setMinHeight(elevation + height);
         roofBuilder->setColorNoiseFreq(0);
+        roofBuilder->setDirection(direction);
         roofBuilder->build(*polygon_);
 
         context_.meshBuilder.writeTextureMappingInfo(mesh, roofMeshContext.appearanceOptions);
