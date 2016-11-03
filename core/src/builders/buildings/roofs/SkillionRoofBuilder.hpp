@@ -43,115 +43,112 @@ public:
 
 private:
 
-    /// Tries to build skillion roof
-    /// NOTE So far we support only one simple polygon with holes when height is set.
+    /// Tries to build skillion roof. So far we support only one simple polygon.
     bool buildSkillion(utymap::meshing::Polygon& polygon) const
     {
-        if (polygon.outers.size() == 1 && height_ > 0)
-            return false;
-
         // get direction vector
         const auto grad = utymap::utils::deg2Rad(direction_);
         const auto direction = utymap::meshing::Vector2(std::sin(grad), std::cos(grad)).normalized();
         const auto maxHeight = minHeight_ + height_;
 
-        // get center and points outside front/back from center in specified direction
-        const auto& range = polygon.outers[0];
-        const auto center = utymap::utils::getCentroid(polygon, range);
-        const auto outBackPoint = center - direction * 0.1;
-        const auto outFrontPoint = center + direction * 0.1;
+        for (const auto& range : polygon.outers) {
+            // get center and points outside front/back from center in specified direction
+            const auto center = utymap::utils::getCentroid(polygon, range);
+            const auto outBackPoint = center - direction * 0.1;
+            const auto outFrontPoint = center + direction * 0.1;
 
-        // copy geometry options and change some values to control mesh builder behaviour
-        auto geometryOptions = meshContext_.geometryOptions;
-        geometryOptions.heightOffset = minHeight_;
-        geometryOptions.elevation = 0;
-        geometryOptions.area = 0;
+            // copy geometry options and change some values to control mesh builder behaviour
+            auto geometryOptions = meshContext_.geometryOptions;
+            geometryOptions.heightOffset = minHeight_;
+            geometryOptions.elevation = 0;
+            geometryOptions.area = 0;
 
-        // build mesh mostly to have triangulation in place
-        utymap::meshing::Mesh mesh("");
-        builderContext_.meshBuilder.addPolygon(mesh, polygon, geometryOptions, meshContext_.appearanceOptions);
+            // build mesh mostly to have triangulation in place
+            utymap::meshing::Mesh mesh("");
+            builderContext_.meshBuilder.addPolygon(mesh, polygon, geometryOptions, meshContext_.appearanceOptions);
 
-        // detect front/back sides to set min/max elevation and get roof plane equation
-        std::size_t frontSideIndex = mesh.vertices.size();
-        std::size_t topBackSideIndex = mesh.vertices.size();
-        double minDistance = std::numeric_limits<double>::max();
-        double maxDistance = 0;
-        const auto lastPointIndex = mesh.vertices.size() - 3;
-        for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
-            auto nextIndex = i == lastPointIndex ? 0 : i + 3;
+            // detect front/back sides to set min/max elevation and get roof plane equation
+            std::size_t frontSideIndex = mesh.vertices.size();
+            std::size_t topBackSideIndex = mesh.vertices.size();
+            double minDistance = std::numeric_limits<double>::max();
+            double maxDistance = 0;
+            const auto lastPointIndex = mesh.vertices.size() - 3;
+            for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
+                auto nextIndex = i == lastPointIndex ? 0 : i + 3;
 
-            utymap::meshing::Vector2 v0(mesh.vertices[i], mesh.vertices[i + 1]);
-            utymap::meshing::Vector2 v1(mesh.vertices[nextIndex], mesh.vertices[nextIndex + 1]);
+                utymap::meshing::Vector2 v0(mesh.vertices[i], mesh.vertices[i + 1]);
+                utymap::meshing::Vector2 v1(mesh.vertices[nextIndex], mesh.vertices[nextIndex + 1]);
 
-            double r = utymap::utils::getIntersection(v0, v1, outBackPoint, outFrontPoint);
-            if (r > std::numeric_limits<double>::lowest()) {
-                const auto intersection = utymap::utils::getPointAlongLine(v0, v1, r);
-                auto distance = utymap::meshing::Vector2::distance(outBackPoint, intersection);
-                
-                if (distance > maxDistance) { // Found new front face
-                    frontSideIndex = i;
-                    maxDistance = distance;
-                } 
-                if (distance < minDistance) { // Found new the highest point on back side
-                    topBackSideIndex = (utymap::meshing::Vector2::distance(v0, intersection) <
-                                        utymap::meshing::Vector2::distance(v1, intersection)) ? i : nextIndex;
-                    minDistance = distance;
+                double r = utymap::utils::getIntersection(v0, v1, outBackPoint, outFrontPoint);
+                if (r > std::numeric_limits<double>::lowest()) {
+                    const auto intersection = utymap::utils::getPointAlongLine(v0, v1, r);
+                    auto distance = utymap::meshing::Vector2::distance(outBackPoint, intersection);
+
+                    if (distance > maxDistance) { // Found new front face
+                        frontSideIndex = i;
+                        maxDistance = distance;
+                    }
+                    if (distance < minDistance) { // Found new the highest point on back side
+                        topBackSideIndex = (utymap::meshing::Vector2::distance(v0, intersection) <
+                            utymap::meshing::Vector2::distance(v1, intersection)) ? i : nextIndex;
+                        minDistance = distance;
+                    }
                 }
             }
-        }
 
-        // fail to determine front/back: fallback to flat roof
-        if (frontSideIndex > lastPointIndex || topBackSideIndex > lastPointIndex || frontSideIndex == topBackSideIndex)
-            return false;
+            // fail to determine front/back: fallback to flat roof
+            if (frontSideIndex > lastPointIndex || topBackSideIndex > lastPointIndex || frontSideIndex == topBackSideIndex)
+                return false;
 
-        // define points which are on top roof plane
-        utymap::meshing::Vector3 p1(mesh.vertices[frontSideIndex], minHeight_, mesh.vertices[frontSideIndex + 1]);
-        auto nextFrontSideIndex = frontSideIndex == lastPointIndex ? 0 : frontSideIndex + 3;
-        utymap::meshing::Vector3 p2(mesh.vertices[nextFrontSideIndex], minHeight_, mesh.vertices[nextFrontSideIndex + 1]);
-        utymap::meshing::Vector3 p3(mesh.vertices[topBackSideIndex], maxHeight, mesh.vertices[topBackSideIndex + 1]);
+            // define points which are on top roof plane
+            utymap::meshing::Vector3 p1(mesh.vertices[frontSideIndex], minHeight_, mesh.vertices[frontSideIndex + 1]);
+            auto nextFrontSideIndex = frontSideIndex == lastPointIndex ? 0 : frontSideIndex + 3;
+            utymap::meshing::Vector3 p2(mesh.vertices[nextFrontSideIndex], minHeight_, mesh.vertices[nextFrontSideIndex + 1]);
+            utymap::meshing::Vector3 p3(mesh.vertices[topBackSideIndex], maxHeight, mesh.vertices[topBackSideIndex + 1]);
 
-        // calculate equation of plane in classical form: Ax + By + Cz = d where n is (A, B, C)
-        auto n = utymap::meshing::Vector3::cross(p1 - p2, p3 - p2);
-        double d = n.x * p1.x + n.y * p1.y + n.z * p1.z;
+            // calculate equation of plane in classical form: Ax + By + Cz = d where n is (A, B, C)
+            auto n = utymap::meshing::Vector3::cross(p1 - p2, p3 - p2);
+            double d = n.x * p1.x + n.y * p1.y + n.z * p1.z;
 
-        // loop over all vertices, calculate their height
-        for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
-            if (i == frontSideIndex || i == nextFrontSideIndex)
-                continue;
-            utymap::meshing::Vector2 p(mesh.vertices[i], mesh.vertices[i + 1]);
-            mesh.vertices[i + 2] = utymap::utils::clamp(calcHeight(p, n, d), minHeight_, maxHeight);
-        }
-
-        // build faces
-        double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox,
-                            meshContext_.appearanceOptions.textureScale, height_);
-        utymap::meshing::Vector2 u0(0, 0);
-        utymap::meshing::Vector2 u1(0, scale);
-        utymap::meshing::Vector2 u2(scale, scale);
-        utymap::meshing::Vector2 u3(scale, 0);
-
-        for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
-            if (i == frontSideIndex) 
-                continue;
-
-            auto nextIndex = i == lastPointIndex ? 0 : i + 3;
-
-            utymap::meshing::Vector3 v0(mesh.vertices[i], minHeight_, mesh.vertices[i + 1]);
-            utymap::meshing::Vector3 v1(mesh.vertices[i], mesh.vertices[i + 2], mesh.vertices[i + 1]);
-            utymap::meshing::Vector3 v2(mesh.vertices[nextIndex], mesh.vertices[nextIndex + 2], mesh.vertices[nextIndex + 1]);
-            utymap::meshing::Vector3 v3(mesh.vertices[nextIndex], minHeight_, mesh.vertices[nextIndex + 1]);
-
-            if (i == nextFrontSideIndex) 
-                addTriangle(v0, v2, v3, u0, u2, u3);
-            else if (nextIndex == frontSideIndex) 
-                addTriangle(v0, v1, v3, u0, u1, u3);
-            else {
-                addTriangle(v0, v2, v3, u0, u2, u3);
-                addTriangle(v0, v1, v2, u0, u1, u2);
+            // loop over all vertices, calculate their height
+            for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
+                if (i == frontSideIndex || i == nextFrontSideIndex)
+                    continue;
+                utymap::meshing::Vector2 p(mesh.vertices[i], mesh.vertices[i + 1]);
+                mesh.vertices[i + 2] = utymap::utils::clamp(calcHeight(p, n, d), minHeight_, maxHeight);
             }
-        }
 
-        utymap::utils::copyMesh(utymap::meshing::Vector3(0, 0, 0), mesh, meshContext_.mesh);
+            // build faces
+            double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox,
+                meshContext_.appearanceOptions.textureScale, height_);
+            utymap::meshing::Vector2 u0(0, 0);
+            utymap::meshing::Vector2 u1(0, scale);
+            utymap::meshing::Vector2 u2(scale, scale);
+            utymap::meshing::Vector2 u3(scale, 0);
+
+            for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
+                if (i == frontSideIndex)
+                    continue;
+
+                auto nextIndex = i == lastPointIndex ? 0 : i + 3;
+
+                utymap::meshing::Vector3 v0(mesh.vertices[i], minHeight_, mesh.vertices[i + 1]);
+                utymap::meshing::Vector3 v1(mesh.vertices[i], mesh.vertices[i + 2], mesh.vertices[i + 1]);
+                utymap::meshing::Vector3 v2(mesh.vertices[nextIndex], mesh.vertices[nextIndex + 2], mesh.vertices[nextIndex + 1]);
+                utymap::meshing::Vector3 v3(mesh.vertices[nextIndex], minHeight_, mesh.vertices[nextIndex + 1]);
+
+                if (i == nextFrontSideIndex)
+                    addTriangle(v0, v2, v3, u0, u2, u3);
+                else if (nextIndex == frontSideIndex)
+                    addTriangle(v0, v1, v3, u0, u1, u3);
+                else {
+                    addTriangle(v0, v2, v3, u0, u2, u3);
+                    addTriangle(v0, v1, v2, u0, u1, u2);
+                }
+            }
+
+            utymap::utils::copyMesh(utymap::meshing::Vector3(0, 0, 0), mesh, meshContext_.mesh);
+        }
 
         return true;
     }
