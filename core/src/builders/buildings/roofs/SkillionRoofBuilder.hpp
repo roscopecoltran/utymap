@@ -53,6 +53,7 @@ private:
         // get direction vector
         const auto grad = utymap::utils::deg2Rad(direction_);
         const auto direction = utymap::meshing::Vector2(std::sin(grad), std::cos(grad)).normalized();
+        const auto maxHeight = minHeight_ + height_;
 
         // get center and points outside front/back from center in specified direction
         const auto& range = polygon.outers[0];
@@ -109,7 +110,7 @@ private:
         utymap::meshing::Vector3 p1(mesh.vertices[frontSideIndex], minHeight_, mesh.vertices[frontSideIndex + 1]);
         auto nextFrontSideIndex = frontSideIndex == lastPointIndex ? 0 : frontSideIndex + 3;
         utymap::meshing::Vector3 p2(mesh.vertices[nextFrontSideIndex], minHeight_, mesh.vertices[nextFrontSideIndex + 1]);
-        utymap::meshing::Vector3 p3(mesh.vertices[topBackSideIndex], minHeight_ + height_, mesh.vertices[topBackSideIndex + 1]);
+        utymap::meshing::Vector3 p3(mesh.vertices[topBackSideIndex], maxHeight, mesh.vertices[topBackSideIndex + 1]);
 
         // calculate equation of plane in classical form: Ax + By + Cz = d where n is (A, B, C)
         auto n = utymap::meshing::Vector3::cross(p1 - p2, p3 - p2);
@@ -120,7 +121,7 @@ private:
             if (i == frontSideIndex || i == nextFrontSideIndex)
                 continue;
             utymap::meshing::Vector2 p(mesh.vertices[i], mesh.vertices[i + 1]);
-            mesh.vertices[i + 2] = calcHeight(p, n, d);
+            mesh.vertices[i + 2] = utymap::utils::clamp(calcHeight(p, n, d), minHeight_, maxHeight);
         }
 
         // build faces
