@@ -88,13 +88,11 @@ private:
                 const auto intersection = utymap::utils::getPointAlongLine(v0, v1, r);
                 auto distance = utymap::meshing::Vector2::distance(outBackPoint, intersection);
                 
-                if (distance > maxDistance) {
-                    // Found new front face
+                if (distance > maxDistance) { // Found new front face
                     frontSideIndex = i;
                     maxDistance = distance;
                 } 
-                if (distance < minDistance) {
-                    // Found new the highest point on back side
+                if (distance < minDistance) { // Found new the highest point on back side
                     topBackSideIndex = (utymap::meshing::Vector2::distance(v0, intersection) <
                                         utymap::meshing::Vector2::distance(v1, intersection)) ? i : nextIndex;
                     minDistance = distance;
@@ -126,10 +124,14 @@ private:
 
         // build faces
         double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox,
-                                                          meshContext_.appearanceOptions.textureScale,
-                                                          height_);
+                            meshContext_.appearanceOptions.textureScale, height_);
+        utymap::meshing::Vector2 u0(0, 0);
+        utymap::meshing::Vector2 u1(0, scale);
+        utymap::meshing::Vector2 u2(scale, scale);
+        utymap::meshing::Vector2 u3(scale, 0);
+
         for (std::size_t i = 0; i < mesh.vertices.size(); i += 3) {
-            if (i == frontSideIndex)
+            if (i == frontSideIndex) 
                 continue;
 
             auto nextIndex = i == lastPointIndex ? 0 : i + 3;
@@ -139,30 +141,27 @@ private:
             utymap::meshing::Vector3 v2(mesh.vertices[nextIndex], mesh.vertices[nextIndex + 2], mesh.vertices[nextIndex + 1]);
             utymap::meshing::Vector3 v3(mesh.vertices[nextIndex], minHeight_, mesh.vertices[nextIndex + 1]);
 
-            if (i == nextFrontSideIndex) {
-                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v3,
-                    utymap::meshing::Vector2(0, 0), utymap::meshing::Vector2(scale, scale), utymap::meshing::Vector2(scale, 0),
-                    meshContext_.geometryOptions, meshContext_.appearanceOptions);
-            }
-            else if (nextIndex == frontSideIndex) {
-                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v3,
-                    utymap::meshing::Vector2(0, 0), utymap::meshing::Vector2(0, scale), utymap::meshing::Vector2(scale, 0),
-                    meshContext_.geometryOptions, meshContext_.appearanceOptions);
-            }
+            if (i == nextFrontSideIndex) 
+                addTriangle(v0, v2, v3, u0, u2, u3);
+            else if (nextIndex == frontSideIndex) 
+                addTriangle(v0, v1, v3, u0, u1, u3);
             else {
-                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v3,
-                    utymap::meshing::Vector2(0, 0), utymap::meshing::Vector2(scale, scale), utymap::meshing::Vector2(0, scale),
-                    meshContext_.geometryOptions, meshContext_.appearanceOptions);
-
-                builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2,
-                    utymap::meshing::Vector2(0, 0), utymap::meshing::Vector2(0, scale), utymap::meshing::Vector2(scale, scale),
-                    meshContext_.geometryOptions, meshContext_.appearanceOptions);
+                addTriangle(v0, v2, v3, u0, u2, u3);
+                addTriangle(v0, v1, v2, u0, u1, u2);
             }
         }
 
         utymap::utils::copyMesh(utymap::meshing::Vector3(0, 0, 0), mesh, meshContext_.mesh);
 
         return true;
+    }
+
+    /// Adds triangle to mesh from context.
+    void addTriangle(const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2, 
+                     const utymap::meshing::Vector2& u0, const utymap::meshing::Vector2& u1, const utymap::meshing::Vector2& u2) const
+    {
+        builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, u0, u1, u2,
+            meshContext_.geometryOptions, meshContext_.appearanceOptions);
     }
 
     /// Calculates height of the 2d point using plane equation.
