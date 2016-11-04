@@ -23,11 +23,20 @@ public:
     {
     }
     
-    /// Sets roof direction. It should either be a string orientation (N, NORTH, NNE, etc.) 
-    ///  or an angle in degree from north clockwise 
+    /// Sets roof direction. It should either be a string orientation (N, NNE, etc.) 
+    /// or an angle in degree from north clockwise 
     void setDirection(const std::string& direction) override
     {
-        direction_ = utymap::utils::lexicalCast<double>(direction);
+        // see http://wiki.openstreetmap.org/wiki/Key:roof:direction
+        static std::unordered_map<std::string, double> directions_ = {
+                { "N", 0 },   { "NNE", 22 },  { "NE", 45 },  { "ENE", 67 },
+                { "E", 90 },  { "ESE", 112 }, { "SE", 135 }, { "SSE", 157 },
+                { "S", 180 }, { "SSW", 202 }, { "SW", 225 }, { "WSW", 247 },
+                { "W", 270 }, { "WNW", 292 }, { "NW", 315 }, { "NNW", 337 } };
+        auto dir = directions_.find(direction);
+        direction_ = dir != directions_.end() 
+            ? dir->second 
+            : utymap::utils::parseDouble(direction);
     }
 
     void build(utymap::meshing::Polygon& polygon) override
