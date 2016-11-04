@@ -29,9 +29,6 @@ public:
     /// Gets original string by id.
     std::string getString(std::uint32_t id) const;
 
-    /// Flushes changes to disk.
-    void flush() const;
-
 private:
     class StringTableImpl;
     std::unique_ptr<StringTableImpl> pimpl_;
