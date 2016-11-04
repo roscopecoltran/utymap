@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllQuadKeysAreLoadedAtZoomOne_ThenCallbac
     loadQuadKeys(1, 0, 1, 0, 1);
 }
 
-// This case tests storing lod range.
+/// This case tests storing lod range.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_ThenCallbacksAreCalled)
 {
     ::addToStoreInRange(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 16, 16, callback);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_Then
     loadQuadKeys(16, 35205, 35205, 21489, 21489);
 }
 
-// This case tests dynamic addtion incremental addtion/search to store.
+/// This case tests dynamic addition incremental addition/search to store.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeysAreLoadedInSequenceAtDetailedZoom_ThenCallbacksAreCalled)
 {
     ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, 35205, 21489, 16, callback);

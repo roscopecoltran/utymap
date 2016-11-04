@@ -2,9 +2,7 @@
 #include "index/StringTable.hpp"
 #include "utils/CoreUtils.hpp"
 
-#include <cstdio>
 #include <fstream>
-#include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <vector>
@@ -30,10 +28,10 @@ public:
     {
         nextId_ = static_cast<std::uint32_t>(indexFile_.tellg() / (sizeof(std::uint32_t) * 2));
         if (nextId_ > 0) {
-            int32_t count = nextId_;
+            std::uint32_t count = nextId_;
             offsets_.reserve(count);
             indexFile_.seekg(0, ios::beg);
-            for (int i = 0; i < count; ++i) {
+            for (std::uint32_t i = 0; i < count; ++i) {
                 std::uint32_t hash, offset;
                 indexFile_.read(reinterpret_cast<char*>(&hash), sizeof(hash));
                 indexFile_.read(reinterpret_cast<char*>(&offset), sizeof(offset));
@@ -72,8 +70,6 @@ public:
         readString(id, str);
         return str;
     }
-
-    void flush() { /* TODO */ }
 
 private:
 
@@ -137,9 +133,4 @@ std::uint32_t StringTable::getId(const std::string& str) const
 std::string StringTable::getString(std::uint32_t id) const
 {
     return pimpl_->getString(id);
-}
-
-void StringTable::flush() const
-{
-    pimpl_->flush();
 }
