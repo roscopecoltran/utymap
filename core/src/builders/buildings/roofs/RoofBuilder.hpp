@@ -53,6 +53,15 @@ public:
     virtual void build(utymap::meshing::Polygon& polygon) = 0;
 
 protected:
+
+    /// Adds triangle to mesh from context.
+    void addTriangle(const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2,
+                     const utymap::meshing::Vector2& u0, const utymap::meshing::Vector2& u1, const utymap::meshing::Vector2& u2) const
+    {
+        builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, u0, u1, u2,
+            meshContext_.geometryOptions, meshContext_.appearanceOptions);
+    }
+
     const utymap::builders::BuilderContext& builderContext_;
     utymap::builders::MeshContext& meshContext_;
     double height_, minHeight_;
