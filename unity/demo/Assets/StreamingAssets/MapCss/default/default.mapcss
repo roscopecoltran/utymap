@@ -5,9 +5,8 @@
 @texture url("default.z16.txt");
 
 /* always ignore some elements. */
-way|z1-16[level<0],
-way|z1-16[layer<0],
-area|z1-16[level<0],
+area,way|z1-16[level<0],
+area,way|z1-16[layer<0],
 area|z1-16[man_made!=bridge][layer<0]  {
     skip:true;
 }

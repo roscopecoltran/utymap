@@ -33,16 +33,7 @@ struct ConditionType final
 struct Filter final
 {
     std::vector<ConditionType> conditions;
-    std::unordered_map<int, std::unique_ptr<const StyleDeclaration>> declarations;
-
-    Filter() = default;
-    Filter(const Filter& other) = delete;
-
-    Filter(Filter&& other) :
-        conditions(std::move(other.conditions)),
-        declarations(std::move(other.declarations))
-    {
-    }
+    std::unordered_map<int, std::shared_ptr<const StyleDeclaration>> declarations;
 };
 
 /// Key: level of details, value: filters for specific element type.
@@ -289,7 +280,7 @@ private:
             if (utymap::utils::GradientUtils::isGradient(declaration.value))
                 addGradient(declaration.value);
 
-            filter.declarations[key] = utymap::utils::make_unique<const StyleDeclaration>(key, declaration.value);
+            filter.declarations[key] = std::make_shared<const StyleDeclaration>(key, declaration.value);
         }
     }
 
@@ -298,7 +289,7 @@ private:
         std::sort(filter.conditions.begin(), filter.conditions.end(),
                   [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
         for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
-            (*filtersPtr)[i].push_back(std::move(filter));
+            (*filtersPtr)[i].push_back(filter);
         }
     }
 
