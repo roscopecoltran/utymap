@@ -30,13 +30,14 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenGetCircle_ThenReturnsCorrectCircle)
     Polygon polygon(1, 0);
     polygon.addContour({ { 0, 0 }, { 4, 0 }, { 4, 4 }, { 0, 4 }, { 0, 0 }});
     Vector2 center;
-    double radius;
+    Vector2 size;
 
-    getCircle(polygon.rectangle, center, radius);
+    getCircle(polygon.rectangle, center, size);
 
     BOOST_CHECK_EQUAL(2, center.x);
     BOOST_CHECK_EQUAL(2, center.y);
-    BOOST_CHECK_EQUAL(2, radius);
+    BOOST_CHECK_EQUAL(2, size.x);
+    BOOST_CHECK_EQUAL(2, size.y);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

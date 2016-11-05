@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanG
     IcoSphereGenerator icoSphereGenerator(builderContext, meshContext);
     icoSphereGenerator
         .setCenter(Vector3(0, 0, 0))
-        .setRadius(10)
+        .setSize(Vector3(10, 10, 10))
         .setRecursionLevel(2)
         .isSemiSphere(false)
         .setColorNoiseFreq(0.1)
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenera
             .setPosition(Vector3(0, 0, 0))
             .setTrunkHeight(5)
             .setTrunkRadius(0.5)
-            .setFoliageRadius(4)
+            .setFoliageSize(Vector3(4, 4, 4))
             .setTrunkColorNoiseFreq(0.1)
             .setFoliageColorNoiseFreq(0.1)
             .generate();

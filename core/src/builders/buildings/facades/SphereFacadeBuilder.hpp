@@ -21,17 +21,17 @@ public:
     void build(utymap::meshing::Polygon& polygon) override
     {
         utymap::meshing::Vector2 center2d;
-        double radius;
-        utymap::utils::getCircle(polygon.rectangle, center2d, radius);
+        utymap::meshing::Vector2 size;
+        utymap::utils::getCircle(polygon.rectangle, center2d, size);
 
         double heightInMeters = utymap::utils::GeoUtils::distance(
                 utymap::GeoCoordinate(center2d.y, center2d.x),
-                utymap::GeoCoordinate(center2d.y + radius, center2d.x));
+                utymap::GeoCoordinate(center2d.y + size.y, center2d.x));
 
         IcoSphereGenerator icoSphereGenerator(builderContext_, meshContext_);
         icoSphereGenerator
                 .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
-                .setRadius(radius, heightInMeters)
+                .setSize(utymap::meshing::Vector3(size.x, heightInMeters, size.y))
                 .setRecursionLevel(2)
                 .isSemiSphere(false)
                 .setColorNoiseFreq(0)

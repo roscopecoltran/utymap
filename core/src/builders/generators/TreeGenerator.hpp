@@ -25,10 +25,9 @@ public:
             trunkGenerator(builderContext, trunkGeneratorMeshContext),
             foliageGenerator(builderContext, foliageGeneratorMeshContext),
             position_(),
+            foliageSize_(),
             trunkHeight_(0),
-            trunkRadius_(0),
-            foliageRadius_(0),
-            foliageHeight_(0)
+            trunkRadius_(0)
     {
     }
 
@@ -56,10 +55,9 @@ public:
     }
 
     /// Sets radius of foliage
-    TreeGenerator& setFoliageRadius(double radius, double height = 1)
+    TreeGenerator& setFoliageSize(const utymap::meshing::Vector3& size)
     {
-        foliageRadius_ = radius;
-        foliageHeight_ = height;
+        foliageSize_ = size;
         return *this;
     }
 
@@ -110,9 +108,9 @@ public:
         foliageGenerator
             .setCenter(utymap::meshing::Vector3(
                 position_.x,
-                position_.y + trunkHeight_ + foliageRadius_,
+                position_.y + trunkHeight_ + foliageSize_.y,
                 position_.z))
-            .setRadius(foliageRadius_, foliageHeight_)
+            .setSize(foliageSize_)
             .setRecursionLevel(1)
             .setVertexNoiseFreq(0.1f)
             .generate();
@@ -127,8 +125,9 @@ private:
     utymap::builders::MeshContext foliageGeneratorMeshContext;
     CylinderGenerator trunkGenerator;
     IcoSphereGenerator foliageGenerator;
-    meshing::Vector3 position_;
-    double trunkHeight_, trunkRadius_, foliageRadius_, foliageHeight_;
+    utymap::meshing::Vector3 position_;
+    utymap::meshing::Vector3 foliageSize_;
+    double trunkHeight_, trunkRadius_;
 };
 }}
 

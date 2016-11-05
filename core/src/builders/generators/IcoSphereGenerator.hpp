@@ -28,7 +28,7 @@ public:
     IcoSphereGenerator(const utymap::builders::BuilderContext& builderContext,
                        utymap::builders::MeshContext& meshContext):
             AbstractGenerator(builderContext, meshContext),
-            center_(), radius_(0), height_(0), recursionLevel_(0), isSemiSphere_(false)
+            center_(), size_(), recursionLevel_(0), isSemiSphere_(false)
     {
     }
 
@@ -40,10 +40,9 @@ public:
     }
 
     /// Sets radius of icosphere.
-    IcoSphereGenerator& setRadius(double radius, double height = 1)
+    IcoSphereGenerator& setSize(const utymap::meshing::Vector3& size)
     {
-        radius_ = radius;
-        height_ = height;
+        size_ = size;
         return *this;
     }
 
@@ -188,13 +187,13 @@ private:
     utymap::meshing::Vector3 scale(const utymap::meshing::Vector3& v) const
     {
         return utymap::meshing::Vector3(
-            v.x * radius_ * 1.5,
-            v.y * height_,
-            v.z * radius_);
+            v.x * size_.x,
+            v.y * size_.y,
+            v.z * size_.z);
     }
 
 utymap::meshing::Vector3 center_;
-double radius_, height_;
+utymap::meshing::Vector3 size_;
 int recursionLevel_;
 bool isSemiSphere_;
 

@@ -49,7 +49,7 @@ inline void getCircle(const std::vector<utymap::GeoCoordinate>& coordinates, uty
 }
 
 /// Gets circle parameters from rectangle.
-inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshing::Vector2& center, double& radius)
+inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshing::Vector2& center, utymap::meshing::Vector2& size)
 {
     double radiusX = (rectangle.xMax - rectangle.xMin) / 2;
     double radiusY = (rectangle.yMax - rectangle.yMin) / 2;
@@ -57,7 +57,7 @@ inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshi
     double centerX = rectangle.xMin + radiusX;
     double centerY = rectangle.yMin + radiusY;
 
-    radius = radiusY;
+    size = utymap::meshing::Vector2(radiusX, radiusY);
     center = utymap::meshing::Vector2(centerX, centerY);
 }
 

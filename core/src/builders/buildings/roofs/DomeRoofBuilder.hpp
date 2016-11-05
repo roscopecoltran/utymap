@@ -23,17 +23,17 @@ public:
     {
         utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
             utymap::meshing::Vector2 center2d;
-            double radius;
-            utymap::utils::getCircle(rectangle, center2d, radius);
+            utymap::meshing::Vector2 size;
+            utymap::utils::getCircle(rectangle, center2d, size);
 
             double heightInMeters = utymap::utils::GeoUtils::distance(
                 utymap::GeoCoordinate(center2d.y, center2d.x),
-                utymap::GeoCoordinate(center2d.y + radius, center2d.x));
+                utymap::GeoCoordinate(center2d.y + size.y, center2d.x));
 
             utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_);
             generator
                 .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
-                .setRadius(radius, heightInMeters)
+                .setSize(utymap::meshing::Vector3(size.x, heightInMeters, size.y))
                 .setRecursionLevel(2)
                 .isSemiSphere(true)
                 .setVertexNoiseFreq(0.0)

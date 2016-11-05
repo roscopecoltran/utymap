@@ -109,7 +109,7 @@ std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext
         trunkGradient, foliageGradient, trunkTexture, foliageTeture);
 
     generator->setFoliageColorNoiseFreq(0);
-    generator->setFoliageRadius(foliageRadiusInDegrees, foliageRadiusInMeters);
+    generator->setFoliageSize(Vector3(1.5 * foliageRadiusInDegrees, foliageRadiusInMeters, foliageRadiusInDegrees));
     generator->setFoliageTextureScale(style.getValue(FoliageTextureScaleKey));
     generator->setTrunkColorNoiseFreq(0);
     generator->setTrunkRadius(style.getValue(TrunkRadius, relativeSize, relativeCoordinate));

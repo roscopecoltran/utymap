@@ -22,8 +22,8 @@ public:
     {
         utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
             utymap::meshing::Vector2 center2d;
-            double radius;
-            utymap::utils::getCircle(rectangle, center2d, radius);
+            utymap::meshing::Vector2 size;
+            utymap::utils::getCircle(rectangle, center2d, size);
 
             CylinderGenerator cylinderGenerator(builderContext_, meshContext_);
             cylinderGenerator
@@ -31,7 +31,7 @@ public:
                 .setHeight(height_)
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
-                .setRadius(radius)
+                .setRadius(size.y)
                 .setColorNoiseFreq(0)
                 .generate();
         });
