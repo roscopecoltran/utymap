@@ -106,7 +106,7 @@ area,relation|z16[landuse=forest] {
 
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
     trunk-radius: 0.2m;
-    trunk-height: 4m;
+    trunk-height: 1.8m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;
