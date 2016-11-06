@@ -13,6 +13,7 @@
 #include "builders/buildings/roofs/PyramidalRoofBuilder.hpp"
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/roofs/SkillionRoofBuilder.hpp"
+#include "builders/buildings/roofs/RoundRoofBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GradientUtils.hpp"
@@ -93,6 +94,12 @@ namespace {
             "skillion",
             [](const BuilderContext& builderContext, MeshContext& meshContext) {
                 return utymap::utils::make_unique<SkillionRoofBuilder>(builderContext, meshContext);
+            }
+        },
+        {
+            "round",
+            [](const BuilderContext& builderContext, MeshContext& meshContext) {
+                return utymap::utils::make_unique<RoundRoofBuilder>(builderContext, meshContext);
             }
         }
     };
