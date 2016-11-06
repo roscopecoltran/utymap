@@ -33,6 +33,11 @@ struct Vector2
         return Vector2(x * scale, y * scale);
     }
 
+    Vector2 operator/(double scale) const
+    {
+        return Vector2(x / scale, y / scale);
+    }
+
     Vector2 operator+(const Vector2& rhs) const
     {
         return Vector2(x + rhs.x, y + rhs.y);
@@ -73,9 +78,14 @@ struct Vector3
     Vector3() : x(0), y(0), z(0)  { }
     Vector3(double x, double y, double z) : x(x), y(y), z(z) { }
 
-    Vector3 operator*(double mult) const
+    Vector3 operator*(double scale) const
     {
-        return Vector3(x * mult, y *mult, z * mult);
+        return Vector3(x * scale, y *scale, z * scale);
+    }
+
+    Vector3 operator/(double scale) const
+    {
+        return Vector3(x / scale, y / scale, z / scale);
     }
 
     Vector3 operator+(const Vector3& rhs) const

@@ -30,6 +30,7 @@ set(HEADER_FILES
         builders/buildings/roofs/MansardRoofBuilder.hpp
         builders/buildings/roofs/PyramidalRoofBuilder.hpp
         builders/buildings/roofs/RoofBuilder.hpp
+        builders/buildings/roofs/RoundRoofBuilder.hpp
         builders/buildings/roofs/SkillionRoofBuilder.hpp
         builders/generators/AbstractGenerator.hpp
         builders/generators/CylinderGenerator.hpp
