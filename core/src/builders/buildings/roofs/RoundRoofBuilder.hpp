@@ -84,17 +84,17 @@ private:
 
             // build round shape based on orientation
             if (direction_ == Direction::Along)
-                buildRoundShape(polygon, p0, p1, p2, p3);
+                buildRoundShape(p0, p1, p2, p3);
             else
-                buildRoundShape(polygon, p1, p2, p3, p0);
+                buildRoundShape(p1, p2, p3, p0);
         }
 
         return true;
     }
 
     /// Builds round shape around front and back.  p1-p2 and p0-p3 are radial segments
-    void buildRoundShape(const utymap::meshing::Polygon& polygon, const utymap::meshing::Vector2& p0,
-        const utymap::meshing::Vector2& p1, const utymap::meshing::Vector2& p2, const utymap::meshing::Vector2& p3) const
+    void buildRoundShape(const utymap::meshing::Vector2& p0, const utymap::meshing::Vector2& p1, 
+                         const utymap::meshing::Vector2& p2, const utymap::meshing::Vector2& p3) const
     {
         // prepare pilar vectors
         const auto direction2d = (p3 - p0).normalized();
