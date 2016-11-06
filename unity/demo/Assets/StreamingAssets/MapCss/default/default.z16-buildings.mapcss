@@ -270,17 +270,17 @@ area,relation|z16[roof:color] {
     roof-color: eval("tag('roof:color')");
 }
 
-area,relation|z16[roof:direction] {
-    roof-direction: eval("tag('roof:direction')");
-}
-area,relation|z16[roof:slope:direction] {
-    roof-direction: eval("tag('roof:slope:direction')");
-}
 area,relation|z16[roof:orientation] {
     roof-direction: eval("tag('roof:orientation')");
 }
 area,relation|z16[building:roof:orientation] {
     roof-direction: eval("tag('building:roof:orientation')");
+}
+area,relation|z16[roof:direction] {
+    roof-direction: eval("tag('roof:direction')");
+}
+area,relation|z16[roof:slope:direction] {
+    roof-direction: eval("tag('roof:slope:direction')");
 }
 
 area,relation|z16[man_made=bridge] {
