@@ -91,14 +91,10 @@ private:
         return true;
     }
 
-    /// Builds round shape around front and back.
+    /// Builds round shape around front and back.  p1-p2 and p0-p3 are radial segments
     void buildRoundShape(const utymap::meshing::Polygon& polygon, const utymap::meshing::Vector2& p0,
         const utymap::meshing::Vector2& p1, const utymap::meshing::Vector2& p2, const utymap::meshing::Vector2& p3) const
     {
-        // p0 ------ p1
-        //              --> p1-p2 and p0-p3 are radial segments
-        //   p3 -- p2
-
         // prepare pilar vectors
         const auto direction2d = (p3 - p0).normalized();
         const utymap::meshing::Vector3 direction(-direction2d.y, 0, direction2d.x);
@@ -132,6 +128,9 @@ private:
 
             addTriangle(frontCenter, front2, front1, u0, u0, u0);
             addTriangle(backCenter, back1, back2, u0, u0, u0);
+
+            addTriangle(front1, back2, back1, u0, u0, u0);
+            addTriangle(front2, back2, front1, u0, u0, u0);
         }
     }
 

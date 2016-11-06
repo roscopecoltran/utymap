@@ -66,6 +66,7 @@ area,relation|z16[roof:height] {
 area,relation|z16[roof:shape=dome] {
     roof-type: dome;
 }
+area,relation|z16[building:roof:shape=pyramidal],
 area,relation|z16[roof:shape=pyramidal] {
     roof-type: pyramidal;
 }
@@ -75,7 +76,9 @@ area,relation|z16[roof:shape=mansard] {
 area,relation|z16[roof:shape=skillion] {
     roof-type: skillion;
 }
-
+area,relation|z16[roof:shape=round] {
+    roof-type: round;
+}
 area,relation|z16[building:shape=cylinder] {
     roof-type: none;
     facade-type: cylinder;
@@ -272,6 +275,12 @@ area,relation|z16[roof:direction] {
 }
 area,relation|z16[roof:slope:direction] {
     roof-direction: eval("tag('roof:slope:direction')");
+}
+area,relation|z16[roof:orientation] {
+    roof-direction: eval("tag('roof:orientation')");
+}
+area,relation|z16[building:roof:orientation] {
+    roof-direction: eval("tag('building:roof:orientation')");
 }
 
 area,relation|z16[man_made=bridge] {
