@@ -50,43 +50,44 @@ private:
 
     /// Tries to build round roof, returns false if polygon has unexpected shape.
     bool buildRound(utymap::meshing::Polygon& polygon) const
-    {
-        const auto range = polygon.outers[0];
-        const auto size = range.second - range.first;
-        if (!polygon.inners.empty() || polygon.outers.size() > 1 || size == 16)
+    {    
+        if (!polygon.inners.empty())
             return false;
 
-        // detect side with maximum length
-        double maxSideLength = 0;
-        auto maxSideIndex = range.first;
-        const auto lastPointIndex = size - 2;
-        for (std::size_t i = range.first; i < range.second; i += 2) {
-            const auto nextIndex = i == lastPointIndex ? 0 : i + 2;
+        for (const auto range : polygon.outers) {
+            const auto size = range.second - range.first;
+            // detect side with maximum length
+            double maxSideLength = 0;
+            auto maxSideIndex = range.first;
+            const auto lastPointIndex = range.second - 2;
+            for (std::size_t i = range.first; i < range.second; i += 2) {
+                const auto nextIndex = i == lastPointIndex ? range.first : i + 2;
 
-            utymap::meshing::Vector2 v0(polygon.points[i], polygon.points[i + 1]);
-            utymap::meshing::Vector2 v1(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
+                utymap::meshing::Vector2 v0(polygon.points[i], polygon.points[i + 1]);
+                utymap::meshing::Vector2 v1(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
 
-            auto length = utymap::meshing::Vector2::distance(v0, v1);
-            if (length > maxSideLength) {
-                maxSideIndex = i;
-                maxSideLength = length;
+                auto length = utymap::meshing::Vector2::distance(v0, v1);
+                if (length > maxSideLength) {
+                    maxSideIndex = i;
+                    maxSideLength = length;
+                }
             }
+
+            // specify points for sides and front/back
+            utymap::meshing::Vector2 p0(polygon.points[maxSideIndex], polygon.points[maxSideIndex + 1]);
+            auto next = nextIndex(maxSideIndex, range.first, lastPointIndex);
+            utymap::meshing::Vector2 p1(polygon.points[next], polygon.points[next + 1]);
+            next = nextIndex(next, range.first, lastPointIndex);
+            utymap::meshing::Vector2 p2(polygon.points[next], polygon.points[next + 1]);
+            next = nextIndex(next, range.first, lastPointIndex);
+            utymap::meshing::Vector2 p3(polygon.points[next], polygon.points[next + 1]);
+
+            // build round shape based on orientation
+            if (direction_ == Direction::Along)
+                buildRoundShape(polygon, p0, p1, p2, p3);
+            else
+                buildRoundShape(polygon, p1, p2, p3, p0);
         }
-
-        // specify points for sides and front/back
-        utymap::meshing::Vector2 p0(polygon.points[maxSideIndex], polygon.points[maxSideIndex + 1]);
-        auto next = nextIndex(maxSideIndex, lastPointIndex);
-        utymap::meshing::Vector2 p1(polygon.points[next], polygon.points[next + 1]);
-        next = nextIndex(next, lastPointIndex);
-        utymap::meshing::Vector2 p2(polygon.points[next], polygon.points[next + 1]);
-        next = nextIndex(next, lastPointIndex);
-        utymap::meshing::Vector2 p3(polygon.points[next], polygon.points[next + 1]);
-
-        // build round shape based on orientation
-        if (direction_ == Direction::Along)
-            buildRoundShape(polygon, p0, p1, p2, p3);
-        else
-            buildRoundShape(polygon, p1, p2, p3, p0);
 
         return true;
     }
@@ -134,9 +135,9 @@ private:
         }
     }
 
-    std::size_t nextIndex(std::size_t current, std::size_t max) const
+    std::size_t nextIndex(std::size_t current, std::size_t min, std::size_t max) const
     {
-        return (current+=2) > max ? 0 : current;
+        return (current+=2) > max ? min : current;
     }
 
     utymap::meshing::Vector3 restore(const utymap::meshing::Vector3& normalized, double radius, utymap::meshing::Vector3 center) const
