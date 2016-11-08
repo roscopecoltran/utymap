@@ -9,8 +9,7 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-
-#include <memory>
+#include "math/Mesh.hpp"
 
 namespace utymap { namespace builders {
 
@@ -35,7 +34,7 @@ public:
 
     /// Creates tree generator which can be used to produce multiple trees inside mesh.
     static std::unique_ptr<TreeGenerator> createGenerator(const utymap::builders::BuilderContext& builderContext,
-                                                          utymap::meshing::Mesh& mesh, 
+                                                          utymap::math::Mesh& mesh,
                                                           const utymap::mapcss::Style& style);
 };
 

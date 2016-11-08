@@ -1,12 +1,11 @@
 #include "builders/terrain/TerraGenerator.hpp"
-
-#include <functional>
-#include <unordered_map>
+#include "math/Mesh.hpp"
+#include "math/Vector2.hpp"
 
 using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 using namespace std::placeholders;
@@ -235,7 +234,7 @@ void TerraGenerator::fillMesh(Polygon& polygon, const RegionContext& regionConte
     }
 }
 
-void TerraGenerator::addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
+void TerraGenerator::addExtrasIfNecessary(Mesh& mesh,
                                           TerraExtras::Context& extrasContext,
                                           const RegionContext& regionContext) const
 {

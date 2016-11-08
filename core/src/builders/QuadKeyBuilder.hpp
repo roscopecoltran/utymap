@@ -8,11 +8,10 @@
 #include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "mapcss/StyleProvider.hpp"
-#include "meshing/MeshTypes.hpp"
+#include "math/Mesh.hpp"
 
 #include <functional>
 #include <string>
-#include <memory>
 
 namespace utymap { namespace builders {
 
@@ -20,7 +19,7 @@ namespace utymap { namespace builders {
 class QuadKeyBuilder final
 {
 public:
-    typedef std::function<void(const utymap::meshing::Mesh&)> MeshCallback;
+    typedef std::function<void(const utymap::math::Mesh&)> MeshCallback;
     typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
     /// Factory of element builders
     typedef std::function<std::unique_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;

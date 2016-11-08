@@ -18,6 +18,7 @@ set(HEADER_FILES
         builders/BuilderContext.hpp
         builders/ElementBuilder.hpp
         builders/ExternalBuilder.hpp
+        builders/MeshBuilder.hpp
         builders/MeshContext.hpp
         builders/QuadKeyBuilder.hpp
         builders/buildings/BuildingBuilder.hpp
@@ -77,9 +78,12 @@ set(HEADER_FILES
         mapcss/StyleEvaluator.hpp
         mapcss/StyleDeclaration.hpp
         mapcss/StyleProvider.hpp
-        meshing/MeshBuilder.hpp
-        meshing/MeshTypes.hpp
-        meshing/Polygon.hpp
+        math/LineLinear.hpp
+        math/Mesh.hpp
+        math/Polygon.hpp
+        math/Rectangle.hpp
+        math/Vector2.hpp
+        math/Vector3.hpp
         utils/CoreUtils.hpp
         utils/ElementUtils.hpp
         utils/GeometryUtils.hpp
@@ -100,6 +104,7 @@ add_library(${LIBRARY_NAME}
         ${LIB_SOURCE}/shapefile/dbfopen.c
         ${LIB_SOURCE}/shapefile/safileio.c
         ${LIB_SOURCE}/shapefile/shpopen.c
+        builders/MeshBuilder.cpp
         builders/misc/BarrierBuilder.cpp
         builders/poi/TreeBuilder.cpp
         builders/terrain/TerraBuilder.cpp
@@ -119,7 +124,6 @@ add_library(${LIBRARY_NAME}
         mapcss/StyleEvaluator.cpp
         mapcss/StyleProvider.cpp
         mapcss/StyleSheet.cpp
-        meshing/MeshBuilder.cpp
         utils/GradientUtils.cpp
         utils/NoiseUtils.cpp
         )

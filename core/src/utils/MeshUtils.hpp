@@ -1,12 +1,13 @@
 #ifndef UTILS_MESHUTILS_HPP_DEFINED
 #define UTILS_MESHUTILS_HPP_DEFINED
 
-#include "meshing/MeshTypes.hpp"
+#include "math/Mesh.hpp"
+#include "math/Vector3.hpp"
 
 namespace utymap { namespace utils {
 
 /// Copies mesh into existing one adjusting position.
-inline void copyMesh(const utymap::meshing::Vector3& position, const utymap::meshing::Mesh& source, utymap::meshing::Mesh& destination)
+inline void copyMesh(const utymap::math::Vector3& position, const utymap::math::Mesh& source, utymap::math::Mesh& destination)
 {
     int startIndex = static_cast<int>(destination.vertices.size() / 3);
 

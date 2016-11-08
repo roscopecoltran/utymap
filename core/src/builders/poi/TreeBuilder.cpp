@@ -1,11 +1,10 @@
 #include "builders/poi/TreeBuilder.hpp"
-#include "utils/GradientUtils.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {

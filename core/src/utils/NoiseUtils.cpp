@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 const double Sqr2 = std::sqrt(2);

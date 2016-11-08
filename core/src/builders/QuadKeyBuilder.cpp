@@ -13,7 +13,7 @@ using namespace utymap::entities;
 using namespace utymap::heightmap;
 using namespace utymap::index;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 const std::string BuilderKeyName = "builders";
 

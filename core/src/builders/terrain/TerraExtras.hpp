@@ -2,9 +2,7 @@
 #define BUILDERS_TERRAEXTRAS_HPP_DEFINED
 
 #include "builders/BuilderContext.hpp"
-#include "meshing/MeshTypes.hpp"
-
-#include <functional>
+#include "math/Mesh.hpp"
 
 namespace utymap { namespace builders {
 
@@ -19,10 +17,10 @@ public:
         std::size_t startTriangle;
         std::size_t startColor;
 
-        utymap::meshing::Mesh& mesh;
+        utymap::math::Mesh& mesh;
         const utymap::mapcss::Style& style;
 
-        Context(utymap::meshing::Mesh& mesh,
+        Context(utymap::math::Mesh& mesh,
                 const utymap::mapcss::Style& style) :
             startVertex(mesh.vertices.size()),
             startTriangle(mesh.triangles.size()),

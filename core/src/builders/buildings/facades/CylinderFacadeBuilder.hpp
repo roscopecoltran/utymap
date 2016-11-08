@@ -3,7 +3,6 @@
 
 #include "builders/buildings/facades/FacadeBuilder.hpp"
 #include "builders/generators/CylinderGenerator.hpp"
-#include "meshing/MeshTypes.hpp"
 #include "utils/GeometryUtils.hpp"
 
 namespace utymap { namespace builders {
@@ -18,16 +17,16 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
-        utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
-            utymap::meshing::Vector2 center2d;
-            utymap::meshing::Vector2 size;
+        utymap::utils::outerRectangles(polygon, [&](const utymap::math::Rectangle& rectangle) {
+            utymap::math:: Vector2 center2d;
+            utymap::math::Vector2 size;
             utymap::utils::getCircle(rectangle, center2d, size);
 
             CylinderGenerator cylinderGenerator(builderContext_, meshContext_);
             cylinderGenerator
-                .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
+                .setCenter(utymap::math::Vector3(center2d.x, minHeight_, center2d.y))
                 .setHeight(height_)
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
@@ -39,5 +38,4 @@ public:
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_FACADES_CYLINDERFACADEBUILDER_HPP_DEFINED

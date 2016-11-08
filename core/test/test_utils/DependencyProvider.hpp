@@ -8,7 +8,6 @@
 #include "mapcss/StyleProvider.hpp"
 
 #include <cstdio>
-#include <memory>
 
 class DependencyProvider
 {
@@ -52,7 +51,7 @@ public:
     std::shared_ptr<utymap::builders::BuilderContext> createBuilderContext(
         const utymap::QuadKey& quadKey,
         const std::string& stylesheet,
-        std::function<void(const utymap::meshing::Mesh&)> meshCallback = nullptr,
+        std::function<void(const utymap::math::Mesh&)> meshCallback = nullptr,
         std::function<void(const utymap::entities::Element&)> elementCallback = nullptr)
     {
         return std::make_shared<utymap::builders::BuilderContext>(quadKey,

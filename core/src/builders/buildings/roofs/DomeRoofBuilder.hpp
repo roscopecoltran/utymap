@@ -19,11 +19,11 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
-        utymap::utils::outerRectangles(polygon, [&](const utymap::meshing::Rectangle& rectangle) {
-            utymap::meshing::Vector2 center2d;
-            utymap::meshing::Vector2 size;
+        utymap::utils::outerRectangles(polygon, [&](const utymap::math::Rectangle& rectangle) {
+            utymap::math::Vector2 center2d;
+            utymap::math::Vector2 size;
             utymap::utils::getCircle(rectangle, center2d, size);
 
             double heightInMeters = utymap::utils::GeoUtils::distance(
@@ -32,8 +32,8 @@ public:
 
             utymap::builders::IcoSphereGenerator generator(builderContext_, meshContext_);
             generator
-                .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
-                .setSize(utymap::meshing::Vector3(size.x, heightInMeters, size.y))
+                .setCenter(utymap::math::Vector3(center2d.x, minHeight_, center2d.y))
+                .setSize(utymap::math::Vector3(size.x, heightInMeters, size.y))
                 .setRecursionLevel(2)
                 .isSemiSphere(true)
                 .setVertexNoiseFreq(0.0)
@@ -44,5 +44,4 @@ public:
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_FACADES_DOMEROOFBUILDER_HPP_DEFINED

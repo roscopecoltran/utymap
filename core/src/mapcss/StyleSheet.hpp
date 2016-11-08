@@ -1,7 +1,7 @@
 #ifndef MAPCSS_STYLESHEET_HPP_DEFINED
 #define MAPCSS_STYLESHEET_HPP_DEFINED
 
-#include "meshing/MeshTypes.hpp"
+#include "math/Rectangle.hpp"
 
 #include <cstdint>
 #include <string>
@@ -39,7 +39,7 @@ struct TextureRegion final
 struct TextureGroup final
 {
     /// Adds specific region to the group.
-    void add(std::uint16_t width, std::uint16_t height, utymap::meshing::Rectangle rect)
+    void add(std::uint16_t width, std::uint16_t height, utymap::math::Rectangle rect)
     {
         regions_.emplace_back(
             width,
@@ -74,7 +74,7 @@ struct TextureAtlas final
         textureGroups_(std::move(textureGroups)),
         emptyGroup_()
     {
-        emptyGroup_.add(0, 0, utymap::meshing::Rectangle());
+        emptyGroup_.add(0, 0, utymap::math::Rectangle());
     }
 
     /// Returns name of atlas.

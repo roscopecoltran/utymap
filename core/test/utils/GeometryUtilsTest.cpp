@@ -1,10 +1,9 @@
-#include "meshing/Polygon.hpp"
 #include "utils/GeometryUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 BOOST_AUTO_TEST_SUITE(Utils_GeometryUtils)

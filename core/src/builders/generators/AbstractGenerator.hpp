@@ -3,10 +3,7 @@
 
 #include "builders/BuilderContext.hpp"
 #include "builders/MeshContext.hpp"
-#include "meshing/MeshTypes.hpp"
 #include "utils/NoiseUtils.hpp"
-
-#include <algorithm>
 
 namespace utymap { namespace builders {
 
@@ -44,9 +41,9 @@ public:
 
 protected:
     /// Adds triangle to mesh.
-    void addTriangle(const utymap::meshing::Vector3& v0,
-                     const utymap::meshing::Vector3& v1,
-                     const utymap::meshing::Vector3& v2) const
+    void addTriangle(const utymap::math::Vector3& v0,
+                     const utymap::math::Vector3& v1,
+                     const utymap::math::Vector3& v2)
     {
         // TODO check noise here.
         double noise = std::abs(vertNoiseFreq_) < 1E-5
@@ -54,20 +51,20 @@ protected:
                        : 0;
 
         builderContext_.meshBuilder.addTriangle(meshContext_.mesh,
-                                 utymap::meshing::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
-                                 utymap::meshing::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
-                                 utymap::meshing::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
-                                 utymap::meshing::Vector2(0, 0),
-                                 utymap::meshing::Vector2(1, 0),
-                                 utymap::meshing::Vector2(1, 1),
+                                 utymap::math::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
+                                 utymap::math::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
+                                 utymap::math::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
+                                 utymap::math::Vector2(0, 0),
+                                 utymap::math::Vector2(1, 0),
+                                 utymap::math::Vector2(1, 1),
                                  meshContext_.geometryOptions,
                                  meshContext_.appearanceOptions);
     }
 
-    void addPlane(const utymap::meshing::Vector2& v0, 
-                  const utymap::meshing::Vector2& v1,
+    void addPlane(const utymap::math::Vector2& v0,
+                  const utymap::math::Vector2& v1,
                   double bottom,
-                  double top) const
+                  double top)
     {
         meshContext_.geometryOptions.elevation = bottom;
         meshContext_.geometryOptions.heightOffset = top - bottom;

@@ -2,11 +2,11 @@
 #define UTILS_GEOMETRYUTILS_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "meshing/Polygon.hpp"
+#include "math/Polygon.hpp"
+#include "math/Rectangle.hpp"
+#include "math/Vector2.hpp"
 
 #include <algorithm>
-#include <vector>
 
 namespace utymap { namespace utils {
 
@@ -49,7 +49,7 @@ inline void getCircle(const std::vector<utymap::GeoCoordinate>& coordinates, uty
 }
 
 /// Gets circle parameters from rectangle.
-inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshing::Vector2& center, utymap::meshing::Vector2& size)
+inline void getCircle(const utymap::math::Rectangle& rectangle, utymap::math::Vector2& center, utymap::math::Vector2& size)
 {
     double radiusX = (rectangle.xMax - rectangle.xMin) / 2;
     double radiusY = (rectangle.yMax - rectangle.yMin) / 2;
@@ -57,12 +57,12 @@ inline void getCircle(const utymap::meshing::Rectangle& rectangle, utymap::meshi
     double centerX = rectangle.xMin + radiusX;
     double centerY = rectangle.yMin + radiusY;
 
-    size = utymap::meshing::Vector2(radiusX, radiusY);
-    center = utymap::meshing::Vector2(centerX, centerY);
+    size = utymap::math::Vector2(radiusX, radiusY);
+    center = utymap::math::Vector2(centerX, centerY);
 }
 
 /// Gets centroid.
-inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& polygon, const utymap::meshing::Polygon::Range& range)
+inline utymap::math::Vector2 getCentroid(const utymap::math::Polygon& polygon, const utymap::math::Polygon::Range& range)
 {
     double centroidX = 0.0;
     double centroidY = 0.0;
@@ -76,12 +76,12 @@ inline utymap::meshing::Vector2 getCentroid(const utymap::meshing::Polygon& poly
     centroidX /= count;
     centroidY /= count;
 
-    return utymap::meshing::Vector2(centroidX, centroidY);
+    return utymap::math::Vector2(centroidX, centroidY);
 }
 
 /// Iterates through polygon outers and call visitor with rectangle of this outer
 template <typename Visitor>
-void outerRectangles(const utymap::meshing::Polygon& polygon, const Visitor& visitor)
+void outerRectangles(const utymap::math::Polygon& polygon, const Visitor& visitor)
 {
     if (polygon.outers.size() == 1) {
         visitor(polygon.rectangle);
@@ -89,17 +89,17 @@ void outerRectangles(const utymap::meshing::Polygon& polygon, const Visitor& vis
     }
 
     for (const auto& outer : polygon.outers) {
-        auto rectangle = utymap::meshing::Rectangle();
+        auto rectangle = utymap::math::Rectangle();
         for (auto i = outer.first; i < outer.second; i += 2) {
-            rectangle.expand(utymap::meshing::Vector2(polygon.points[i], polygon.points[i + 1]));
+            rectangle.expand(utymap::math::Vector2(polygon.points[i], polygon.points[i + 1]));
         }
         visitor(rectangle);
     }
 }
 
 /// Gets intersection point between two segments. If they don't intersect double lowest is returned.
-inline double getIntersection(const utymap::meshing::Vector2& start1, const utymap::meshing::Vector2& end1,
-                              const utymap::meshing::Vector2& start2, const utymap::meshing::Vector2& end2)
+inline double getIntersection(const utymap::math::Vector2& start1, const utymap::math::Vector2& end1,
+                              const utymap::math::Vector2& start2, const utymap::math::Vector2& end2)
 {
     double denom = ((end1.x - start1.x) * (end2.y - start2.y)) - ((end1.y - start1.y) * (end2.x - start2.x));
 
@@ -121,9 +121,9 @@ inline double getIntersection(const utymap::meshing::Vector2& start1, const utym
 }
 
 /// Gets point along the line. r is computed by getIntersection
-inline utymap::meshing::Vector2 getPointAlongLine(const utymap::meshing::Vector2& start, const utymap::meshing::Vector2& end, double r)
+inline utymap::math::Vector2 getPointAlongLine(const utymap::math::Vector2& start, const utymap::math::Vector2& end, double r)
 {
-    return utymap::meshing::Vector2(start.x + (r * (end.x - start.x)), start.y + (r * (end.y - start.y)));
+    return utymap::math::Vector2(start.x + (r * (end.x - start.x)), start.y + (r * (end.y - start.y)));
 }
 
 }}

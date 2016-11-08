@@ -3,7 +3,7 @@
 
 #include "builders/BuilderContext.hpp"
 #include "builders/MeshContext.hpp"
-#include "meshing/Polygon.hpp"
+#include "math/Polygon.hpp"
 
 namespace utymap { namespace builders {
 
@@ -36,7 +36,7 @@ class FacadeBuilder
   }
 
   /// Builds roof from polygon.
-  virtual void build(utymap::meshing::Polygon& polygon) = 0;
+  virtual void build(utymap::math::Polygon& polygon) = 0;
 
  protected:
 
@@ -46,5 +46,4 @@ class FacadeBuilder
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_FACADES_FACADEBUILDER_HPP_DEFINED

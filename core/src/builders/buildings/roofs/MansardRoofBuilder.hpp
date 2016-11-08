@@ -3,13 +3,10 @@
 
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "clipper/clipper.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "meshing/Polygon.hpp"
+#include "builders/MeshBuilder.hpp"
 
 #include <algorithm>
 #include <limits>
-#include <vector>
 
 namespace utymap { namespace builders {
 
@@ -25,7 +22,7 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
         ClipperLib::ClipperOffset offset;
         ClipperLib::Path path;
@@ -36,10 +33,10 @@ public:
         for (std::size_t i = 0; i < polygon.points.size(); i += 2) {
             auto nextIndex = i == lastPointIndex ? 0 : i + 2;
 
-            utymap::meshing::Vector2 v1(polygon.points[i], polygon.points[i + 1]);
-            utymap::meshing::Vector2 v2(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
+            utymap::math::Vector2 v1(polygon.points[i], polygon.points[i + 1]);
+            utymap::math::Vector2 v2(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
 
-            min = std::min(min, utymap::meshing::Vector2::distance(v1, v2));
+            min = std::min(min, utymap::math::Vector2::distance(v1, v2));
 
             path.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(v1.x * Scale), 
                                                 static_cast<ClipperLib::cInt>(v1.y * Scale)));
@@ -61,17 +58,17 @@ public:
 
 private:
 
-    void build(const utymap::meshing::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index) const
+    void build(const utymap::math::Polygon& polygon, ClipperLib::Path& offsetShape, std::size_t index)
     {
         if (!ClipperLib::Orientation(offsetShape))
             std::reverse(offsetShape.begin(), offsetShape.end());
 
         // build top
-        utymap::meshing::Polygon topShape(offsetShape.size(), 0);
-        std::vector<utymap::meshing::Vector2> topShapeVertices;
+        utymap::math::Polygon topShape(offsetShape.size(), 0);
+        std::vector<utymap::math::Vector2> topShapeVertices;
         topShapeVertices.reserve(offsetShape.size());
         for (const auto& p : offsetShape) {
-            topShapeVertices.push_back(utymap::meshing::Vector2(p.X / Scale, p.Y/ Scale));
+            topShapeVertices.push_back(utymap::math::Vector2(p.X / Scale, p.Y/ Scale));
         }
         topShape.addContour(topShapeVertices);
 
@@ -100,35 +97,35 @@ private:
             auto nextTopIndex = (i + 2)  % size;
             auto nextBottomIndex = (index + i + 2) % size;
 
-            auto v0 = utymap::meshing::Vector3(polygon.points[bottomIndex], minHeight_, polygon.points[bottomIndex + 1]);
-            auto v1 = utymap::meshing::Vector3(polygon.points[nextBottomIndex], minHeight_, polygon.points[nextBottomIndex + 1]);
-            auto v2 = utymap::meshing::Vector3(topShape.points[nextTopIndex], topHeight, topShape.points[nextTopIndex + 1]);
-            auto v3 = utymap::meshing::Vector3(topShape.points[topIndex], topHeight, topShape.points[topIndex + 1]);
+            auto v0 = utymap::math::Vector3(polygon.points[bottomIndex], minHeight_, polygon.points[bottomIndex + 1]);
+            auto v1 = utymap::math::Vector3(polygon.points[nextBottomIndex], minHeight_, polygon.points[nextBottomIndex + 1]);
+            auto v2 = utymap::math::Vector3(topShape.points[nextTopIndex], topHeight, topShape.points[nextTopIndex + 1]);
+            auto v3 = utymap::math::Vector3(topShape.points[topIndex], topHeight, topShape.points[topIndex + 1]);
 
             builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v2, v0, v3, 
-                utymap::meshing::Vector2(scale, scale),
-                utymap::meshing::Vector2(0, 0),
-                utymap::meshing::Vector2(0, scale),
+                utymap::math::Vector2(scale, scale),
+                utymap::math::Vector2(0, 0),
+                utymap::math::Vector2(0, scale),
                 meshContext_.geometryOptions, meshContext_.appearanceOptions);
 
             builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v2, v1,
-                utymap::meshing::Vector2(0, 0),
-                utymap::meshing::Vector2(scale, scale),
-                utymap::meshing::Vector2(scale, 0),
+                utymap::math::Vector2(0, 0),
+                utymap::math::Vector2(scale, scale),
+                utymap::math::Vector2(scale, 0),
                 meshContext_.geometryOptions, meshContext_.appearanceOptions);
         }
     }
 
-    std::size_t findFirstIndex(const ClipperLib::IntPoint& p, const utymap::meshing::Polygon& polygon) const
+    std::size_t findFirstIndex(const ClipperLib::IntPoint& p, const utymap::math::Polygon& polygon) const
     {
-        utymap::meshing::Vector2 point(p.X / Scale, p.Y / Scale);
+        utymap::math::Vector2 point(p.X / Scale, p.Y / Scale);
 
         std::size_t index = 0, size = polygon.points.size() / 2;
         double minDistance = std::numeric_limits<double>::max();
 
         for (std::size_t i = 0; i < size; i+=2) {
-            double distance = utymap::meshing::Vector2::distance(point, 
-                utymap::meshing::Vector2(polygon.points[i], polygon.points[i + 1]));
+            double distance = utymap::math::Vector2::distance(point,
+                utymap::math::Vector2(polygon.points[i], polygon.points[i + 1]));
             if (distance < minDistance) {
                 minDistance = distance;
                 index = i;

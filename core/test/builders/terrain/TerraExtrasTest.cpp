@@ -5,13 +5,11 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
-#include <algorithm>
-
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 namespace {
     const ColorGradient gradient = ColorGradient();

@@ -5,12 +5,13 @@
 #include "entities/Way.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/GradientUtils.hpp"
+#include "math/Polygon.hpp"
 
 using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {

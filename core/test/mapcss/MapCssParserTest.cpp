@@ -6,7 +6,6 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
 
 namespace {
     typedef std::string::const_iterator StringIterator;

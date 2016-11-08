@@ -1,9 +1,9 @@
 #ifndef MESHING_POLYGON_HPP_DEFINED
 #define MESHING_POLYGON_HPP_DEFINED
 
-#include "meshing/MeshTypes.hpp"
+#include "Rectangle.hpp"
 
-namespace utymap { namespace meshing {
+namespace utymap { namespace math {
 
 /// Represents polygon in 2D space.
 /// NOTE this class is designed to work with Triangle library
@@ -23,7 +23,7 @@ public:
 
     Rectangle rectangle;
 
-    Polygon(size_t numberOfPoints, size_t numberOfHoles = 1)
+    Polygon(std::size_t numberOfPoints, std::size_t numberOfHoles = 1)
     {
         points.reserve(numberOfPoints * 2);
         holes.reserve(numberOfHoles * 2);
@@ -31,8 +31,8 @@ public:
     }
 
     void addContour(const std::vector<Vector2>& contour)
-    { 
-        addContour(contour, false); 
+    {
+        addContour(contour, false);
     }
 
     void addHole(const std::vector<Vector2>& hole)
@@ -62,7 +62,7 @@ private:
             inners.push_back(std::make_pair(startIndex, endIndex));
         } else {
             outers.push_back(std::make_pair(startIndex, endIndex));
-        }      
+        }
 
         auto offset = segments.size() / 2;
         for (std::size_t i = 0; i < count; ++i) {
@@ -91,7 +91,7 @@ private:
             return true;
         }
 
-        for (size_t i = 0; i < length; i++) {
+        for (std::size_t i = 0; i < length; i++) {
             a = contour[i];
             b = contour[(i + 1) % length];
 
@@ -141,7 +141,5 @@ private:
     }
 };
 
-
 }}
-
 #endif // MESHING_POLYGON_HPP_DEFINED

@@ -5,8 +5,6 @@
 #include "utils/GeometryUtils.hpp"
 #include "utils/GeoUtils.hpp"
 
-#include <vector>
-
 namespace utymap { namespace builders {
 
 /// Builds flat roof in low poly.
@@ -19,7 +17,7 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
         double scale = utymap::utils::GeoUtils::getScaled(builderContext_.boundingBox,
                                                           meshContext_.appearanceOptions.textureScale,
@@ -32,14 +30,14 @@ public:
             for (std::size_t i = range.first; i < range.second; i += 2) {
                 auto nextIndex = i == lastPointIndex ? range.first : i + 2;
 
-                utymap::meshing::Vector3 v0(polygon.points[i], minHeight_, polygon.points[i + 1]);
-                utymap::meshing::Vector3 v1(center.x, minHeight_ + height_, center.y);
-                utymap::meshing::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
+                utymap::math::Vector3 v0(polygon.points[i], minHeight_, polygon.points[i + 1]);
+                utymap::math::Vector3 v1(center.x, minHeight_ + height_, center.y);
+                utymap::math::Vector3 v2(polygon.points[nextIndex], minHeight_, polygon.points[nextIndex + 1]);
 
                 builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, 
-                    utymap::meshing::Vector2(0, 0),
-                    utymap::meshing::Vector2(scale, 0),
-                    utymap::meshing::Vector2(scale, scale),
+                    utymap::math::Vector2(0, 0),
+                    utymap::math::Vector2(scale, 0),
+                    utymap::math::Vector2(scale, scale),
                     meshContext_.geometryOptions, meshContext_.appearanceOptions);
             }
         }  

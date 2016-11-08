@@ -15,7 +15,7 @@ using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 namespace {
     const std::string stylesheet = "area|z16[building=yes] { roof-color:gradient(red); }";

@@ -2,8 +2,7 @@
 #define BUILDERS_BUILDINGS_ROOFS_FLATROOFBUILDER_HPP_DEFINED
 
 #include "builders/buildings/roofs/RoofBuilder.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/Polygon.hpp"
+#include "builders/MeshBuilder.hpp"
 
 namespace utymap { namespace builders {
 
@@ -23,7 +22,7 @@ public:
         return *this;
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
         meshContext_.geometryOptions.elevation = minHeight_;
         meshContext_.geometryOptions.heightOffset = 0;
@@ -37,5 +36,4 @@ public:
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_ROOFS_FLATROOFBUILDER_HPP_DEFINED

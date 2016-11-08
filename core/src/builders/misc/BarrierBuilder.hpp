@@ -3,7 +3,7 @@
 
 #include "builders/ElementBuilder.hpp"
 #include "mapcss/Style.hpp"
-#include "meshing/Polygon.hpp"
+#include "math/Polygon.hpp"
 
 namespace utymap { namespace builders {
 
@@ -30,7 +30,7 @@ public:
 private:
     void buildFromPolygon(const utymap::entities::Way& way, 
                           const utymap::mapcss::Style& style,
-                          utymap::meshing::Polygon& polygon) const;
+                          utymap::math::Polygon& polygon) const;
 };
 
 }}

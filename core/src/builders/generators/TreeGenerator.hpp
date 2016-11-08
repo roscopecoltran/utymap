@@ -4,7 +4,6 @@
 #include "builders/generators/AbstractGenerator.hpp"
 #include "builders/generators/CylinderGenerator.hpp"
 #include "builders/generators/IcoSphereGenerator.hpp"
-#include "meshing/MeshTypes.hpp"
 
 namespace utymap { namespace builders {
 
@@ -13,7 +12,7 @@ class TreeGenerator
 {
 public:
     TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  utymap::meshing::Mesh& mesh,
+                  utymap::math::Mesh& mesh,
                   const utymap::mapcss::Style& style,
                   const utymap::mapcss::ColorGradient& trunkGradient,
                   const utymap::mapcss::ColorGradient& foliageGradient,
@@ -34,7 +33,7 @@ public:
     TreeGenerator(const TreeGenerator&) = delete;
 
     /// Sets position of tree
-    TreeGenerator& setPosition(const utymap::meshing::Vector3& position)
+    TreeGenerator& setPosition(const utymap::math::Vector3& position)
     {
         position_ = position;
         return *this;
@@ -55,7 +54,7 @@ public:
     }
 
     /// Sets radius of foliage
-    TreeGenerator& setFoliageSize(const utymap::meshing::Vector3& size)
+    TreeGenerator& setFoliageSize(const utymap::math::Vector3& size)
     {
         foliageSize_ = size;
         return *this;
@@ -106,7 +105,7 @@ public:
 
         // generate foliage
         foliageGenerator
-            .setCenter(utymap::meshing::Vector3(
+            .setCenter(utymap::math::Vector3(
                 position_.x,
                 position_.y + trunkHeight_ + foliageSize_.y,
                 position_.z))
@@ -125,8 +124,8 @@ private:
     utymap::builders::MeshContext foliageGeneratorMeshContext;
     CylinderGenerator trunkGenerator;
     IcoSphereGenerator foliageGenerator;
-    utymap::meshing::Vector3 position_;
-    utymap::meshing::Vector3 foliageSize_;
+    utymap::math::Vector3 position_;
+    utymap::math::Vector3 foliageSize_;
     double trunkHeight_, trunkRadius_;
 };
 }}

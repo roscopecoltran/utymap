@@ -4,8 +4,6 @@
 #include "builders/generators/AbstractGenerator.hpp"
 #include "utils/MathUtils.hpp"
 
-#include <cmath>
-
 namespace utymap { namespace builders {
 
 /// Generates cylinder.
@@ -21,7 +19,7 @@ public:
     }
 
     /// Sets center of cylinder.
-    CylinderGenerator& setCenter(const utymap::meshing::Vector3& center)
+    CylinderGenerator& setCenter(const utymap::math::Vector3& center)
     {
         center_ = center;
         return *this;
@@ -64,23 +62,23 @@ public:
             double firstAngle = j * angleStep;
             double secondAngle = (j == radialSegments_ - 1 ? 0 : j + 1) * angleStep;
 
-            auto first = utymap::meshing::Vector2(
+            auto first = utymap::math::Vector2(
                     radius_ * std::cos(firstAngle) + center_.x,
                     radius_ * std::sin(firstAngle) + center_.z);
 
-            auto second = utymap::meshing::Vector2(
+            auto second = utymap::math::Vector2(
                     radius_ * std::cos(secondAngle) + center_.x,
                     radius_ * std::sin(secondAngle) + center_.z);
 
             // bottom cap
             addTriangle(center_,
-                        utymap::meshing::Vector3(first.x, center_.y, first.y),
-                        utymap::meshing::Vector3(second.x, center_.y, second.y));
+                        utymap::math::Vector3(first.x, center_.y, first.y),
+                        utymap::math::Vector3(second.x, center_.y, second.y));
 
             // top cap
-            addTriangle(utymap::meshing::Vector3(center_.x, center_.y + height_, center_.z),
-                        utymap::meshing::Vector3(second.x, center_.y + height_, second.y),
-                        utymap::meshing::Vector3(first.x, center_.y + height_, first.y));
+            addTriangle(utymap::math::Vector3(center_.x, center_.y + height_, center_.z),
+                        utymap::math::Vector3(second.x, center_.y + height_, second.y),
+                        utymap::math::Vector3(first.x, center_.y + height_, first.y));
 
             for (int i = 0; i < heightSegments; i++) {
                 double bottomHeight = i * heightStep + center_.y;
@@ -91,11 +89,11 @@ public:
     }
 
 private:
-    utymap::meshing::Vector3 center_;
+    utymap::math::Vector3 center_;
     int radialSegments_;
     double radius_, height_, maxSegmentHeight_;
 
 };
-}}
 
+}}
 #endif // BUILDERS_GENERATORS_CYLINDERGENERATOR_HPP_DEFINED

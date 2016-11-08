@@ -1,10 +1,9 @@
 #ifndef BUILDERS_MESHCONTEXT_HPP_DEFINED
 #define BUILDERS_MESHCONTEXT_HPP_DEFINED
 
+#include "builders/MeshBuilder.hpp"
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/Style.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/MeshTypes.hpp"
 #include "utils/GradientUtils.hpp"
 
 namespace utymap { namespace builders {
@@ -12,12 +11,12 @@ namespace utymap { namespace builders {
 /// Provides the way to access mesh specific data.
 struct MeshContext
 {
-  utymap::meshing::Mesh& mesh;
+  utymap::math::Mesh& mesh;
   const utymap::mapcss::Style& style;
-  utymap::meshing::MeshBuilder::GeometryOptions geometryOptions;
-  utymap::meshing::MeshBuilder::AppearanceOptions appearanceOptions;
+  utymap::builders::MeshBuilder::GeometryOptions geometryOptions;
+  utymap::builders::MeshBuilder::AppearanceOptions appearanceOptions;
 
-  MeshContext(utymap::meshing::Mesh& mesh,
+  MeshContext(utymap::math::Mesh& mesh,
               const utymap::mapcss::Style& style,
               const utymap::mapcss::ColorGradient& gradient,
               const utymap::mapcss::TextureRegion& region) :
@@ -28,7 +27,7 @@ struct MeshContext
   {
   }
 
-  static MeshContext create(utymap::meshing::Mesh& mesh,
+  static MeshContext create(utymap::math::Mesh& mesh,
                             const utymap::mapcss::Style& style,
                             const utymap::mapcss::StyleProvider& styleProvider,
                             const std::string& colorKey,

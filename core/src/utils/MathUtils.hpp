@@ -1,7 +1,7 @@
 #ifndef UTILS_MATHUTILS_HPP_DEFINED
 #define UTILS_MATHUTILS_HPP_DEFINED
 
-#include "meshing/MeshTypes.hpp"
+#include "math/Vector3.hpp"
 
 #include <algorithm>
 #include <array>
@@ -34,7 +34,7 @@ inline double rad2Deg(double radians)
 }
 
 /// Creates rotation matrix for rotation around given vector in 3D space.
-inline std::function<utymap::meshing::Vector3(const utymap::meshing::Vector3&)> createRotationFunc(const utymap::meshing::Vector3& n, double angle)
+inline std::function<utymap::math::Vector3(const utymap::math::Vector3&)> createRotationFunc(const utymap::math::Vector3& n, double angle)
 {
     double cos = std::cos(angle);
     double sin = std::sin(angle);
@@ -51,10 +51,10 @@ inline std::function<utymap::meshing::Vector3(const utymap::meshing::Vector3&)> 
     double m23 = n.y * n.z * (1 - cos) + n.x * sin;
     double m33 = n.z * n.z * (1 - cos) + cos;
 
-    return[=](const utymap::meshing::Vector3& v) {
-        return utymap::meshing::Vector3(v.x*m11 + v.y*m21 + v.z*m31,
-                                        v.x*m12 + v.y*m22 + v.z*m32,
-                                        v.x*m13 + v.y*m23 + v.z*m33);
+    return[=](const utymap::math::Vector3& v) {
+        return utymap::math::Vector3(v.x*m11 + v.y*m21 + v.z*m31,
+                                     v.x*m12 + v.y*m22 + v.z*m32,
+                                     v.x*m13 + v.y*m23 + v.z*m33);
     };
 }
 

@@ -2,8 +2,7 @@
 #include "heightmap/FlatElevationProvider.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 #include "mapcss/ColorGradient.hpp"
-#include "meshing/Polygon.hpp"
-#include "meshing/MeshBuilder.hpp"
+#include "builders/MeshBuilder.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -11,7 +10,7 @@ using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 namespace {
     typedef Vector2 DPoint;

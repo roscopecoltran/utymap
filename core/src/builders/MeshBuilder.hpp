@@ -5,12 +5,14 @@
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/StyleSheet.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "meshing/Polygon.hpp"
+#include "math/Polygon.hpp"
+#include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
+#include "math/Mesh.hpp"
 
 #include <memory>
 
-namespace utymap { namespace meshing {
+namespace utymap { namespace builders {
 
 /// Provides the way to build mesh in 3D space.
 class MeshBuilder final
@@ -19,7 +21,7 @@ public:
 
     struct GeometryOptions final
     {
-        GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset, 
+        GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset,
                         bool flipSide = false, bool hasBackSide = false, int segmentSplit = 0) :
             area(area),
             eleNoiseFreq(eleNoiseFreq),
@@ -33,16 +35,16 @@ public:
 
         /// Max area of triangle in refined mesh.
         double area;
-        
+
         /// Elevation noise frequency.
         double eleNoiseFreq;
-        
+
         /// Fixed elevation. If specified elevation provider is not used.
         double elevation;
-        
+
         /// Height offset.
         double heightOffset;
-        
+
         /// If set then triangle side is flipped.
         bool flipSide;
 
@@ -88,50 +90,50 @@ public:
     };
 
     /// Creates builder with given elevation provider.
-    MeshBuilder(const utymap::QuadKey& quadKey, 
+    MeshBuilder(const utymap::QuadKey& quadKey,
                 const utymap::heightmap::ElevationProvider& eleProvider);
 
     ~MeshBuilder();
 
     /// Adds polygon to existing mesh using options provided.
-    void addPolygon(Mesh& mesh, 
-                    Polygon& polygon, 
-                    const GeometryOptions& geometryOptions, 
+    void addPolygon(utymap::math::Mesh& mesh,
+                    utymap::math::Polygon& polygon,
+                    const GeometryOptions& geometryOptions,
                     const AppearanceOptions& appearanceOptions) const;
 
     /// Adds simple plane to existing mesh using options provided.
-    void addPlane(Mesh& mesh, 
-                  const Vector2& p1,
-                  const Vector2& p2, 
-                  const GeometryOptions& geometryOptions, 
+    void addPlane(utymap::math::Mesh& mesh,
+                  const utymap::math::Vector2& p1,
+                  const utymap::math::Vector2& p2,
+                  const GeometryOptions& geometryOptions,
                   const AppearanceOptions& appearanceOptions) const;
 
     /// Adds simple plane to existing mesh using elevation and options provided.
-    void addPlane(Mesh& mesh, 
-                  const Vector2& p1, 
-                  const Vector2& p2, 
-                  double ele1, 
-                  double ele2, 
-                  const GeometryOptions& geometryOptions, 
+    void addPlane(utymap::math::Mesh& mesh,
+                  const utymap::math::Vector2& p1,
+                  const utymap::math::Vector2& p2,
+                  double ele1,
+                  double ele2,
+                  const GeometryOptions& geometryOptions,
                   const AppearanceOptions& appearanceOptions) const;
 
     /// Adds triangle to mesh using options provided.
-    void addTriangle(Mesh& mesh,
-                     const utymap::meshing::Vector3& v0,
-                     const utymap::meshing::Vector3& v1,
-                     const utymap::meshing::Vector3& v2,
-                     const utymap::meshing::Vector2& uv0,
-                     const utymap::meshing::Vector2& uv1,
-                     const utymap::meshing::Vector2& uv2,
+    void addTriangle(utymap::math::Mesh& mesh,
+                     const utymap::math::Vector3& v0,
+                     const utymap::math::Vector3& v1,
+                     const utymap::math::Vector3& v2,
+                     const utymap::math::Vector2& uv0,
+                     const utymap::math::Vector2& uv1,
+                     const utymap::math::Vector2& uv2,
                      const GeometryOptions& geometryOptions,
                      const AppearanceOptions& appearanceOptions) const;
 
-    /// Writes texture mapping info into mesh. 
-    /// NOTE we want to support tiling with atlas textures. It requires to write some 
+    /// Writes texture mapping info into mesh.
+    /// NOTE we want to support tiling with atlas textures. It requires to write some
     /// specific logic in shader. So, this code passes all information needed by it.
     /// This method exists because of performance optimization: you need to call it manually
     /// after all geometry related to one specific texture has been added.
-    void writeTextureMappingInfo(Mesh& mesh, 
+    void writeTextureMappingInfo(utymap::math::Mesh& mesh,
                                  const AppearanceOptions& appearanceOptions) const;
 
 private:
@@ -140,5 +142,4 @@ private:
 };
 
 }}
-
 #endif // MESHING_MESHBUILDER_HPP_DEFINED

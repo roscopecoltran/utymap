@@ -14,18 +14,18 @@
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/roofs/SkillionRoofBuilder.hpp"
 #include "builders/buildings/roofs/RoundRoofBuilder.hpp"
+#include "math/Vector2.hpp"
+#include "math/Mesh.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/ElementUtils.hpp"
 #include "utils/GradientUtils.hpp"
-
-#include <unordered_map>
 
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::index;
 using namespace utymap::utils;
 
@@ -54,7 +54,7 @@ namespace {
     public:
         EmptyRoofBuilder(const BuilderContext& bc, MeshContext& mc)
             : RoofBuilder(bc, mc) { }
-        void build(utymap::meshing::Polygon&) override {}
+        void build(Polygon&) override {}
     };
 
     typedef std::function<std::unique_ptr<RoofBuilder>(const BuilderContext&, MeshContext&)> RoofBuilderFactory;

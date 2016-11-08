@@ -2,14 +2,11 @@
 #define BUILDERS_BUILDINGS_ROOFS_ROUNDROOFBUILDER_HPP_DEFINED
 
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/Polygon.hpp"
+#include "builders/MeshBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/MathUtils.hpp"
 #include "utils/MeshUtils.hpp"
-
-#include <cmath>
 
 namespace utymap { namespace builders {
 
@@ -35,7 +32,7 @@ public:
         direction_ = direction == "across" ? Direction::Across : Direction::Along;
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
         if (!buildRound(polygon)) {
             FlatRoofBuilder::build(polygon);
@@ -49,7 +46,7 @@ public:
 private:
 
     /// Tries to build round roof, returns false if polygon has unexpected shape.
-    bool buildRound(utymap::meshing::Polygon& polygon) const
+    bool buildRound(utymap::math::Polygon& polygon) const
     {    
         if (!polygon.inners.empty())
             return false;
@@ -63,10 +60,10 @@ private:
             for (std::size_t i = range.first; i < range.second; i += 2) {
                 const auto nextIndex = i == lastPointIndex ? range.first : i + 2;
 
-                utymap::meshing::Vector2 v0(polygon.points[i], polygon.points[i + 1]);
-                utymap::meshing::Vector2 v1(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
+                utymap::math::Vector2 v0(polygon.points[i], polygon.points[i + 1]);
+                utymap::math::Vector2 v1(polygon.points[nextIndex], polygon.points[nextIndex + 1]);
 
-                auto length = utymap::meshing::Vector2::distance(v0, v1);
+                auto length = utymap::math::Vector2::distance(v0, v1);
                 if (length > maxSideLength) {
                     maxSideIndex = i;
                     maxSideLength = length;
@@ -74,13 +71,13 @@ private:
             }
 
             // specify points for sides and front/back
-            utymap::meshing::Vector2 p0(polygon.points[maxSideIndex], polygon.points[maxSideIndex + 1]);
+            utymap::math::Vector2 p0(polygon.points[maxSideIndex], polygon.points[maxSideIndex + 1]);
             auto next = nextIndex(maxSideIndex, range.first, lastPointIndex);
-            utymap::meshing::Vector2 p1(polygon.points[next], polygon.points[next + 1]);
+            utymap::math::Vector2 p1(polygon.points[next], polygon.points[next + 1]);
             next = nextIndex(next, range.first, lastPointIndex);
-            utymap::meshing::Vector2 p2(polygon.points[next], polygon.points[next + 1]);
+            utymap::math::Vector2 p2(polygon.points[next], polygon.points[next + 1]);
             next = nextIndex(next, range.first, lastPointIndex);
-            utymap::meshing::Vector2 p3(polygon.points[next], polygon.points[next + 1]);
+            utymap::math::Vector2 p3(polygon.points[next], polygon.points[next + 1]);
 
             // build round shape based on orientation
             if (direction_ == Direction::Along)
@@ -93,25 +90,25 @@ private:
     }
 
     /// Builds round shape around front and back.  p1-p2 and p0-p3 are radial segments
-    void buildRoundShape(const utymap::meshing::Vector2& p0, const utymap::meshing::Vector2& p1, 
-                         const utymap::meshing::Vector2& p2, const utymap::meshing::Vector2& p3) const
+    void buildRoundShape(const utymap::math::Vector2& p0, const utymap::math::Vector2& p1,
+                         const utymap::math::Vector2& p2, const utymap::math::Vector2& p3) const
     {
         // prepare pilar vectors
         const auto direction2d = (p3 - p0).normalized();
-        const utymap::meshing::Vector3 direction(-direction2d.y, 0, direction2d.x);
+        const utymap::math::Vector3 direction(-direction2d.y, 0, direction2d.x);
 
-        const utymap::meshing::Vector3 frontCenter((p0.x + p3.x) / 2, minHeight_, (p0.y + p3.y) / 2);
-        const utymap::meshing::Vector3 backCenter((p1.x + p2.x) / 2, minHeight_, (p1.y + p2.y) / 2);
+        const utymap::math::Vector3 frontCenter((p0.x + p3.x) / 2, minHeight_, (p0.y + p3.y) / 2);
+        const utymap::math::Vector3 backCenter((p1.x + p2.x) / 2, minHeight_, (p1.y + p2.y) / 2);
         
-        const double frontRadius = utymap::meshing::Vector2::distance(utymap::meshing::Vector2(frontCenter.x, frontCenter.z), p0);
-        const double backRadius = utymap::meshing::Vector2::distance(utymap::meshing::Vector2(backCenter.x, backCenter.z), p1);
+        const double frontRadius = utymap::math::Vector2::distance(utymap::math::Vector2(frontCenter.x, frontCenter.z), p0);
+        const double backRadius = utymap::math::Vector2::distance(utymap::math::Vector2(backCenter.x, backCenter.z), p1);
 
         // these vectors we will rotation around direction vector
-        const auto frontRotVector = (utymap::meshing::Vector3(p0.x, minHeight_, p0.y) - frontCenter).normalized();
-        const auto backRotVector = (utymap::meshing::Vector3(p1.x, minHeight_, p1.y) - backCenter).normalized();
+        const auto frontRotVector = (utymap::math::Vector3(p0.x, minHeight_, p0.y) - frontCenter).normalized();
+        const auto backRotVector = (utymap::math::Vector3(p1.x, minHeight_, p1.y) - backCenter).normalized();
 
         // define uv mapping
-        utymap::meshing::Vector2 u0(0, 0);
+        utymap::math::Vector2 u0(0, 0);
 
         const double angleStep = -pi / RadialSegmentCount;
         for (int j = 0; j < RadialSegmentCount; j++) {
@@ -140,9 +137,9 @@ private:
         return (current+=2) > max ? min : current;
     }
 
-    utymap::meshing::Vector3 restore(const utymap::meshing::Vector3& normalized, double radius, utymap::meshing::Vector3 center) const
+    utymap::math::Vector3 restore(const utymap::math::Vector3& normalized, double radius, utymap::math::Vector3 center) const
     {
-        return utymap::meshing::Vector3(center.x + normalized.x * radius, minHeight_ + normalized.y * height_, center.z + normalized.z * radius);
+        return utymap::math::Vector3(center.x + normalized.x * radius, minHeight_ + normalized.y * height_, center.z + normalized.z * radius);
     }
 
     Direction direction_;

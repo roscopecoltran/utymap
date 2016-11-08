@@ -3,7 +3,8 @@
 
 #include "builders/buildings/facades/FacadeBuilder.hpp"
 #include "builders/generators/IcoSphereGenerator.hpp"
-#include "meshing/MeshTypes.hpp"
+#include "math/Polygon.hpp"
+#include "math/Vector2.hpp"
 #include "utils/GeometryUtils.hpp"
 
 namespace utymap { namespace builders {
@@ -18,10 +19,10 @@ public:
     {
     }
 
-    void build(utymap::meshing::Polygon& polygon) override
+    void build(utymap::math::Polygon& polygon) override
     {
-        utymap::meshing::Vector2 center2d;
-        utymap::meshing::Vector2 size;
+        utymap::math::Vector2 center2d;
+        utymap::math::Vector2 size;
         utymap::utils::getCircle(polygon.rectangle, center2d, size);
 
         double heightInMeters = utymap::utils::GeoUtils::distance(
@@ -30,8 +31,8 @@ public:
 
         IcoSphereGenerator icoSphereGenerator(builderContext_, meshContext_);
         icoSphereGenerator
-                .setCenter(utymap::meshing::Vector3(center2d.x, minHeight_, center2d.y))
-                .setSize(utymap::meshing::Vector3(size.x, heightInMeters, size.y))
+                .setCenter(utymap::math::Vector3(center2d.x, minHeight_, center2d.y))
+                .setSize(utymap::math::Vector3(size.x, heightInMeters, size.y))
                 .setRecursionLevel(2)
                 .isSemiSphere(false)
                 .setColorNoiseFreq(0)
@@ -40,5 +41,4 @@ public:
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_FACADES_SPHEREFACADEBUILDER_HPP_DEFINED

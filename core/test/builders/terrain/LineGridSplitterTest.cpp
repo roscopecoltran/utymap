@@ -4,7 +4,7 @@
 
 using namespace ClipperLib;
 using namespace utymap::builders;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 namespace {
     typedef std::vector<Vector2> DoublePoints;

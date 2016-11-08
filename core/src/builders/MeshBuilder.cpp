@@ -2,14 +2,15 @@
 #define ANSI_DECLARATORS
 
 #include "BoundingBox.hpp"
-#include "meshing/MeshBuilder.hpp"
+#include "MeshBuilder.hpp"
 #include "triangle/triangle.h"
 #include "utils/CoreUtils.hpp"
 #include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
+using namespace utymap::builders;
 using namespace utymap::heightmap;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 class MeshBuilder::MeshBuilderImpl
@@ -18,13 +19,13 @@ public:
 
     MeshBuilderImpl(const utymap::QuadKey& quadKey, const ElevationProvider& eleProvider) :
         quadKey_(quadKey),
-        bbox_(GeoUtils::quadKeyToBoundingBox(quadKey)), 
+        bbox_(GeoUtils::quadKeyToBoundingBox(quadKey)),
         geoWidth_(bbox_.width()),
         geoHeight_(bbox_.height()),
         eleProvider_(eleProvider)
     {
     }
-     
+
     void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         triangulateio in, mid;
@@ -93,7 +94,8 @@ public:
         free(mid.segmentmarkerlist);
     }
 
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
+                  const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         double ele1 = eleProvider_.getElevation(quadKey_, p1.y, p1.x);
         double ele2 = eleProvider_.getElevation(quadKey_, p2.y, p2.x);
@@ -104,7 +106,8 @@ public:
         addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
     }
 
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2,
+                  const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         auto color = appearanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, appearanceOptions.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
@@ -123,7 +126,9 @@ public:
         addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1, Vector2(scaleX, scaleY));
     }
 
-    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, const GeometryOptions& geometryOptions, const AppearanceOptions& apperanceOptions) const
+    void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2,
+                     const Vector2& uv0, const Vector2& uv1, const Vector2& uv2,
+                     const GeometryOptions& geometryOptions, const AppearanceOptions& apperanceOptions) const
     {
         auto color = apperanceOptions.gradient.evaluate((NoiseUtils::perlin2D(v0.x, v0.z, apperanceOptions.colorNoiseFreq) + 1) / 2);
         int startIndex = static_cast<int>(mesh.vertices.size() / 3);
@@ -175,7 +180,7 @@ private:
         mesh.vertices.push_back(p.y);
         mesh.vertices.push_back(ele);
         mesh.colors.push_back(color);
-        
+
         mesh.uvs.push_back(uv.x);
         mesh.uvs.push_back(uv.y);
 
@@ -188,14 +193,15 @@ private:
     }
 
     /// Fills mesh with all data needed to render object correctly outside core library.
-    void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+    void fillMesh(triangulateio* io, Mesh& mesh,
+                  const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
         // prepare texture data
         const auto map = createMapFunc(appearanceOptions);
 
-        ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints), 
+        ensureMeshCapacity(mesh, static_cast<std::size_t>(io->numberofpoints),
                                  static_cast<std::size_t>(io->numberoftriangles));
 
         for (int i = 0; i < io->numberofpoints; i++) {
@@ -282,22 +288,28 @@ MeshBuilder::MeshBuilder(const utymap::QuadKey& quadKey, const ElevationProvider
 
 MeshBuilder::~MeshBuilder() { }
 
-void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon,
+                             const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
+                           const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addPlane(mesh, p1, p2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
+                           double ele1, double ele2,
+                           const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2,
+                              const Vector2& uv0, const Vector2& uv1, const Vector2& uv2,
+                              const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addTriangle(mesh, v0, v1, v2, uv0, uv1, uv2, geometryOptions, appearanceOptions);
 }

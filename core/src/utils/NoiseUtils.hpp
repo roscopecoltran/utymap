@@ -1,7 +1,8 @@
 #ifndef UTILS_NOISEUTILS_HPP_DEFINED
 #define UTILS_NOISEUTILS_HPP_DEFINED
 
-#include "meshing/MeshTypes.hpp"
+#include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
 
 namespace utymap { namespace utils {
 
@@ -18,12 +19,12 @@ public:
 
 private:
 
-    static double dot(const utymap::meshing::Vector3& g, double x, double y, double z)
+    static double dot(const utymap::math::Vector3& g, double x, double y, double z)
     {
         return g.x*x + g.y*y + g.z*z;
     }
 
-    static double dot(const utymap::meshing::Vector2& g, double x, double y)
+    static double dot(const utymap::math::Vector2& g, double x, double y)
     {
         return g.x*x + g.y*y;
     }
@@ -36,8 +37,8 @@ private:
     static const int HashMask = 255;
     static const int GradientsMask2D = 7;
     static const int GradientsMask3D = 15;
-    static const utymap::meshing::Vector2 Gradients2D[];
-    static const utymap::meshing::Vector3 Gradients3D[];
+    static const utymap::math::Vector2 Gradients2D[];
+    static const utymap::math::Vector3 Gradients3D[];
     static const int Hash[];
 };
 }}

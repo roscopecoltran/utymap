@@ -9,14 +9,12 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
-#include <cstdio>
-
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
-using namespace utymap::meshing;
+using namespace utymap::math;
 using namespace utymap::index;
 using namespace utymap::utils;
 

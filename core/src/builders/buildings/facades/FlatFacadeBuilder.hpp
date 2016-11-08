@@ -2,7 +2,7 @@
 #define BUILDERS_BUILDINGS_FACADES_FLATFACADEBUILDER_HPP_DEFINED
 
 #include "builders/buildings/facades/FacadeBuilder.hpp"
-#include "meshing/MeshBuilder.hpp"
+#include "builders/MeshBuilder.hpp"
 
 namespace utymap { namespace builders {
 
@@ -16,7 +16,7 @@ public:
     {
     }
 
-  void build(utymap::meshing::Polygon& polygon) override
+  void build(utymap::math::Polygon& polygon) override
   {
       meshContext_.geometryOptions.elevation = minHeight_;
       meshContext_.geometryOptions.heightOffset = height_;
@@ -30,15 +30,15 @@ public:
 
 private:
 
-    void buildRange(const utymap::meshing::Polygon& polygon,
-                    const utymap::meshing::Polygon::Range& range) const
+    void buildRange(const utymap::math::Polygon& polygon,
+                    const utymap::math::Polygon::Range& range) const
     {
         std::int64_t first = static_cast<std::int64_t>(range.first);
         std::int64_t last = static_cast<std::int64_t>(range.second) - 2;
         for (auto  i = last; i >= first; i -= 2) {
-            utymap::meshing::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
+            utymap::math::Vector2 p1(polygon.points[i], polygon.points[i + 1]);
             auto j = i == first ? last : i - 2;
-            utymap::meshing::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
+            utymap::math::Vector2 p2(polygon.points[j], polygon.points[j + 1]);
 
             builderContext_.meshBuilder.addPlane(meshContext_.mesh,
                 p2,
@@ -52,5 +52,4 @@ private:
 };
 
 }}
-
 #endif // BUILDERS_BUILDINGS_FACADES_FLATFACADEBUILDER_HPP_DEFINED

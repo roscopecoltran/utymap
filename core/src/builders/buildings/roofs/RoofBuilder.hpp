@@ -3,8 +3,7 @@
 
 #include "builders/BuilderContext.hpp"
 #include "builders/MeshContext.hpp"
-#include "meshing/MeshTypes.hpp"
-#include "meshing/Polygon.hpp"
+#include "math/Polygon.hpp"
 
 namespace utymap { namespace builders {
 
@@ -50,13 +49,13 @@ public:
     }
 
     // Builds roof from polygon.
-    virtual void build(utymap::meshing::Polygon& polygon) = 0;
+    virtual void build(utymap::math::Polygon& polygon) = 0;
 
 protected:
 
     /// Adds triangle to mesh from context.
-    void addTriangle(const utymap::meshing::Vector3& v0, const utymap::meshing::Vector3& v1, const utymap::meshing::Vector3& v2,
-                     const utymap::meshing::Vector2& u0, const utymap::meshing::Vector2& u1, const utymap::meshing::Vector2& u2) const
+    void addTriangle(const utymap::math::Vector3& v0, const utymap::math::Vector3& v1, const utymap::math::Vector3& v2,
+                     const utymap::math::Vector2& u0, const utymap::math::Vector2& u1, const utymap::math::Vector2& u2) const
     {
         builderContext_.meshBuilder.addTriangle(meshContext_.mesh, v0, v1, v2, u0, u1, u2,
             meshContext_.geometryOptions, meshContext_.appearanceOptions);

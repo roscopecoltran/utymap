@@ -325,7 +325,7 @@ private:
             groups[region.groupName]
                 .add(static_cast<std::uint16_t>(atlas.width),
                      static_cast<std::uint16_t>(atlas.height),
-                     utymap::meshing::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
+                     utymap::math::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
         }
 
         stylesheet.textures.emplace_back(atlas.index, groups);

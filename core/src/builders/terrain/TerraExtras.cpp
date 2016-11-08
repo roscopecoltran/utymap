@@ -1,11 +1,10 @@
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/poi/TreeBuilder.hpp"
+#include "math/Mesh.hpp"
 #include "utils/MeshUtils.hpp"
 
-#include <algorithm>
-
 using namespace utymap::builders;
-using namespace utymap::meshing;
+using namespace utymap::math;
 
 namespace {
     const std::string TreeFrequencyKey = "tree-frequency";

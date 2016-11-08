@@ -18,7 +18,6 @@
 #include "index/PersistentElementStore.hpp"
 #include "mapcss/MapCssParser.hpp"
 #include "mapcss/StyleSheet.hpp"
-#include "meshing/MeshTypes.hpp"
 #include "utils/CoreUtils.hpp"
 
 #include "Callbacks.hpp"
@@ -28,7 +27,6 @@
 #include <fstream>
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 /// Exposes API for external usage.
 class Application
@@ -136,7 +134,7 @@ public:
             auto& eleProvider = getElevationProvider(quadKey, eleDataType);
             ExportElementVisitor elementVisitor(quadKey, stringTable_, styleProvider, eleProvider, elementCallback);
             quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
-                [&meshCallback](const utymap::meshing::Mesh& mesh) {
+                [&meshCallback](const utymap::math::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
                     meshCallback(mesh.name.data(),

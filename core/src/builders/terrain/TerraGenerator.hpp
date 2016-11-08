@@ -5,13 +5,13 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 #include "builders/terrain/TerraExtras.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/MeshTypes.hpp"
+#include "builders/MeshBuilder.hpp"
+#include "math/Mesh.hpp"
+#include "math/Polygon.hpp"
+#include "math/Rectangle.hpp"
+#include "math/Vector2.hpp"
 
 #include <memory>
-#include <unordered_map>
-#include <queue>
-#include <vector>
 
 namespace utymap { namespace builders {
 
@@ -23,16 +23,16 @@ public:
     struct RegionContext final
     {
         const utymap::mapcss::Style style;
-        // Prefix in mapcss.
+        /// Prefix in mapcss.
         const std::string prefix;
 
-        const utymap::meshing::MeshBuilder::GeometryOptions geometryOptions;
-        const utymap::meshing::MeshBuilder::AppearanceOptions appearanceOptions;
+        const utymap::builders::MeshBuilder::GeometryOptions geometryOptions;
+        const utymap::builders::MeshBuilder::AppearanceOptions appearanceOptions;
 
         RegionContext(const utymap::mapcss::Style& style,
                       const std::string& prefix,
-                      const utymap::meshing::MeshBuilder::GeometryOptions& geometryOptions,
-                      const utymap::meshing::MeshBuilder::AppearanceOptions& appearanceOptions) :
+                      const utymap::builders::MeshBuilder::GeometryOptions& geometryOptions,
+                      const utymap::builders::MeshBuilder::AppearanceOptions& appearanceOptions) :
             style(style), 
             prefix(prefix), 
             geometryOptions(std::move(geometryOptions)), 
@@ -81,8 +81,7 @@ public:
 
 private:
     typedef std::unique_ptr<Region> RegionPtr;
-    typedef std::vector<utymap::meshing::Vector2> Points;
-
+    typedef std::vector<utymap::math::Vector2> Points;
 
     struct GreaterThanByArea
     {
@@ -109,10 +108,10 @@ private:
 
     Points restorePoints(const ClipperLib::Path& path) const;
 
-    void fillMesh(utymap::meshing::Polygon& polygon, const RegionContext& regionContext);
+    void fillMesh(utymap::math::Polygon& polygon, const RegionContext& regionContext);
 
     /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
-    void addExtrasIfNecessary(utymap::meshing::Mesh& mesh,
+    void addExtrasIfNecessary(utymap::math::Mesh& mesh,
                               TerraExtras::Context& extrasContext,
                               const RegionContext& regionContext) const;
 
@@ -123,11 +122,10 @@ private:
     ClipperLib::ClipperEx& foregroundClipper_;
     ClipperLib::ClipperEx backGroundClipper_;
     LineGridSplitter splitter_;
-    utymap::meshing::Mesh mesh_;
+    utymap::math::Mesh mesh_;
     Layers layers_;
-    utymap::meshing::Rectangle rect_;
+    utymap::math::Rectangle rect_;
 };
 
 }}
-
 #endif // BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED

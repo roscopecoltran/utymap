@@ -3,10 +3,10 @@
 
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
+#include "builders/MeshBuilder.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
-#include "meshing/MeshBuilder.hpp"
-#include "meshing/MeshTypes.hpp"
+#include <math/Mesh.hpp>
 #include "utils/GeoUtils.hpp"
 
 #include <functional>
@@ -27,17 +27,17 @@ struct BuilderContext final
     /// Current elevation provider.
     const utymap::heightmap::ElevationProvider& eleProvider;
     /// Mesh callback should be called once mesh is constructed.
-    std::function<void(const utymap::meshing::Mesh&)> meshCallback;
+    std::function<void(const utymap::math::Mesh&)> meshCallback;
     /// Element callback is called to process original element by external logic.
     std::function<void(const utymap::entities::Element&)> elementCallback;
     /// Mesh builder.
-    const utymap::meshing::MeshBuilder meshBuilder;
+    const utymap::builders::MeshBuilder meshBuilder;
 
     BuilderContext(const utymap::QuadKey& quadKey,
                    const utymap::mapcss::StyleProvider& styleProvider,
                    utymap::index::StringTable& stringTable,
                    const utymap::heightmap::ElevationProvider& eleProvider,
-                   std::function<void(const utymap::meshing::Mesh&)> meshCallback,
+                   std::function<void(const utymap::math::Mesh&)> meshCallback,
                    std::function<void(const utymap::entities::Element&)> elementCallback) :
         quadKey(quadKey),
         boundingBox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),

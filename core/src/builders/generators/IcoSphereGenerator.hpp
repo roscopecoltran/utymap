@@ -2,11 +2,11 @@
 #define BUILDERS_GENERATORS_ICOSPHEREGENERATOR_HPP_DEFINED
 
 #include "builders/generators/AbstractGenerator.hpp"
+#include "math/Vector3.hpp"
 
 #include <algorithm>
 #include <cstdint>
 #include <vector>
-#include <unordered_map>
 
 namespace utymap { namespace builders {
 
@@ -33,14 +33,14 @@ public:
     }
 
     /// Sets center of icosphere.
-    IcoSphereGenerator& setCenter(const utymap::meshing::Vector3& center)
+    IcoSphereGenerator& setCenter(const utymap::math::Vector3& center)
     {
         center_ = center;
         return *this;
     }
 
     /// Sets radius of icosphere.
-    IcoSphereGenerator& setSize(const utymap::meshing::Vector3& size)
+    IcoSphereGenerator& setSize(const utymap::math::Vector3& size)
     {
         size_ = size;
         return *this;
@@ -65,20 +65,20 @@ public:
         // create 12 vertices of a icosahedron
         double t = (1 + std::sqrt(5)) / 2;
 
-        vertexList_.push_back(utymap::meshing::Vector3(-1, t, 0).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(1, t, 0).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(-1, -t, 0).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(1, -t, 0).normalized());
+        vertexList_.push_back(utymap::math::Vector3(-1, t, 0).normalized());
+        vertexList_.push_back(utymap::math::Vector3(1, t, 0).normalized());
+        vertexList_.push_back(utymap::math::Vector3(-1, -t, 0).normalized());
+        vertexList_.push_back(utymap::math::Vector3(1, -t, 0).normalized());
 
-        vertexList_.push_back(utymap::meshing::Vector3(0, -1, t).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(0, 1, t).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(0., -1, -t).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(0, 1, -t).normalized());
+        vertexList_.push_back(utymap::math::Vector3(0, -1, t).normalized());
+        vertexList_.push_back(utymap::math::Vector3(0, 1, t).normalized());
+        vertexList_.push_back(utymap::math::Vector3(0., -1, -t).normalized());
+        vertexList_.push_back(utymap::math::Vector3(0, 1, -t).normalized());
 
-        vertexList_.push_back(utymap::meshing::Vector3(t, 0, -1).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(t, 0, 1).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(-t, 0, -1).normalized());
-        vertexList_.push_back(utymap::meshing::Vector3(-t, 0, 1).normalized());
+        vertexList_.push_back(utymap::math::Vector3(t, 0, -1).normalized());
+        vertexList_.push_back(utymap::math::Vector3(t, 0, 1).normalized());
+        vertexList_.push_back(utymap::math::Vector3(-t, 0, -1).normalized());
+        vertexList_.push_back(utymap::math::Vector3(-t, 0, 1).normalized());
 
         // create 20 triangles of the icosahedron
         std::vector<TriangleIndices> faces;
@@ -134,7 +134,7 @@ public:
         }
         generateMesh(faces);
 
-        // clear state to allow reusage
+        // clear state to allow reuse
         middlePointIndexCache_.clear();
         vertexList_.clear();
     }
@@ -154,9 +154,9 @@ private:
             return ret->second;
 
         // not in cache, calculate it
-        utymap::meshing::Vector3 point1 = vertexList_[p1];
-        utymap::meshing::Vector3 point2 = vertexList_[p2];
-        utymap::meshing::Vector3 middle
+        utymap::math::Vector3 point1 = vertexList_[p1];
+        utymap::math::Vector3 point2 = vertexList_[p2];
+        utymap::math::Vector3 middle
         (
             (point1.x + point2.x) / 2,
             (point1.y + point2.y) / 2,
@@ -184,21 +184,21 @@ private:
         }
     }
 
-    utymap::meshing::Vector3 scale(const utymap::meshing::Vector3& v) const
+    utymap::math::Vector3 scale(const utymap::math::Vector3& v) const
     {
-        return utymap::meshing::Vector3(
+        return utymap::math::Vector3(
             v.x * size_.x,
             v.y * size_.y,
             v.z * size_.z);
     }
 
-utymap::meshing::Vector3 center_;
-utymap::meshing::Vector3 size_;
+utymap::math::Vector3 center_;
+utymap::math::Vector3 size_;
 int recursionLevel_;
 bool isSemiSphere_;
 
 std::unordered_map<std::uint64_t, std::size_t> middlePointIndexCache_;
-std::vector<utymap::meshing::Vector3> vertexList_;
+std::vector<utymap::math::Vector3> vertexList_;
 
 };
 

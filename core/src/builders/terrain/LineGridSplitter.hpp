@@ -2,20 +2,19 @@
 #define BUILDERS_TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
 
 #include "clipper/clipper.hpp"
-#include "meshing/MeshTypes.hpp"
+#include "math/Vector2.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <limits>
-#include <vector>
 
 namespace utymap { namespace builders {
 
 /// Splits line to segments on axis aligned grid intersections.
 class LineGridSplitter final
 {
-    typedef utymap::meshing::Vector2 Point;
+    typedef utymap::math::Vector2 Point;
     typedef std::vector<Point> Points;
 
     struct sort_x
