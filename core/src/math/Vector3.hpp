@@ -45,6 +45,14 @@ struct Vector3
             : Vector3(); // degenerative case
     }
 
+    static double distance(const Vector3& v1, const Vector3& v2)
+    {
+        double dx = v1.x - v2.x;
+        double dy = v1.y - v2.y;
+        double dz = v1.z - v2.z;
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
     static Vector3 cross(const Vector3& a, const Vector3& b)
     {
         return Vector3(a.y * b.z - a.z * b.y,

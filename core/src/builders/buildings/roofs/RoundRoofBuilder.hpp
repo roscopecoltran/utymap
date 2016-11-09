@@ -3,10 +3,8 @@
 
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
 #include "builders/MeshBuilder.hpp"
-#include "utils/CoreUtils.hpp"
-#include "utils/GeometryUtils.hpp"
+#include "math/Quaternion.hpp"
 #include "utils/MathUtils.hpp"
-#include "utils/MeshUtils.hpp"
 
 namespace utymap { namespace builders {
 
@@ -71,13 +69,13 @@ private:
             }
 
             // specify points for sides and front/back
-            utymap::math::Vector2 p0(polygon.points[maxSideIndex], polygon.points[maxSideIndex + 1]);
+            const utymap::math::Vector3 p0(polygon.points[maxSideIndex], minHeight_, polygon.points[maxSideIndex + 1]);
             auto next = nextIndex(maxSideIndex, range.first, lastPointIndex);
-            utymap::math::Vector2 p1(polygon.points[next], polygon.points[next + 1]);
+            const utymap::math::Vector3 p1(polygon.points[next], minHeight_, polygon.points[next + 1]);
             next = nextIndex(next, range.first, lastPointIndex);
-            utymap::math::Vector2 p2(polygon.points[next], polygon.points[next + 1]);
+            const utymap::math::Vector3 p2(polygon.points[next], minHeight_, polygon.points[next + 1]);
             next = nextIndex(next, range.first, lastPointIndex);
-            utymap::math::Vector2 p3(polygon.points[next], polygon.points[next + 1]);
+            const utymap::math::Vector3 p3(polygon.points[next], minHeight_, polygon.points[next + 1]);
 
             // build round shape based on orientation
             if (direction_ == Direction::Along)
@@ -90,39 +88,36 @@ private:
     }
 
     /// Builds round shape around front and back.  p1-p2 and p0-p3 are radial segments
-    void buildRoundShape(const utymap::math::Vector2& p0, const utymap::math::Vector2& p1,
-                         const utymap::math::Vector2& p2, const utymap::math::Vector2& p3) const
+    void buildRoundShape(const utymap::math::Vector3& p0, const utymap::math::Vector3& p1,
+                         const utymap::math::Vector3& p2, const utymap::math::Vector3& p3) const
     {
-        // prepare pilar vectors
-        const auto direction2d = (p3 - p0).normalized();
-        const utymap::math::Vector3 direction(-direction2d.y, 0, direction2d.x);
-
-        const utymap::math::Vector3 frontCenter((p0.x + p3.x) / 2, minHeight_, (p0.y + p3.y) / 2);
-        const utymap::math::Vector3 backCenter((p1.x + p2.x) / 2, minHeight_, (p1.y + p2.y) / 2);
-        
-        const double frontRadius = utymap::math::Vector2::distance(utymap::math::Vector2(frontCenter.x, frontCenter.z), p0);
-        const double backRadius = utymap::math::Vector2::distance(utymap::math::Vector2(backCenter.x, backCenter.z), p1);
-
-        // these vectors we will rotation around direction vector
-        const auto frontRotVector = (utymap::math::Vector3(p0.x, minHeight_, p0.y) - frontCenter).normalized();
-        const auto backRotVector = (utymap::math::Vector3(p1.x, minHeight_, p1.y) - backCenter).normalized();
-
         // define uv mapping
         utymap::math::Vector2 u0(0, 0);
 
-        const double angleStep = -pi / RadialSegmentCount;
+        // prepare data involved into rotation logic.
+        const auto direction2d = (p3 - p0).normalized();
+        const utymap::math::Vector3 direction(-direction2d.z, 0, direction2d.x);
+        // these points are rotation centers for front/back sides.
+        const auto frontCenter = (p0 + p3) / 2;
+        const auto backCenter = (p1 + p2) / 2;
+        // these vectors will be rotated.
+        const auto frontRot = (p0 - frontCenter).normalized();
+        const auto backRot = (p1 - backCenter).normalized();
+        // these radius are used to restore vector magnitudes.
+        const double frontRadius = utymap::math::Vector3::distance(p0, frontCenter);
+        const double backRadius = utymap::math::Vector3::distance(p1, backCenter);
+        // quaternions between which spherical interpolation should be done.
+        const auto q0 = utymap::math::Quaternion::fromAngleAxis(0, direction);
+        const auto q1 = utymap::math::Quaternion::fromAngleAxis(-pi, direction);
+       
         for (int j = 0; j < RadialSegmentCount; j++) {
-            double firstAngle = j * angleStep;
-            double secondAngle = (j + 1) * angleStep;
-
-            auto firstAngleRotationFunc = utymap::utils::createRotationFunc(direction, firstAngle);
-            auto secondAngleRotationFunc = utymap::utils::createRotationFunc(direction, secondAngle);
-
-            // rotate vectors and move to original position
-            const auto front1 = restore(firstAngleRotationFunc(frontRotVector), frontRadius, frontCenter);
-            const auto front2 = restore(secondAngleRotationFunc(frontRotVector), frontRadius, frontCenter);
-            const auto back1 = restore(firstAngleRotationFunc(backRotVector), backRadius, backCenter);
-            const auto back2 = restore(secondAngleRotationFunc(backRotVector), backRadius, backCenter);
+            auto q0t = q0.slerp(q0, q1, j / static_cast<double>(RadialSegmentCount));
+            auto q1t = q1.slerp(q0, q1, (j + 1) / static_cast<double>(RadialSegmentCount));
+            
+            const auto front1 = restore(q0t.rotate(frontRot), frontRadius, frontCenter);
+            const auto front2 = restore(q1t.rotate(frontRot), frontRadius, frontCenter);
+            const auto back1 = restore(q0t.rotate(backRot), backRadius, backCenter);
+            const auto back2 = restore(q1t.rotate(backRot), backRadius, backCenter);
 
             addTriangle(frontCenter, front2, front1, u0, u0, u0);
             addTriangle(backCenter, back1, back2, u0, u0, u0);
@@ -137,9 +132,10 @@ private:
         return (current+=2) > max ? min : current;
     }
 
-    utymap::math::Vector3 restore(const utymap::math::Vector3& normalized, double radius, utymap::math::Vector3 center) const
+    utymap::math::Vector3 restore(const utymap::math::Vector3& v, double radius, utymap::math::Vector3 center) const
     {
-        return utymap::math::Vector3(center.x + normalized.x * radius, minHeight_ + normalized.y * height_, center.z + normalized.z * radius);
+        // p' = q * p * qInversed
+        return utymap::math::Vector3(center.x + v.x * radius, minHeight_ + v.y * height_, center.z + v.z * radius);
     }
 
     Direction direction_;

@@ -81,6 +81,7 @@ set(HEADER_FILES
         math/LineLinear.hpp
         math/Mesh.hpp
         math/Polygon.hpp
+        math/Quaternion.hpp
         math/Rectangle.hpp
         math/Vector2.hpp
         math/Vector3.hpp

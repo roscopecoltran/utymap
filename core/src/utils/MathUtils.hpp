@@ -33,31 +33,5 @@ inline double rad2Deg(double radians)
     return 180.0*radians / pi;
 }
 
-/// Creates rotation matrix for rotation around given vector in 3D space.
-inline std::function<utymap::math::Vector3(const utymap::math::Vector3&)> createRotationFunc(const utymap::math::Vector3& n, double angle)
-{
-    double cos = std::cos(angle);
-    double sin = std::sin(angle);
-
-    double m11 = n.x * n.x * (1 - cos) + cos;
-    double m21 = n.x * n.y * (1 - cos) - n.z * sin;
-    double m31 = n.x * n.z * (1 - cos) + n.y * sin;
-
-    double m12 = n.x * n.y * (1 - cos) + n.z * sin;
-    double m22 = n.y * n.y * (1 - cos) + cos;
-    double m32 = n.y * n.z * (1 - cos) - n.x * sin;
-
-    double m13 = n.x * n.z * (1 - cos) - n.y * sin;
-    double m23 = n.y * n.z * (1 - cos) + n.x * sin;
-    double m33 = n.z * n.z * (1 - cos) + cos;
-
-    return[=](const utymap::math::Vector3& v) {
-        return utymap::math::Vector3(v.x*m11 + v.y*m21 + v.z*m31,
-                                     v.x*m12 + v.y*m22 + v.z*m32,
-                                     v.x*m13 + v.y*m23 + v.z*m33);
-    };
-}
-
 }}
-
 #endif // UTILS_MATHUTILS_HPP_DEFINED

@@ -62,7 +62,7 @@ struct Vector2
     {
         double dx = v1.x - v2.x;
         double dy = v1.y - v2.y;
-        return ::std::sqrt(dx * dx + dy * dy);
+        return std::sqrt(dx * dx + dy * dy);
     }
 };
 
