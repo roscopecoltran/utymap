@@ -32,6 +32,14 @@ struct Vector3
         return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
     }
 
+    Vector3& operator+=(const Vector3& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+
     double magnitude() const
     {
         return ::std::sqrt(x * x + y * y + z * z);

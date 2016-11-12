@@ -24,6 +24,15 @@ struct Quaternion final
     {
     }
 
+    /// Rotates quaternion.
+    void rotate(const Quaternion& q)
+    {
+        x = w*q.x + x*q.w + y*q.z - z*q.y;
+        y = w*q.y + y*q.w + z*q.x - x*q.z;
+        z = w*q.z + z*q.w + x*q.y - y*q.x;
+        w = w*q.w - x*q.x - y*q.y - z*q.z;
+    }
+
     double norm() const
     {
         return x*x + y*y + z*z + w*w;
@@ -66,6 +75,22 @@ struct Quaternion final
         double halfAngle = angle * 0.5;
         double sinA = std::sin(halfAngle);
         return Quaternion(v.x*sinA, v.y*sinA, v.z*sinA, std::cos(halfAngle));
+    }
+    
+    /// Creates unit quaternion from euler angles in radians.
+    static Quaternion fromEulerAngles(const Vector3& v)
+    {
+        double t0 = std::cos(v.x * 0.5f);
+        double t1 = std::sin(v.x * 0.5f);
+        double t2 = std::cos(v.y * 0.5f);
+        double t3 = std::sin(v.y * 0.5f);
+        double t4 = std::cos(v.z * 0.5f);
+        double t5 = std::sin(v.z * 0.5f);
+
+        return Quaternion(t0 * t3 * t4 - t1 * t2 * t5,
+                          t0 * t2 * t5 + t1 * t3 * t4,
+                          t1 * t2 * t4 - t0 * t3 * t5,
+                          t0 * t2 * t4 + t1 * t3 * t5);
     }
 
     /// Performs spherical linear interpolation.

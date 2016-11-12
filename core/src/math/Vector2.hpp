@@ -45,6 +45,13 @@ struct Vector2
         return Vector2(x - rhs.x, y - rhs.y);
     }
 
+    Vector2& operator+=(const Vector2& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        return *this;
+    }
+
     double magnitude() const
     {
         return ::std::sqrt(x * x + y * y);
