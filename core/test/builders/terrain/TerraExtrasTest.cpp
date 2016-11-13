@@ -14,6 +14,7 @@ using namespace utymap::math;
 namespace {
     const ColorGradient gradient = ColorGradient();
     const std::string stylesheet = "area|z16[amenity=forest] { "
+                                    "tree-frequency: 30; tree-chunk-size: 30;"
                                     "foliage-color: gradient(green);"
                                     "trunk-color:gradient(red); foliage-radius:2.5m;"
                                     "trunk-radius:0.2m; trunk-height:4m; }";

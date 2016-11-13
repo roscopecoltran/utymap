@@ -28,6 +28,16 @@ struct Mesh final
     /// Disable copying to prevent accidental copy
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
+
+    /// Clear geometry. Name stays.
+    void clear()
+    {
+        vertices.clear();
+        triangles.clear();
+        colors.clear();
+        uvs.clear();
+        uvMap.clear();
+    }
 };
 
 }}
