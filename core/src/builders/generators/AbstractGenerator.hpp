@@ -45,15 +45,14 @@ protected:
                      const utymap::math::Vector3& v1,
                      const utymap::math::Vector3& v2)
     {
-        // TODO check noise here.
-        double noise = std::abs(vertNoiseFreq_) < 1E-5
+        double noise = std::abs(vertNoiseFreq_) > 1E-5
                        ? utymap::utils::NoiseUtils::perlin2D(v0.x, v0.z, vertNoiseFreq_)
                        : 0;
 
         builderContext_.meshBuilder.addTriangle(meshContext_.mesh,
-                                 utymap::math::Vector3(v0.x + noise, v0.y + noise, v0.z + noise),
-                                 utymap::math::Vector3(v1.x + noise, v1.y + noise, v1.z + noise),
-                                 utymap::math::Vector3(v2.x + noise, v2.y + noise, v2.z + noise),
+                                 utymap::math::Vector3(v0.x, v0.y + noise, v0.z),
+                                 utymap::math::Vector3(v1.x, v1.y + noise, v1.z),
+                                 utymap::math::Vector3(v2.x, v2.y + noise, v2.z),
                                  utymap::math::Vector2(0, 0),
                                  utymap::math::Vector2(1, 0),
                                  utymap::math::Vector2(1, 1),

@@ -94,10 +94,10 @@ double NoiseUtils::perlin2D(double x, double y, double frequency)
 
     int h0 = Hash[ix0];
     int h1 = Hash[ix1];
-    Vector2 g00 = Gradients2D[Hash[h0 + iy0] & GradientsMask2D];
-    Vector2 g10 = Gradients2D[Hash[h1 + iy0] & GradientsMask2D];
-    Vector2 g01 = Gradients2D[Hash[h0 + iy1] & GradientsMask2D];
-    Vector2 g11 = Gradients2D[Hash[h1 + iy1] & GradientsMask2D];
+    const Vector2& g00 = Gradients2D[Hash[h0 + iy0] & GradientsMask2D];
+    const Vector2& g10 = Gradients2D[Hash[h1 + iy0] & GradientsMask2D];
+    const Vector2& g01 = Gradients2D[Hash[h0 + iy1] & GradientsMask2D];
+    const Vector2& g11 = Gradients2D[Hash[h1 + iy1] & GradientsMask2D];
 
     double v00 = dot(g00, tx0, ty0);
     double v10 = dot(g10, tx1, ty0);
@@ -142,14 +142,14 @@ double NoiseUtils::perlin3D(double x, double y, double z, double frequency)
     int h10 = Hash[h1 + iy0];
     int h01 = Hash[h0 + iy1];
     int h11 = Hash[h1 + iy1];
-    Vector3 g000 = Gradients3D[Hash[h00 + iz0] & GradientsMask3D];
-    Vector3 g100 = Gradients3D[Hash[h10 + iz0] & GradientsMask3D];
-    Vector3 g010 = Gradients3D[Hash[h01 + iz0] & GradientsMask3D];
-    Vector3 g110 = Gradients3D[Hash[h11 + iz0] & GradientsMask3D];
-    Vector3 g001 = Gradients3D[Hash[h00 + iz1] & GradientsMask3D];
-    Vector3 g101 = Gradients3D[Hash[h10 + iz1] & GradientsMask3D];
-    Vector3 g011 = Gradients3D[Hash[h01 + iz1] & GradientsMask3D];
-    Vector3 g111 = Gradients3D[Hash[h11 + iz1] & GradientsMask3D];
+    const Vector3& g000 = Gradients3D[Hash[h00 + iz0] & GradientsMask3D];
+    const Vector3& g100 = Gradients3D[Hash[h10 + iz0] & GradientsMask3D];
+    const Vector3& g010 = Gradients3D[Hash[h01 + iz0] & GradientsMask3D];
+    const Vector3& g110 = Gradients3D[Hash[h11 + iz0] & GradientsMask3D];
+    const Vector3& g001 = Gradients3D[Hash[h00 + iz1] & GradientsMask3D];
+    const Vector3& g101 = Gradients3D[Hash[h10 + iz1] & GradientsMask3D];
+    const Vector3& g011 = Gradients3D[Hash[h01 + iz1] & GradientsMask3D];
+    const Vector3& g111 = Gradients3D[Hash[h11 + iz1] & GradientsMask3D];
 
     double v000 = dot(g000, tx0, ty0, tz0);
     double v100 = dot(g100, tx1, ty0, tz0);
