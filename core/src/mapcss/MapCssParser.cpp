@@ -413,10 +413,6 @@ StyleSheet MapCssParser::parse(const std::string& str) const
 
 StyleSheet MapCssParser::parse(std::istream& istream) const
 {
-    // TODO from some reason, this approach will skip some spaces in declaration (e.g. gradient)
-    //boost::spirit::istream_iterator begin(istream);
-    //boost::spirit::istream_iterator end;
-    //return parse(begin, end);
     std::string styleContent((std::istreambuf_iterator<char>(istream)), std::istreambuf_iterator<char>());
     return parse(styleContent);
 }
