@@ -66,18 +66,9 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
     double treeStepInMeters = style.getValue(TreeStepKey);
 
     for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
-        const auto& p1 = way.coordinates[i];
-        const auto& p2 = way.coordinates[i + 1];
-
-        double distanceInMeters = GeoUtils::distance(p1, p2);
-        int treeCount = static_cast<int>(distanceInMeters / treeStepInMeters);
-
-        for (int j = 0; j < treeCount; ++j) {
-            GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / treeCount);
-            
-            double elevation = context_.eleProvider.getElevation(context_.quadKey, position);
-            utymap::utils::copyMesh(Vector3(position.longitude, elevation, position.latitude), treeMesh, newMesh);
-        }
+        const auto& p0 = way.coordinates[i];
+        const auto& p1 = way.coordinates[i + 1];
+        utymap::utils::copyMeshAlong(context_.quadKey, p0, p1, treeMesh, newMesh, treeStepInMeters, context_.eleProvider);
     }
 
     context_.meshCallback(newMesh);

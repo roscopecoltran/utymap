@@ -36,6 +36,22 @@ inline void copyMesh(const utymap::math::Vector3& position, const utymap::math::
     }
 }
 
+/// Copies mesh along two coordinates.
+inline void copyMeshAlong(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& p1, const utymap::GeoCoordinate& p2,
+                          const utymap::math::Mesh& source, utymap::math::Mesh& destination, double stepInMeters,
+                          const utymap::heightmap::ElevationProvider& eleProvider)
+{
+    double distanceInMeters = GeoUtils::distance(p1, p2);
+    int treeCount = static_cast<int>(distanceInMeters / stepInMeters);
+
+    for (int j = 0; j < treeCount; ++j) {
+        GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / treeCount);
+
+        double elevation = eleProvider.getElevation(quadKey, position);
+        utymap::utils::copyMesh(utymap::math::Vector3(position.longitude, elevation, position.latitude), source, destination);
+    }
+}
+
 }}
 
 #endif // UTILS_GEOUTILS_HPP_DEFINED
