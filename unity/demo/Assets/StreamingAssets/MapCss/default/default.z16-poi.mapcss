@@ -303,7 +303,7 @@ node|z16[highway=street_lamp] {
     lamp-light-texture-type: background;
     lamp-light-texture-scale: 50;
 
-    lamp-pillar-color: gradient(#c0c0c0);
+    lamp-pillar-color: gradient(black);
     lamp-pillar-radius: 0.1m;
     lamp-pillar-height: 8m;
     lamp-pillar-texture-index: 0;

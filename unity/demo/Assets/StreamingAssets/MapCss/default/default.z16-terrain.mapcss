@@ -91,15 +91,36 @@ area,relation|z16[leisure=recreation_ground],
 area,relation|z16[leisure=garden] {
     color: gradient(#98fb98, #adff2f 5%, #006400 10%, #556b2f 80%, #b8860b);
     texture-type: grass;
+
+    mesh-extras: forest;
+    mesh-name: terrain_park;
+    tree-frequency: 60;
+    tree-chunk-size: 30;
+
+    foliage-color: gradient(#80c34c, #406126 50%, #101809);
+    foliage-radius: 2.5m;
+    foliage-texture-index: 0;
+    foliage-texture-type: tree;
+    foliage-texture-scale: 50;
+
+    trunk-color: gradient(#f4a460, #614126 50%, #302013);
+    trunk-radius: 0.3m;
+    trunk-height: 1.5m;
+    trunk-texture-index: 0;
+    trunk-texture-type: background;
+    trunk-texture-scale: 200;
 }
 area,relation|z16[natural=wood],
+area,relation|z16[leisure=nature_reserve],
 area,relation|z16[landuse=orchard],
 area,relation|z16[landuse=forest] {
+    color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
+
     mesh-extras: forest;
     mesh-name: terrain_forest;
     tree-frequency: 10;
     tree-chunk-size: 30;
-    color: gradient(#98fb98, #064807 10%, #032804 50%, #b8860b);
+    texture-type: grass;
 
     foliage-color: gradient(#80c34c, #406126 50%, #101809);
     foliage-radius: 2.5m;
