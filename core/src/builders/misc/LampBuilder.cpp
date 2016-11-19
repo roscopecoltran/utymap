@@ -76,16 +76,24 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
         if (width > 0) {
             auto direction = (Vector2(p1.longitude, p1.latitude) - Vector2(p0.longitude, p0.latitude)).normalized();
             Vector2 normal(-direction.y, direction.x);
-            // add to left side
             auto leftP0 = Vector2(p0.longitude, p0.latitude) + normal * width;
             auto leftP1 = Vector2(p1.longitude, p1.latitude) + normal * width;
-            utymap::utils::copyMeshAlong(context_.quadKey, GeoCoordinate(leftP0.y, leftP0.x), GeoCoordinate(leftP1.y, leftP1.x),
-                lampMesh, newMesh, stepInMeters, context_.eleProvider);
-            // add to right side
             auto rightP0 = Vector2(p0.longitude, p0.latitude) - normal * width;
             auto rightP1 = Vector2(p1.longitude, p1.latitude) - normal * width;
-            utymap::utils::copyMeshAlong(context_.quadKey, GeoCoordinate(rightP0.y, rightP0.x), GeoCoordinate(rightP1.y, rightP1.x),
-                lampMesh, newMesh, stepInMeters, context_.eleProvider);
+
+            double distanceInMeters = GeoUtils::distance(p0, p1);
+            int count = static_cast<int>(distanceInMeters / stepInMeters);
+
+            for (int j = 0; j < count; ++j) {
+                double offset = static_cast<double>(j) / count;
+                GeoCoordinate position = j % 2 == 0 
+                    ? GeoUtils::newPoint(GeoCoordinate(leftP0.y, leftP0.x), GeoCoordinate(leftP1.y, leftP1.x), offset)
+                    : GeoUtils::newPoint(GeoCoordinate(rightP0.y, rightP0.x), GeoCoordinate(rightP1.y, rightP1.x), offset);
+
+                double elevation = context_.eleProvider.getElevation(context_.quadKey, position);
+                utymap::utils::copyMesh(utymap::math::Vector3(position.longitude, elevation, position.latitude), lampMesh, newMesh);
+            }
+
         } else
             utymap::utils::copyMeshAlong(context_.quadKey, p0, p1, lampMesh, newMesh, stepInMeters, context_.eleProvider);
     }
