@@ -26,7 +26,8 @@ public:
             position_(),
             foliageSize_(),
             trunkHeight_(0),
-            trunkRadius_(0)
+            trunkRadius_(0),
+            foliageRecursionLevel_(1)
     {
     }
 
@@ -88,6 +89,12 @@ public:
         return *this;
     }
 
+    TreeGenerator& setFoliageRecursionLevel(int level)
+    {
+        foliageRecursionLevel_ = level;
+        return *this;
+    }
+
     void generate()
     {
         // generate trunk
@@ -97,7 +104,7 @@ public:
             .setRadius(trunkRadius_)
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
-            .setVertexNoiseFreq(0.1f)
+            .setVertexNoiseFreq(0)
             .generate();
 
         builderContext_.meshBuilder.writeTextureMappingInfo(trunkGeneratorMeshContext.mesh, 
@@ -107,11 +114,11 @@ public:
         foliageGenerator
             .setCenter(utymap::math::Vector3(
                 position_.x,
-                position_.y + trunkHeight_ + foliageSize_.y,
+                position_.y + trunkHeight_ + foliageSize_.y - 0.1,
                 position_.z))
             .setSize(foliageSize_)
-            .setRecursionLevel(1)
-            .setVertexNoiseFreq(0.1f)
+            .setRecursionLevel(foliageRecursionLevel_)
+            .setVertexNoiseFreq(0)
             .generate();
 
         builderContext_.meshBuilder.writeTextureMappingInfo(foliageGeneratorMeshContext.mesh,
@@ -127,6 +134,7 @@ private:
     utymap::math::Vector3 position_;
     utymap::math::Vector3 foliageSize_;
     double trunkHeight_, trunkRadius_;
+    int foliageRecursionLevel_;
 };
 }}
 

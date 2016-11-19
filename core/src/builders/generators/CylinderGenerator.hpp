@@ -80,7 +80,7 @@ public:
                         utymap::math::Vector3(second.x, center_.y + height_, second.y),
                         utymap::math::Vector3(first.x, center_.y + height_, first.y));
 
-            for (int i = 0; i < heightSegments; i++) {
+            for (int i = 0; i < heightSegments; ++i) {
                 double bottomHeight = i * heightStep + center_.y;
                 double topHeight = (i + 1) * heightStep + center_.y;
                 addPlane(first, second, bottomHeight, topHeight);

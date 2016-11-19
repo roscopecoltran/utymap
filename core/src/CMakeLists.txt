@@ -38,6 +38,7 @@ set(HEADER_FILES
         builders/generators/IcoSphereGenerator.hpp
         builders/generators/TreeGenerator.hpp
         builders/misc/BarrierBuilder.hpp
+        builders/misc/LampBuilder.hpp
         builders/poi/TreeBuilder.hpp
         builders/terrain/LineGridSplitter.hpp
         builders/terrain/TerraBuilder.hpp
@@ -107,6 +108,7 @@ add_library(${LIBRARY_NAME}
         ${LIB_SOURCE}/shapefile/shpopen.c
         builders/MeshBuilder.cpp
         builders/misc/BarrierBuilder.cpp
+        builders/misc/LampBuilder.cpp
         builders/poi/TreeBuilder.cpp
         builders/terrain/TerraBuilder.cpp
         builders/terrain/TerraExtras.cpp
