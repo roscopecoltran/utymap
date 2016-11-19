@@ -42,10 +42,10 @@ inline void copyMeshAlong(const utymap::QuadKey& quadKey, const utymap::GeoCoord
                           const utymap::heightmap::ElevationProvider& eleProvider)
 {
     double distanceInMeters = GeoUtils::distance(p1, p2);
-    int treeCount = static_cast<int>(distanceInMeters / stepInMeters);
+    int count = static_cast<int>(distanceInMeters / stepInMeters);
 
-    for (int j = 0; j < treeCount; ++j) {
-        GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / treeCount);
+    for (int j = 0; j < count; ++j) {
+        GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / count);
 
         double elevation = eleProvider.getElevation(quadKey, position);
         utymap::utils::copyMesh(utymap::math::Vector3(position.longitude, elevation, position.latitude), source, destination);
