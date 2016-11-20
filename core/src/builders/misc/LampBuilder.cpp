@@ -84,7 +84,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
             double distanceInMeters = GeoUtils::distance(p0, p1);
             int count = static_cast<int>(distanceInMeters / stepInMeters);
 
-            for (int j = 0; j < count; ++j) {
+            for (int j = 1; j < count - 1; ++j) {
                 double offset = static_cast<double>(j) / count;
                 GeoCoordinate position = j % 2 == 0 
                     ? GeoUtils::newPoint(GeoCoordinate(leftP0.y, leftP0.x), GeoCoordinate(leftP1.y, leftP1.x), offset)
