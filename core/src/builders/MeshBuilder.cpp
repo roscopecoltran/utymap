@@ -95,35 +95,40 @@ public:
     }
 
     void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
-                  const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+        const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
-        double ele1 = eleProvider_.getElevation(quadKey_, p1.y, p1.x);
-        double ele2 = eleProvider_.getElevation(quadKey_, p2.y, p2.x);
+        bool hasElevation = geometryOptions.elevation > std::numeric_limits<double>::lowest();
+
+        double ele1 = hasElevation ? geometryOptions.elevation : eleProvider_.getElevation(quadKey_, p1.y, p1.x);
+        double ele2 = hasElevation ? geometryOptions.elevation : eleProvider_.getElevation(quadKey_, p2.y, p2.x);
 
         ele1 += NoiseUtils::perlin2D(p1.x, p1.y, geometryOptions.eleNoiseFreq);
         ele2 += NoiseUtils::perlin2D(p2.x, p2.y, geometryOptions.eleNoiseFreq);
 
-        addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
+        addPlane(mesh, Vector3(p1.x, ele1, p1.y), Vector3(p2.x, ele2, p2.y), geometryOptions, appearanceOptions);
     }
 
-    void addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2, double ele1, double ele2,
+    void addPlane(Mesh& mesh, const Vector3& p1, const Vector3& p2,
                   const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
     {
         auto color = appearanceOptions.gradient.evaluate((NoiseUtils::perlin2D(p1.x, p1.y, appearanceOptions.colorNoiseFreq) + 1) / 2);
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
         double size = geoWidth_ / appearanceOptions.textureScale;
-        double scaleX = Vector2::distance(p2, p1) / size;
+        double scaleX = Vector3::distance(p2, p1) / size;
         double scaleY = GeoUtils::getOffset(GeoCoordinate(p1.y, p1.x), geometryOptions.heightOffset) / size;
 
-        addVertex(mesh, p1, ele1, color, index, Vector2(0, 0));
-        addVertex(mesh, p2, ele2, color, index + 2, Vector2(scaleX, 0));
-        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1, Vector2(scaleX, scaleY));
+        const auto topP1 = Vector3(p1.x, p1.y + geometryOptions.heightOffset, p1.z);
+        const auto topP2 = Vector3(p2.x, p2.y + geometryOptions.heightOffset, p2.z);
+
+        addVertex(mesh, p1, color, index, Vector2(0, 0));
+        addVertex(mesh, p2, color, index + 2, Vector2(scaleX, 0));
+        addVertex(mesh, topP2, color, index + 1, Vector2(scaleX, scaleY));
         index += 3;
 
-        addVertex(mesh, p1, ele1 + geometryOptions.heightOffset, color, index, Vector2(0, scaleY));
-        addVertex(mesh, p1, ele1, color, index + 2, Vector2(0, 0));
-        addVertex(mesh, p2, ele2 + geometryOptions.heightOffset, color, index + 1, Vector2(scaleX, scaleY));
+        addVertex(mesh, topP1, color, index, Vector2(0, scaleY));
+        addVertex(mesh, p1, color, index + 2, Vector2(0, 0));
+        addVertex(mesh, topP2, color, index + 1, Vector2(scaleX, scaleY));
     }
 
     void addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2,
@@ -300,11 +305,10 @@ void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
     pimpl_->addPlane(mesh, p1, p2, geometryOptions, appearanceOptions);
 }
 
-void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,
-                           double ele1, double ele2,
+void MeshBuilder::addPlane(Mesh& mesh, const Vector3& p1, const Vector3& p2,
                            const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
-    pimpl_->addPlane(mesh, p1, p2, ele1, ele2, geometryOptions, appearanceOptions);
+    pimpl_->addPlane(mesh, p1, p2, geometryOptions, appearanceOptions);
 }
 
 void MeshBuilder::addTriangle(Mesh& mesh, const Vector3& v0, const Vector3& v1, const Vector3& v2,

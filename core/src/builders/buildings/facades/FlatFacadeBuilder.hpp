@@ -43,8 +43,6 @@ private:
             builderContext_.meshBuilder.addPlane(meshContext_.mesh,
                 p2,
                 p1,
-                minHeight_,
-                minHeight_,
                 meshContext_.geometryOptions,
                 meshContext_.appearanceOptions);
         }

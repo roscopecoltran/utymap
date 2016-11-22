@@ -110,10 +110,8 @@ public:
 
     /// Adds simple plane to existing mesh using elevation and options provided.
     void addPlane(utymap::math::Mesh& mesh,
-                  const utymap::math::Vector2& p1,
-                  const utymap::math::Vector2& p2,
-                  double ele1,
-                  double ele2,
+                  const utymap::math::Vector3& p1,
+                  const utymap::math::Vector3& p2,
                   const GeometryOptions& geometryOptions,
                   const AppearanceOptions& appearanceOptions) const;
 
