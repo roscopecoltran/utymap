@@ -26,11 +26,6 @@ public:
     void visitRelation(const utymap::entities::Relation&) override { }
 
     void complete() override { }
-   
-private:
-    void buildFromPolygon(const utymap::entities::Way& way, 
-                          const utymap::mapcss::Style& style,
-                          utymap::math::Polygon& polygon) const;
 };
 
 }}

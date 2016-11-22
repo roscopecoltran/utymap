@@ -71,15 +71,14 @@ protected:
         builderContext_.meshBuilder.addPlane(meshContext_.mesh,
                                     v0,
                                     v1,
-                                    bottom,
-                                    bottom,
                                     meshContext_.geometryOptions,
                                     meshContext_.appearanceOptions);
     }
 
-private:
     const utymap::builders::BuilderContext& builderContext_;
     utymap::builders::MeshContext& meshContext_;
+
+private:
     double vertNoiseFreq_;
 };
 

@@ -37,6 +37,7 @@ set(HEADER_FILES
         builders/generators/CylinderGenerator.hpp
         builders/generators/IcoSphereGenerator.hpp
         builders/generators/TreeGenerator.hpp
+        builders/generators/WallGenerator.hpp
         builders/misc/BarrierBuilder.hpp
         builders/misc/LampBuilder.hpp
         builders/poi/TreeBuilder.hpp
