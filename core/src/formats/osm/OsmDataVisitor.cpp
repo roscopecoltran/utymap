@@ -18,41 +18,6 @@ using namespace utymap::formats;
 using namespace utymap::entities;
 using namespace utymap::index;
 
-namespace {
-
-    std::unordered_set<std::string> AreaKeys
-    {
-        "building",
-        "building:part",
-        "landuse",
-        "amenity",
-        "harbour",
-        "historic",
-        "leisure",
-        "man_made",
-        "military",
-        "natural",
-        "office",
-        "place",
-        "power",
-        "public_transport",
-        "shop",
-        "sport",
-        "tourism",
-        "waterway",
-        "wetland",
-        "water",
-        "aeroway",
-        "addr:housenumber",
-        "addr:housename"
-    };
-
-    std::unordered_set<std::string> FalseKeys
-    {
-        "no", "No", "NO", "false", "False", "FALSE", "0"
-    };
-}
-
 void OsmDataVisitor::visitBounds(BoundingBox bbox)
 {
 }
@@ -73,16 +38,9 @@ void OsmDataVisitor::visitWay(std::uint64_t id, std::vector<std::uint64_t>& node
     for (auto nodeId : nodeIds) {
         coordinates.push_back(context_.nodeMap[nodeId]->coordinate);
     }
-
-    if (coordinates.size() > 2 && isArea(tags)) {
-        if (coordinates.at(0) == coordinates.at(coordinates.size() - 1)) {
-            // NOTE three coordinates are invalid here: skip.
-            // TODO should it be considered as way instead?
-            if (coordinates.size() == 3)
-                return;
-
-            coordinates.pop_back();
-        }
+    auto size = coordinates.size();
+    if (size > 3 && coordinates[0] == coordinates[size - 1]) {
+        coordinates.pop_back();
 
         auto area = std::make_shared<Area>();
         area->id = id;
@@ -117,17 +75,6 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers& members, u
 void OsmDataVisitor::add(utymap::entities::Element& element)
 {
     add_(element);
-}
-
-bool OsmDataVisitor::isArea(const utymap::formats::Tags& tags) const
-{
-    for (const auto& tag : tags) {
-        if (AreaKeys.find(tag.key) != AreaKeys.end() &&
-            FalseKeys.find(tag.value) == FalseKeys.end())
-            return true;
-    }
-
-    return false;
 }
 
 bool OsmDataVisitor::hasTag(const std::string& key, const std::string& value, const std::vector<utymap::entities::Tag>& tags) const
