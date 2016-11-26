@@ -104,7 +104,9 @@ namespace UtyMap.Unity.Maps.Data
                     unityUvs3 = new Vector2[worldPoints.Length];
                 }
 
-                _tile.Register(id);
+                // TODO this is not scalable: think about better solution for elements clipped by tile rect.
+                if (!name.StartsWith("barrier"))
+                    _tile.Register(id);
             }
 
             if (worldPoints.Length >= 65000)
