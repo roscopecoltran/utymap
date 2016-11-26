@@ -2,8 +2,6 @@
 #define BUILDERS_MISC_BARRIER_BUILDER_HPP_DEFINED
 
 #include "builders/ElementBuilder.hpp"
-#include "mapcss/Style.hpp"
-#include "math/Polygon.hpp"
 
 namespace utymap { namespace builders {
 

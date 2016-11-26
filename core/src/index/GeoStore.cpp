@@ -26,7 +26,7 @@ class GeoStore::GeoStoreImpl final
     {
     public:
         FilterElementVisitor(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor)
-                : visitor_(visitor), quadKey_(quadKey), styleProvider_(styleProvider), ids_()
+                : quadKey_(quadKey), styleProvider_(styleProvider), visitor_(visitor), ids_()
         {
         }
 
