@@ -15,7 +15,7 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node&) override { }
+    void visitNode(const utymap::entities::Node&) override;
 
     void visitArea(const utymap::entities::Area&) override { }
 

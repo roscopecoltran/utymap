@@ -45,7 +45,6 @@ node|z16[amenity=townhall]                                            { rect:130
 
 node|z16[waste],
 node|z16[amenity=waste_basket]                    { rect:260_390_64_64;   }
-node|z16[barrier=block]                                                { rect:325_390_64_64;   }
 node|z16[barrier=bollard]                                            { rect:390_0_64_64;   }
 node|z16[barrier=cattle_grid]                                    { rect:390_65_64_64;   }
 node|z16[barrier=cycle_barrier]                                    { rect:390_130_64_64;   }
