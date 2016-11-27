@@ -83,10 +83,10 @@ private:
         auto bottom = builderContext_.eleProvider.getElevation(builderContext_.quadKey, p0.y, p0.x);
         auto top = bottom + height_;
 
-        addPlane(leftP0, leftP1, bottom, top);
-        addPlane(leftP1, rightP1, bottom, top);
-        addPlane(rightP1, rightP0, bottom, top);
-        addPlane(rightP0, leftP0, bottom, top);
+        addPlane(leftP1, leftP0, bottom, top);
+        addPlane(rightP1, leftP1, bottom, top);
+        addPlane(rightP0, rightP1, bottom, top);
+        addPlane(leftP0, rightP0, bottom, top);
 
         addTriangle(utymap::math::Vector3(leftP0.x, top, leftP0.y),
                     utymap::math::Vector3(leftP1.x, top, leftP1.y),
