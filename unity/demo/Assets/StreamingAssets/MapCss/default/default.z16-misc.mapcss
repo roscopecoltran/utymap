@@ -30,3 +30,10 @@ way,area,relation|z16[barrier=hedge] {
     texture-type: grass;
     width: 0.2m;
 }
+
+way,area,relation|z16[barrier=kerb] {
+    texture-type: background;
+    height: 0.2m;
+    width: 0.1m;
+    length: 0.5m;
+}
