@@ -3,8 +3,10 @@
 #include "builders/misc/BarrierBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
+#include "entities/Area.hpp"
 #include "utils/GradientUtils.hpp"
 
+using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
@@ -54,19 +56,30 @@ void BarrierBuilder::visitNode(const Node& node)
 
 void BarrierBuilder::visitWay(const Way& way)
 {
-    Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
-    Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, way));
+    buildBarrier(way);
+}
+
+void BarrierBuilder::visitArea(const Area& area)
+{
+    buildBarrier(area);
+}
+
+template <typename T>
+void BarrierBuilder::buildBarrier(const T& element)
+{
+    Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
+    Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider,
-        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey, way.id);
+        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey, element.id);
 
-    double width = style.getValue(WidthKey, 
+    double width = style.getValue(WidthKey,
         context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
         context_.boundingBox.center());
 
     WallGenerator generator(context_, meshContext);
     generator
-        .setGeometry(way.coordinates)
+        .setGeometry(element.coordinates)
         .setWidth(width)
         .setHeight(style.getValue(HeightKey))
         .setLength(style.getValue(LengthKey))
