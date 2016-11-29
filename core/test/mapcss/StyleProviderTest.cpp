@@ -18,21 +18,28 @@ namespace {
             dependencyProvider(),
             stylesheet(new StyleSheet())
         {
-            stylesheet->rules.push_back(Rule());
         }
 
         void setSingleSelector(int zoomStart, int zoomEnd,
             const std::initializer_list<std::string>& names,
-            const std::initializer_list<utymap::mapcss::Condition>& conditions)
+            const std::initializer_list<utymap::mapcss::Condition>& conditions,
+            const std::initializer_list<utymap::mapcss::Declaration>& declarations = {})
         {
-            Selector selector;
+            auto selector = Selector();
             selector.names.insert(selector.names.begin(), names.begin(), names.end());
-            selector.zoom.start = zoomStart;
-            selector.zoom.end = zoomEnd;
+            selector.zoom.start = static_cast<std::uint8_t>(zoomStart);
+            selector.zoom.end = static_cast<std::uint8_t>(zoomEnd);
             for (const auto& condition : conditions) {
                 selector.conditions.push_back(condition);
             }
-            stylesheet->rules[0].selectors.push_back(selector);
+
+            Rule rule;
+            for (const auto& declaration : declarations) {
+                rule.declarations.push_back(declaration);
+            }
+
+            rule.selectors.push_back(selector);
+            stylesheet->rules.push_back(rule);
             styleProvider = std::make_shared<StyleProvider>(
                 *stylesheet, 
                 *dependencyProvider.getStringTable());
@@ -142,6 +149,24 @@ BOOST_AUTO_TEST_CASE(GivenTwoNotEqualsConditions_WhenHasStyle_ThenReturnFalse)
         });
 
     BOOST_CHECK(!styleProvider->hasStyle(node, zoomLevel));
+}
+
+BOOST_AUTO_TEST_CASE(GivenCustomElementRuleOverridesDefault_WhenForElement_ThenStyleHasOnlyCustomRule)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "node" },
+                      { {"amenity", "=", "biergarten"} },
+                      { {"key1", "value1"} });
+    setSingleSelector(zoomLevel, zoomLevel, { "element" },
+                      { {"id", "=", "7"} },
+                      { {"key2", "value2"} });
+    Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 7,
+                      { std::make_pair("amenity", "biergarten") });
+
+    Style style = styleProvider->forElement(node, zoomLevel);
+
+    BOOST_CHECK(style.has(dependencyProvider.getStringTable()->getId("key2"), "value2"));
+    BOOST_CHECK(!style.has(dependencyProvider.getStringTable()->getId("key1")));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

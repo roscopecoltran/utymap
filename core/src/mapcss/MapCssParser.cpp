@@ -217,6 +217,7 @@ struct SelectorGrammar : qi::grammar<Iterator, Selector(), CommentSkipper<Iterat
         start =
               (name % ',' >> zoom >> +condition)
             | (+ascii::string("canvas") > zoom )
+            | (+ascii::string("element") > zoom > condition)
         ;
 
         start.name("selector");

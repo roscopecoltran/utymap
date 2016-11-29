@@ -319,4 +319,17 @@ BOOST_AUTO_TEST_CASE(GivenImportFile_WhenParse_ThenHasOneTexture)
     BOOST_CHECK_EQUAL(stylesheet.textures.size(), 1);
 }
 
+BOOST_AUTO_TEST_CASE(GivenElementRule_WhenParse_ThenReturnRule)
+{
+    std::string str = "element|z1[id=7] { key1:value1; }\n";
+    MapCssParser parser;
+
+    StyleSheet stylesheet = parser.parse(str);
+
+    BOOST_CHECK_EQUAL(stylesheet.rules.size(), 1);
+    BOOST_CHECK_EQUAL(stylesheet.rules[0].selectors[0].names[0], "element");
+    BOOST_CHECK_EQUAL(stylesheet.rules[0].selectors[0].conditions[0].key, "id");
+    BOOST_CHECK_EQUAL(stylesheet.rules[0].selectors[0].conditions[0].value, "7");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

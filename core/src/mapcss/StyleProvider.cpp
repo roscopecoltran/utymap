@@ -30,22 +30,25 @@ struct ConditionType final
     OpType type;
 };
 
-struct Filter final
+struct ConditionFilter final
 {
     std::vector<ConditionType> conditions;
-    std::unordered_map<int, std::shared_ptr<const StyleDeclaration>> declarations;
+    std::vector<std::shared_ptr<const StyleDeclaration>> declarations;
 };
 
 /// Key: level of details, value: filters for specific element type.
-typedef std::unordered_map<int, std::vector<Filter>> FilterMap;
+typedef std::unordered_map<int, std::vector<ConditionFilter>> ConditionFilterMap;
+typedef std::unordered_map<std::uint64_t, std::vector<std::shared_ptr<const StyleDeclaration>>> IdentifierFilter;
+typedef std::unordered_map<int, IdentifierFilter> IdentifierFilterMap;
 
 struct FilterCollection final
 {
-    FilterMap nodes;
-    FilterMap ways;
-    FilterMap areas;
-    FilterMap relations;
-    FilterMap canvases;
+    ConditionFilterMap nodes;
+    ConditionFilterMap ways;
+    ConditionFilterMap areas;
+    ConditionFilterMap relations;
+    ConditionFilterMap canvases;
+    IdentifierFilterMap elements;
 };
 
 class StyleBuilder final : public ElementVisitor
@@ -54,23 +57,23 @@ class StyleBuilder final : public ElementVisitor
 public:
 
     StyleBuilder(std::vector<Tag> tags, StringTable& stringTable,
-                 const FilterCollection& filters, int levelOfDetails, bool onlyCheck = false) :
+                 const FilterCollection& filters, int levelOfDetail, bool onlyCheck = false) :
             style(tags, stringTable),
             filters_(filters),
-            levelOfDetails_(levelOfDetails),
+            levelOfDetail_(levelOfDetail),
             onlyCheck_(onlyCheck),
             canBuild_(false),
             stringTable_(stringTable)
     {
     }
 
-    void visitNode(const Node& node) override { checkOrBuild(node.tags, filters_.nodes); }
+    void visitNode(const Node& node) override { checkOrBuild(node, filters_.nodes); }
 
-    void visitWay(const Way& way) override { checkOrBuild(way.tags, filters_.ways); }
+    void visitWay(const Way& way) override { checkOrBuild(way, filters_.ways); }
 
-    void visitArea(const Area& area) override { checkOrBuild(area.tags, filters_.areas); }
+    void visitArea(const Area& area) override { checkOrBuild(area, filters_.areas); }
 
-    void visitRelation(const Relation& relation) override { checkOrBuild(relation.tags, filters_.relations); }
+    void visitRelation(const Relation& relation) override { checkOrBuild(relation, filters_.relations); }
 
     bool canBuild() const { return canBuild_; }
 
@@ -78,15 +81,13 @@ public:
 
 private:
 
-    void checkOrBuild(const std::vector<Tag>& tags, const FilterMap& filters)
+    void checkOrBuild(const Element& element, const ConditionFilterMap& filters)
     {
-        if (onlyCheck_)
-            check(tags, filters);
-        else
-            build(tags, filters);
+        if (!buildFromIdentifier(element))
+            buildFromCondition(element.tags, filters);
     }
 
-    /// checks tag's value assuming that the key is already checked.
+    /// Checks tag's value assuming that the key is already checked.
     bool matchTag(const Tag& tag, const ConditionType& condition)
     {
         switch (condition.type) {
@@ -100,6 +101,8 @@ private:
                 return compareDoubles(tag.value, condition.value, std::less<double>());
             case OpType::Greater:
                 return compareDoubles(tag.value, condition.value, std::greater<double>());
+            default:
+                return false;
         }
     }
 
@@ -128,12 +131,12 @@ private:
         return false;
     }
 
-    /// Builds style object. More expensive to call than check.
-    void build(const std::vector<Tag>& tags, const FilterMap& filters)
+    /// Builds style object from regular mapcss rule encapsulated by condition filter.
+    void buildFromCondition(const std::vector<Tag>& tags, const ConditionFilterMap& filters)
     {
-        FilterMap::const_iterator iter = filters.find(levelOfDetails_);
+        ConditionFilterMap::const_iterator iter = filters.find(levelOfDetail_);
         if (iter != filters.end()) {
-            for (const Filter& filter : iter->second) {
+            for (const ConditionFilter& filter : iter->second) {
                 bool isMatched = true;
                 for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
                     isMatched &= matchTags(tags.cbegin(), tags.cend(), *it);
@@ -141,34 +144,36 @@ private:
                 // merge declarations to style
                 if (isMatched) {
                     canBuild_ = true;
+                    if (onlyCheck_) return;
+
                     for (const auto& d : filter.declarations) {
-                        style.put(*d.second);
+                        style.put(*d);
                     }
                 }
             }
         }
     }
 
-    /// Just checks whether style can be created without constructing actual style.
-    void check(const std::vector<Tag>& tags, const FilterMap& filters)
+    /// Builds style object from element id rule encapsulated by identifier filter.
+    bool buildFromIdentifier(const Element& element)
     {
-        FilterMap::const_iterator iter = filters.find(levelOfDetails_);
-        if (iter != filters.end()) {
-            for (const Filter& filter : iter->second) {
-                bool isMatched = true;
-                for (auto it = filter.conditions.cbegin(); it != filter.conditions.cend() && isMatched; ++it) {
-                    isMatched &= matchTags(tags.cbegin(), tags.cend(), *it);
+        auto filterMap = filters_.elements.find(levelOfDetail_);
+        if (filterMap != filters_.elements.end()) {
+            auto elementStyle = filterMap->second.find(element.id);
+            if (elementStyle != filterMap->second.end()) {
+                canBuild_ = true;
+                if (!onlyCheck_) {
+                    for (const auto& d : elementStyle->second)
+                        style.put(*d);
                 }
-                if (isMatched) {
-                    canBuild_ = true;
-                    return;
-                }
+                return true;
             }
         }
+        return false;
     }
 
     const FilterCollection &filters_;
-    int levelOfDetails_;
+    int levelOfDetail_;
     bool onlyCheck_;
     bool canBuild_;
     StringTable& stringTable_;
@@ -199,23 +204,25 @@ public:
         filters.areas.reserve(24);
         filters.relations.reserve(24);
         filters.canvases.reserve(24);
+        filters.elements.reserve(24);
 
         for (const Rule& rule : stylesheet.rules) {
             for (const Selector& selector : rule.selectors) {
                 for (const std::string& name : selector.names) {
-                    FilterMap* filtersPtr = nullptr;
+                    ConditionFilterMap* filtersPtr = nullptr;
                     if (name == "node") filtersPtr = &filters.nodes;
                     else if (name == "way") filtersPtr = &filters.ways;
                     else if (name == "area") filtersPtr = &filters.areas;
                     else if (name == "relation") filtersPtr = &filters.relations;
                     else if (name == "canvas") filtersPtr = &filters.canvases;
+                    else if (name == "element") {
+                        addIdentifierRule(selector, rule.declarations);
+                        continue;
+                    }
                     else
                         throw std::domain_error("Unexpected selector name:" + name);
 
-                    Filter filter;
-                    addConditions(filter, selector);
-                    addDeclarations(filter, rule);
-                    addToFilterMap(filtersPtr, filter, selector);
+                    addConditionRule(filtersPtr, rule, selector);
                 }
             }
         }
@@ -251,10 +258,35 @@ public:
 
 private:
 
-    void addConditions(Filter& filter, const Selector& selector)
+    /// Adds rule for element with specific id.
+    void addIdentifierRule(const Selector& selector, const std::vector<Declaration>& declarations)
     {
-        filter.conditions.reserve(selector.conditions.size());
-        for (const Condition &condition : selector.conditions) {
+        auto filter = IdentifierFilter();
+        addDeclarations(declarations, [&](std::shared_ptr<const StyleDeclaration> declaration) {
+            auto id = utymap::utils::lexicalCast<std::uint64_t>(selector.conditions[0].value);
+            filter[id].push_back(declaration);
+        });
+
+        for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
+            filters.elements[i] = filter;
+        }
+    }
+
+    /// Adds rule for element.
+    void addConditionRule(ConditionFilterMap* filtersPtr, const Rule rule, const Selector& selector)
+    {
+        ConditionFilter filter;
+        addConditions(filter, selector.conditions);
+        addDeclarations(rule.declarations, [&](std::shared_ptr<const StyleDeclaration> declaration) {
+            filter.declarations.push_back(declaration);
+        });
+        addToFilterMap(filtersPtr, filter, selector);
+    }
+
+    void addConditions(ConditionFilter& filter, const std::vector<Condition>& conditions)
+    {
+        filter.conditions.reserve(conditions.size());
+        for (const Condition &condition : conditions) {
             ConditionType c;
             if (condition.operation == "") c.type = OpType::Exists;
             else if (condition.operation == "=") c.type = OpType::Equals;
@@ -270,21 +302,17 @@ private:
         }
     }
 
-    void addDeclarations(Filter& filter, const Rule& rule)
+    template <typename T>
+    void addDeclarations(const std::vector<Declaration>& declarations, const T& filter)
     {
-        filter.declarations.reserve(rule.declarations.size());
-        for (auto i = 0; i < rule.declarations.size(); ++i) {
-            Declaration declaration = rule.declarations[i];
-            uint32_t key = stringTable.getId(declaration.key);
-
+        for (const auto& declaration : declarations) {
             if (utymap::utils::GradientUtils::isGradient(declaration.value))
                 addGradient(declaration.value);
-
-            filter.declarations[key] = std::make_shared<const StyleDeclaration>(key, declaration.value);
+            filter(std::make_shared<const StyleDeclaration>(stringTable.getId(declaration.key), declaration.value));
         }
     }
 
-    void addToFilterMap(FilterMap* filtersPtr, Filter& filter, const Selector& selector)
+    void addToFilterMap(ConditionFilterMap* filtersPtr, ConditionFilter& filter, const Selector& selector)
     {
         std::sort(filter.conditions.begin(), filter.conditions.end(),
                   [](const ConditionType& c1, const ConditionType& c2) { return c1.key > c2.key; });
@@ -337,7 +365,7 @@ Style StyleProvider::forCanvas(int levelOfDetails) const
     Style style({}, pimpl_->stringTable);
     for (const auto &filter : pimpl_->filters.canvases[levelOfDetails]) {
         for (const auto &declaration : filter.declarations) {
-            style.put(*declaration.second);
+            style.put(*declaration);
         }
     }
     return std::move(style);
