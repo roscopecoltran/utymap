@@ -4,6 +4,7 @@ relation|z16[type=building] {
     builders: building;
 }
 
+area,relation|z16[man_made=stele],
 area,relation|z16[man_made=bridge],
 area,relation|z16[man_made=tower],
 area,relation|z16[construction=building],
@@ -283,12 +284,15 @@ area,relation|z16[roof:slope:direction] {
     roof-direction: eval("tag('roof:slope:direction')");
 }
 
+way,relation|z16[man_made=pier][area=yes],
+area,relation|z16[man_made=pier],
 area,relation|z16[man_made=bridge] {
     height: 0.2m;
     min-height: -0.2m;
     roof-color: gradient(#4d4d4d);
 }
 
+area,relation|z16[building][height=0],
 area,relation|z16[building:part=no] {
     skip:true;
 }
