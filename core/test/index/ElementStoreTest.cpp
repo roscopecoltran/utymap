@@ -303,30 +303,4 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreInsideQuadKey_IsStored)
     BOOST_CHECK_EQUAL(elementStore.times, 1);
 }
 
-BOOST_AUTO_TEST_CASE(GivenWayWithSmallSize_WhenStore_IsSkipped)
-{
-    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
-    { { "test", "Foo" } }, { { 5, 5 }, { 10, 10 } });
-    TestElementStore elementStore(*dependencyProvider.getStringTable(),
-       [&](const Element& element, const QuadKey& quadKey) {});
-
-    elementStore.store(way, LodRange(1, 1), 
-        *dependencyProvider.getStyleProvider("way|z1[test=Foo] { size: 50%;}"));
-
-    BOOST_CHECK_EQUAL(elementStore.times, 0);
-}
-
-BOOST_AUTO_TEST_CASE(GivenWayWithLargeSize_WhenStore_IsStored)
-{
-    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
-    { { "test", "Foo" } }, { { 5, 5 }, { 100, 100 } });
-    TestElementStore elementStore(*dependencyProvider.getStringTable(),
-        [&](const Element& element, const QuadKey& quadKey) {});
-
-    elementStore.store(way, LodRange(1, 1), 
-        *dependencyProvider.getStyleProvider("way|z1[test=Foo] { size: 50%;}"));
-
-    BOOST_CHECK_EQUAL(elementStore.times, 1);
-}
-
 BOOST_AUTO_TEST_SUITE_END()
