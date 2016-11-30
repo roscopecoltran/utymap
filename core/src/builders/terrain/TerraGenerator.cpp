@@ -166,7 +166,7 @@ void TerraGenerator::populateMesh(Paths& paths, const RegionContext& regionConte
     ClipperLib::SimplifyPolygons(paths);
     ClipperLib::CleanPolygons(paths);
 
-    bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 1E-8;
+    bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points
     double size = 0;
     for (std::size_t i = 0; i < paths.size(); ++i)
