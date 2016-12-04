@@ -27,7 +27,7 @@ public:
     /// Generates mesh for given rect.
     virtual void generate(ClipperLib::Path& tileRect) = 0;
 
-    virtual ~TerraGenerator();
+    virtual ~TerraGenerator() = default;
 
 protected:
     const utymap::builders::BuilderContext& context_;
