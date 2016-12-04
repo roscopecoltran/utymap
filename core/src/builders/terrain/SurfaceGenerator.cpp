@@ -39,7 +39,8 @@ SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& s
 
 void SurfaceGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
 {
-    layers_[type].push(region);
+    if (region->level == 0)
+        layers_[type].push(region);
 }
 
 void SurfaceGenerator::generate(Path& tileRect)

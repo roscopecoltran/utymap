@@ -174,6 +174,7 @@ private:
         if (!region->isLayer)
             region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
 
+        region->level = style.getValue(StyleConsts::LevelKey);
         region->area = std::abs(utymap::utils::getArea(coordinates));
 
         return region;

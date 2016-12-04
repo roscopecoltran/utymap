@@ -2,6 +2,10 @@ canvas|z16 {
     layer-priority: water,drive,pedestrian;
 }
 
+area,way,relation|z1-16[layer] {
+    level: eval("tag('layer')");
+}
+
 @import url("default.z16-poi.mapcss");
 @import url("default.z16-terrain.mapcss");
 @import url("default.z16-roads.mapcss");

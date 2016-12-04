@@ -73,7 +73,7 @@ struct RegionContext final
 struct Region final
 {
     Region() :
-        isLayer(false), area(0), context(nullptr), geometry()
+        isLayer(false), level(0), area(0), context(nullptr), geometry()
     {
     }
 
@@ -91,6 +91,8 @@ struct Region final
 
     /// Layer flag. If it's set all with such flag should be merged together.
     bool isLayer;
+    /// Level value: zero for objects on terrain surface.
+    int level;
     /// Area of polygon.
     double area;
     /// context is optional: might be empty if polygon is layer
