@@ -2,14 +2,13 @@
 #include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
-#include "builders/terrain/TerraGenerator.hpp"
+#include "builders/terrain/SurfaceGenerator.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
 #include "utils/CoreUtils.hpp"
-#include "utils/GeoUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 
 using namespace ClipperLib;
@@ -22,8 +21,6 @@ using namespace utymap::utils;
 
 namespace {
     const double Scale = 1E7;
-    const std::string TerrainLayerKey = "terrain-layer";
-    const std::string WidthKey = "width";
 
     /// Converts coordinate to clipper's IntPoint.
     IntPoint toIntPoint(double x, double y)
@@ -36,9 +33,9 @@ namespace {
     {
         const Relation& relation;
         ElementVisitor& builder;
-        TerraGenerator::Region& region;
+        Region& region;
 
-        RelationVisitor(ElementVisitor& b, const Relation& r, TerraGenerator::Region& reg) :
+        RelationVisitor(ElementVisitor& b, const Relation& r, Region& reg) :
                 relation(r), builder(b), region(reg) {}
 
         void visitNode(const utymap::entities::Node& n) override { n.accept(builder); }
@@ -88,7 +85,7 @@ public:
         auto region = createRegion(style, way.coordinates);
 
         // make polygon from line by offsetting it using width specified
-        double width = style.getValue(WidthKey, 
+        double width = style.getValue(StyleConsts::WidthKey, 
             context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
             context_.boundingBox.center());
 
@@ -103,9 +100,9 @@ public:
 
         region->points = solution;
         std::string type = region->isLayer
-            ? style.getString(TerrainLayerKey)
+            ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
-        generator_.addRegion(type, std::move(region));
+        generator_.addRegion(type, way, style, std::move(region));
     }
 
     void visitArea(const utymap::entities::Area& area) override
@@ -113,14 +110,14 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, area.coordinates);
         std::string type = region->isLayer
-            ? style.getString(TerrainLayerKey)
+            ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
-        generator_.addRegion(type, std::move(region));
+        generator_.addRegion(type, area, style, std::move(region));
     }
 
     void visitRelation(const utymap::entities::Relation& rel) override
     {
-        auto region = utymap::utils::make_unique<TerraGenerator::Region>();
+        auto region = utymap::utils::make_unique<Region>();
         RelationVisitor visitor(*this, rel, *region);
 
         for (const auto& element : rel.elements) {
@@ -134,14 +131,14 @@ public:
 
         if (!region->points.empty()) {
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
-            region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
+            region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
             if (!region->isLayer)
-                region->context = utymap::utils::make_unique<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+                region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
 
             std::string type = region->isLayer 
-                ? style.getString(TerrainLayerKey)
+                ? style.getString(StyleConsts::TerrainLayerKey)
                 : "";
-            generator_.addRegion(type, std::move(region));
+            generator_.addRegion(type, rel, style, std::move(region));
         }
     }
 
@@ -154,9 +151,9 @@ public:
 
 private:
 
-    std::unique_ptr<TerraGenerator::Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates) const
+    std::unique_ptr<Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates) const
     {
-        auto region = utymap::utils::make_unique<TerraGenerator::Region>();
+        auto region = utymap::utils::make_unique<Region>();
         Path path;
         path.reserve(coordinates.size());
         for (const GeoCoordinate& c : coordinates)
@@ -164,9 +161,9 @@ private:
 
         region->points.push_back(path);
 
-        region->isLayer = style.has(context_.stringTable.getId(TerrainLayerKey));
+        region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
         if (!region->isLayer)
-            region->context = utymap::utils::make_unique<TerraGenerator::RegionContext>(generator_.createRegionContext(style, ""));
+            region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
 
         region->area = std::abs(utymap::utils::getArea(coordinates));
 
@@ -176,7 +173,7 @@ private:
     const Style style_;
     ClipperEx clipper_;
     ClipperOffset offset_;
-    TerraGenerator generator_;
+    SurfaceGenerator generator_;
     ClipperLib::Path tileRect_;
 };
 

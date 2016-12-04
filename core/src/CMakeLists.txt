@@ -42,6 +42,8 @@ set(HEADER_FILES
         builders/misc/LampBuilder.hpp
         builders/poi/TreeBuilder.hpp
         builders/terrain/LineGridSplitter.hpp
+        builders/terrain/RegionTypes.hpp
+        builders/terrain/SurfaceGenerator.hpp
         builders/terrain/TerraBuilder.hpp
         builders/terrain/TerraExtras.hpp
         builders/terrain/TerraGenerator.hpp
@@ -77,6 +79,7 @@ set(HEADER_FILES
         mapcss/MapCssParser.hpp
         mapcss/StyleSheet.hpp
         mapcss/Style.hpp
+        mapcss/StyleConsts.hpp
         mapcss/StyleEvaluator.hpp
         mapcss/StyleDeclaration.hpp
         mapcss/StyleProvider.hpp
@@ -111,9 +114,9 @@ add_library(${LIBRARY_NAME}
         builders/misc/BarrierBuilder.cpp
         builders/misc/LampBuilder.cpp
         builders/poi/TreeBuilder.cpp
+        builders/terrain/SurfaceGenerator.cpp
         builders/terrain/TerraBuilder.cpp
         builders/terrain/TerraExtras.cpp
-        builders/terrain/TerraGenerator.cpp
         builders/QuadKeyBuilder.cpp
         builders/buildings/BuildingBuilder.cpp
         formats/osm/MultipolygonProcessor.cpp
@@ -125,6 +128,7 @@ add_library(${LIBRARY_NAME}
         index/PersistentElementStore.cpp
         index/StringTable.cpp
         mapcss/MapCssParser.cpp
+        mapcss/StyleConsts.cpp
         mapcss/StyleEvaluator.cpp
         mapcss/StyleProvider.cpp
         mapcss/StyleSheet.cpp

@@ -1,131 +1,39 @@
 #ifndef BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED
 #define BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
-#include "builders/terrain/LineGridSplitter.hpp"
-#include "builders/terrain/TerraExtras.hpp"
-#include "builders/MeshBuilder.hpp"
-#include "math/Mesh.hpp"
-#include "math/Polygon.hpp"
-#include "math/Rectangle.hpp"
-#include "math/Vector2.hpp"
+#include "builders/terrain/RegionTypes.hpp"
 
 #include <memory>
 
 namespace utymap { namespace builders {
 
-/// Provides the way to generate terrain mesh.
-class TerraGenerator final
+/// Defines behaviour for generating objects on/under/above terrain.
+class TerraGenerator
 {
 public:
-    /// Region context encapsulates information about given region.
-    struct RegionContext final
+    TerraGenerator(const utymap::builders::BuilderContext& context,
+                   const utymap::mapcss::Style& style) :
+        context_(context), style_(style)
     {
-        const utymap::mapcss::Style style;
-        /// Prefix in mapcss.
-        const std::string prefix;
+    }
 
-        const utymap::builders::MeshBuilder::GeometryOptions geometryOptions;
-        const utymap::builders::MeshBuilder::AppearanceOptions appearanceOptions;
+    /// Adds region for given element.
+    virtual void addRegion(const std::string& type,
+                           const utymap::entities::Element& element,
+                           const utymap::mapcss::Style& style,
+                           std::shared_ptr<Region> region) = 0;
 
-        RegionContext(const utymap::mapcss::Style& style,
-                      const std::string& prefix,
-                      const utymap::builders::MeshBuilder::GeometryOptions& geometryOptions,
-                      const utymap::builders::MeshBuilder::AppearanceOptions& appearanceOptions) :
-            style(style), 
-            prefix(prefix), 
-            geometryOptions(std::move(geometryOptions)), 
-            appearanceOptions(std::move(appearanceOptions))
-        {
-        }
-    };
+    /// Generates mesh for given rect.
+    virtual void generate(ClipperLib::Path& tileRect) = 0;
 
-    /// Represents terrain region.
-    struct Region final
-    {
-        Region() : 
-            isLayer(false), area(0), context(nullptr), points() 
-        {
-        }
+    virtual ~TerraGenerator();
 
-        Region(Region&& other) :
-            isLayer(other.isLayer), area(other.area), 
-            context(std::move(other.context)), points(std::move(other.points))
-        {
-        };
-
-        Region(const Region&) = delete;
-        Region&operator=(const Region&) = delete;
-        Region&operator=(Region&&) = delete;
-
-        bool isLayer;
-        double area;
-        std::unique_ptr<RegionContext> context; // optional: might be empty if polygon is layer
-        ClipperLib::Paths points;
-    };
-
-    TerraGenerator(const BuilderContext& context,
-                   const utymap::mapcss::Style& style,
-                   ClipperLib::ClipperEx& foregroundClipper_);
-
-    /// Adds region
-    void addRegion(const std::string& type, std::unique_ptr<Region> region);
-
-    /// Generates mesh and calls callback from context.
-    void generate(ClipperLib::Path& tileRect);
-
-    /// Creates region  context.
-    RegionContext createRegionContext(const utymap::mapcss::Style& style,
-                                      const std::string& prefix) const;
-
-private:
-    typedef std::unique_ptr<Region> RegionPtr;
-    typedef std::vector<utymap::math::Vector2> Points;
-
-    struct GreaterThanByArea
-    {
-        bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
-        {
-            return lhs->area > rhs->area;
-        }
-    };
-
-    typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Regions;
-    typedef std::unordered_map<std::string, Regions> Layers;
-
-    /// Builds all objects for quadkey organized by layers
-    void buildLayers();
-
-    /// Builds background as clip area of layers
-    void buildBackground(ClipperLib::Path& tileRect);
-
-    void buildFromRegions(Regions& regions, const RegionContext& regionContext);
-
-    void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    void populateMesh(ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    Points restorePoints(const ClipperLib::Path& path) const;
-
-    void fillMesh(utymap::math::Polygon& polygon, const RegionContext& regionContext);
-
-    /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
-    void addExtrasIfNecessary(utymap::math::Mesh& mesh,
-                              TerraExtras::Context& extrasContext,
-                              const RegionContext& regionContext) const;
-
-    void processHeightOffset(const Points& points, const RegionContext& regionContext);
-
-    const BuilderContext& context_;
+protected:
+    const utymap::builders::BuilderContext& context_;
     const utymap::mapcss::Style& style_;
-    ClipperLib::ClipperEx& foregroundClipper_;
-    ClipperLib::ClipperEx backGroundClipper_;
-    LineGridSplitter splitter_;
-    utymap::math::Mesh mesh_;
-    Layers layers_;
-    utymap::math::Rectangle rect_;
 };
 
 }}
+
 #endif // BUILDERS_TERRAIN_TERRAGENERATOR_HPP_DEFINED
