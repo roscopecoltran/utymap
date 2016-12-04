@@ -20,3 +20,5 @@ const std::string StyleConsts::GridCellSize = "grid-cell-size";
 
 const std::string StyleConsts::TerrainLayerKey = "terrain-layer";
 const std::string StyleConsts::WidthKey = "width";
+
+const std::string StyleConsts::LevelKey = "level";

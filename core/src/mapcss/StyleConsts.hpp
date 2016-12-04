@@ -27,6 +27,8 @@ struct StyleConsts final {
 
     static const std::string TerrainLayerKey;
     static const std::string WidthKey;
+
+    static const std::string LevelKey;
 };
 
 }}
