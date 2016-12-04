@@ -15,8 +15,7 @@ namespace {
     const double AreaTolerance = 1000;
     const double Scale = 1E7;
 
-    const std::string TerrainMeshName = "terrain";
-
+    const std::string TerrainMeshName = "terrain_surface";
 
     const std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs = 
     {
@@ -121,6 +120,7 @@ void SurfaceGenerator::buildFromPaths(const Paths& paths, const RegionContext& r
 void SurfaceGenerator::populateMesh(Paths& paths, const RegionContext& regionContext)
 {
     ClipperLib::SimplifyPolygons(paths);
+    ClipperLib::CleanPolygons(paths);
 
     bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points

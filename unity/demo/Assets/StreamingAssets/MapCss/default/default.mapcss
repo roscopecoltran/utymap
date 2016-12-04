@@ -3,8 +3,3 @@
 @import url("default.z16.mapcss");
 
 @texture url("default.z16.txt");
-
-/* always ignore some elements. */
-area,way,relation|z1-16[level<0] {
-    skip:true;
-}

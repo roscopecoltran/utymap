@@ -2,7 +2,10 @@ canvas|z16 {
     layer-priority: water,drive,pedestrian;
 }
 
-area,way,relation|z1-16[layer] {
+area,way,relation|z16[level<0] {
+    skip:true;
+}
+area,way,relation|z16[layer] {
     level: eval("tag('layer')");
 }
 
