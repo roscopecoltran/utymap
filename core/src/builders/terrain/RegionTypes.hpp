@@ -73,15 +73,15 @@ struct RegionContext final
 struct Region final
 {
     Region() :
-        isLayer(false), area(0), context(nullptr), points()
+        isLayer(false), area(0), context(nullptr), geometry()
     {
     }
 
     Region(Region&& other) :
-        isLayer(other.isLayer), 
+        isLayer(other.isLayer),
         area(other.area),
-        context(std::move(other.context)), 
-        points(std::move(other.points))
+        context(std::move(other.context)),
+        geometry(std::move(other.geometry))
     {
     };
 
@@ -89,12 +89,14 @@ struct Region final
     Region&operator=(const Region&) = delete;
     Region&operator=(Region&&) = delete;
 
+    /// Layer flag. If it's set all with such flag should be merged together.
     bool isLayer;
+    /// Area of polygon.
     double area;
-
     /// context is optional: might be empty if polygon is layer
-    std::shared_ptr<const RegionContext> context;
-    ClipperLib::Paths points;
+    std::unique_ptr<const RegionContext> context;
+    /// Geometry of region.
+    ClipperLib::Paths geometry;
 };
 
 typedef std::shared_ptr<const Region> RegionPtr;

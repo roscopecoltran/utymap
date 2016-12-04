@@ -74,7 +74,7 @@ void SurfaceGenerator::buildLayers()
     for (auto& layer : layers_)
         while (!layer.second.empty()) {
             auto& region = layer.second.top();
-            buildFromPaths(region->points, *region->context);
+            buildFromPaths(region->geometry, *region->context);
             layer.second.pop();
         }
 }
@@ -96,7 +96,7 @@ void SurfaceGenerator::buildFromRegions(Regions& regions, const RegionContext& r
     // merge all regions together
     Clipper clipper;
     while (!regions.empty()) {
-        clipper.AddPaths(regions.top()->points, ptSubject, true);
+        clipper.AddPaths(regions.top()->geometry, ptSubject, true);
         regions.pop();
     }
 

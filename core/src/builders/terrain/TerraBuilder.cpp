@@ -49,7 +49,7 @@ namespace {
             for (const utymap::GeoCoordinate& c : a.coordinates)
                 path.push_back(toIntPoint(c.longitude, c.latitude));
 
-            region.points.push_back(path);
+            region.geometry.push_back(path);
             region.area += std::abs(utymap::utils::getArea(a.coordinates));
         }
 
@@ -89,18 +89,19 @@ public:
         // make polygon from line by offsetting it using width specified
         double width = style.getValue(StyleConsts::WidthKey, 
             context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
-            context_.boundingBox.center());
+            context_.boundingBox.center()) * Scale;
 
         Paths solution;
-        offset_.AddPaths(region->points, jtMiter, etOpenSquare);
-        offset_.Execute(solution, width *  Scale);
+        offset_.ArcTolerance = width / 20;
+        offset_.AddPaths(region->geometry, jtMiter, etOpenRound);
+        offset_.Execute(solution, width);
         offset_.Clear();
        
         clipper_.AddPaths(solution, ptSubject, true);
         clipper_.Execute(ctIntersection, solution);
         clipper_.removeSubject();
 
-        region->points = solution;
+        region->geometry = solution;
         std::string type = region->isLayer
             ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
@@ -135,7 +136,7 @@ public:
                 element->accept(visitor);
         }
 
-        if (!region->points.empty()) {
+        if (!region->geometry.empty()) {
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
             region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
             if (!region->isLayer)
@@ -168,7 +169,7 @@ private:
         for (const GeoCoordinate& c : coordinates)
             path.push_back(toIntPoint(c.longitude, c.latitude));
 
-        region->points.push_back(path);
+        region->geometry.push_back(path);
 
         region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
         if (!region->isLayer)
