@@ -63,8 +63,7 @@ public:
 
     explicit TerraBuilderImpl(const BuilderContext& context) :
         ElementBuilder(context), 
-        style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)), 
-        clipper_(),
+        style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)),
         generators_()
     {
         tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.minPoint.latitude));
@@ -74,7 +73,7 @@ public:
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_, clipper_));
+        generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_));
     }
 
     void visitNode(const utymap::entities::Node& node) override
@@ -92,15 +91,16 @@ public:
             context_.boundingBox.center()) * Scale;
 
         Paths solution;
-        offset_.ArcTolerance = width / 20;
+        // NOTE: we should limit round shape precision due to performance reasons.
+        offset_.ArcTolerance = width * 0.05;
         offset_.AddPaths(region->geometry, jtRound, etOpenRound);
         offset_.Execute(solution, width);
         offset_.Clear();
-       
+
         clipper_.AddPaths(solution, ptSubject, true);
         clipper_.Execute(ctIntersection, solution);
         clipper_.removeSubject();
-
+       
         region->geometry = solution;
         std::string type = region->isLayer
             ? style.getString(StyleConsts::TerrainLayerKey)
@@ -154,7 +154,6 @@ public:
     /// builds tile mesh using data provided.
     void complete() override
     {
-        clipper_.Clear();
         for (const auto& generator : generators_)
             generator->generate(tileRect_);
     }
@@ -184,7 +183,7 @@ private:
     ClipperEx clipper_;
     ClipperOffset offset_;
     std::vector<std::unique_ptr<TerraGenerator>> generators_;
-    ClipperLib::Path tileRect_;
+    Path tileRect_;
 };
 
 void TerraBuilder::visitNode(const utymap::entities::Node& node) { pimpl_->visitNode(node); }

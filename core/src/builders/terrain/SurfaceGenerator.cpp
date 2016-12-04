@@ -25,10 +25,10 @@ namespace {
     };
 };
 
-SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style, ClipperEx& foregroundClipper) :
+SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style) :
     TerraGenerator(context, style),
-    foregroundClipper_(foregroundClipper),
-    backGroundClipper_(),
+    foregroundClipper_(),
+    backgroundClipper_(),
     mesh_(TerrainMeshName),
     rect_(context.boundingBox.minPoint.longitude,
           context.boundingBox.minPoint.latitude,
@@ -39,18 +39,20 @@ SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& s
 
 void SurfaceGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
 {
-    layers_[type].push(std::move(region));
+    layers_[type].push(region);
 }
 
 void SurfaceGenerator::generate(Path& tileRect)
 {
+    backgroundClipper_.AddPath(tileRect, ptSubject, true);
+
     double size = style_.getValue(StyleConsts::GridCellSize,
         context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, 
         context_.boundingBox.center());
     splitter_.setParams(Scale, size);
 
     buildLayers();
-    buildBackground(tileRect);
+    buildBackground();
 
     context_.meshCallback(mesh_);
 }
@@ -80,12 +82,11 @@ void SurfaceGenerator::buildLayers()
 }
 
 /// process the rest area.
-void SurfaceGenerator::buildBackground(Path& tileRect)
+void SurfaceGenerator::buildBackground()
 {
-    backGroundClipper_.AddPath(tileRect, ptSubject, true);
     Paths background;
-    backGroundClipper_.Execute(ctDifference, background, pftNonZero, pftNonZero);
-    backGroundClipper_.Clear();
+    backgroundClipper_.Execute(ctDifference, background, pftNonZero, pftNonZero);
+    backgroundClipper_.Clear();
 
     if (!background.empty())
         populateMesh(background, RegionContext::create(context_, style_, ""));
@@ -134,7 +135,7 @@ void SurfaceGenerator::populateMesh(Paths& paths, const RegionContext& regionCon
         if (std::abs(area) < AreaTolerance)
             continue;
 
-        backGroundClipper_.AddPath(path, ptClip, true);
+        backgroundClipper_.AddPath(path, ptClip, true);
 
         auto points = restorePoints(path);
         if (isHole)

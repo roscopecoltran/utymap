@@ -19,8 +19,7 @@ class SurfaceGenerator final : public TerraGenerator
 {
 public:
     SurfaceGenerator(const BuilderContext& context,
-                     const utymap::mapcss::Style& style,
-                     ClipperLib::ClipperEx& foregroundClipper_);
+                     const utymap::mapcss::Style& style);
 
     /// Adds region
     void addRegion(const std::string& type,
@@ -36,7 +35,7 @@ private:
     void buildLayers();
 
     /// Builds background as clip area of layers
-    void buildBackground(ClipperLib::Path& tileRect);
+    void buildBackground();
 
     void buildFromRegions(Regions& regions, const RegionContext& regionContext);
 
@@ -56,8 +55,8 @@ private:
     void processHeightOffset(const std::vector<utymap::math::Vector2>& points, 
                              const RegionContext& regionContext);
 
-    ClipperLib::ClipperEx& foregroundClipper_;
-    ClipperLib::ClipperEx backGroundClipper_;
+    ClipperLib::ClipperEx foregroundClipper_;
+    ClipperLib::ClipperEx backgroundClipper_;
     LineGridSplitter splitter_;
     utymap::math::Mesh mesh_;
     Layers layers_;
