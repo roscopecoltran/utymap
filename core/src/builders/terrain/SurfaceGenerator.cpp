@@ -120,7 +120,6 @@ void SurfaceGenerator::buildFromPaths(const Paths& paths, const RegionContext& r
 void SurfaceGenerator::populateMesh(Paths& paths, const RegionContext& regionContext)
 {
     ClipperLib::SimplifyPolygons(paths);
-    ClipperLib::CleanPolygons(paths);
 
     bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points
@@ -191,8 +190,8 @@ void SurfaceGenerator::fillMesh(Polygon& polygon, const RegionContext& regionCon
 }
 
 void SurfaceGenerator::addExtrasIfNecessary(Mesh& mesh,
-                                          TerraExtras::Context& extrasContext,
-                                          const RegionContext& regionContext) const
+                                            TerraExtras::Context& extrasContext,
+                                            const RegionContext& regionContext) const
 {
     std::string meshExtras = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshExtrasKey);
     if (meshExtras.empty())
