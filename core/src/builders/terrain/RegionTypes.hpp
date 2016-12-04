@@ -79,6 +79,7 @@ struct Region final
 
     Region(Region&& other) :
         isLayer(other.isLayer),
+        level(other.level),
         area(other.area),
         context(std::move(other.context)),
         geometry(std::move(other.geometry))
