@@ -93,7 +93,7 @@ public:
 
         Paths solution;
         offset_.ArcTolerance = width / 20;
-        offset_.AddPaths(region->geometry, jtMiter, etOpenRound);
+        offset_.AddPaths(region->geometry, jtRound, etOpenRound);
         offset_.Execute(solution, width);
         offset_.Clear();
        
