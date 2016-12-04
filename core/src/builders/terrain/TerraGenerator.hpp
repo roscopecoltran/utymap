@@ -13,8 +13,9 @@ class TerraGenerator
 {
 public:
     TerraGenerator(const utymap::builders::BuilderContext& context,
-                   const utymap::mapcss::Style& style) :
-        context_(context), style_(style)
+                   const utymap::mapcss::Style& style,
+                   const ClipperLib::Path& tileRect) :
+        context_(context), style_(style), tileRect_(tileRect)
     {
     }
 
@@ -25,13 +26,14 @@ public:
                            std::shared_ptr<Region> region) = 0;
 
     /// Generates mesh for given rect.
-    virtual void generate(ClipperLib::Path& tileRect) = 0;
+    virtual void generate() = 0;
 
     virtual ~TerraGenerator() = default;
 
 protected:
     const utymap::builders::BuilderContext& context_;
     const utymap::mapcss::Style& style_;
+    const ClipperLib::Path tileRect_;
 };
 
 }}

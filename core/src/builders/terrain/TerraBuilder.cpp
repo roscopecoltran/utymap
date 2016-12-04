@@ -73,7 +73,7 @@ public:
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_));
+        generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_, tileRect_));
     }
 
     void visitNode(const utymap::entities::Node& node) override
@@ -155,7 +155,7 @@ public:
     void complete() override
     {
         for (const auto& generator : generators_)
-            generator->generate(tileRect_);
+            generator->generate();
     }
 
 private:

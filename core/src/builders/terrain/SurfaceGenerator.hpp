@@ -19,7 +19,8 @@ class SurfaceGenerator final : public TerraGenerator
 {
 public:
     SurfaceGenerator(const BuilderContext& context,
-                     const utymap::mapcss::Style& style);
+                     const utymap::mapcss::Style& style,
+                     const ClipperLib::Path& tileRect);
 
     /// Adds region
     void addRegion(const std::string& type,
@@ -28,7 +29,7 @@ public:
                    std::shared_ptr<Region> region) override;
 
     /// Generates mesh and calls callback from context.
-    void generate(ClipperLib::Path& tileRect) override;
+    void generate() override;
 
 private:
     /// Builds all objects for quadkey organized by layers

@@ -24,8 +24,8 @@ namespace {
     };
 };
 
-SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style) :
-    TerraGenerator(context, style),
+SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style, const ClipperLib::Path& tileRect) :
+    TerraGenerator(context, style, tileRect),
     foregroundClipper_(),
     backgroundClipper_(),
     mesh_(TerrainMeshName),
@@ -42,9 +42,9 @@ void SurfaceGenerator::addRegion(const std::string& type, const utymap::entities
         layers_[type].push(region);
 }
 
-void SurfaceGenerator::generate(Path& tileRect)
+void SurfaceGenerator::generate()
 {
-    backgroundClipper_.AddPath(tileRect, ptSubject, true);
+    backgroundClipper_.AddPath(tileRect_, ptSubject, true);
 
     double size = style_.getValue(StyleConsts::GridCellSize,
         context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, 
