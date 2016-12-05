@@ -3,6 +3,7 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "builders/terrain/SurfaceGenerator.hpp"
+#include "builders/terrain/TunnelGenerator.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
@@ -74,6 +75,7 @@ public:
         clipper_.AddPath(tileRect_, ptClip, true);
 
         generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_, tileRect_));
+        generators_.push_back(utymap::utils::make_unique<TunnelGenerator>(context, style_, tileRect_));
     }
 
     void visitNode(const utymap::entities::Node& node) override
