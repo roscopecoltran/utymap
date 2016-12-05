@@ -73,7 +73,7 @@ void SurfaceGenerator::addGeometry(Paths& geometry, const RegionContext& regionC
     }
 
     if (!polygon.points.empty())
-        fillMesh(polygon, regionContext);
+        addGeometry(polygon, regionContext);
 }
 
 void SurfaceGenerator::buildHeightOffset(const std::vector<Vector2>& points, const RegionContext& regionContext)
@@ -94,29 +94,25 @@ void SurfaceGenerator::buildHeightOffset(const std::vector<Vector2>& points, con
     }
 }
 
-void SurfaceGenerator::fillMesh(Polygon& polygon, const RegionContext& regionContext)
+void SurfaceGenerator::addGeometry(Polygon& polygon, const RegionContext& regionContext)
 {
     std::string meshName = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
-        TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
-        context_.meshBuilder.addPolygon(polygonMesh, 
-                                        polygon, 
-                                        regionContext.geometryOptions, 
-                                        regionContext.appearanceOptions);
+        context_.meshBuilder.addPolygon(polygonMesh, polygon, 
+            regionContext.geometryOptions, regionContext.appearanceOptions);
         context_.meshBuilder.writeTextureMappingInfo(polygonMesh, regionContext.appearanceOptions);
 
+        TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
         addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
-        TerraExtras::Context extrasContext(mesh_, regionContext.style);
-        context_.meshBuilder.addPolygon(mesh_,
-                                        polygon, 
-                                        regionContext.geometryOptions, 
-                                        regionContext.appearanceOptions);
+        context_.meshBuilder.addPolygon(mesh_, polygon, 
+            regionContext.geometryOptions, regionContext.appearanceOptions);
         context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
 
+        TerraExtras::Context extrasContext(mesh_, regionContext.style);
         addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
 }
@@ -125,7 +121,7 @@ void SurfaceGenerator::addExtrasIfNecessary(Mesh& mesh,
                                             TerraExtras::Context& extrasContext,
                                             const RegionContext& regionContext) const
 {
-    std::string meshExtras = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshExtrasKey);
+    auto meshExtras = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshExtrasKey);
     if (meshExtras.empty())
         return;
 

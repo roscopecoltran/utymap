@@ -38,7 +38,8 @@ private:
     /// Builds height contour shape.
     void buildHeightOffset(const std::vector<utymap::math::Vector2>& points, const RegionContext& regionContext);
 
-    void fillMesh(utymap::math::Polygon& polygon, const RegionContext& regionContext);
+    /// Adds polygon to mesh.
+    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext);
 
     /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::math::Mesh& mesh,
