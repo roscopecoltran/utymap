@@ -3,13 +3,11 @@
 
 #include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
-#include "builders/terrain/LineGridSplitter.hpp"
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/terrain/TerraGenerator.hpp"
 #include "builders/terrain/RegionTypes.hpp"
 #include "math/Mesh.hpp"
 #include "math/Polygon.hpp"
-#include "math/Rectangle.hpp"
 #include "math/Vector2.hpp"
 
 namespace utymap { namespace builders {
@@ -31,20 +29,14 @@ public:
     /// Generates mesh and calls callback from context.
     void generate() override;
 
+protected:
+
+    void addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext) override;
+
 private:
-    /// Builds all objects for quadkey organized by layers
-    void buildLayers();
 
-    /// Builds background as clip area of layers
-    void buildBackground();
-
-    void buildFromRegions(Regions& regions, const RegionContext& regionContext);
-
-    void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    void populateMesh(ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    std::vector<utymap::math::Vector2> restorePoints(const ClipperLib::Path& path) const;
+    /// Builds height contour shape.
+    void buildHeightOffset(const std::vector<utymap::math::Vector2>& points, const RegionContext& regionContext);
 
     void fillMesh(utymap::math::Polygon& polygon, const RegionContext& regionContext);
 
@@ -53,15 +45,7 @@ private:
                               TerraExtras::Context& extrasContext,
                               const RegionContext& regionContext) const;
 
-    void processHeightOffset(const std::vector<utymap::math::Vector2>& points, 
-                             const RegionContext& regionContext);
-
-    ClipperLib::ClipperEx foregroundClipper_;
-    ClipperLib::ClipperEx backgroundClipper_;
-    LineGridSplitter splitter_;
     utymap::math::Mesh mesh_;
-    Layers layers_;
-    utymap::math::Rectangle rect_;
 };
 
 }}
