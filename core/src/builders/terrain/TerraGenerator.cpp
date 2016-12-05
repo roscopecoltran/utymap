@@ -5,6 +5,10 @@ using namespace utymap::builders;
 using namespace utymap::mapcss;
 using namespace utymap::math;
 
+namespace {
+    const double Scale = 1E7;
+}
+
 TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
                                const utymap::mapcss::Style& style,
                                const ClipperLib::Path& tileRect) :
@@ -14,9 +18,11 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
                                      context.boundingBox.maxPoint.longitude,
                                      context.boundingBox.maxPoint.latitude)
 {
+    auto size = style_.getValue(StyleConsts::GridCellSize, context_.boundingBox.height(), context_.boundingBox.center());
+    splitter_.setParams(Scale, size);
 }
 
-void TerraGenerator::buildLayers()
+void TerraGenerator::buildForeground()
 {
     // 1. process layers: regions with shared properties.
     std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey));

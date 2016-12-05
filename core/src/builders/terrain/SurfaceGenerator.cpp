@@ -13,7 +13,6 @@ using namespace std::placeholders;
 namespace {
     /// Tolerance for meshing
     const double AreaTolerance = 1000;
-    const double Scale = 1E7;
 
     const std::string TerrainMeshName = "terrain_surface";
 
@@ -37,12 +36,7 @@ void SurfaceGenerator::addRegion(const std::string& type, const utymap::entities
 
 void SurfaceGenerator::generate()
 {
-    double size = style_.getValue(StyleConsts::GridCellSize,
-        context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude, 
-        context_.boundingBox.center());
-    splitter_.setParams(Scale, size);
-
-    buildLayers();
+    buildForeground();
     buildBackground();
 
     context_.meshCallback(mesh_);

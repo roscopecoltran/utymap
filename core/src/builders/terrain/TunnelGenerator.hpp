@@ -27,7 +27,7 @@ public:
     void generate() override;
 
 protected:
-    void buildBackground() override;
+    void buildBackground() override { }
     void addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext) override;
 
 private:

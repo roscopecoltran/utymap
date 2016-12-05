@@ -7,6 +7,7 @@
 using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::mapcss;
+using namespace utymap::math;
 
 namespace {
 
@@ -50,11 +51,6 @@ TunnelGenerator::TunnelGenerator(const BuilderContext& context, const Style& sty
 {
 }
 
-void TunnelGenerator::buildBackground()
-{
-    // NOTE we do not interesting in background for tunnels.
-}
-
 void TunnelGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
 {
     if (region->level < 0)
@@ -66,7 +62,9 @@ void TunnelGenerator::addRegion(const std::string& type, const utymap::entities:
 
 void TunnelGenerator::generate()
 {
-    buildLayers();
+    buildForeground();
+
+    context_.meshCallback(mesh_);
 }
 
 void TunnelGenerator::addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext)

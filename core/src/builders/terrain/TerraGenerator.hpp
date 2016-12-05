@@ -29,10 +29,10 @@ public:
     virtual ~TerraGenerator() = default;
 
 protected:
-    /// Builds all objects for quadkey organized by layers.
-    virtual void buildLayers();
+    /// Builds all foreground objects specified by layers.
+    virtual void buildForeground();
 
-    /// Builds all objects to occupy the space not used by layers
+    /// Builds all objects which occupy the space not used by foreground objects
     virtual void buildBackground();
 
     /// Called to populate mesh with geometry provided by paths
