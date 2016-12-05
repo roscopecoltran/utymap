@@ -78,6 +78,9 @@ void TerraGenerator::buildFromPaths(const Paths& paths, const RegionContext& reg
     foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
     foregroundClipper_.moveSubjectToClip();
 
+    ClipperLib::SimplifyPolygons(solution);
+    ClipperLib::CleanPolygons(solution);
+
     addGeometry(solution, regionContext);
 }
 

@@ -44,9 +44,6 @@ void SurfaceGenerator::generate()
 
 void SurfaceGenerator::addGeometry(Paths& geometry, const RegionContext& regionContext)
 {
-    ClipperLib::SimplifyPolygons(geometry);
-    ClipperLib::CleanPolygons(geometry);
-
     bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points
     double size = 0;
