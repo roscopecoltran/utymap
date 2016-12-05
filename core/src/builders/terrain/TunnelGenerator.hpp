@@ -31,6 +31,7 @@ protected:
     void addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext) override;
 
 private:
+    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext);
 
     utymap::math::Mesh mesh_;
 };
