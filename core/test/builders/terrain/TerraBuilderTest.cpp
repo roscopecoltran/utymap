@@ -23,13 +23,12 @@ namespace {
     struct Builders_Terrain_TerraBuilderFixture
     {
         DependencyProvider dependencyProvider;
-        std::shared_ptr<TerraBuilder> terraBuilder;
     };
 }
 
 BOOST_FIXTURE_TEST_SUITE(Builders_Terrain_TerraBuilder, Builders_Terrain_TerraBuilderFixture)
 
-BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
+BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenSurfaceMeshIsNotEmpty)
 {
     bool isCalled = false;
     QuadKey quadKey(1, 0, 0);
@@ -38,6 +37,8 @@ BOOST_AUTO_TEST_CASE(GivenLargeWater_WhenComplete_ThenMeshIsNotEmpty)
         *dependencyProvider.getStringTable(),
         *dependencyProvider.getElevationProvider(),
         [&](const Mesh& mesh) {
+            if (mesh.name != "terrain_surface")
+                return;
             isCalled = true;
             BOOST_CHECK_GT(mesh.vertices.size(), 0);
             BOOST_CHECK_GT(mesh.triangles.size(), 0);
