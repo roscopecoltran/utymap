@@ -1,5 +1,5 @@
 canvas|z16 {
-    layer-priority: water,drive,pedestrian;
+    layer-priority: bridge,drive,pedestrian,water;
 }
 
 area,way,relation|z16[level<0] {

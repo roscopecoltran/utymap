@@ -8,6 +8,16 @@ canvas|z16 {
     texture-index: 0;
     texture-type: background;
     texture-scale: 100;
+
+    bridge-mesh-name: terrain_bridges;
+    bridge-max-area: 5%;
+    bridge-color-noise-freq: 0.1;
+    bridge-ele-noise-freq: 0.05;
+    bridge-color: gradient(#636363);
+    bridge-height-offset:0.05m;
+    bridge-texture-index: 0;
+    bridge-texture-type: drive;
+    bridge-texture-scale: 200;
 }
 
 area,relation|z16[amenity],
@@ -145,4 +155,10 @@ area,relation|z16[landuse=grass],
 area,relation|z16[landuse=meadow] {
     color: gradient(#adff2f, #006400 30%, #556b2f 90%, #b8860b);
     texture-type: grass;
+}
+
+area,relation|z16[man_made=bridge] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: bridge;
 }
