@@ -17,16 +17,16 @@ public:
                      const utymap::mapcss::Style& style,
                      const ClipperLib::Path& tileRect);
 
-    /// Adds region
-    void addRegion(const std::string& type,
-                   const utymap::entities::Element& element,
-                   const utymap::mapcss::Style& style,
-                   std::shared_ptr<Region> region) override;
-
     /// Generates mesh and calls callback from context.
     void generate() override;
 
 protected:
+    void onAddRegion(const std::string& type,
+                     const utymap::entities::Element& element,
+                     const utymap::mapcss::Style& style,
+                     std::shared_ptr<Region> region) override { }
+
+    bool canHandle(std::shared_ptr<Region> region) override;
 
     void addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext) override;
 

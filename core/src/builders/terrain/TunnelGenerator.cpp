@@ -53,11 +53,8 @@ TunnelGenerator::TunnelGenerator(const BuilderContext& context, const Style& sty
 {
 }
 
-void TunnelGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
+void TunnelGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
 {
-    if (region->level < 0)
-        layers_[type].push(region);
-
     GeometryVisitor visitor(region->level);
     element.accept(visitor);
 }
@@ -67,6 +64,11 @@ void TunnelGenerator::generate()
     buildForeground();
 
     context_.meshCallback(mesh_);
+}
+
+bool TunnelGenerator::canHandle(std::shared_ptr<Region> region)
+{
+    return false;
 }
 
 void TunnelGenerator::addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext)

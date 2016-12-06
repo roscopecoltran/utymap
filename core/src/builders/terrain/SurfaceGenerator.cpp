@@ -26,18 +26,17 @@ SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& s
 {
 }
 
-void SurfaceGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
-{
-    if (region->level == 0)
-        layers_[type].push(region);
-}
-
 void SurfaceGenerator::generate()
 {
     buildForeground();
     buildBackground();
 
     context_.meshCallback(mesh_);
+}
+
+bool SurfaceGenerator::canHandle(std::shared_ptr<Region> region)
+{
+    return region->level == 0;
 }
 
 void SurfaceGenerator::addGeometry(Paths& geometry, const RegionContext& regionContext)

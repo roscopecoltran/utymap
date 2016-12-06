@@ -22,6 +22,11 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
     splitter_.setParams(Scale, size);
 }
 
+void TerraGenerator::addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
+{
+    layers_[type].push(region);
+}
+
 void TerraGenerator::buildForeground()
 {
     // 1. process layers: regions with shared properties.

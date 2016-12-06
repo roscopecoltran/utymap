@@ -18,10 +18,10 @@ public:
                    const ClipperLib::Path& tileRect);
 
     /// Adds region for given element.
-    virtual void addRegion(const std::string& type,
-                           const utymap::entities::Element& element,
-                           const utymap::mapcss::Style& style,
-                           std::shared_ptr<Region> region) = 0;
+    void addRegion(const std::string& type,
+                   const utymap::entities::Element& element,
+                   const utymap::mapcss::Style& style,
+                   std::shared_ptr<Region> region);
 
     /// Generates mesh for given rect.
     virtual void generate() = 0;
@@ -29,6 +29,16 @@ public:
     virtual ~TerraGenerator() = default;
 
 protected:
+
+    /// Called when new region is added to layer collection.
+    virtual void onAddRegion(const std::string& type,
+                             const utymap::entities::Element& element,
+                             const utymap::mapcss::Style& style,
+                             std::shared_ptr<Region> region) = 0;
+
+    /// Called before region is processed. If function returns false then processing is skipped.
+    virtual bool canHandle(std::shared_ptr<Region> region) = 0;
+
     /// Builds all foreground objects specified by layers.
     virtual void buildForeground();
 
@@ -48,7 +58,6 @@ protected:
     ClipperLib::ClipperEx foregroundClipper_;
     ClipperLib::ClipperEx backgroundClipper_;
     utymap::builders::LineGridSplitter splitter_;
-    Layers layers_;
 
 private:
     /// Builds mesh using regions data.
@@ -56,6 +65,8 @@ private:
 
     /// Builds mesh using paths data.
     void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
+
+    Layers layers_;
 };
 
 }}
