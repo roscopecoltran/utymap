@@ -1,6 +1,5 @@
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/poi/TreeBuilder.hpp"
-#include "math/Mesh.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
