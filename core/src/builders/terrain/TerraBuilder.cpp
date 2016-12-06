@@ -9,7 +9,6 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 
-#include "utils/CoreUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 
 using namespace ClipperLib;

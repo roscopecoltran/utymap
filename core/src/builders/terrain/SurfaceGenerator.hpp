@@ -1,11 +1,8 @@
 #ifndef BUILDERS_TERRAIN_SURFACEGENERATOR_HPP_DEFINED
 #define BUILDERS_TERRAIN_SURFACEGENERATOR_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
-#include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/terrain/TerraGenerator.hpp"
-#include "builders/terrain/RegionTypes.hpp"
 #include "math/Mesh.hpp"
 #include "math/Polygon.hpp"
 #include "math/Vector2.hpp"

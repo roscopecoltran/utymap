@@ -1,11 +1,7 @@
 #ifndef BUILDERS_TERRAIN_TUNNELGENERATOR_HPP_DEFINED
 #define BUILDERS_TERRAIN_TUNNELGENERATOR_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
-#include "builders/BuilderContext.hpp"
-#include "builders/terrain/RegionTypes.hpp"
 #include "builders/terrain/TerraGenerator.hpp"
-#include "entities/Element.hpp"
 
 namespace utymap { namespace builders {
 

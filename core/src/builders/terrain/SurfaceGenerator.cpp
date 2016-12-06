@@ -1,6 +1,4 @@
 #include "builders/terrain/SurfaceGenerator.hpp"
-#include "math/Mesh.hpp"
-#include "math/Vector2.hpp"
 
 using namespace ClipperLib;
 using namespace utymap::builders;
