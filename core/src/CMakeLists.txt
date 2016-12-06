@@ -41,6 +41,7 @@ set(HEADER_FILES
         builders/misc/BarrierBuilder.hpp
         builders/misc/LampBuilder.hpp
         builders/poi/TreeBuilder.hpp
+        builders/terrain/BridgeGenerator.hpp
         builders/terrain/LineGridSplitter.hpp
         builders/terrain/RegionTypes.hpp
         builders/terrain/SurfaceGenerator.hpp
@@ -116,6 +117,7 @@ add_library(${LIBRARY_NAME}
         builders/misc/LampBuilder.cpp
         builders/poi/TreeBuilder.cpp
         builders/terrain/SurfaceGenerator.cpp
+        builders/terrain/BridgeGenerator.cpp
         builders/terrain/TerraBuilder.cpp
         builders/terrain/TerraExtras.cpp
         builders/terrain/TerraGenerator.cpp
