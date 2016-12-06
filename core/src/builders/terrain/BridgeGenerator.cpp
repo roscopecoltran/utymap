@@ -21,12 +21,12 @@ void BridgeGenerator::generate()
     context_.meshCallback(mesh_);
 }
 
-bool BridgeGenerator::canHandle(std::shared_ptr<Region> region)
+bool BridgeGenerator::canHandle(const std::shared_ptr<Region>& region)
 {
     return false;
 }
 
-void BridgeGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
+void BridgeGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
     // TODO
 }

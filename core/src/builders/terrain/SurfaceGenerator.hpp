@@ -24,9 +24,9 @@ protected:
     void onAddRegion(const std::string& type,
                      const utymap::entities::Element& element,
                      const utymap::mapcss::Style& style,
-                     std::shared_ptr<Region> region) override { }
+                     const std::shared_ptr<Region>& region) override { }
 
-    bool canHandle(std::shared_ptr<Region> region) override;
+    bool canHandle(const std::shared_ptr<Region>& region) override;
 
     void addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext) override;
 

@@ -110,8 +110,7 @@ public:
             ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
 
-        for (const auto& generator : generators_)
-            generator->addRegion(type, way, style, region);
+        addRegion(type, way, style, region);
     }
 
     void visitArea(const utymap::entities::Area& area) override
@@ -122,8 +121,7 @@ public:
             ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
 
-        for (const auto& generator : generators_)
-            generator->addRegion(type, area, style, region);
+        addRegion(type, area, style, region);
     }
 
     void visitRelation(const utymap::entities::Relation& rel) override
@@ -150,8 +148,7 @@ public:
                 ? style.getString(StyleConsts::TerrainLayerKey)
                 : "";
 
-            for (const auto& generator : generators_)
-                generator->addRegion(type, rel, style, region);
+            addRegion(type, rel, style, region);
         }
     }
 
@@ -163,6 +160,12 @@ public:
     }
 
 private:
+
+    void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
+    {
+        for (const auto& generator : generators_)
+            generator->addRegion(type, element, style, region);
+    }
 
     std::shared_ptr<Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates) const
     {

@@ -53,7 +53,7 @@ TunnelGenerator::TunnelGenerator(const BuilderContext& context, const Style& sty
 {
 }
 
-void TunnelGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region> region)
+void TunnelGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
     GeometryVisitor visitor(region->level);
     element.accept(visitor);
@@ -66,7 +66,7 @@ void TunnelGenerator::generate()
     context_.meshCallback(mesh_);
 }
 
-bool TunnelGenerator::canHandle(std::shared_ptr<Region> region)
+bool TunnelGenerator::canHandle(const std::shared_ptr<Region>& region)
 {
     return false;
 }

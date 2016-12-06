@@ -34,10 +34,10 @@ protected:
     virtual void onAddRegion(const std::string& type,
                              const utymap::entities::Element& element,
                              const utymap::mapcss::Style& style,
-                             std::shared_ptr<Region> region) = 0;
+                             const std::shared_ptr<Region>& region) = 0;
 
     /// Called before region is processed. If function returns false then processing is skipped.
-    virtual bool canHandle(std::shared_ptr<Region> region) = 0;
+    virtual bool canHandle(const std::shared_ptr<Region>& region) = 0;
 
     /// Builds all foreground objects specified by layers.
     virtual void buildForeground();

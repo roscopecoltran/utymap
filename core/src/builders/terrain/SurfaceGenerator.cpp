@@ -34,7 +34,7 @@ void SurfaceGenerator::generate()
     context_.meshCallback(mesh_);
 }
 
-bool SurfaceGenerator::canHandle(std::shared_ptr<Region> region)
+bool SurfaceGenerator::canHandle(const std::shared_ptr<Region>& region)
 {
     return region->level == 0;
 }
