@@ -1,4 +1,4 @@
-#include "builders/terrain/TunnelGenerator.hpp"
+#include "builders/terrain/ExteriorGenerator.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
@@ -13,13 +13,14 @@ namespace {
 /// Tolerance for meshing
 const double AreaTolerance = 1000;
 
-const std::string TerrainMeshName = "terrain_tunnel";
+const std::string TerrainMeshName = "terrain_exterior";
 
 struct LineNetwork final
 {
     
 };
 
+/// Visits geometry storing information for surface "touching" detection.
 struct GeometryVisitor : utymap::entities::ElementVisitor
 {
     explicit GeometryVisitor(int level) : level_(level)
@@ -48,35 +49,18 @@ private:
 
 }
 
-TunnelGenerator::TunnelGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
-    TerraGenerator(context, style, tileRect), mesh_(TerrainMeshName)
+ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
+    TerraGenerator(context, style, tileRect, TerrainMeshName)
 {
 }
 
-void TunnelGenerator::onAddRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
+void ExteriorGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
     GeometryVisitor visitor(region->level);
     element.accept(visitor);
 }
 
-void TunnelGenerator::generate()
-{
-    buildForeground();
-
-    context_.meshCallback(mesh_);
-}
-
-bool TunnelGenerator::canHandle(const std::shared_ptr<Region>& region)
-{
-    return false;
-}
-
-void TunnelGenerator::addGeometry(ClipperLib::Paths& geometry, const RegionContext& regionContext)
-{
-    // TODO
-}
-
-void TunnelGenerator::addGeometry(Polygon& polygon, const RegionContext& regionContext)
+void ExteriorGenerator::generateFrom(Layers& layers)
 {
     // TODO
 }

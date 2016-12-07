@@ -97,7 +97,7 @@ struct Region final
     /// Area of polygon.
     double area;
     /// context is optional: might be empty if polygon is layer
-    std::unique_ptr<const RegionContext> context;
+    std::shared_ptr<const RegionContext> context;
     /// Geometry of region.
     ClipperLib::Paths geometry;
 };
@@ -112,8 +112,8 @@ struct GreaterThanByArea
     }
 };
 
-typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Regions;
-typedef std::unordered_map<std::string, Regions> Layers;
+typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Layer;
+typedef std::unordered_map<std::string, Layer> Layers;
 
 }}
 

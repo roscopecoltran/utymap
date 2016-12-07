@@ -3,8 +3,7 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "builders/terrain/SurfaceGenerator.hpp"
-#include "builders/terrain/BridgeGenerator.hpp"
-#include "builders/terrain/TunnelGenerator.hpp"
+#include "builders/terrain/ExteriorGenerator.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
@@ -74,9 +73,8 @@ public:
 
         clipper_.AddPath(tileRect_, ptClip, true);
 
-        // NOTE order is important due to propogation of region changes.
-        generators_.push_back(utymap::utils::make_unique<BridgeGenerator>(context, style_, tileRect_));
-        generators_.push_back(utymap::utils::make_unique<TunnelGenerator>(context, style_, tileRect_));
+        // NOTE order is important due to propagation of region changes from top to bottom.
+        generators_.push_back(utymap::utils::make_unique<ExteriorGenerator>(context, style_, tileRect_));
         generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_, tileRect_));
     }
 
@@ -155,18 +153,27 @@ public:
     /// builds tile mesh using data provided.
     void complete() override
     {
+        for (auto& layerPair : layers_) {
+            if (!layerPair.first.empty())
+                mergeRegions(layerPair.second, std::make_shared<RegionContext>(
+                RegionContext::create(context_, style_, layerPair.first + "-")));
+        }
+
         for (const auto& generator : generators_)
-            generator->generate();
+            generator->generateFrom(layers_);
     }
 
 private:
 
     void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
     {
-        for (const auto& generator : generators_)
-            generator->addRegion(type, element, style, region);
+        for (const auto& generator : generators_) {
+            layers_[type].push(region);
+            generator->onNewRegion(type, element, style, region);
+        }
     }
 
+    /// Creates region from given geometry and style.
     std::shared_ptr<Region> createRegion(const Style& style, const std::vector<GeoCoordinate>& coordinates) const
     {
         auto region = std::make_shared<Region>();
@@ -179,7 +186,7 @@ private:
 
         region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
         if (!region->isLayer)
-            region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
+            region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
         region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
         region->area = std::abs(utymap::utils::getArea(coordinates));
@@ -187,10 +194,38 @@ private:
         return region;
     }
 
+    /// Merges regions into one taking into account level difference.
+    void mergeRegions(Layer& layer, std::shared_ptr<const RegionContext> regionContext) const
+    {
+        std::unordered_map<int, std::pair<std::shared_ptr<Region>, std::shared_ptr<Clipper>>> regionMap;
+        while (!layer.empty()) {
+            const auto& current = layer.top();
+            auto mapPair = regionMap.find(current->level);
+            if (mapPair == regionMap.end()) {
+                auto clipperPair = std::make_pair(std::make_shared<Region>(), std::make_shared<Clipper>());
+                mapPair = regionMap.insert(std::make_pair(current->level, clipperPair)).first;
+                mapPair->second.first->level = current->level;
+                mapPair->second.first->context = regionContext;
+            }
+            mapPair->second.first->area += current->area;
+            mapPair->second.second->AddPaths(current->geometry, ptSubject, true);
+
+            layer.pop();
+        }
+
+        for (auto& pair : regionMap) {
+            Paths result;
+            pair.second.second->Execute(ctUnion, result, pftNonZero, pftNonZero);
+            pair.second.first->geometry = std::move(result);
+            layer.push(pair.second.first);
+        }
+    }
+
     const Style style_;
     ClipperEx clipper_;
     ClipperOffset offset_;
     std::vector<std::unique_ptr<TerraGenerator>> generators_;
+    Layers layers_;
     Path tileRect_;
 };
 

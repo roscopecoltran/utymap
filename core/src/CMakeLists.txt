@@ -41,14 +41,13 @@ set(HEADER_FILES
         builders/misc/BarrierBuilder.hpp
         builders/misc/LampBuilder.hpp
         builders/poi/TreeBuilder.hpp
-        builders/terrain/BridgeGenerator.hpp
+        builders/terrain/ExteriorGenerator.hpp
         builders/terrain/LineGridSplitter.hpp
         builders/terrain/RegionTypes.hpp
         builders/terrain/SurfaceGenerator.hpp
         builders/terrain/TerraBuilder.hpp
         builders/terrain/TerraExtras.hpp
         builders/terrain/TerraGenerator.hpp
-        builders/terrain/TunnelGenerator.hpp
         entities/Element.hpp
         entities/ElementVisitor.hpp
         entities/Node.hpp
@@ -117,11 +116,10 @@ add_library(${LIBRARY_NAME}
         builders/misc/LampBuilder.cpp
         builders/poi/TreeBuilder.cpp
         builders/terrain/SurfaceGenerator.cpp
-        builders/terrain/BridgeGenerator.cpp
+        builders/terrain/ExteriorGenerator.cpp
         builders/terrain/TerraBuilder.cpp
         builders/terrain/TerraExtras.cpp
         builders/terrain/TerraGenerator.cpp
-        builders/terrain/TunnelGenerator.cpp
         builders/QuadKeyBuilder.cpp
         builders/buildings/BuildingBuilder.cpp
         formats/osm/MultipolygonProcessor.cpp

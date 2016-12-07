@@ -21,22 +21,98 @@ namespace {
     };
 };
 
-SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style, const ClipperLib::Path& tileRect) :
-    TerraGenerator(context, style, tileRect), mesh_(TerrainMeshName)
+SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
+TerraGenerator(context, style, tileRect, TerrainMeshName)
 {
 }
 
-void SurfaceGenerator::generate()
+void SurfaceGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
-    buildForeground();
+}
+
+/// NOTE Original layer collection is cleared after this function executed.
+void SurfaceGenerator::generateFrom(Layers& layers)
+{
+    buildForeground(layers);
+
     buildBackground();
 
     context_.meshCallback(mesh_);
 }
 
-bool SurfaceGenerator::canHandle(const std::shared_ptr<Region>& region)
+void SurfaceGenerator::buildForeground(Layers& layers)
 {
-    return region->level == 0;
+    // 1. Process layers according their priority
+    std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey));
+    while (ss.good()) {
+        std::string name;
+        getline(ss, name, ',');
+        auto layer = layers.find(name);
+        if (layer != layers.end()) {
+            buildLayer(layer->second);
+            layers.erase(layer);
+        }
+    }
+
+    // 2. Process the rest.
+    while (!layers.empty()) {
+        auto layer = layers.begin();
+        buildLayer(layer->second);
+        layers.erase(layer->first);
+    }
+}
+
+void SurfaceGenerator::buildBackground()
+{
+    Paths background;
+    backgroundClipper_.AddPath(tileRect_, ptSubject, true);
+    backgroundClipper_.Execute(ctDifference, background, pftNonZero, pftNonZero);
+    backgroundClipper_.Clear();
+
+    if (!background.empty())
+        addGeometry(background, RegionContext::create(context_, style_, ""));
+}
+
+void SurfaceGenerator::buildLayer(Layer& layer)
+{
+    while (!layer.empty()) {
+        auto& region = layer.top();
+        if (region->level == 0)
+            buildFromPaths(region->geometry, *region->context);
+        
+        layer.pop();
+    }
+}
+
+void SurfaceGenerator::buildFromPaths(const Paths& paths, const RegionContext& regionContext)
+{
+    Paths solution;
+    foregroundClipper_.AddPaths(paths, ptSubject, true);
+    foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
+    foregroundClipper_.moveSubjectToClip();
+
+    ClipperLib::SimplifyPolygons(solution);
+    ClipperLib::CleanPolygons(solution);
+
+    addGeometry(solution, regionContext);
+}
+
+void SurfaceGenerator::buildHeightOffset(const std::vector<Vector2>& points, const RegionContext& regionContext)
+{
+    // do not use elevation noise for height offset.
+    auto newGeometryOptions = regionContext.geometryOptions;
+    newGeometryOptions.eleNoiseFreq = 0;
+
+    for (std::size_t i = 0; i < points.size(); ++i) {
+        const auto& p1 = points[i];
+        const auto& p2 = points[i == (points.size() - 1) ? 0 : i + 1];
+
+        // check whether two points are on cell rect
+        if (isOnBorder(p1) && isOnBorder(p2))
+            continue;
+
+        context_.meshBuilder.addPlane(mesh_, p1, p2, newGeometryOptions, regionContext.appearanceOptions);
+    }
 }
 
 void SurfaceGenerator::addGeometry(Paths& geometry, const RegionContext& regionContext)
@@ -68,24 +144,6 @@ void SurfaceGenerator::addGeometry(Paths& geometry, const RegionContext& regionC
 
     if (!polygon.points.empty())
         addGeometry(polygon, regionContext);
-}
-
-void SurfaceGenerator::buildHeightOffset(const std::vector<Vector2>& points, const RegionContext& regionContext)
-{
-    // do not use elevation noise for height offset.
-    auto newGeometryOptions = regionContext.geometryOptions;
-    newGeometryOptions.eleNoiseFreq = 0;
-
-    for (std::size_t i = 0; i < points.size(); ++i) {
-        const auto& p1 = points[i];
-        const auto& p2 = points[i == (points.size() - 1) ? 0 : i + 1];
-
-        // check whether two points are on cell rect
-        if (rect_.isOnBorder(p1) && rect_.isOnBorder(p2))
-            continue;
-
-        context_.meshBuilder.addPlane(mesh_, p1, p2, newGeometryOptions, regionContext.appearanceOptions);
-    }
 }
 
 void SurfaceGenerator::addGeometry(Polygon& polygon, const RegionContext& regionContext)
