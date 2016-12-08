@@ -42,7 +42,7 @@ void SurfaceGenerator::generateFrom(Layers& layers)
 
 void SurfaceGenerator::buildForeground(Layers& layers)
 {
-    // 1. Process layers according their priority
+    // Process layers according their priority
     std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey));
     while (ss.good()) {
         std::string name;
@@ -54,7 +54,7 @@ void SurfaceGenerator::buildForeground(Layers& layers)
         }
     }
 
-    // 2. Process the rest.
+    // Process the rest.
     while (!layers.empty()) {
         auto layer = layers.begin();
         buildLayer(layer->second);
@@ -75,12 +75,9 @@ void SurfaceGenerator::buildBackground()
 
 void SurfaceGenerator::buildLayer(Layer& layer)
 {
-    while (!layer.empty()) {
-        auto& region = layer.top();
+    for (const auto& region : layer) {
         if (region->level == 0)
             buildFromPaths(region->geometry, *region->context);
-        
-        layer.pop();
     }
 }
 

@@ -28,6 +28,15 @@ namespace {
         return IntPoint(static_cast<cInt>(x * Scale), static_cast<cInt>(y * Scale));
     }
 
+    /// Compares regions based on their area.
+    struct GreaterThanByArea
+    {
+        bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
+        {
+            return lhs->area > rhs->area;
+        }
+    };
+
     /// Visits relation and fills region.
     struct RelationVisitor : public ElementVisitor
     {
@@ -154,9 +163,12 @@ public:
     void complete() override
     {
         for (auto& layerPair : layers_) {
-            if (!layerPair.first.empty())
+            if (!layerPair.first.empty()) {
                 mergeRegions(layerPair.second, std::make_shared<RegionContext>(
-                RegionContext::create(context_, style_, layerPair.first + "-")));
+                    RegionContext::create(context_, style_, layerPair.first + "-")));
+            }
+            // Sort based on area
+            std::sort(layerPair.second.begin(), layerPair.second.end(), GreaterThanByArea());
         }
 
         for (const auto& generator : generators_)
@@ -168,7 +180,7 @@ private:
     void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
     {
         for (const auto& generator : generators_) {
-            layers_[type].push(region);
+            layers_[type].push_back(region);
             generator->onNewRegion(type, element, style, region);
         }
     }
@@ -198,8 +210,7 @@ private:
     void mergeRegions(Layer& layer, std::shared_ptr<const RegionContext> regionContext) const
     {
         std::unordered_map<int, std::pair<std::shared_ptr<Region>, std::shared_ptr<Clipper>>> regionMap;
-        while (!layer.empty()) {
-            const auto& current = layer.top();
+        for (const auto& current : layer) {
             auto mapPair = regionMap.find(current->level);
             if (mapPair == regionMap.end()) {
                 auto clipperPair = std::make_pair(std::make_shared<Region>(), std::make_shared<Clipper>());
@@ -209,15 +220,14 @@ private:
             }
             mapPair->second.first->area += current->area;
             mapPair->second.second->AddPaths(current->geometry, ptSubject, true);
-
-            layer.pop();
         }
 
+        layer.clear();
         for (auto& pair : regionMap) {
             Paths result;
             pair.second.second->Execute(ctUnion, result, pftNonZero, pftNonZero);
             pair.second.first->geometry = std::move(result);
-            layer.push(pair.second.first);
+            layer.push_back(pair.second.first);
         }
     }
 

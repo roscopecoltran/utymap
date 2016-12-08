@@ -103,16 +103,7 @@ struct Region final
 };
 
 typedef std::shared_ptr<const Region> RegionPtr;
-
-struct GreaterThanByArea
-{
-    bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
-    {
-        return lhs->area > rhs->area;
-    }
-};
-
-typedef std::priority_queue<RegionPtr, std::vector<RegionPtr>, GreaterThanByArea> Layer;
+typedef std::vector<RegionPtr> Layer;
 typedef std::unordered_map<std::string, Layer> Layers;
 
 }}
