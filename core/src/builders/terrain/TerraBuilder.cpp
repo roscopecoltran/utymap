@@ -113,7 +113,7 @@ public:
         clipper_.removeSubject();
        
         region->geometry = solution;
-        std::string type = region->isLayer
+        std::string type = region->isLayer()
             ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
 
@@ -124,7 +124,7 @@ public:
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, area.coordinates);
-        std::string type = region->isLayer
+        std::string type = region->isLayer()
             ? style.getString(StyleConsts::TerrainLayerKey)
             : "";
 
@@ -147,11 +147,10 @@ public:
 
         if (!region->geometry.empty()) {
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
-            region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
-            if (!region->isLayer)
+            if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
                 region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
 
-            std::string type = region->isLayer 
+            std::string type = region->isLayer()
                 ? style.getString(StyleConsts::TerrainLayerKey)
                 : "";
 
@@ -159,7 +158,7 @@ public:
         }
     }
 
-    /// builds tile mesh using data provided.
+    /// Builds tile mesh using created layers and registered terra generators.
     void complete() override
     {
         for (auto& layerPair : layers_) {
@@ -167,7 +166,7 @@ public:
                 mergeRegions(layerPair.second, std::make_shared<RegionContext>(
                     RegionContext::create(context_, style_, layerPair.first + "-")));
             }
-            // Sort based on area
+            // sort based on area
             std::sort(layerPair.second.begin(), layerPair.second.end(), GreaterThanByArea());
         }
 
@@ -196,8 +195,7 @@ private:
 
         region->geometry.push_back(path);
 
-        region->isLayer = style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey));
-        if (!region->isLayer)
+        if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
             region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
         region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));

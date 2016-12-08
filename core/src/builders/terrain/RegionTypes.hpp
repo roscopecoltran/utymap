@@ -73,12 +73,11 @@ struct RegionContext final
 struct Region final
 {
     Region() :
-        isLayer(false), level(0), area(0), context(nullptr), geometry()
+        level(0), area(0), context(nullptr), geometry()
     {
     }
 
     Region(Region&& other) :
-        isLayer(other.isLayer),
         level(other.level),
         area(other.area),
         context(std::move(other.context)),
@@ -91,13 +90,20 @@ struct Region final
     Region&operator=(Region&&) = delete;
 
     /// Layer flag. If it's set all with such flag should be merged together.
-    bool isLayer;
+    bool isLayer() const
+    {
+        return context == nullptr;
+    }
+
     /// Level value: zero for objects on terrain surface.
     int level;
+
     /// Area of polygon.
     double area;
-    /// context is optional: might be empty if polygon is layer
+
+    /// Context is optional: might be empty if polygon is layer
     std::shared_ptr<const RegionContext> context;
+
     /// Geometry of region.
     ClipperLib::Paths geometry;
 };
