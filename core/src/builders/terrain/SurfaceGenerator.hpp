@@ -24,6 +24,10 @@ public:
 
     void generateFrom(Layers& layers) override;
 
+protected:
+    /// Adds geometry to mesh.
+    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
+
 private:
     /// Builds foreground surface.
     void buildForeground(Layers& layers);
@@ -36,15 +40,6 @@ private:
 
     /// Builds mesh using paths data.
     void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    /// Builds height contour shape.
-    void buildHeightOffset(const std::vector<utymap::math::Vector2>& points, const RegionContext& regionContext);
-
-    /// Adds geometry to mesh.
-    void addGeometry(ClipperLib::Paths& paths, const RegionContext& regionContext);
-
-    /// Adds geometry to mesh.
-    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext);
 
     /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::math::Mesh& mesh,

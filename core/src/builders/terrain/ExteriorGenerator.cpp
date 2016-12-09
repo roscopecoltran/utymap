@@ -62,5 +62,21 @@ void ExteriorGenerator::onNewRegion(const std::string& type, const utymap::entit
 
 void ExteriorGenerator::generateFrom(Layers& layers)
 {
-    // TODO
+    for (const auto& layerPair : layers) {
+        for (const auto& region : layerPair.second) {
+            if (region->level < 0) {
+                // TODO
+                //TerraGenerator::addGeometry(region->geometry, *region->context, [](const Path& path) { });
+            }
+        }
+    }
+
+    context_.meshCallback(mesh_);
+}
+
+void ExteriorGenerator::addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext)
+{
+    context_.meshBuilder.addPolygon(mesh_, polygon, 
+        regionContext.geometryOptions, regionContext.appearanceOptions);
+    context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
 }

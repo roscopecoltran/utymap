@@ -20,8 +20,8 @@ public:
 
     void generateFrom(Layers& layers) override;
 
-private:
-
+protected:
+    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
 };
 
 }}

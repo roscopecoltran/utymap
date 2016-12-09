@@ -6,6 +6,9 @@ using namespace utymap::mapcss;
 using namespace utymap::math;
 
 namespace {
+    /// Tolerance for meshing
+    const double AreaTolerance = 1000;
+    /// Coordinate scale.
     const double Scale = 1E7;
 }
 
@@ -23,6 +26,55 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
 {
     auto size = style_.getValue(StyleConsts::GridCellSize, context_.boundingBox.height(), context_.boundingBox.center());
     splitter_.setParams(Scale, size);
+}
+
+void TerraGenerator::addGeometry(const Paths& geometry, const RegionContext& regionContext, const std::function<void(const Path&)>& geometryVisitor)
+{
+    bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
+    // calculate approximate size of overall points
+    double size = 0;
+    for (std::size_t i = 0; i < geometry.size(); ++i)
+        size += geometry[i].size() * 1.5;
+
+    Polygon polygon(static_cast<std::size_t>(size));
+    for (const Path& path : geometry) {
+        double area = ClipperLib::Area(path);
+        bool isHole = area < 0;
+        if (std::abs(area) < AreaTolerance)
+            continue;
+
+        geometryVisitor(path);
+
+        auto points = restoreGeometry(path);
+        if (isHole)
+            polygon.addHole(points);
+        else
+            polygon.addContour(points);
+
+        if (hasHeightOffset)
+            buildHeightOffset(points, regionContext);
+    }
+
+    if (!polygon.points.empty())
+        addGeometry(polygon, regionContext);
+}
+
+void TerraGenerator::buildHeightOffset(const std::vector<Vector2>& points, const RegionContext& regionContext)
+{
+    // do not use elevation noise for height offset.
+    auto newGeometryOptions = regionContext.geometryOptions;
+    newGeometryOptions.eleNoiseFreq = 0;
+
+    for (std::size_t i = 0; i < points.size(); ++i) {
+        const auto& p1 = points[i];
+        const auto& p2 = points[i == (points.size() - 1) ? 0 : i + 1];
+
+        // check whether two points are on cell rect
+        if (isOnBorder(p1) && isOnBorder(p2))
+            continue;
+
+        context_.meshBuilder.addPlane(mesh_, p1, p2, newGeometryOptions, regionContext.appearanceOptions);
+    }
 }
 
 std::vector<Vector2> TerraGenerator::restoreGeometry(const Path& geometry) const

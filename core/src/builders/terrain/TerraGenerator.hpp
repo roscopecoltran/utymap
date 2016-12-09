@@ -5,6 +5,7 @@
 #include "builders/terrain/RegionTypes.hpp"
 #include "builders/terrain/LineGridSplitter.hpp"
 
+#include <functional>
 #include <memory>
 
 namespace utymap { namespace builders {
@@ -30,11 +31,14 @@ public:
     virtual ~TerraGenerator() = default;
 
 protected:
-    /// Restores geometry from clipper format.
-    std::vector<utymap::math::Vector2> restoreGeometry(const ClipperLib::Path& geometry) const;
+    /// Adds geometry to mesh.
+    void addGeometry(const ClipperLib::Paths& paths,
+                     const RegionContext& regionContext,
+                     const std::function<void(const ClipperLib::Path&)>& geometryVisitor);
 
-    /// Checks whether given point is on tile border.
-    inline bool isOnBorder(const utymap::math::Vector2& p) const { return rect_.isOnBorder(p); }
+    /// Adds geometry to mesh.
+    virtual void addGeometry(utymap::math::Polygon& polygon,
+                             const RegionContext& regionContext) = 0;
 
     const utymap::builders::BuilderContext& context_;
     const utymap::mapcss::Style& style_;
@@ -42,6 +46,16 @@ protected:
     utymap::math::Mesh mesh_;
 
 private:
+
+    /// Checks whether given point is on tile border.
+    inline bool isOnBorder(const utymap::math::Vector2& p) const { return rect_.isOnBorder(p); }
+
+    /// Builds height contour shape.
+    void buildHeightOffset(const std::vector<utymap::math::Vector2>& points, const RegionContext& regionContext);
+
+    /// Restores geometry from clipper format.
+    std::vector<utymap::math::Vector2> restoreGeometry(const ClipperLib::Path& geometry) const;
+
     const utymap::math::Rectangle rect_;
     utymap::builders::LineGridSplitter splitter_;
 };
