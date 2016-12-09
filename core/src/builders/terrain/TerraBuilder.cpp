@@ -29,11 +29,11 @@ namespace {
     }
 
     /// Compares regions based on their area.
-    struct GreaterThanByArea
+    struct LessThanByArea
     {
         bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
         {
-            return lhs->area > rhs->area;
+            return lhs->area < rhs->area;
         }
     };
 
@@ -167,7 +167,7 @@ public:
                     RegionContext::create(context_, style_, layerPair.first + "-")));
             }
             // sort based on area
-            std::sort(layerPair.second.begin(), layerPair.second.end(), GreaterThanByArea());
+            std::sort(layerPair.second.begin(), layerPair.second.end(), LessThanByArea());
         }
 
         for (const auto& generator : generators_)
