@@ -100,20 +100,20 @@ void SurfaceGenerator::addGeometry(Polygon& polygon, const RegionContext& region
     std::string meshName = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshNameKey);
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
+        TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
         context_.meshBuilder.addPolygon(polygonMesh, polygon,
             regionContext.geometryOptions, regionContext.appearanceOptions);
         context_.meshBuilder.writeTextureMappingInfo(polygonMesh, regionContext.appearanceOptions);
 
-        TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
         addExtrasIfNecessary(polygonMesh, extrasContext, regionContext);
         context_.meshCallback(polygonMesh);
     }
     else {
+        TerraExtras::Context extrasContext(mesh_, regionContext.style);
         context_.meshBuilder.addPolygon(mesh_, polygon,
             regionContext.geometryOptions, regionContext.appearanceOptions);
         context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
 
-        TerraExtras::Context extrasContext(mesh_, regionContext.style);
         addExtrasIfNecessary(mesh_, extrasContext, regionContext);
     }
 }
