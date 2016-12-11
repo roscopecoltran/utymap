@@ -57,6 +57,12 @@ struct Vector2
         return ::std::sqrt(x * x + y * y);
     }
 
+    /// Calculates dot product
+    double dot(const Vector2& v) const
+    {
+        return x * v.x + y * v.y;
+    }
+
     Vector2 normalized() const
     {
         double length = magnitude();
