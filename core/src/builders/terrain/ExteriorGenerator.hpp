@@ -3,6 +3,8 @@
 
 #include "builders/terrain/TerraGenerator.hpp"
 
+#include <memory>
+
 namespace utymap { namespace builders {
 
 /// Generates meshes outside terrain surface, e.g. tunnels, roads above ground, etc.
@@ -20,8 +22,13 @@ public:
 
     void generateFrom(Layers& layers) override;
 
+    ~ExteriorGenerator();
+
 protected:
     void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
+private:
+    class ExteriorGeneratorImpl;
+    std::unique_ptr<ExteriorGeneratorImpl> p_impl;
 };
 
 }}

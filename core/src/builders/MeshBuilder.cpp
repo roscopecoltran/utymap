@@ -26,7 +26,8 @@ public:
     {
     }
 
-    void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+    void addPolygon(Mesh& mesh, Polygon& polygon, const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions, 
+        EleInterpolator eleInterpolator = nullptr) const
     {
         triangulateio in, mid;
 
@@ -52,7 +53,7 @@ public:
 
         // do not refine mesh if area is not set.
         if (std::abs(geometryOptions.area) < std::numeric_limits<double>::epsilon()) {
-            fillMesh(&mid, mesh, geometryOptions, appearanceOptions);
+            fillMesh(&mid, mesh, geometryOptions, appearanceOptions, eleInterpolator);
             mid.trianglearealist = nullptr;
         }
         else {
@@ -75,7 +76,7 @@ public:
             }
             ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
 
-            fillMesh(&out, mesh, geometryOptions, appearanceOptions);
+            fillMesh(&out, mesh, geometryOptions, appearanceOptions, eleInterpolator);
 
             free(out.pointlist);
             free(out.pointattributelist);
@@ -198,8 +199,8 @@ private:
     }
 
     /// Fills mesh with all data needed to render object correctly outside core library.
-    void fillMesh(triangulateio* io, Mesh& mesh,
-                  const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
+    void fillMesh(triangulateio* io, Mesh& mesh, const GeometryOptions& geometryOptions, 
+        const AppearanceOptions& appearanceOptions, EleInterpolator eleInterpolator) const
     {
         int triStartIndex = static_cast<int>(mesh.vertices.size() / 3);
 
@@ -213,9 +214,14 @@ private:
             // get coordinates
             double x = io->pointlist[i * 2 + 0];
             double y = io->pointlist[i * 2 + 1];
-            double ele = geometryOptions.heightOffset + (geometryOptions.elevation > std::numeric_limits<double>::lowest()
-                ? geometryOptions.elevation
-                : eleProvider_.getElevation(quadKey_, y, x));
+            
+            double ele;
+            if (eleInterpolator != nullptr)
+                ele = eleInterpolator(GeoCoordinate(y, x));
+            else
+                ele = geometryOptions.heightOffset + (geometryOptions.elevation > std::numeric_limits<double>::lowest()
+                    ? geometryOptions.elevation
+                    : eleProvider_.getElevation(quadKey_, y, x));
 
             // do no apply noise on boundaries
             if (io->pointmarkerlist != nullptr && io->pointmarkerlist[i] != 1)
@@ -297,6 +303,12 @@ void MeshBuilder::addPolygon(Mesh& mesh, Polygon& polygon,
                              const GeometryOptions& geometryOptions, const AppearanceOptions& appearanceOptions) const
 {
     pimpl_->addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
+}
+
+void MeshBuilder::addPolygon(utymap::math::Mesh& mesh, utymap::math::Polygon& polygon, const GeometryOptions& geometryOptions, 
+    const AppearanceOptions& appearanceOptions, EleInterpolator eleInterpolator) const
+{
+    pimpl_->addPolygon(mesh, polygon, geometryOptions, appearanceOptions, eleInterpolator);
 }
 
 void MeshBuilder::addPlane(Mesh& mesh, const Vector2& p1, const Vector2& p2,

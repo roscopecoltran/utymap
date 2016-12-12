@@ -45,8 +45,6 @@ struct RegionContext final
             style.getValue(prefix + StyleConsts::EleNoiseFreqKey, quadKeyWidth),
             std::numeric_limits<double>::lowest(), // no fixed elevation
             style.getValue(prefix + StyleConsts::HeightOffsetKey, quadKeyWidth),
-            false, // no flip
-            false, // no back side
             1      // no new vertices on boundaries
             );
 

@@ -8,7 +8,7 @@
 #include "utils/CoreUtils.hpp"
 
 #include <algorithm>
-#include <cstdint>
+#include <climits>
 
 namespace utymap { namespace utils {
 
@@ -40,45 +40,63 @@ inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable
     return std::move(convertedTags);
 }
 
+template <typename T>
+std::uint32_t getTagValue(std::uint32_t key,
+                          const std::vector<utymap::entities::Tag>& tags,
+                          std::uint32_t defaultValue,
+                          const T& t)
+{
+    auto begin = tags.begin();
+    auto end = tags.end();
+    while (begin < end) {
+        const auto middle = begin + (std::distance(begin, end) / 2);
+        if (middle->key == key)
+            return t(middle->value);
+
+        if (middle->key > key)
+            end = middle;
+        else
+            begin = middle + 1;
+    }
+
+    return defaultValue;
+}
+
 inline bool hasTag(std::uint32_t key,
                    std::uint32_t value,
                    const std::vector<utymap::entities::Tag>& tags)
 {
-    auto begin = tags.begin();
-    auto end = tags.end();
-
-    while (begin < end) {
-        const auto middle = begin + (std::distance(begin, end) / 2);
-        if (middle->key == key)
-            return middle->value == value;
-
-        if (middle->key > key)
-            end = middle;
-        else
-            begin = middle + 1;
-    }
-    return false;
+    return getTagValue(key, tags, std::numeric_limits<std::uint32_t>::max(), [](const std::uint32_t v) {
+        return v;
+    }) == value;
 }
 
-inline std::string getTagValue(std::uint32_t key, 
+inline std::string getTagValue(std::uint32_t key,
                                const std::vector<utymap::entities::Tag>& tags,
-                               utymap::index::StringTable& stringTable)
+                               const utymap::index::StringTable& stringTable)
 {
-    auto begin = tags.begin();
-    auto end = tags.end();
-    while (begin < end) {
-        const auto middle = begin + (std::distance(begin, end) / 2);
-        if (middle->key == key) 
-            return stringTable.getString(middle->value);
-        
-        if (middle->key > key)
-            end = middle;
-        else
-            begin = middle + 1;
-    }
-
-    throw std::domain_error("Cannot find tag:" + stringTable.getString(key));
+    return stringTable.getString(getTagValue(key, tags, std::numeric_limits<std::uint32_t>::max(),
+        [&](const std::uint32_t v) {
+            if (v == std::numeric_limits<std::uint32_t>::max())
+                throw std::domain_error("Cannot find tag:" + stringTable.getString(key));
+            return v;
+        }));
 }
+
+/*inline std::string getTagValue(std::uint32_t key,
+                               const std::vector<utymap::entities::Tag>& tags,
+                               const utymap::index::StringTable& stringTable,
+                               const std::string defaultValue = "")
+{
+    auto valueId = getTagValue(key, tags, std::numeric_limits<std::uint32_t>::max(),
+        [&](const std::uint32_t v) {
+            return v;
+        });
+
+    return valueId == std::numeric_limits<std::uint32_t>::max()
+        ? defaultValue
+        : stringTable.getString(valueId);
+}*/
 
 ///Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
