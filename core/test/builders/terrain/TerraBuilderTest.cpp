@@ -14,8 +14,6 @@ using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::math;
 
-const bool TerrainLevelImplemented = false;
-
 namespace {
     const std::string stylesheet =
         "canvas|z1-16 { grid-cell-size: 1%; layer-priority: road; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
@@ -63,7 +61,9 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     BOOST_CHECK(isCalled);
 }
 
-BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry,
+/*
+ const bool TerrainLevelImplemented = false;
+ BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry,
    * boost::unit_test::enable_if<TerrainLevelImplemented>())
 {
     bool isCalled = false;
@@ -88,6 +88,6 @@ BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteri
     terraBuilder->complete();
 
     BOOST_CHECK(isCalled);
-}
+}*/
 
 BOOST_AUTO_TEST_SUITE_END()

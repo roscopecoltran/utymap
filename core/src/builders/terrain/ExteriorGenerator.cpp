@@ -70,15 +70,17 @@ const InclineType InclineType::Down = InclineType(std::numeric_limits<int>::min(
 /// Stores information for building slope region.
 struct SlopeSegment
 {
-    Vector2 tail;
+    /// Direction of the slope.
+    Vector2 direction;
+    /// Region
     std::shared_ptr<Region> region;
 
     // NOTE for debug only.
     // TODO remove
     std::size_t elementId;
     
-    SlopeSegment(const Vector2& tail, const std::shared_ptr<Region>& region, std::size_t elementId) :
-        tail(tail), region(region), elementId(elementId)
+    SlopeSegment(const Vector2& start, const Vector2& end, const std::shared_ptr<Region>& region, std::size_t elementId) :
+        direction(end - start), region(region), elementId(elementId)
     {
     }
 };
@@ -123,10 +125,13 @@ private:
 
 class ExteriorGenerator::ExteriorGeneratorImpl : public utymap::entities::ElementVisitor
 {
+    /// Defines a type for storing all possible slope segments.
+    typedef std::unordered_map<Vector2, std::vector<SlopeSegment>, HashFunc, EqualsFunc> ExitMap;
+
 public:
     ExteriorGeneratorImpl(const BuilderContext& context) :
-        context_(context), inclineType_(InclineType::None), region_(nullptr),
-        slopeRegions(), entranceMap_(), exitMap_(),
+        context_(context), region_(nullptr), inclineType_(InclineType::None),
+        levelInfoMap_(), slopeRegionMap_(),
         inclineKey_(context.stringTable.getId(InclineKey)),
         inclideUp_(context.stringTable.getId(InclineUpValue)),
         inclideDown_(context.stringTable.getId(InclineDownValue))
@@ -135,7 +140,7 @@ public:
 
     void visitNode(const utymap::entities::Node&) override 
     { 
-        // TODO
+        // TODO Some exits can be added as node?
     }
 
     void visitWay(const utymap::entities::Way& way) override
@@ -146,18 +151,24 @@ public:
         auto v1 = Vector2(c1.longitude, c1.latitude);
         auto v2 = Vector2(c2.longitude, c2.latitude);
 
-        if (region_->level == 0) {
-            entranceMap_.insert(v1);
-            entranceMap_.insert(v2);
-        } else {
-            exitMap_[v1].push_back(SlopeSegment(v2, region_, way.id));
-            exitMap_[v2].push_back(SlopeSegment(v1, region_, way.id));
+        auto level = region_->level;
+
+        auto levelInfoPair = levelInfoMap_.find(level);
+        if (levelInfoPair == levelInfoMap_.end()) {
+            levelInfoMap_.insert(std::make_pair(level, utymap::utils::make_unique<ExitMap>()));
+            levelInfoPair = levelInfoMap_.find(level);
         }
+
+        // TODO Key and slope direction depends on incline key.
+        // also region can be promoted to another level.
+
+        (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, v1, region_, way.id));
+        (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, v2, region_, way.id));
     }
 
     void visitArea(const utymap::entities::Area& area) override 
     {
-        // TODO
+        // TODO area as a slope region?
     }
 
     void visitRelation(const utymap::entities::Relation& relation) override
@@ -183,8 +194,8 @@ public:
 
     void build()
     {
-        // Build slope regions.
-        for (const auto& pair : exitMap_) {
+        // TODO Build slope regions.
+       /* for (const auto& pair : exitMap_) {
             if (entranceMap_.find(pair.first) == entranceMap_.end())
                 continue;
 
@@ -192,29 +203,27 @@ public:
                 Vector2 middle((segment.tail.x + pair.first.x) / 2, (segment.tail.y + pair.first.y)/ 2);
                 slopeRegions.push_back(SlopeRegion(middle, pair.first, segment.region, segment.elementId));
             }
-        }
+        }*/
     }
-
-    /// TODO optimize data structure.
-    std::vector<SlopeRegion> slopeRegions;
 
 private:
     const BuilderContext& context_;
 
-    /// Defines set for storing exterior surface entrance info.
-    std::unordered_set<Vector2, HashFunc, EqualsFunc> entranceMap_;
+    /// Stores information about level's exits.
+    std::unordered_map<int, std::unique_ptr<ExitMap>> levelInfoMap_;
 
-    /// Defines map for storing exterior surface exit info.
-    std::unordered_map<Vector2, std::vector<SlopeSegment>, HashFunc, EqualsFunc> exitMap_;
+    /// Stores slope regions.
+    std::unordered_map<int, std::vector<SlopeRegion>> slopeRegionMap_;
 
-    /// Mapcss cached values
-    std::uint32_t inclineKey_, inclideUp_, inclideDown_;
+    /// Current region.
+    std::shared_ptr<Region> region_;
 
+    /// Current region incline type.
     InclineType inclineType_;
 
-    std::shared_ptr<Region> region_;
+    /// Mapcss cached string ids.
+    std::uint32_t inclineKey_, inclideUp_, inclideDown_;
 };
-
 
 ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
     TerraGenerator(context, style, tileRect, TerrainMeshName), p_impl(utymap::utils::make_unique<ExteriorGeneratorImpl>(context))
@@ -223,10 +232,6 @@ ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style&
 
 void ExteriorGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
-    // TODO implement this.
-    if (region->level > 0)
-        return;
-
     p_impl->setElementData(element, style, region);
     element.accept(*p_impl);
 }
@@ -237,7 +242,8 @@ void ExteriorGenerator::generateFrom(Layers& layers)
 
     for (const auto& layerPair : layers) {
         for (const auto& region : layerPair.second) {
-            if (region->level < 0) {
+            // NOTE We don't have any slope regions on surface.
+            if (region->level != 0) {
                 TerraGenerator::addGeometry(region->geometry, *region->context, [](const Path& path) { });
             }
         }
@@ -252,20 +258,22 @@ ExteriorGenerator::~ExteriorGenerator()
 
 void ExteriorGenerator::addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext)
 {
+    // TODO
     double deepHeight = 10;
 
     context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.geometryOptions, regionContext.appearanceOptions,
         [&](const GeoCoordinate& coordinate) {
-        IntPoint p(coordinate.longitude * Scale, coordinate.latitude* Scale);
-        Vector2 v(coordinate.longitude, coordinate.latitude);
-        for (const auto& region : p_impl->slopeRegions) {
-            if (region.contains(p)) {
-                double slope = region.calculateSlope(v);
-                if (slope >=0 )
-                    return interpolate(0, deepHeight, slope);
-            }
-        }
-        return deepHeight;
+            // TODO
+           /* IntPoint p(coordinate.longitude * Scale, coordinate.latitude* Scale);
+            Vector2 v(coordinate.longitude, coordinate.latitude);
+            for (const auto& region : p_impl->slopeRegions) {
+                if (region.contains(p)) {
+                    double slope = region.calculateSlope(v);
+                    if (slope >=0 )
+                        return interpolate(0, deepHeight, slope);
+                }
+            }*/
+            return deepHeight;
     });
     context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
 }
