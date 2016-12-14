@@ -20,6 +20,7 @@ namespace {
         "road-ele-noise-freq: 0.05; road-color-noise-freq: 0.1; road-color:gradient(red); road-max-area: 5%;}"
         "area|z1[landuse=commercial] { builders:terrain; terrain-layer:road; }"
 
+        "way|z16[highway][incline] { incline: eval(\"tag('incline')\"); }"
         "way|z16[highway] { builders:terrain; terrain-layer:road; }"
         "way|z16[layer<0] { level: eval(\"tag('layer')\"); }";
 
@@ -61,7 +62,6 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     BOOST_CHECK(isCalled);
 }
 
-/*
  const bool TerrainLevelImplemented = false;
  BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry,
    * boost::unit_test::enable_if<TerrainLevelImplemented>())
@@ -88,6 +88,6 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     terraBuilder->complete();
 
     BOOST_CHECK(isCalled);
-}*/
+}
 
 BOOST_AUTO_TEST_SUITE_END()
