@@ -162,30 +162,25 @@ public:
         auto v1 = Vector2(c1.longitude, c1.latitude);
         auto v2 = Vector2(c2.longitude, c2.latitude);
 
-        region_->level -= inclineType_ == InclineType::None ? 0 : 1;
-
         auto levelInfoPair = levelInfoMap_.find(region_->level);
         if (levelInfoPair == levelInfoMap_.end()) {
             levelInfoMap_.insert(std::make_pair(region_->level, utymap::utils::make_unique<ExitMap>()));
             levelInfoPair = levelInfoMap_.find(region_->level);
         }
 
-        if (inclineType_ != InclineType::Up)
-            (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, region_, way.id));
-        if (inclineType_ != InclineType::Down)
-            (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, region_, way.id));
-
-        /*// create slope segments
         if (inclineType_ == InclineType::None) {
+            // store as possible slope segment.
             (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, region_, way.id));
             (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, region_, way.id));
-        } else {
- 
+        }
+        else {
+            // promote down and add directly as slope region
+            region_->level -= 1;
             if (inclineType_ == InclineType::Up)
-                (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, region_, way.id));
+                slopeRegionMap_[region_->level].push_back(SlopeRegion(v1, v2, region_, way.id));
             else
-                (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, region_, way.id));
-        }*/
+                slopeRegionMap_[region_->level].push_back(SlopeRegion(v2, v1, region_, way.id));
+        }
     }
 
     void visitArea(const utymap::entities::Area& area) override 
@@ -223,8 +218,6 @@ public:
 
                 // an exit.
                 for (const auto& segment : slopePair.second) {
-                    // TODO do we need to promote region down one level down?
-                    segment.region->level -= 1;
                     slopeRegionMap_[curr->first].push_back(SlopeRegion(segment.tail, slopePair.first, segment.region, segment.elementId));
                 }
             }
