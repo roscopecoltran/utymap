@@ -25,7 +25,7 @@ public:
     ~ExteriorGenerator();
 
 protected:
-    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
+    void addGeometry(int level, utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
 private:
     class ExteriorGeneratorImpl;
     std::unique_ptr<ExteriorGeneratorImpl> p_impl;

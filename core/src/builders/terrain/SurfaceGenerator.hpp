@@ -26,7 +26,7 @@ public:
 
 protected:
     /// Adds geometry to mesh.
-    void addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
+    void addGeometry(int level, utymap::math::Polygon& polygon, const RegionContext& regionContext) override;
 
 private:
     /// Builds foreground surface.

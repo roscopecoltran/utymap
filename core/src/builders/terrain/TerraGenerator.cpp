@@ -28,7 +28,7 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
     splitter_.setParams(Scale, size);
 }
 
-void TerraGenerator::addGeometry(const Paths& geometry, const RegionContext& regionContext, const std::function<void(const Path&)>& geometryVisitor)
+void TerraGenerator::addGeometry(int level, const Paths& geometry, const RegionContext& regionContext, const std::function<void(const Path&)>& geometryVisitor)
 {
     bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points
@@ -56,7 +56,7 @@ void TerraGenerator::addGeometry(const Paths& geometry, const RegionContext& reg
     }
 
     if (!polygon.points.empty())
-        addGeometry(polygon, regionContext);
+        addGeometry(level, polygon, regionContext);
 }
 
 void TerraGenerator::buildHeightOffset(const std::vector<Vector2>& points, const RegionContext& regionContext)

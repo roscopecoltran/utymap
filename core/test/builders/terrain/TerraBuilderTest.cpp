@@ -16,13 +16,13 @@ using namespace utymap::math;
 
 namespace {
     const std::string stylesheet =
-        "canvas|z1-16 { grid-cell-size: 1%; layer-priority: road; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
-        "road-ele-noise-freq: 0.05; road-color-noise-freq: 0.1; road-color:gradient(red); road-max-area: 5%;}"
+        "canvas|z1 { grid-cell-size: 1%; layer-priority: road; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
+        "road-ele-noise-freq: 0; road-color-noise-freq: 0; road-color:gradient(red); road-max-area: 0;}"
         "area|z1[landuse=commercial] { builders:terrain; terrain-layer:road; }"
 
-        "way|z16[highway][incline] { incline: eval(\"tag('incline')\"); }"
-        "way|z16[highway] { builders:terrain; terrain-layer:road; }"
-        "way|z16[layer<0] { level: eval(\"tag('layer')\"); }";
+        "way|z1[highway][incline] { incline: eval(\"tag('incline')\"); }"
+        "way|z1[highway] { builders:terrain; terrain-layer:road; width: 0.0000001; }"
+        "way|z1[layer<0] { level: eval(\"tag('layer')\"); }";
 
     struct Builders_Terrain_TerraBuilderFixture
     {
@@ -62,27 +62,22 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     BOOST_CHECK(isCalled);
 }
 
- const bool TerrainLevelImplemented = false;
- BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry,
-   * boost::unit_test::enable_if<TerrainLevelImplemented>())
+BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry)
 {
     bool isCalled = false;
-    auto terraBuilder = create(QuadKey(16, 35202, 21492), [&](const Mesh& mesh) {
+    auto terraBuilder = create(QuadKey(1, 1, 0), [&](const Mesh& mesh) {
         if (mesh.name != "terrain_exterior") return;
         // TODO
         isCalled = true;
     });
-    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 48840561,
-             { { "highway", "footway" }, {"layer", "-1"} },
-             { { 52.5196429, 13.3737519 }, { 52.519642, 13.3731909}, { 52.5196415, 13.372909 } })
+    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
+             { { "highway", "footway" }, { "layer", "-1" } }, { { 0, 15 }, { 0, 10 }, { 0, 5 } })
          .accept(*terraBuilder);
-    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 421618241,
-             { { "highway", "steps" }, { "incline", "up"} },
-             { { 52.5196415, 13.372909 }, { 52.5196413, 13.372696 } })
+    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 1,
+             { { "highway", "steps" }, { "incline", "up" } }, { { 0, 5 }, { 0, 0 } })
           .accept(*terraBuilder);
-    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 421618243,
-             { { "highway", "steps" }, { "incline", "up"} },
-             { { 52.5196429, 13.3737519 }, { 52.5196438, 13.3739644 } })
+    ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 2,
+             { { "highway", "steps" }, { "incline", "up" } }, { { 0, 15 }, { 0, 20 } })
           .accept(*terraBuilder);
 
     terraBuilder->complete();

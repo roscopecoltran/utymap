@@ -83,7 +83,7 @@ public:
         clipper_.AddPath(tileRect_, ptClip, true);
 
         // NOTE order is important due to propagation of region changes from top to bottom.
-        //generators_.push_back(utymap::utils::make_unique<ExteriorGenerator>(context, style_, tileRect_));
+        generators_.push_back(utymap::utils::make_unique<ExteriorGenerator>(context, style_, tileRect_));
         generators_.push_back(utymap::utils::make_unique<SurfaceGenerator>(context, style_, tileRect_));
     }
 

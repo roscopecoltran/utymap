@@ -32,12 +32,14 @@ public:
 
 protected:
     /// Adds geometry to mesh.
-    void addGeometry(const ClipperLib::Paths& paths,
+    void addGeometry(int level,
+                     const ClipperLib::Paths& paths,
                      const RegionContext& regionContext,
                      const std::function<void(const ClipperLib::Path&)>& geometryVisitor);
 
     /// Adds geometry to mesh.
-    virtual void addGeometry(utymap::math::Polygon& polygon,
+    virtual void addGeometry(int level,
+                             utymap::math::Polygon& polygon,
                              const RegionContext& regionContext) = 0;
 
     const utymap::builders::BuilderContext& context_;

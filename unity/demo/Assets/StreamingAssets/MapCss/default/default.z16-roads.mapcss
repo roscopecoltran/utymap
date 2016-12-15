@@ -27,6 +27,10 @@ way|z16[highway] {
     width: 1m;
 }
 
+way|z16[highway][incline] {
+    incline: eval("tag('incline')");
+}
+
 way|z16[highway=path][foot=designated] {
     terrain-layer: pedestrian;
     width: 1m;

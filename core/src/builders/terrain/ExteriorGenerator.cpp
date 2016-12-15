@@ -109,19 +109,19 @@ public:
         lengthSquare_ = distance * distance;
     }
 
+    /// Returns true if the point is inside geometry.
     bool contains(const IntPoint& p) const
     {
-        for (const auto& path : region_->geometry)
-            if (ClipperLib::PointInPolygon(p, path) != 0)
-                return true;
-
-        return false;
+        return std::any_of(region_->geometry.begin(), region_->geometry.end(),
+            [&](const ClipperLib::Path& path) {
+                return ClipperLib::PointInPolygon(p, path) != 0;
+        });
     }
 
     /// Calculate scalar projection divided to length to get slope ratio in range [0, 1]
     double calculateSlope(const Vector2& v) const
     {
-        return(v - start_).dot(centerLine_) / lengthSquare_;
+        return utymap::utils::clamp((v - start_).dot(centerLine_) / lengthSquare_, 0, 1);
     }
     // NOTE for debug only.
     // TODO remove
@@ -205,21 +205,16 @@ public:
         // process tunnels
         for (auto curr = levelInfoMap_.begin(); curr != levelInfoMap_.end() && curr->first < 0; ++curr) {
             auto next = std::next(curr, 1);
-
-            // TODO handle this case. This might happen if there is no objects on surface but tunnel crosses tile.
-            if (next == levelInfoMap_.end())
-                break;
+            if (next == levelInfoMap_.end()) break;
+            if (next->second->empty()) continue;
 
             // try to find exists on level above and create slope regions.
             for (const auto& slopePair : *curr->second) {
                 // not an exit
-                if (next->second->find(slopePair.first) == next->second->end())
-                    continue;
-
+                if (next->second->find(slopePair.first) == next->second->end()) continue;
                 // an exit.
-                for (const auto& segment : slopePair.second) {
+                for (const auto& segment : slopePair.second)
                     slopeRegionMap_[curr->first].push_back(SlopeRegion(segment.tail, slopePair.first, segment.region, segment.elementId));
-                }
             }
         }
 
@@ -227,6 +222,26 @@ public:
         //for (auto curr = levelInfoMap_.rbegin(); curr != levelInfoMap_.rend() && curr->first > 0; ++curr) {
 
         //}
+    }
+
+    double getHeight(int level, const GeoCoordinate& coordinate) const
+    {
+        const double deepHeight = 10;
+
+        auto regionPair = slopeRegionMap_.find(level);
+        if (regionPair != slopeRegionMap_.end()) {
+            IntPoint p(static_cast<cInt>(coordinate.longitude * Scale),
+                       static_cast<cInt>(coordinate.latitude* Scale));
+            Vector2 v(coordinate.longitude, coordinate.latitude);
+            for (const auto& region : regionPair->second) {
+                if (region.contains(p)) {
+                    double slope = region.calculateSlope(v);
+                    return interpolate(deepHeight, deepHeight * 2, slope);
+                }
+            }
+        }
+
+        return deepHeight;
     }
 
 private:
@@ -267,7 +282,7 @@ void ExteriorGenerator::generateFrom(Layers& layers)
         for (const auto& region : layerPair.second) {
             // NOTE we don't have any slope regions on surface.
             if (region->level != 0) {
-                TerraGenerator::addGeometry(region->geometry, *region->context, [](const Path& path) { });
+                TerraGenerator::addGeometry(region->level, region->geometry, *region->context, [](const Path& path) {});
             }
         }
     }
@@ -279,24 +294,11 @@ ExteriorGenerator::~ExteriorGenerator()
 {
 }
 
-void ExteriorGenerator::addGeometry(utymap::math::Polygon& polygon, const RegionContext& regionContext)
+void ExteriorGenerator::addGeometry(int level, utymap::math::Polygon& polygon, const RegionContext& regionContext)
 {
-    // TODO
-    double deepHeight = 10;
-
     context_.meshBuilder.addPolygon(mesh_, polygon, regionContext.geometryOptions, regionContext.appearanceOptions,
         [&](const GeoCoordinate& coordinate) {
-            // TODO
-           /* IntPoint p(coordinate.longitude * Scale, coordinate.latitude* Scale);
-            Vector2 v(coordinate.longitude, coordinate.latitude);
-            for (const auto& region : p_impl->slopeRegions) {
-                if (region.contains(p)) {
-                    double slope = region.calculateSlope(v);
-                    if (slope >=0 )
-                        return interpolate(0, deepHeight, slope);
-                }
-            }*/
-            return deepHeight;
+            return p_impl->getHeight(level, coordinate);
     });
     context_.meshBuilder.writeTextureMappingInfo(mesh_, regionContext.appearanceOptions);
 }

@@ -10,6 +10,7 @@ using namespace std::placeholders;
 
 namespace {
     const std::string TerrainMeshName = "terrain_surface";
+    const int Level = 0;
 
     const std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs = 
     {
@@ -67,7 +68,8 @@ void SurfaceGenerator::buildBackground()
     backgroundClipper_.Clear();
 
     if (!background.empty())
-        TerraGenerator::addGeometry(background,
+        TerraGenerator::addGeometry(Level,
+                                    background,
                                     RegionContext::create(context_, style_, ""),
                                     [](const Path& path) {});
 }
@@ -90,12 +92,12 @@ void SurfaceGenerator::buildFromPaths(const Paths& paths, const RegionContext& r
     ClipperLib::SimplifyPolygons(solution);
     ClipperLib::CleanPolygons(solution);
 
-    TerraGenerator::addGeometry(solution, regionContext, [&](const Path& path) {
+    TerraGenerator::addGeometry(Level, solution, regionContext, [&](const Path& path) {
         backgroundClipper_.AddPath(path, ptClip, true);
     });
 }
 
-void SurfaceGenerator::addGeometry(Polygon& polygon, const RegionContext& regionContext)
+void SurfaceGenerator::addGeometry(int level, Polygon& polygon, const RegionContext& regionContext)
 {
     std::string meshName = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshNameKey);
     if (!meshName.empty()) {
