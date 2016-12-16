@@ -144,11 +144,9 @@ namespace {
     /// as one game object. If area/relation is already part of relation then we
     /// should avoid processing it as independent element. We cannot just delete
     /// element from store as it might be a part of other relation.
-    bool shouldBeIgnored(const Element& element)
+    inline bool shouldBeIgnored(const Element& element)
     {
-        return hasTag(std::numeric_limits<std::uint32_t>::max(),
-                      std::numeric_limits<std::uint32_t>::max(),
-                      element.tags);
+        return hasIgnore(element.tags);
     }
 
     /// Responsible for processing multipolygon relation.

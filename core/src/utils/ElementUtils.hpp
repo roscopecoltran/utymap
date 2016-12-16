@@ -71,6 +71,13 @@ inline bool hasTag(std::uint32_t key,
     }) == value;
 }
 
+inline bool hasIgnore(const std::vector<utymap::entities::Tag>& tags)
+{
+    static const std::uint32_t IgnoreKey = std::numeric_limits<std::uint32_t>::max();
+    static const std::uint32_t IgnoreValue = 0;
+    return hasTag(IgnoreKey, IgnoreValue, tags);
+}
+
 inline std::string getTagValue(std::uint32_t key,
                                const std::vector<utymap::entities::Tag>& tags,
                                const utymap::index::StringTable& stringTable)
@@ -82,21 +89,6 @@ inline std::string getTagValue(std::uint32_t key,
             return v;
         }));
 }
-
-/*inline std::string getTagValue(std::uint32_t key,
-                               const std::vector<utymap::entities::Tag>& tags,
-                               const utymap::index::StringTable& stringTable,
-                               const std::string defaultValue = "")
-{
-    auto valueId = getTagValue(key, tags, std::numeric_limits<std::uint32_t>::max(),
-        [&](const std::uint32_t v) {
-            return v;
-        });
-
-    return valueId == std::numeric_limits<std::uint32_t>::max()
-        ? defaultValue
-        : stringTable.getString(valueId);
-}*/
 
 ///Gets mesh name
 inline std::string getMeshName(const std::string& prefix, const utymap::entities::Element& element) {
