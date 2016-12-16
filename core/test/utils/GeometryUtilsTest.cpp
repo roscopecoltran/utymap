@@ -6,18 +6,6 @@ using namespace utymap;
 using namespace utymap::math;
 using namespace utymap::utils;
 
-namespace boost { namespace test_tools { namespace tt_detail {
-    std::ostream& operator<<(std::ostream& os, const Vector2 &v)
-    {
-        return os << '(' << v.x << ',' << v.y << ')';
-    } 
-}}}
-
-static inline std::ostream& operator<<(std::ostream &os, const Vector2 &v)
-{
-    return os;
-}
-
 BOOST_AUTO_TEST_SUITE(Utils_GeometryUtils)
 
 BOOST_AUTO_TEST_CASE(GivenCoordinates_WhenGetCircle_ThenReturnsCorrectCircle)
@@ -57,8 +45,7 @@ BOOST_AUTO_TEST_CASE(GiveSegment_WhenGetOffsetLine_ThenReturnsCorrectRectangle)
 
     auto vertices = getOffsetLine({ 0, 0 }, { 10, 0 }, 1);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), 
-        vertices.begin(), vertices.end());
+    BOOST_CHECK(expected == vertices);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
