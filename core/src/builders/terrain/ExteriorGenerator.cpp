@@ -4,6 +4,7 @@
 #include "entities/Relation.hpp"
 #include "math/Vector2.hpp"
 #include "utils/GeometryUtils.hpp"
+#include "utils/MathUtils.hpp"
 
 #include <climits>
 #include <map>
@@ -25,9 +26,14 @@ const std::string InclineKey = "incline";
 const std::string InclineUpValue = "up";
 const std::string InclineDownValue = "down";
 
-double interpolate(double a, double b, double r)
+double lerp(double a, double b, double r)
 {
     return a * (1.0 - r) + b * r;
+}
+
+double slerp(double a, double b, double r)
+{
+    return a + std::sin(r * pi) * (b - a);
 }
 
 struct HashFunc
@@ -220,8 +226,13 @@ public:
         const double deepHeight = 4;
         const double offset = 0;
 
-        double startHeight = level * deepHeight + offset;
-        double endHeight = (level + 1) * deepHeight + offset;
+        double startHeight = level > 0 
+            ? (level - 1) * deepHeight + offset
+            : level * deepHeight + offset;
+        
+        double endHeight = level > 0
+            ? level * deepHeight + offset
+            : (level + 1) * deepHeight + offset;
 
         auto regionPair = slopeRegionMap_.find(level);
         if (regionPair != slopeRegionMap_.end()) {
@@ -229,7 +240,9 @@ public:
             for (const auto& region : regionPair->second) {
                 if (region.contains(p)) {
                     double slope = region.calculateSlope(p);
-                    return interpolate(startHeight, endHeight, slope);
+                    return level > 0 
+                        ? slerp(startHeight, endHeight, slope)
+                        : lerp(startHeight, endHeight, slope);
                 }
             }
         }
@@ -294,7 +307,7 @@ void ExteriorGenerator::generateFrom(Layers& layers)
 
     for (const auto& layerPair : layers) {
         for (const auto& region : layerPair.second) {
-            // NOTE we don't have any slope regions on surface.
+            // Ignore surface
             if (region->level != 0) {
                 TerraGenerator::addGeometry(region->level, region->geometry, *region->context, [](const Path& path) {});
             }
