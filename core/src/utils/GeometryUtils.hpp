@@ -143,6 +143,21 @@ inline std::vector<utymap::math::Vector2> getOffsetLine(const utymap::math::Vect
     return vertices;
 }
 
+/// Returns true if given point is inside given simple polygon (including borders) represented by points. 
+inline bool isPointInPolygon(const utymap::math::Vector2& p, const std::vector<utymap::math::Vector2> points)
+{
+    std::size_t i, j, size = points.size();
+    bool result = false;
+
+    for (i = 0, j = size - 1; i < size; j = i++) {
+        if (((points[i].y >= p.y) != (points[j].y >= p.y)) &&
+            (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+            result = !result;
+    }
+
+    return result;
+}
+
 }}
 
 #endif // UTILS_GEOMETRYUTILS_HPP_DEFINED

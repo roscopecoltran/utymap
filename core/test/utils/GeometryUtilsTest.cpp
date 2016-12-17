@@ -48,4 +48,20 @@ BOOST_AUTO_TEST_CASE(GiveSegment_WhenGetOffsetLine_ThenReturnsCorrectRectangle)
     BOOST_CHECK(expected == vertices);
 }
 
+BOOST_AUTO_TEST_CASE(GivePointInPolygon_WhenIsPointInPolygon_ThenReturnsTrue)
+{
+    BOOST_CHECK(isPointInPolygon({ 1, 1 }, { {0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+BOOST_AUTO_TEST_CASE(GivePointOnPolygonBorder_WhenIsPointInPolygon_ThenReturnsTrue)
+{
+    BOOST_CHECK(isPointInPolygon({ 10, 5 }, { { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+BOOST_AUTO_TEST_CASE(GivePointIsOutsidePolygon_WhenIsPointInPolygon_ThenReturnsFalse)
+{
+    BOOST_CHECK(!isPointInPolygon({ 11, 11 }, { { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
