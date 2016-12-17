@@ -39,7 +39,7 @@ private:
     void buildLayer(Layer& layer);
 
     /// Builds mesh using paths data.
-    void buildFromPaths(const ClipperLib::Paths& paths, const RegionContext& regionContext);
+    void buildRegion(const Region& region);
 
     /// Adds extras to mesh, e.g. trees, water surface if meshExtras are specified in options.
     void addExtrasIfNecessary(utymap::math::Mesh& mesh,

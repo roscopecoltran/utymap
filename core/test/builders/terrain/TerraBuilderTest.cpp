@@ -66,9 +66,10 @@ BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteri
 {
     bool isCalled = false;
     auto terraBuilder = create(QuadKey(1, 1, 0), [&](const Mesh& mesh) {
-        if (mesh.name != "terrain_exterior") return;
-        // TODO
-        isCalled = true;
+        if (mesh.name == "terrain_exterior") {
+            // TODO check mesh
+            isCalled = true;
+        };
     });
     ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
              { { "highway", "footway" }, { "layer", "-1" } }, { { 0, 15 }, { 0, 10 }, { 0, 5 } })

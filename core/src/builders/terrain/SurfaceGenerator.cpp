@@ -26,6 +26,10 @@ TerraGenerator(context, style, tileRect, TerrainMeshName)
 
 void SurfaceGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
+    if (region->origLevel == 0 && region->level != 0) {
+        foregroundClipper_.AddPaths(region->geometry, ptClip, true);
+        backgroundClipper_.AddPaths(region->geometry, ptClip, true);
+    }
 }
 
 /// NOTE Original layer collection is cleared after this function executed.
@@ -68,33 +72,35 @@ void SurfaceGenerator::buildBackground()
     backgroundClipper_.Clear();
 
     if (!background.empty())
-        TerraGenerator::addGeometry(Level,
-                                    background,
-                                    RegionContext::create(context_, style_, ""),
-                                    [](const Path& path) {});
+        TerraGenerator::addGeometry(Level, background, RegionContext::create(context_, style_, ""), 
+            [](const Path& path) {});
 }
 
 void SurfaceGenerator::buildLayer(Layer& layer)
 {
     for (const auto& region : layer) {
         if (region->level == 0)
-            buildFromPaths(region->geometry, *region->context);
+            buildRegion(*region);
     }
 }
 
-void SurfaceGenerator::buildFromPaths(const Paths& paths, const RegionContext& regionContext)
+void SurfaceGenerator::buildRegion(const Region& region)
 {
-    Paths solution;
-    foregroundClipper_.AddPaths(paths, ptSubject, true);
-    foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
-    foregroundClipper_.moveSubjectToClip();
+    if (region.level == 0) {
+        Paths solution;
+        foregroundClipper_.AddPaths(region.geometry, ptSubject, true);
+        foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
+        foregroundClipper_.moveSubjectToClip();
 
-    ClipperLib::SimplifyPolygons(solution);
-    ClipperLib::CleanPolygons(solution);
+        ClipperLib::SimplifyPolygons(solution);
+        ClipperLib::CleanPolygons(solution);
 
-    TerraGenerator::addGeometry(Level, solution, regionContext, [&](const Path& path) {
-        backgroundClipper_.AddPath(path, ptClip, true);
-    });
+        TerraGenerator::addGeometry(Level, solution, *region.context, [&](const Path& path) {
+            backgroundClipper_.AddPath(path, ptClip, true);
+        });
+    } /*else if (region.origLevel == 0) {
+        backgroundClipper_.AddPaths(region.geometry, ptClip, true);
+    }*/
 }
 
 void SurfaceGenerator::addGeometry(int level, Polygon& polygon, const RegionContext& regionContext)

@@ -153,6 +153,9 @@ public:
 
     void visitWay(const utymap::entities::Way& way) override
     {
+        //if (way.id != 421618241 && way.id != 48840561 /*&& way.id != 421618243*/)
+        //    return;
+
         const auto& c1 = way.coordinates[0];
         const auto& c2 = way.coordinates[way.coordinates.size() - 1];
 
@@ -229,9 +232,10 @@ public:
     double getHeight(int level, const GeoCoordinate& coordinate) const
     {
         const double deepHeight = 4;
+        const double offset = 0;
 
-        double startHeight = level * deepHeight;
-        double endHeight = (level + 1) * deepHeight;
+        double startHeight = level * deepHeight + offset;
+        double endHeight = (level + 1) * deepHeight + offset;
 
         auto regionPair = slopeRegionMap_.find(level);
         if (regionPair != slopeRegionMap_.end()) {
@@ -287,7 +291,7 @@ void ExteriorGenerator::generateFrom(Layers& layers)
     for (const auto& layerPair : layers) {
         for (const auto& region : layerPair.second) {
             // NOTE we don't have any slope regions on surface.
-            if (region->level != 0) {
+            if (region->level == -1) {
                 TerraGenerator::addGeometry(region->level, region->geometry, *region->context, [](const Path& path) {});
             }
         }

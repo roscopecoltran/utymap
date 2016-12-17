@@ -198,7 +198,9 @@ private:
         if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
             region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
-        region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
+        int level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
+        region->origLevel = level;
+        region->level = level;
         region->area = std::abs(utymap::utils::getArea(coordinates));
 
         return region;
