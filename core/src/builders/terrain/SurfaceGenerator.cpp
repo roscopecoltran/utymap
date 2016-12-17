@@ -75,8 +75,9 @@ void SurfaceGenerator::buildBackground()
 void SurfaceGenerator::buildLayer(Layer& layer)
 {
     for (const auto& region : layer) {
-        if (region->level == 0)
-            buildRegion(*region);
+        // TODO revise condition once level processing is implemented
+        // if (region->level == 0)
+        buildRegion(*region);
     }
 }
 
