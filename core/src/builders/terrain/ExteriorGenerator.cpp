@@ -3,7 +3,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "math/Vector2.hpp"
-#include "utils/ElementUtils.hpp"
+#include "utils/GeometryUtils.hpp"
 
 #include <climits>
 #include <map>
@@ -81,19 +81,17 @@ const InclineType InclineType::Up = InclineType(std::numeric_limits<int>::max())
 const InclineType InclineType::Down = InclineType(std::numeric_limits<int>::min());
 
 /// Stores information for building slope region.
-struct SlopeSegment
+struct SlopeSegment final
 {
-    /// Used to get direction of the slope.
-    Vector2 tail;
-    /// Region
-    std::shared_ptr<Region> region;
+    const Vector2 tail;
+    const double width;
 
     // NOTE for debug only.
     // TODO remove
     std::size_t elementId;
     
-    SlopeSegment(const Vector2& tail, const std::shared_ptr<Region>& region, std::size_t elementId) :
-        tail(tail), region(region), elementId(elementId)
+    SlopeSegment(const Vector2& tail, double width, std::size_t elementId) :
+        tail(tail),  width(width), elementId(elementId)
     {
     }
 };
@@ -102,20 +100,19 @@ struct SlopeSegment
 class SlopeRegion final
 {
 public:
-    SlopeRegion(const Vector2& start, const Vector2& end, const std::shared_ptr<Region>& region, std::size_t elementId) :
-        region_(region), start_(start), centerLine_(end - start), lengthSquare_(), elementId(elementId)
+    SlopeRegion(const Vector2& start, const Vector2& end, double width, std::size_t elementId) :
+        elementId(elementId), start_(start), centerLine_(end - start),
+        geometry(utymap::utils::getOffsetLine(start, end + centerLine_.normalized() * width, width)),
+        lengthSquare_()
     {
         double distance = Vector2::distance(start, end);
         lengthSquare_ = distance * distance;
     }
 
     /// Returns true if the point is inside geometry.
-    bool contains(const IntPoint& p) const
+    bool contains(const Vector2& p) const
     {
-        return std::any_of(region_->geometry.begin(), region_->geometry.end(),
-            [&](const ClipperLib::Path& path) {
-                return ClipperLib::PointInPolygon(p, path) != 0;
-        });
+        return utymap::utils::isPointInPolygon(p, geometry);
     }
 
     /// Calculate scalar projection divided to length to get slope ratio in range [0, 1]
@@ -128,9 +125,9 @@ public:
     std::size_t elementId;
 
 private:
-    std::shared_ptr<Region> region_;
     const Vector2 start_;
     const Vector2 centerLine_;
+    const std::vector<Vector2> geometry;
     double lengthSquare_;
 };
 
@@ -142,10 +139,10 @@ class ExteriorGenerator::ExteriorGeneratorImpl : public utymap::entities::Elemen
     typedef std::unordered_map<Vector2, std::vector<SlopeSegment>, HashFunc, EqualsFunc> ExitMap;
 
 public:
-    ExteriorGeneratorImpl(const BuilderContext& context) :
-        context_(context), region_(nullptr), inclineType_(InclineType::None),
-        levelInfoMap_(), slopeRegionMap_(),
-        inclineKey_(context.stringTable.getId(InclineKey))
+    ExteriorGeneratorImpl(const BuilderContext& builderContext) :
+        builderContext_(builderContext),  levelInfoMap_(), slopeRegionMap_(), 
+        inclineKey_(builderContext.stringTable.getId(InclineKey)),
+        region_(nullptr), style_(nullptr), inclineType_(InclineType::None)
     {
     }
 
@@ -162,6 +159,10 @@ public:
         auto v1 = Vector2(c1.longitude, c1.latitude);
         auto v2 = Vector2(c2.longitude, c2.latitude);
 
+        double width = style_->getValue(StyleConsts::WidthKey,
+            builderContext_.boundingBox.maxPoint.latitude - builderContext_.boundingBox.minPoint.latitude,
+            builderContext_.boundingBox.center());
+
         auto levelInfoPair = levelInfoMap_.find(region_->level);
         if (levelInfoPair == levelInfoMap_.end()) {
             levelInfoMap_.insert(std::make_pair(region_->level, utymap::utils::make_unique<ExitMap>()));
@@ -170,16 +171,16 @@ public:
 
         if (inclineType_ == InclineType::None) {
             // store as possible slope segment.
-            (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, region_, way.id));
-            (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, region_, way.id));
+            (*levelInfoPair->second)[v1].push_back(SlopeSegment(v2, width, way.id));
+            (*levelInfoPair->second)[v2].push_back(SlopeSegment(v1, width, way.id));
         }
         else {
             // promote down and add directly as slope region
             region_->level -= 1;
             if (inclineType_ == InclineType::Up)
-                slopeRegionMap_[region_->level].push_back(SlopeRegion(v1, v2, region_, way.id));
+                slopeRegionMap_[region_->level].push_back(SlopeRegion(v1, v2, width, way.id));
             else
-                slopeRegionMap_[region_->level].push_back(SlopeRegion(v2, v1, region_, way.id));
+                slopeRegionMap_[region_->level].push_back(SlopeRegion(v2, v1, width, way.id));
         }
     }
 
@@ -194,10 +195,11 @@ public:
             element->accept(*this);
     }
 
-    void setElementData(const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
+    void setElementContext(const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
     {
-        region_ = region;
         inclineType_ = InclineType::create(style.getString(inclineKey_));
+        style_ = &style;
+        region_ = region;
     }
 
     void build()
@@ -214,7 +216,7 @@ public:
                 if (next->second->find(slopePair.first) == next->second->end()) continue;
                 // an exit.
                 for (const auto& segment : slopePair.second)
-                    slopeRegionMap_[curr->first].push_back(SlopeRegion(segment.tail, slopePair.first, segment.region, segment.elementId));
+                    slopeRegionMap_[curr->first].push_back(SlopeRegion(slopePair.first, segment.tail, segment.width, segment.elementId));
             }
         }
 
@@ -230,12 +232,10 @@ public:
 
         auto regionPair = slopeRegionMap_.find(level);
         if (regionPair != slopeRegionMap_.end()) {
-            IntPoint p(static_cast<cInt>(coordinate.longitude * Scale),
-                       static_cast<cInt>(coordinate.latitude* Scale));
-            Vector2 v(coordinate.longitude, coordinate.latitude);
+            Vector2 p(coordinate.longitude, coordinate.latitude);
             for (const auto& region : regionPair->second) {
                 if (region.contains(p)) {
-                    double slope = region.calculateSlope(v);
+                    double slope = region.calculateSlope(p);
                     return interpolate(deepHeight, deepHeight * 2, slope);
                 }
             }
@@ -245,7 +245,7 @@ public:
     }
 
 private:
-    const BuilderContext& context_;
+    const BuilderContext& builderContext_;
 
     /// Stores information about level's exits.
     std::map<int, std::unique_ptr<ExitMap>> levelInfoMap_;
@@ -253,14 +253,17 @@ private:
     /// Stores slope regions.
     std::unordered_map<int, std::vector<SlopeRegion>> slopeRegionMap_;
 
-    /// Current region.
-    std::shared_ptr<Region> region_;
-
-    /// Current region incline type.
-    InclineType inclineType_;
-
     /// Mapcss cached string ids.
     std::uint32_t inclineKey_;
+
+    /// Current element style.
+    std::shared_ptr<Region> region_;
+
+    /// Current element style.
+    const Style* style_;
+
+    /// Current element region incline type.
+    InclineType inclineType_;
 };
 
 ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
@@ -270,7 +273,7 @@ ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style&
 
 void ExteriorGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
-    p_impl->setElementData(element, style, region);
+    p_impl->setElementContext(element, style, region);
     element.accept(*p_impl);
 }
 
