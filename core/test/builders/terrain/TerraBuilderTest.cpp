@@ -62,12 +62,13 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     BOOST_CHECK(isCalled);
 }
 
-BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshHasExpectedGeometry)
+BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshIsNotEmpty)
 {
     bool isCalled = false;
     auto terraBuilder = create(QuadKey(1, 1, 0), [&](const Mesh& mesh) {
         if (mesh.name == "terrain_exterior") {
-            // TODO check mesh
+            BOOST_CHECK_GT(mesh.vertices.size(), 0);
+            BOOST_CHECK_GT(mesh.triangles.size(), 0);
             isCalled = true;
         };
     });

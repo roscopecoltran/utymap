@@ -153,9 +153,6 @@ public:
 
     void visitWay(const utymap::entities::Way& way) override
     {
-        //if (way.id != 421618241 && way.id != 48840561 /*&& way.id != 421618243*/)
-        //    return;
-
         const auto& c1 = way.coordinates[0];
         const auto& c2 = way.coordinates[way.coordinates.size() - 1];
 
@@ -209,24 +206,13 @@ public:
     {
         // process tunnels
         for (auto curr = levelInfoMap_.begin(); curr != levelInfoMap_.end() && curr->first < 0; ++curr) {
-            auto next = std::next(curr, 1);
-            if (next == levelInfoMap_.end()) break;
-            if (next->second->empty()) continue;
-
-            // try to find exists on level above and create slope regions.
-            for (const auto& slopePair : *curr->second) {
-                // not an exit
-                if (next->second->find(slopePair.first) == next->second->end()) continue;
-                // an exit.
-                for (const auto& segment : slopePair.second)
-                    slopeRegionMap_[curr->first].push_back(SlopeRegion(slopePair.first, segment.tail, segment.width, segment.elementId));
-            }
+            build(curr, levelInfoMap_.end());
         }
 
-        //// TODO process bridges
-        //for (auto curr = levelInfoMap_.rbegin(); curr != levelInfoMap_.rend() && curr->first > 0; ++curr) {
-
-        //}
+        // process bridges
+        for (auto curr = levelInfoMap_.rbegin(); curr != levelInfoMap_.rend() && curr->first > 0; ++curr) {
+            build(curr, levelInfoMap_.rend());
+        }
     }
 
     double getHeight(int level, const GeoCoordinate& coordinate) const
@@ -252,6 +238,24 @@ public:
     }
 
 private:
+    template<typename Iterator>
+    void build(Iterator curr, Iterator end)
+    {
+        auto next = std::next(curr, 1);
+        if (next == end || next->second->empty())
+            return;
+
+        // try to find exists on next above level create slope regions.
+        for (const auto& slopePair : *curr->second) {
+            // not an exit
+            if (next->second->find(slopePair.first) == next->second->end())
+                continue;
+            // an exit.
+            for (const auto& segment : slopePair.second)
+                slopeRegionMap_[curr->first].push_back(SlopeRegion(slopePair.first, segment.tail, segment.width, segment.elementId));
+        }
+    }
+
     const BuilderContext& builderContext_;
 
     /// Stores information about level's exits.
@@ -291,7 +295,7 @@ void ExteriorGenerator::generateFrom(Layers& layers)
     for (const auto& layerPair : layers) {
         for (const auto& region : layerPair.second) {
             // NOTE we don't have any slope regions on surface.
-            if (region->level == -1) {
+            if (region->level != 0) {
                 TerraGenerator::addGeometry(region->level, region->geometry, *region->context, [](const Path& path) {});
             }
         }
