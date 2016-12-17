@@ -103,13 +103,6 @@ public:
                     const GeometryOptions& geometryOptions,
                     const AppearanceOptions& appearanceOptions) const;
 
-    /// Adds polygon to existing mesh using elevation interpolator and options provided.
-    void addPolygon(utymap::math::Mesh& mesh,
-                    utymap::math::Polygon& polygon,
-                    const GeometryOptions& geometryOptions,
-                    const AppearanceOptions& appearanceOptions,
-                    EleInterpolator eleInterpolator) const;
-
     /// Adds simple plane to existing mesh using options provided.
     void addPlane(utymap::math::Mesh& mesh,
                   const utymap::math::Vector2& p1,

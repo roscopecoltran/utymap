@@ -62,15 +62,14 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenComplete_ThenSurfaceMeshIsNotEmpty)
     BOOST_CHECK(isCalled);
 }
 
-BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshIsNotEmpty)
+BOOST_AUTO_TEST_CASE(GivenOneTunnelConnectedWithTwoSteps_WhenComplete_ThenExteriorMeshIsNotCreated)
 {
     bool isCalled = false;
     auto terraBuilder = create(QuadKey(1, 1, 0), [&](const Mesh& mesh) {
         if (mesh.name == "terrain_exterior") {
-            BOOST_CHECK_GT(mesh.vertices.size(), 0);
-            BOOST_CHECK_GT(mesh.triangles.size(), 0);
-            isCalled = true;
+            throw std::domain_error("Exterior feature is not allowed!");
         };
+        isCalled = true;
     });
     ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 0,
              { { "highway", "footway" }, { "layer", "-1" } }, { { 0, 15 }, { 0, 10 }, { 0, 5 } })

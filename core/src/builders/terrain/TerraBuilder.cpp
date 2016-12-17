@@ -105,12 +105,16 @@ public:
         // NOTE: we should limit round shape precision due to performance reasons.
         offset_.ArcTolerance = width * 0.05;
         offset_.AddPaths(region->geometry, jtRound, etOpenRound);
+
         offset_.Execute(solution, width);
         offset_.Clear();
 
         clipper_.AddPaths(solution, ptSubject, true);
         clipper_.Execute(ctIntersection, solution);
         clipper_.removeSubject();
+
+        ClipperLib::SimplifyPolygons(solution);
+        ClipperLib::CleanPolygons(solution);
        
         region->geometry = solution;
         std::string type = region->isLayer()
@@ -198,9 +202,7 @@ private:
         if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
             region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
-        int level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
-        region->origLevel = level;
-        region->level = level;
+        region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
         region->area = std::abs(utymap::utils::getArea(coordinates));
 
         return region;

@@ -26,10 +26,6 @@ TerraGenerator(context, style, tileRect, TerrainMeshName)
 
 void SurfaceGenerator::onNewRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, const std::shared_ptr<Region>& region)
 {
-    if (region->origLevel == 0 && region->level != 0) {
-        foregroundClipper_.AddPaths(region->geometry, ptClip, true);
-        backgroundClipper_.AddPaths(region->geometry, ptClip, true);
-    }
 }
 
 /// NOTE Original layer collection is cleared after this function executed.

@@ -70,13 +70,11 @@ struct RegionContext final
 /// Represents terrain region.
 struct Region final
 {
-    Region() :
-        origLevel(0), level(0), area(0), context(nullptr), geometry()
+    Region() : level(0), area(0), context(nullptr), geometry()
     {
     }
 
     Region(Region&& other) :
-        origLevel(other.origLevel),
         level(other.level),
         area(other.area),
         context(std::move(other.context)),
@@ -93,8 +91,6 @@ struct Region final
     {
         return context == nullptr;
     }
-
-    int origLevel;
 
     /// Level value: zero for objects on terrain surface.
     int level;
