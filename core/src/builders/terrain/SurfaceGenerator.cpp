@@ -86,21 +86,17 @@ void SurfaceGenerator::buildLayer(Layer& layer)
 
 void SurfaceGenerator::buildRegion(const Region& region)
 {
-    if (region.level == 0) {
-        Paths solution;
-        foregroundClipper_.AddPaths(region.geometry, ptSubject, true);
-        foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
-        foregroundClipper_.moveSubjectToClip();
+    Paths solution;
+    foregroundClipper_.AddPaths(region.geometry, ptSubject, true);
+    foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
+    foregroundClipper_.moveSubjectToClip();
 
-        ClipperLib::SimplifyPolygons(solution);
-        ClipperLib::CleanPolygons(solution);
+    ClipperLib::SimplifyPolygons(solution);
+    ClipperLib::CleanPolygons(solution);
 
-        TerraGenerator::addGeometry(Level, solution, *region.context, [&](const Path& path) {
-            backgroundClipper_.AddPath(path, ptClip, true);
-        });
-    } /*else if (region.origLevel == 0) {
-        backgroundClipper_.AddPaths(region.geometry, ptClip, true);
-    }*/
+    TerraGenerator::addGeometry(Level, solution, *region.context, [&](const Path& path) {
+        backgroundClipper_.AddPath(path, ptClip, true);
+    });
 }
 
 void SurfaceGenerator::addGeometry(int level, Polygon& polygon, const RegionContext& regionContext)

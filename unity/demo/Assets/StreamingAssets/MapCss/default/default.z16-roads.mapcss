@@ -92,3 +92,7 @@ way|z16[highway=residential] {
     lamp-pillar-texture-type: background;
     lamp-pillar-texture-scale: 200;
 }
+
+way,relation|z16[layer>0][bridge=yes] {
+    level: 0;
+}
