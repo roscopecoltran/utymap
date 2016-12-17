@@ -228,7 +228,10 @@ public:
 
     double getHeight(int level, const GeoCoordinate& coordinate) const
     {
-        const double deepHeight = 10;
+        const double deepHeight = 4;
+
+        double startHeight = level * deepHeight;
+        double endHeight = (level + 1) * deepHeight;
 
         auto regionPair = slopeRegionMap_.find(level);
         if (regionPair != slopeRegionMap_.end()) {
@@ -236,12 +239,12 @@ public:
             for (const auto& region : regionPair->second) {
                 if (region.contains(p)) {
                     double slope = region.calculateSlope(p);
-                    return interpolate(deepHeight, deepHeight * 2, slope);
+                    return interpolate(startHeight, endHeight, slope);
                 }
             }
         }
 
-        return deepHeight;
+        return startHeight;
     }
 
 private:
