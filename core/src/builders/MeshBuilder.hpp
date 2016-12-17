@@ -10,6 +10,7 @@
 #include "math/Vector3.hpp"
 #include "math/Mesh.hpp"
 
+#include <functional>
 #include <memory>
 
 namespace utymap { namespace builders {
@@ -19,16 +20,17 @@ class MeshBuilder final
 {
 public:
 
+    typedef const std::function<double(const utymap::GeoCoordinate&)>& EleInterpolator;
+
     struct GeometryOptions final
     {
-        GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset,
-                        bool flipSide = false, bool hasBackSide = false, int segmentSplit = 0) :
+        GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset, int segmentSplit = 0) :
             area(area),
             eleNoiseFreq(eleNoiseFreq),
             elevation(elevation),
             heightOffset(heightOffset),
-            flipSide(flipSide),
-            hasBackSide(hasBackSide),
+            flipSide(false),
+            hasBackSide(false),
             segmentSplit(segmentSplit)
         {
         }
@@ -100,6 +102,13 @@ public:
                     utymap::math::Polygon& polygon,
                     const GeometryOptions& geometryOptions,
                     const AppearanceOptions& appearanceOptions) const;
+
+    /// Adds polygon to existing mesh using elevation interpolator and options provided.
+    void addPolygon(utymap::math::Mesh& mesh,
+                    utymap::math::Polygon& polygon,
+                    const GeometryOptions& geometryOptions,
+                    const AppearanceOptions& appearanceOptions,
+                    EleInterpolator eleInterpolator) const;
 
     /// Adds simple plane to existing mesh using options provided.
     void addPlane(utymap::math::Mesh& mesh,

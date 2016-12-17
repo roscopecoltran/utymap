@@ -59,9 +59,7 @@ private:
             relation_.elements.push_back(element);
 
         //NOTE add specific tag to signalize that this element should not be processed separetely by building builder
-        element->tags.push_back(utymap::entities::Tag(
-            std::numeric_limits<std::uint32_t>::max(),
-            std::numeric_limits<std::uint32_t>::max()));
+        element->tags.push_back(utymap::entities::Tag(std::numeric_limits<std::uint32_t>::max(), 0));
     }
 
     utymap::entities::Relation& relation_;

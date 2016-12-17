@@ -126,6 +126,38 @@ inline utymap::math::Vector2 getPointAlongLine(const utymap::math::Vector2& star
     return utymap::math::Vector2(start.x + (r * (end.x - start.x)), start.y + (r * (end.y - start.y)));
 }
 
+/// Gets list of vertices received by segment offsetting
+inline std::vector<utymap::math::Vector2> getOffsetLine(const utymap::math::Vector2& start, const utymap::math::Vector2& end, double width)
+{
+    auto direction = (end - start).normalized();
+    utymap::math::Vector2 n(-direction.y, direction.x);
+
+    std::vector<utymap::math::Vector2> vertices;
+    vertices.reserve(4);
+
+    vertices.push_back(start + n * width);
+    vertices.push_back(start - n * width);
+    vertices.push_back(end - n * width);
+    vertices.push_back(end + n * width);
+
+    return vertices;
+}
+
+/// Returns true if given point is inside given simple polygon (including borders) represented by points. 
+inline bool isPointInPolygon(const utymap::math::Vector2& p, const std::vector<utymap::math::Vector2> points)
+{
+    std::size_t i, j, size = points.size();
+    bool result = false;
+
+    for (i = 0, j = size - 1; i < size; j = i++) {
+        if (((points[i].y >= p.y) != (points[j].y >= p.y)) &&
+            (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+            result = !result;
+    }
+
+    return result;
+}
+
 }}
 
 #endif // UTILS_GEOMETRYUTILS_HPP_DEFINED

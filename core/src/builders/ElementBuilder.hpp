@@ -10,7 +10,7 @@ namespace utymap { namespace builders {
 class ElementBuilder : public utymap::entities::ElementVisitor
 {
 public:
-    explicit  ElementBuilder(const utymap::builders::BuilderContext& context) :
+    explicit ElementBuilder(const utymap::builders::BuilderContext& context) :
         context_(context)
     {
     }

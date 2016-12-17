@@ -39,4 +39,29 @@ BOOST_AUTO_TEST_CASE(GivenRectangle_WhenGetCircle_ThenReturnsCorrectCircle)
     BOOST_CHECK_EQUAL(2, size.y);
 }
 
+BOOST_AUTO_TEST_CASE(GiveSegment_WhenGetOffsetLine_ThenReturnsCorrectRectangle)
+{
+    std::vector<Vector2> expected = { { 0, 1 }, { 0, -1 }, { 10, -1 }, { 10, 1 } };
+
+    auto vertices = getOffsetLine({ 0, 0 }, { 10, 0 }, 1);
+
+    BOOST_CHECK(expected == vertices);
+}
+
+BOOST_AUTO_TEST_CASE(GivePointInPolygon_WhenIsPointInPolygon_ThenReturnsTrue)
+{
+    BOOST_CHECK(isPointInPolygon({ 1, 1 }, { {0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+BOOST_AUTO_TEST_CASE(GivePointOnPolygonBorder_WhenIsPointInPolygon_ThenReturnsTrue)
+{
+    BOOST_CHECK(isPointInPolygon({ 10, 5 }, { { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+BOOST_AUTO_TEST_CASE(GivePointIsOutsidePolygon_WhenIsPointInPolygon_ThenReturnsFalse)
+{
+    BOOST_CHECK(!isPointInPolygon({ 11, 11 }, { { 0, 0 }, { 0, 10 }, { 10, 10 }, { 10, 0 } }));
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -170,7 +170,6 @@ private:
     double step_;
 };
 
-}
-}
+}}
 
 #endif // BUILDERS_TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
