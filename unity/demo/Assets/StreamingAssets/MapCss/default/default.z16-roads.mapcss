@@ -88,3 +88,8 @@ way|z16[highway=residential] {
     lamp-pillar-texture-type: background;
     lamp-pillar-texture-scale: 200;
 }
+
+way|z16[highway][lanes] {
+    width: eval("tag('lanes') * 2");
+    dimension: 1m;
+}

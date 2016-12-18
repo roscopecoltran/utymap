@@ -74,7 +74,7 @@ public:
     explicit TerraBuilderImpl(const BuilderContext& context) :
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)),
-        generators_()
+        generators_(), dimenstionKey_(context.stringTable.getId(StyleConsts::DimenstionKey))
     {
         tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.minPoint.latitude));
         tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.minPoint.latitude));
@@ -96,13 +96,10 @@ public:
     {
         Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, way.coordinates);
-
-        // make polygon from line by offsetting it using width specified
-        double width = style.getValue(StyleConsts::WidthKey, 
-            context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
-            context_.boundingBox.center()) * Scale;
+        double width = getWidth(style)* Scale;
 
         Paths solution;
+        // make polygon from line by offsetting it using width specified
         // NOTE: we should limit round shape precision due to performance reasons.
         offset_.ArcTolerance = width * 0.05;
         offset_.AddPaths(region->geometry, jtRound, etOpenRound);
@@ -177,6 +174,17 @@ public:
 
 private:
 
+    /// Gets width for line offsetting taking care about dimension.
+    double getWidth(const Style& style) const
+    {
+        // NOTE current mapcss does not support double value evaluation with dimension
+        // so, special trick with mapcss key is used.
+        double value = style.getValue(StyleConsts::WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
+        return style.has(dimenstionKey_)
+            ? value * style.getValue(StyleConsts::DimenstionKey, context_.boundingBox.height(), context_.boundingBox.center())
+            : value;
+    }
+
     void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
     {
         for (const auto& generator : generators_) {
@@ -238,6 +246,7 @@ private:
     std::vector<std::unique_ptr<TerraGenerator>> generators_;
     Layers layers_;
     Path tileRect_;
+    std::uint32_t dimenstionKey_;
 };
 
 void TerraBuilder::visitNode(const utymap::entities::Node& node) { pimpl_->visitNode(node); }

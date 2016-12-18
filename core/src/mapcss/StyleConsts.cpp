@@ -22,3 +22,4 @@ const std::string StyleConsts::TerrainLayerKey = "terrain-layer";
 const std::string StyleConsts::WidthKey = "width";
 
 const std::string StyleConsts::LevelKey = "level";
+const std::string StyleConsts::DimenstionKey = "dimension";
