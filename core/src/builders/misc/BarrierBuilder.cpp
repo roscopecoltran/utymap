@@ -4,6 +4,7 @@
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
+#include "mapcss/StyleConsts.hpp"
 #include "utils/GradientUtils.hpp"
 
 using namespace utymap;
@@ -15,17 +16,7 @@ using namespace utymap::utils;
 
 namespace {
     const double Scale = 1E7;
-    const std::string WidthKey = "width";
-    const std::string HeightKey = "height";
-    const std::string LengthKey = "length";
-    const std::string RadiusKey = "radius";
-
-    const std::string ColorKey = "color";
     const std::string MeshNamePrefix = "barrier:";
-
-    const std::string TextureIndexKey = "texture-index";
-    const std::string TextureTypeKey = "texture-type";
-    const std::string TextureScaleKey = "texture-scale";
 }
 
 void BarrierBuilder::visitNode(const Node& node)
@@ -34,17 +25,17 @@ void BarrierBuilder::visitNode(const Node& node)
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, node));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider,
-        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey, node.id);
+        StyleConsts::GradientKey, StyleConsts::TextureIndexKey, 
+        StyleConsts::TextureTypeKey, StyleConsts::TextureScaleKey, node.id);
 
-    double relativeSize = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
     GeoCoordinate relativeCoordinate = context_.boundingBox.center();
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
     CylinderGenerator generator(context_, meshContext);
     generator
         .setCenter(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
-        .setHeight(style.getValue(HeightKey))
-        .setRadius(style.getValue(RadiusKey, relativeSize, relativeCoordinate))
+        .setHeight(style.getValue(StyleConsts::HeightKey))
+        .setRadius(style.getValue(StyleConsts::RadiusKey, context_.boundingBox.height(), relativeCoordinate))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
         .setVertexNoiseFreq(0)
@@ -71,18 +62,17 @@ void BarrierBuilder::buildBarrier(const T& element)
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider,
-        ColorKey, TextureIndexKey, TextureTypeKey, TextureScaleKey, element.id);
+        StyleConsts::GradientKey, StyleConsts::TextureIndexKey,
+        StyleConsts::TextureTypeKey, StyleConsts::TextureScaleKey, element.id);
 
-    double width = style.getValue(WidthKey,
-        context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
-        context_.boundingBox.center());
+    double width = style.getValue(StyleConsts::WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
 
     WallGenerator generator(context_, meshContext);
     generator
         .setGeometry(element.coordinates)
         .setWidth(width)
-        .setHeight(style.getValue(HeightKey))
-        .setLength(style.getValue(LengthKey))
+        .setHeight(style.getValue(StyleConsts::HeightKey))
+        .setLength(style.getValue(StyleConsts::LengthKey))
         .generate();
 
     context_.meshBuilder.writeTextureMappingInfo(mesh, meshContext.appearanceOptions);

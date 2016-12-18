@@ -26,7 +26,11 @@ struct StyleConsts final {
     static const std::string GridCellSize;
 
     static const std::string TerrainLayerKey;
+    
+    static const std::string HeightKey;
     static const std::string WidthKey;
+    static const std::string LengthKey;
+    static const std::string RadiusKey;
 
     static const std::string LevelKey;
     static const std::string DimenstionKey;

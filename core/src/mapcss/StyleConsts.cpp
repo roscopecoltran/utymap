@@ -19,7 +19,11 @@ const std::string StyleConsts::MeshExtrasKey = "mesh-extras";
 const std::string StyleConsts::GridCellSize = "grid-cell-size";
 
 const std::string StyleConsts::TerrainLayerKey = "terrain-layer";
+
+const std::string StyleConsts::HeightKey = "height";
 const std::string StyleConsts::WidthKey = "width";
+const std::string StyleConsts::LengthKey = "length";
+const std::string StyleConsts::RadiusKey = "radius";
 
 const std::string StyleConsts::LevelKey = "level";
 const std::string StyleConsts::DimenstionKey = "dimension";
