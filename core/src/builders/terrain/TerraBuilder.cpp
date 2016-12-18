@@ -11,6 +11,8 @@
 
 #include "utils/GeometryUtils.hpp"
 
+#include <numeric>
+
 using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -59,7 +61,6 @@ namespace {
                 path.push_back(toIntPoint(c.longitude, c.latitude));
 
             region.geometry.push_back(path);
-            region.area += std::abs(utymap::utils::getArea(a.coordinates));
         }
 
         void visitRelation(const utymap::entities::Relation& r) override { r.accept(builder); }
@@ -105,7 +106,6 @@ public:
         // NOTE: we should limit round shape precision due to performance reasons.
         offset_.ArcTolerance = width * 0.05;
         offset_.AddPaths(region->geometry, jtRound, etOpenRound);
-
         offset_.Execute(solution, width);
         offset_.Clear();
 
@@ -203,8 +203,6 @@ private:
             region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
         region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
-        region->area = std::abs(utymap::utils::getArea(coordinates));
-
         return region;
     }
 
@@ -220,7 +218,6 @@ private:
                 mapPair->second.first->level = current->level;
                 mapPair->second.first->context = regionContext;
             }
-            mapPair->second.first->area += current->area;
             mapPair->second.second->AddPaths(current->geometry, ptSubject, true);
         }
 
@@ -228,6 +225,11 @@ private:
         for (auto& pair : regionMap) {
             Paths result;
             pair.second.second->Execute(ctUnion, result, pftNonZero, pftNonZero);
+            pair.second.first->area = std::accumulate(result.begin(), result.end(), 0.,
+                [](double acc, const Path& path) {
+                    return acc + std::abs(ClipperLib::Area(path));
+            }) / (Scale * Scale);
+               
             pair.second.first->geometry = std::move(result);
             layer.push_back(pair.second.first);
         }
