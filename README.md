@@ -1,6 +1,6 @@
 <a href="https://play.google.com/store/apps/details?id=com.utymap.demo&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="64" /></a>
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg?style=flat)](https://github.com/reinterpretcat/utymap)
 [![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
 [![Coverity](https://scan.coverity.com/projects/10159/badge.svg)](https://scan.coverity.com/projects/reinterpretcat-utymap)
 [![Release](https://img.shields.io/github/release/reinterpretcat/utymap.svg)](https://github.com/reinterpretcat/utymap/releases/latest)
