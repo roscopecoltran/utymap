@@ -28,8 +28,11 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
     splitter_.setParams(Scale, size);
 }
 
-void TerraGenerator::addGeometry(int level, const Paths& geometry, const RegionContext& regionContext, const std::function<void(const Path&)>& geometryVisitor)
+void TerraGenerator::addGeometry(int level, Paths& geometry, const RegionContext& regionContext, const std::function<void(const Path&)>& geometryVisitor)
 {
+    ClipperLib::SimplifyPolygons(geometry);
+    ClipperLib::CleanPolygons(geometry);
+
     bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
     // calculate approximate size of overall points
     double size = 0;

@@ -82,6 +82,13 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenAllQuadKeysAreLoadedAtZoomOne_ThenCallbac
     loadQuadKeys(1, 0, 1, 0, 1);
 }
 
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeysAreLoadedAtBirdEyeZoomLevel_ThenCallbacksAreCalled)
+{
+    ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_JSON_2_FILE, 8800, 5373, 14, callback);
+
+    loadQuadKeys(14, 8800, 8800, 5373, 5373);
+}
+
 /// This case tests storing lod range.
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenDataIsLoadedInLodRangeAtDetailedZoom_ThenCallbacksAreCalled)
 {

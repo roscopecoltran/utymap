@@ -88,9 +88,6 @@ void SurfaceGenerator::buildRegion(const Region& region)
     foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
     foregroundClipper_.moveSubjectToClip();
 
-    ClipperLib::SimplifyPolygons(solution);
-    ClipperLib::CleanPolygons(solution);
-
     TerraGenerator::addGeometry(Level, solution, *region.context, [&](const Path& path) {
         backgroundClipper_.AddPath(path, ptClip, true);
     });

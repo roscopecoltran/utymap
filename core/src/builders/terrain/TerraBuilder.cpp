@@ -112,9 +112,6 @@ public:
         clipper_.AddPaths(solution, ptSubject, true);
         clipper_.Execute(ctIntersection, solution);
         clipper_.removeSubject();
-
-        ClipperLib::SimplifyPolygons(solution);
-        ClipperLib::CleanPolygons(solution);
        
         region->geometry = solution;
         std::string type = region->isLayer()

@@ -33,7 +33,7 @@ public:
 protected:
     /// Adds geometry to mesh.
     void addGeometry(int level,
-                     const ClipperLib::Paths& paths,
+                     ClipperLib::Paths& paths,
                      const RegionContext& regionContext,
                      const std::function<void(const ClipperLib::Path&)>& geometryVisitor);
 
