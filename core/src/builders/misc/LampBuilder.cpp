@@ -57,10 +57,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
 {
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
-    double width = style.getValue(WidthKey,
-        context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude,
-        context_.boundingBox.center());
-    
+    double width = style.getValue(WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
     double stepInMeters = style.getValue(LampStep);
 
     Mesh lampMesh("");

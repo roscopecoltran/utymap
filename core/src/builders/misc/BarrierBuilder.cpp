@@ -69,7 +69,8 @@ void BarrierBuilder::buildBarrier(const T& element)
 
     WallGenerator generator(context_, meshContext);
     generator
-        .setGeometry(element.coordinates)
+        .setGeometry(element.coordinates.begin(),
+                     element.coordinates.end())
         .setWidth(width)
         .setHeight(style.getValue(StyleConsts::HeightKey))
         .setLength(style.getValue(StyleConsts::LengthKey))

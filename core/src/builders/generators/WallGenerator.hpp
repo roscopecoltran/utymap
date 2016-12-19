@@ -14,16 +14,20 @@ namespace utymap { namespace builders {
 class WallGenerator : public AbstractGenerator
 {
 public:
+
+    typedef std::vector<utymap::GeoCoordinate>::const_iterator Iterator;
+
     WallGenerator(const utymap::builders::BuilderContext& builderContext,
                   utymap::builders::MeshContext& meshContext) :
         AbstractGenerator(builderContext, meshContext),
-        geometry_(), width_(0), height_(0), length_(0)
+        begin_(), end_(), width_(0), height_(0), length_(0)
     {
     }
 
-    WallGenerator& setGeometry(const std::vector<utymap::GeoCoordinate>& geometry)
+    WallGenerator& setGeometry(Iterator begin, Iterator end)
     {
-        geometry_ = geometry;
+        begin_ = begin;
+        end_ = end;
         return *this;
     }
 
@@ -47,11 +51,10 @@ public:
 
     void generate() override
     {
-        auto size = geometry_.size();
-
+        auto size = std::distance(begin_, end_);
         for (std::size_t i = 0; i < size - 1; ++i) {
-            const auto& p0 = geometry_[i];
-            const auto& p1 = geometry_[i + 1];
+            const auto& p0 = *(begin_ + i);
+            const auto& p1 = *(begin_ + i + 1);
 
             double distanceInMeters = utymap::utils::GeoUtils::distance(p0, p1);
             int count = std::max(static_cast<int>(distanceInMeters / length_), 1);
@@ -97,7 +100,7 @@ private:
                     utymap::math::Vector3(rightP1.x, top, rightP1.y));
     }
 
-    std::vector<utymap::GeoCoordinate> geometry_;
+    Iterator begin_, end_;
     double width_, height_, length_;
 };
 
