@@ -20,7 +20,7 @@ public:
     WallGenerator(const utymap::builders::BuilderContext& builderContext,
                   utymap::builders::MeshContext& meshContext) :
         AbstractGenerator(builderContext, meshContext),
-        begin_(), end_(), width_(0), height_(0), length_(0)
+        begin_(), end_(), width_(0), height_(0), length_(0), offset_(0)
     {
     }
 
@@ -49,15 +49,24 @@ public:
         return *this;
     }
 
+    WallGenerator& setOffset(double offset)
+    {
+        offset_ = offset;
+        return *this;
+    }
+
     void generate() override
     {
-        auto size = std::distance(begin_, end_);
-        for (std::size_t i = 0; i < size - 1; ++i) {
+        if (begin_ == end_) return;
+
+        auto size = static_cast<std::size_t>(std::distance(begin_, end_) - 1);
+        auto fullLength = length_ + offset_;
+        for (std::size_t i = 0; i < size; ++i) {
             const auto& p0 = *(begin_ + i);
             const auto& p1 = *(begin_ + i + 1);
 
             double distanceInMeters = utymap::utils::GeoUtils::distance(p0, p1);
-            int count = std::max(static_cast<int>(distanceInMeters / length_), 1);
+            int count = std::max(static_cast<int>(distanceInMeters / fullLength), 1);
 
             auto start = p0;
             for (int j = 1; j <= count; ++j) {
@@ -101,7 +110,7 @@ private:
     }
 
     Iterator begin_, end_;
-    double width_, height_, length_;
+    double width_, height_, length_, offset_;
 };
 
 }}
