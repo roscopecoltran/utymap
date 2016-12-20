@@ -38,13 +38,13 @@ struct RegionContext final
     {
         using StyleConsts = utymap::mapcss::StyleConsts;
 
-        double quadKeyWidth = context.boundingBox.maxPoint.latitude - context.boundingBox.minPoint.latitude;
+        auto relativeSize = context.boundingBox.height();
 
         MeshBuilder::GeometryOptions geometryOptions(
-            style.getValue(prefix + StyleConsts::MaxAreaKey(), quadKeyWidth * quadKeyWidth),
-            style.getValue(prefix + StyleConsts::EleNoiseFreqKey(), quadKeyWidth),
+            style.getValue(prefix + StyleConsts::MaxAreaKey(), relativeSize * relativeSize),
+            style.getValue(prefix + StyleConsts::EleNoiseFreqKey(), relativeSize),
             std::numeric_limits<double>::lowest(), // no fixed elevation
-            style.getValue(prefix + StyleConsts::HeightOffsetKey(), quadKeyWidth),
+            style.getValue(prefix + StyleConsts::HeightOffsetKey(), relativeSize),
             1      // no new vertices on boundaries
             );
 
@@ -57,7 +57,7 @@ struct RegionContext final
 
         MeshBuilder::AppearanceOptions appearanceOptions(
             context.styleProvider.getGradient(style.getString(prefix + StyleConsts::GradientKey())),
-            style.getValue(prefix + StyleConsts::ColorNoiseFreqKey(), quadKeyWidth),
+            style.getValue(prefix + StyleConsts::ColorNoiseFreqKey(), context.boundingBox),
             textureIndex,
             textureRegion,
             scale > 0 ? scale : 1

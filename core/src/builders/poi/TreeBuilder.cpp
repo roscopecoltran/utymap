@@ -83,11 +83,8 @@ void TreeBuilder::visitRelation(const utymap::entities::Relation& relation)
 
 std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext& builderContext, Mesh& mesh, const Style& style)
 {
-    double relativeSize = builderContext.boundingBox.maxPoint.latitude - builderContext.boundingBox.minPoint.latitude;
-    GeoCoordinate relativeCoordinate = builderContext.boundingBox.center();
-
-    double foliageRadiusInDegrees = style.getValue(FoliageRadius, relativeSize, relativeCoordinate);
-    double foliageRadiusInMeters = style.getValue(FoliageRadius, relativeSize);
+    double foliageRadiusInDegrees = style.getValue(FoliageRadius, builderContext.boundingBox);
+    double foliageRadiusInMeters = style.getValue(FoliageRadius, builderContext.boundingBox.height());
 
     const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, TrunkColorKey);
     const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, FoliageColorKey);
@@ -102,8 +99,8 @@ std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext
     generator->setFoliageSize(Vector3(1.5 * foliageRadiusInDegrees, foliageRadiusInMeters, foliageRadiusInDegrees));
     generator->setFoliageTextureScale(style.getValue(FoliageTextureScaleKey));
     generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkRadius(style.getValue(TrunkRadius, relativeSize, relativeCoordinate));
-    generator->setTrunkHeight(style.getValue(TrunkHeight, relativeSize));
+    generator->setTrunkRadius(style.getValue(TrunkRadius, builderContext.boundingBox));
+    generator->setTrunkHeight(style.getValue(TrunkHeight, builderContext.boundingBox.height()));
     generator->setTrunkTextureScale(style.getValue(TrunkTextureScaleKey));
 
     return generator;

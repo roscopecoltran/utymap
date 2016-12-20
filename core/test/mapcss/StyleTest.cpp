@@ -6,6 +6,7 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
+using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
@@ -18,6 +19,7 @@ namespace {
     struct Utils_MapCssUtilsFixture
     {
         DependencyProvider dependencyProvider;
+        BoundingBox boundingBox = GeoUtils::quadKeyToBoundingBox(QuadKey(16, 35205, 21489));
     };
 }
 
@@ -30,7 +32,7 @@ BOOST_AUTO_TEST_CASE(GivenValueInMeters_WhenGetValue_ThenReturnPositiveValue)
         0, { std::make_pair("meters", "") }, { { 52.52975 , 13.38810 } });
     Style style = dependencyProvider.getStyleProvider(stylesheet)->forElement(way, lod);
 
-    double width = style.getValue("width", lod, way.coordinates[0]);
+    double width = style.getValue("width", boundingBox);
 
     BOOST_CHECK(width > 0);
 }
@@ -42,7 +44,7 @@ BOOST_AUTO_TEST_CASE(GivenValueInPercents_WhenGetValue_ThenReturnPositiveValue)
         0, { std::make_pair("percent", "") }, { { 52.52975, 13.38810 } });
     Style style = dependencyProvider.getStyleProvider(stylesheet)->forElement(way, lod);
 
-    double width = style.getValue("width", lod, way.coordinates[0]);
+    double width = style.getValue("width", boundingBox);
 
     BOOST_CHECK(width > 0);
 }

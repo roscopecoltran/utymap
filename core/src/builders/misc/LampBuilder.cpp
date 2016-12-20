@@ -57,7 +57,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
 {
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
-    double width = style.getValue(WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
+    double width = style.getValue(WidthKey, context_.boundingBox);
     double stepInMeters = style.getValue(LampStep);
 
     Mesh lampMesh("");
@@ -107,11 +107,8 @@ void LampBuilder::visitRelation(const utymap::entities::Relation& relation)
 void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& mesh) const
 {
     // NOTE silently reuse tree builder..
-    double relativeSize = context_.boundingBox.maxPoint.latitude - context_.boundingBox.minPoint.latitude;
-    GeoCoordinate relativeCoordinate = context_.boundingBox.center();
-
-    double foliageRadiusInDegrees = style.getValue(LampLightRadius, relativeSize, relativeCoordinate);
-    double foliageRadiusInMeters = style.getValue(LampLightRadius, relativeSize);
+    double foliageRadiusInDegrees = style.getValue(LampLightRadius, context_.boundingBox);
+    double foliageRadiusInMeters = style.getValue(LampLightRadius, context_.boundingBox.height());
 
     const auto& trunkGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampPillarColorKey);
     const auto& foliageGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampLightColorKey);
@@ -127,8 +124,8 @@ void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& m
     generator->setFoliageTextureScale(style.getValue(LampLightTextureScaleKey));
     generator->setFoliageRecursionLevel(0);
     generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkRadius(style.getValue(LampPillarRadius, relativeSize, relativeCoordinate));
-    generator->setTrunkHeight(style.getValue(LampPillarHeight, relativeSize));
+    generator->setTrunkRadius(style.getValue(LampPillarRadius, context_.boundingBox));
+    generator->setTrunkHeight(style.getValue(LampPillarHeight, context_.boundingBox.height()));
     generator->setTrunkTextureScale(style.getValue(LampPillarTextureScaleKey));
     generator->setPosition(position);
     generator->generate();

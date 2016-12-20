@@ -1,6 +1,6 @@
 canvas|z16 {
     grid-cell-size: 5%;
-    max-area: 0.05%;
+    max-area: 0.1%;
     color-noise-freq: 100000;
     ele-noise-freq: 7500;
     color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
@@ -27,7 +27,7 @@ area,relation|z16[historic=memorial],
 area,relation|z16[landuse] {
     clip:true;
     builders: terrain;
-    max-area: 0.01%;
+    max-area: 0.02%;
     color-noise-freq: 100000;
     ele-noise-freq: 7500;
     color: gradient(red);

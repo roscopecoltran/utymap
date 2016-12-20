@@ -28,14 +28,13 @@ void BarrierBuilder::visitNode(const Node& node)
         StyleConsts::GradientKey(), StyleConsts::TextureIndexKey(),
         StyleConsts::TextureTypeKey(), StyleConsts::TextureScaleKey(), node.id);
 
-    GeoCoordinate relativeCoordinate = context_.boundingBox.center();
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
     CylinderGenerator generator(context_, meshContext);
     generator
         .setCenter(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
         .setHeight(style.getValue(StyleConsts::HeightKey()))
-        .setRadius(style.getValue(StyleConsts::RadiusKey(), context_.boundingBox.height(), relativeCoordinate))
+        .setRadius(style.getValue(StyleConsts::RadiusKey(), context_.boundingBox))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
         .setVertexNoiseFreq(0)
@@ -65,7 +64,7 @@ void BarrierBuilder::buildBarrier(const T& element)
         StyleConsts::GradientKey(), StyleConsts::TextureIndexKey(),
         StyleConsts::TextureTypeKey(), StyleConsts::TextureScaleKey(), element.id);
 
-    double width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox.height(), context_.boundingBox.center());
+    double width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
 
     WallGenerator generator(context_, meshContext);
     generator

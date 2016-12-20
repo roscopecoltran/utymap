@@ -179,9 +179,9 @@ private:
     {
         // NOTE current mapcss does not support double value evaluation with dimension
         // so, special trick with mapcss key is used.
-        double value = style.getValue(StyleConsts::WidthKey(), context_.boundingBox.height(), context_.boundingBox.center());
+        double value = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
         return style.has(dimenstionKey_)
-            ? value * style.getValue(StyleConsts::DimenstionKey(), context_.boundingBox.height(), context_.boundingBox.center())
+            ? value * style.getValue(StyleConsts::DimenstionKey(), context_.boundingBox)
             : value;
     }
 

@@ -97,19 +97,33 @@ struct Style final
     }
 
     /// Gets double value or zero.
-    double getValue(const std::string& key,
-                    double size = 1,
-                    const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
+    double getValue(const std::string& key) const
     {
-        std::uint32_t keyId = stringTable_.getId(key);
-        return getValue(keyId, size, coordinate);
+        return getValue(key, 1);
     }
 
     /// Gets double value or zero.
-    double getValue(std::uint32_t keyId,
-                    double size = 1,
-                    const utymap::GeoCoordinate& coordinate = GeoCoordinate()) const
+    /// Relative size is used when dimension is specified
+    double getValue(const std::string& key, double relativeSize) const
     {
+        return getValue(key, relativeSize, BoundingBox());
+    }
+
+    /// Gets double value or zero.
+    /// Bounding box is used when dimension is specified
+    double getValue(const std::string& key, const BoundingBox& bbox) const
+    {
+        return getValue(key, bbox.height(), bbox);
+    }
+
+private:
+
+    /// Gets double value or zero.
+    /// Bounding box is used when dimension is specified
+    double getValue(const std::string& key, double relativeSize, const BoundingBox& bbox) const
+    {
+        std::uint32_t keyId = stringTable_.getId(key);
+
         if (!has(keyId))
             return 0;
 
@@ -119,23 +133,21 @@ struct Style final
 
         if (dimen == 'm') {
             double value = utymap::utils::parseDouble(rawValue.substr(0, rawValue.size() - 1));
-            return coordinate.isValid()
-                ? utymap::utils::GeoUtils::getOffset(coordinate, value)
+            return bbox.isValid()
+                ? utymap::utils::GeoUtils::getOffset(bbox.center(), value)
                 : value;
         }
 
-        // relative to size
         if (dimen == '%') {
             double value = utymap::utils::parseDouble(rawValue.substr(0, rawValue.size() - 1));
-            return size * value * 0.01;
+            return relativeSize * value * 0.01;
         }
 
         return declaration.isEval()
-                ? declaration.evaluate<double>(tags_, stringTable_)
-                : utymap::utils::parseDouble(rawValue);
+            ? declaration.evaluate<double>(tags_, stringTable_)
+            : utymap::utils::parseDouble(rawValue);
     }
 
-private:
     utymap::index::StringTable& stringTable_;
     std::vector<utymap::entities::Tag> tags_;
     std::unordered_map<std::uint32_t, const StyleDeclaration*> declarations_;
