@@ -24,7 +24,7 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
                                      context.boundingBox.maxPoint.longitude,
                                      context.boundingBox.maxPoint.latitude)
 {
-    auto size = style_.getValue(StyleConsts::GridCellSize, context_.boundingBox.height(), context_.boundingBox.center());
+    auto size = style_.getValue(StyleConsts::GridCellSize(), context_.boundingBox.height(), context_.boundingBox.center());
     splitter_.setParams(Scale, size);
 }
 

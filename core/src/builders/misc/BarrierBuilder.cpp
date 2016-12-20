@@ -25,8 +25,8 @@ void BarrierBuilder::visitNode(const Node& node)
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, node));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider,
-        StyleConsts::GradientKey, StyleConsts::TextureIndexKey, 
-        StyleConsts::TextureTypeKey, StyleConsts::TextureScaleKey, node.id);
+        StyleConsts::GradientKey(), StyleConsts::TextureIndexKey(),
+        StyleConsts::TextureTypeKey(), StyleConsts::TextureScaleKey(), node.id);
 
     GeoCoordinate relativeCoordinate = context_.boundingBox.center();
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
@@ -34,8 +34,8 @@ void BarrierBuilder::visitNode(const Node& node)
     CylinderGenerator generator(context_, meshContext);
     generator
         .setCenter(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
-        .setHeight(style.getValue(StyleConsts::HeightKey))
-        .setRadius(style.getValue(StyleConsts::RadiusKey, context_.boundingBox.height(), relativeCoordinate))
+        .setHeight(style.getValue(StyleConsts::HeightKey()))
+        .setRadius(style.getValue(StyleConsts::RadiusKey(), context_.boundingBox.height(), relativeCoordinate))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
         .setVertexNoiseFreq(0)
@@ -62,18 +62,18 @@ void BarrierBuilder::buildBarrier(const T& element)
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
 
     MeshContext meshContext = MeshContext::create(mesh, style, context_.styleProvider,
-        StyleConsts::GradientKey, StyleConsts::TextureIndexKey,
-        StyleConsts::TextureTypeKey, StyleConsts::TextureScaleKey, element.id);
+        StyleConsts::GradientKey(), StyleConsts::TextureIndexKey(),
+        StyleConsts::TextureTypeKey(), StyleConsts::TextureScaleKey(), element.id);
 
-    double width = style.getValue(StyleConsts::WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
+    double width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox.height(), context_.boundingBox.center());
 
     WallGenerator generator(context_, meshContext);
     generator
         .setGeometry(element.coordinates.begin(),
                      element.coordinates.end())
         .setWidth(width)
-        .setHeight(style.getValue(StyleConsts::HeightKey))
-        .setLength(style.getValue(StyleConsts::LengthKey))
+        .setHeight(style.getValue(StyleConsts::HeightKey()))
+        .setLength(style.getValue(StyleConsts::LengthKey()))
         .generate();
 
     context_.meshBuilder.writeTextureMappingInfo(mesh, meshContext.appearanceOptions);

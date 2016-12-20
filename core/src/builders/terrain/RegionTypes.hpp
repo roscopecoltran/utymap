@@ -41,23 +41,23 @@ struct RegionContext final
         double quadKeyWidth = context.boundingBox.maxPoint.latitude - context.boundingBox.minPoint.latitude;
 
         MeshBuilder::GeometryOptions geometryOptions(
-            style.getValue(prefix + StyleConsts::MaxAreaKey, quadKeyWidth * quadKeyWidth),
-            style.getValue(prefix + StyleConsts::EleNoiseFreqKey, quadKeyWidth),
+            style.getValue(prefix + StyleConsts::MaxAreaKey(), quadKeyWidth * quadKeyWidth),
+            style.getValue(prefix + StyleConsts::EleNoiseFreqKey(), quadKeyWidth),
             std::numeric_limits<double>::lowest(), // no fixed elevation
-            style.getValue(prefix + StyleConsts::HeightOffsetKey, quadKeyWidth),
+            style.getValue(prefix + StyleConsts::HeightOffsetKey(), quadKeyWidth),
             1      // no new vertices on boundaries
             );
 
-        auto textureIndex = static_cast<std::uint16_t>(style.getValue(prefix + StyleConsts::TextureIndexKey));
+        auto textureIndex = static_cast<std::uint16_t>(style.getValue(prefix + StyleConsts::TextureIndexKey()));
         auto textureRegion = context.styleProvider
-            .getTexture(textureIndex, style.getString(prefix + StyleConsts::TextureTypeKey))
+            .getTexture(textureIndex, style.getString(prefix + StyleConsts::TextureTypeKey()))
             .random(0);   // TODO use seed for randomization
 
-        double scale = style.getValue(prefix + StyleConsts::TextureScaleKey);
+        double scale = style.getValue(prefix + StyleConsts::TextureScaleKey());
 
         MeshBuilder::AppearanceOptions appearanceOptions(
-            context.styleProvider.getGradient(style.getString(prefix + StyleConsts::GradientKey)),
-            style.getValue(prefix + StyleConsts::ColorNoiseFreqKey, quadKeyWidth),
+            context.styleProvider.getGradient(style.getString(prefix + StyleConsts::GradientKey())),
+            style.getValue(prefix + StyleConsts::ColorNoiseFreqKey(), quadKeyWidth),
             textureIndex,
             textureRegion,
             scale > 0 ? scale : 1

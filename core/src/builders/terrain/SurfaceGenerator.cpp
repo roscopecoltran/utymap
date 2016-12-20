@@ -41,7 +41,7 @@ void SurfaceGenerator::generateFrom(Layers& layers)
 void SurfaceGenerator::buildForeground(Layers& layers)
 {
     // Process layers according their priority
-    std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey));
+    std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey()));
     while (ss.good()) {
         std::string name;
         getline(ss, name, ',');
@@ -95,7 +95,7 @@ void SurfaceGenerator::buildRegion(const Region& region)
 
 void SurfaceGenerator::addGeometry(int level, Polygon& polygon, const RegionContext& regionContext)
 {
-    std::string meshName = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshNameKey);
+    std::string meshName = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshNameKey());
     if (!meshName.empty()) {
         Mesh polygonMesh(meshName);
         TerraExtras::Context extrasContext(polygonMesh, regionContext.style);
@@ -120,7 +120,7 @@ void SurfaceGenerator::addExtrasIfNecessary(Mesh& mesh,
                                             TerraExtras::Context& extrasContext,
                                             const RegionContext& regionContext) const
 {
-    auto meshExtras = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshExtrasKey);
+    auto meshExtras = regionContext.style.getString(regionContext.prefix + StyleConsts::MeshExtrasKey());
     if (meshExtras.empty())
         return;
 

@@ -74,7 +74,7 @@ public:
     explicit TerraBuilderImpl(const BuilderContext& context) :
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)),
-        generators_(), dimenstionKey_(context.stringTable.getId(StyleConsts::DimenstionKey))
+        generators_(), dimenstionKey_(context.stringTable.getId(StyleConsts::DimenstionKey()))
     {
         tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.minPoint.latitude));
         tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.minPoint.latitude));
@@ -112,7 +112,7 @@ public:
        
         region->geometry = solution;
         std::string type = region->isLayer()
-            ? style.getString(StyleConsts::TerrainLayerKey)
+            ? style.getString(StyleConsts::TerrainLayerKey())
             : "";
 
         addRegion(type, way, style, region);
@@ -123,7 +123,7 @@ public:
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
         auto region = createRegion(style, area.coordinates);
         std::string type = region->isLayer()
-            ? style.getString(StyleConsts::TerrainLayerKey)
+            ? style.getString(StyleConsts::TerrainLayerKey())
             : "";
 
         addRegion(type, area, style, region);
@@ -145,11 +145,11 @@ public:
 
         if (!region->geometry.empty()) {
             Style style = context_.styleProvider.forElement(rel, context_.quadKey.levelOfDetail);
-            if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
+            if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey())))
                 region->context = utymap::utils::make_unique<RegionContext>(RegionContext::create(context_, style, ""));
 
             std::string type = region->isLayer()
-                ? style.getString(StyleConsts::TerrainLayerKey)
+                ? style.getString(StyleConsts::TerrainLayerKey())
                 : "";
 
             addRegion(type, rel, style, region);
@@ -179,9 +179,9 @@ private:
     {
         // NOTE current mapcss does not support double value evaluation with dimension
         // so, special trick with mapcss key is used.
-        double value = style.getValue(StyleConsts::WidthKey, context_.boundingBox.height(), context_.boundingBox.center());
+        double value = style.getValue(StyleConsts::WidthKey(), context_.boundingBox.height(), context_.boundingBox.center());
         return style.has(dimenstionKey_)
-            ? value * style.getValue(StyleConsts::DimenstionKey, context_.boundingBox.height(), context_.boundingBox.center())
+            ? value * style.getValue(StyleConsts::DimenstionKey(), context_.boundingBox.height(), context_.boundingBox.center())
             : value;
     }
 
@@ -204,10 +204,10 @@ private:
 
         region->geometry.push_back(path);
 
-        if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey)))
+        if (!style.has(context_.stringTable.getId(StyleConsts::TerrainLayerKey())))
             region->context = std::make_shared<RegionContext>(RegionContext::create(context_, style, ""));
 
-        region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey));
+        region->level = static_cast<int>(style.getValue(StyleConsts::LevelKey()));
         return region;
     }
 
