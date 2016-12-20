@@ -42,7 +42,7 @@ namespace Assets.Scripts
         {
             _appManager = ApplicationManager.Instance;
             _appManager.InitializeFramework(ConfigBuilder.GetDefault()
-                    .SetElevationType(ElevationDataType.Grid),
+                    .SetElevationType(ElevationDataType.Flat),
                 (compositionRoot) =>
                 {
                     compositionRoot.RegisterAction((c, _) => 
