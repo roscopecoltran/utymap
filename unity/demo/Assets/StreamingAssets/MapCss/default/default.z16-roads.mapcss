@@ -22,9 +22,23 @@ canvas|z16 {
 
 way|z16[highway] {
     clip:true;
-    builders: terrain;
+    builders: terrain,lamp;
     terrain-layer: pedestrian;
     width: 1m;
+
+    lamp-step: 30m;
+    lamp-light-color: gradient(yellow);
+    lamp-light-radius: 0.4m;
+    lamp-light-texture-index: 0;
+    lamp-light-texture-type: background;
+    lamp-light-texture-scale: 50;
+
+    lamp-pillar-color: gradient(black);
+    lamp-pillar-radius: 0.1m;
+    lamp-pillar-height: 8m;
+    lamp-pillar-texture-index: 0;
+    lamp-pillar-texture-type: background;
+    lamp-pillar-texture-scale: 200;
 }
 
 way|z16[highway=path][foot=designated] {
@@ -70,26 +84,19 @@ way|z16[highway=tertiary_link] {
     width: 4m;
 }
 
-way|z16[highway=secondary],
-way|z16[highway=tertiary],
-way|z16[highway=residential] {
-    builders: terrain,lamp;
-    lamp-step: 30m;
-    lamp-light-color: gradient(yellow);
-    lamp-light-radius: 0.4m;
-    lamp-light-texture-index: 0;
-    lamp-light-texture-type: background;
-    lamp-light-texture-scale: 50;
-
-    lamp-pillar-color: gradient(black);
-    lamp-pillar-radius: 0.1m;
-    lamp-pillar-height: 8m;
-    lamp-pillar-texture-index: 0;
-    lamp-pillar-texture-type: background;
-    lamp-pillar-texture-scale: 200;
-}
-
 way|z16[highway][lanes] {
     width: eval("tag('lanes') * 2");
     dimension: 1m;
+}
+
+way|z16[highway][lanes>1] {
+    builders: terrain,lamp,lane;
+
+    lane-height:0.01m;
+    lane-width: 0.1m;
+    lane-length: 2m;
+    lane-color: gradient(white);
+    lane-texture-index: 0;
+    lane-texture-type: background;
+    lane-texture-scale: 200;
 }

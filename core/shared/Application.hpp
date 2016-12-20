@@ -9,6 +9,7 @@
 #include "builders/buildings/BuildingBuilder.hpp"
 #include "builders/misc/BarrierBuilder.hpp"
 #include "builders/misc/LampBuilder.hpp"
+#include "builders/misc/LaneBuilder.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "heightmap/FlatElevationProvider.hpp"
@@ -232,6 +233,10 @@ private:
 
         quadKeyBuilder_.registerElementBuilder("lamp", [&](const utymap::builders::BuilderContext& context) {
             return utymap::utils::make_unique<utymap::builders::LampBuilder>(context);
+        });
+
+        quadKeyBuilder_.registerElementBuilder("lane", [&](const utymap::builders::BuilderContext& context) {
+            return utymap::utils::make_unique<utymap::builders::LaneBuilder>(context);
         });
     }
 

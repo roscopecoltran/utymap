@@ -61,6 +61,7 @@ public:
 
         auto size = static_cast<std::size_t>(std::distance(begin_, end_) - 1);
         auto fullLength = length_ + offset_;
+        auto ratio = length_ / fullLength;
         for (std::size_t i = 0; i < size; ++i) {
             const auto& p0 = *(begin_ + i);
             const auto& p1 = *(begin_ + i + 1);
@@ -73,7 +74,8 @@ public:
                 double offset = static_cast<double>(j) / count;
                 auto end = count == 1 ? p1 : utymap::utils::GeoUtils::newPoint(p0, p1, offset);
                 buildSegment(utymap::math::Vector2(start.longitude, start.latitude),
-                             utymap::math::Vector2(end.longitude, end.latitude));
+                    utymap::math::Vector2(start.longitude + (end.longitude - start.longitude) * ratio,
+                                          start.latitude + (end.latitude - start.latitude) * ratio));
                 start = end;
             }
         }

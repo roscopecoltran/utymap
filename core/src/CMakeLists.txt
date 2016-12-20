@@ -40,6 +40,7 @@ set(HEADER_FILES
         builders/generators/WallGenerator.hpp
         builders/misc/BarrierBuilder.hpp
         builders/misc/LampBuilder.hpp
+        builders/misc/LaneBuilder.hpp
         builders/poi/TreeBuilder.hpp
         builders/terrain/ExteriorGenerator.hpp
         builders/terrain/LineGridSplitter.hpp
@@ -114,6 +115,7 @@ add_library(${LIBRARY_NAME}
         builders/MeshBuilder.cpp
         builders/misc/BarrierBuilder.cpp
         builders/misc/LampBuilder.cpp
+        builders/misc/LaneBuilder.cpp
         builders/poi/TreeBuilder.cpp
         builders/terrain/SurfaceGenerator.cpp
         builders/terrain/ExteriorGenerator.cpp
