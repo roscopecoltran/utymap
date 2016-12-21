@@ -115,7 +115,8 @@ public:
         int index = static_cast<int>(mesh.vertices.size() / 3);
 
         double size = geoWidth_ / appearanceOptions.textureScale;
-        double scaleX = Vector3::distance(p2, p1) / size;
+        // NOTE cannot use original vertices as y is not normalized
+        double scaleX = Vector2::distance(Vector2(p2.x, p2.z), Vector2(p1.x, p1.z)) / size;
         double scaleY = GeoUtils::getOffset(GeoCoordinate(p1.y, p1.x), geometryOptions.heightOffset) / size;
 
         const auto topP1 = Vector3(p1.x, p1.y + geometryOptions.heightOffset, p1.z);

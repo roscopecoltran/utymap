@@ -43,7 +43,7 @@ protected:
     /// Adds triangle to mesh.
     void addTriangle(const utymap::math::Vector3& v0,
                      const utymap::math::Vector3& v1,
-                     const utymap::math::Vector3& v2)
+                     const utymap::math::Vector3& v2) const
     {
         double noise = std::abs(vertNoiseFreq_) > 1E-5
                        ? utymap::utils::NoiseUtils::perlin2D(v0.x, v0.z, vertNoiseFreq_)
@@ -63,16 +63,44 @@ protected:
     void addPlane(const utymap::math::Vector2& v0,
                   const utymap::math::Vector2& v1,
                   double bottom,
-                  double top)
+                  double top) const
     {
         meshContext_.geometryOptions.elevation = bottom;
         meshContext_.geometryOptions.heightOffset = top - bottom;
 
-        builderContext_.meshBuilder.addPlane(meshContext_.mesh,
-                                    v0,
-                                    v1,
-                                    meshContext_.geometryOptions,
-                                    meshContext_.appearanceOptions);
+        builderContext_.meshBuilder.addPlane(meshContext_.mesh, v0, v1,
+            meshContext_.geometryOptions, meshContext_.appearanceOptions);
+    }
+
+    void addPlane(const utymap::math::Vector3& v0, 
+                  const utymap::math::Vector3& v1, 
+                  double heightOffset) const
+    {
+        meshContext_.geometryOptions.heightOffset = heightOffset;
+
+        builderContext_.meshBuilder.addPlane(meshContext_.mesh, v0, v1,
+            meshContext_.geometryOptions, meshContext_.appearanceOptions);
+    }
+
+    /// Builds parallelepiped with two sides on different height.
+    void buildParallelepiped(const utymap::math::Vector3& leftP0,
+                             const utymap::math::Vector3& leftP1,
+                             const utymap::math::Vector3& rightP0,
+                             const utymap::math::Vector3& rightP1,
+                             double height) const
+    {
+        addPlane(leftP1, leftP0, height);
+        addPlane(rightP1, leftP1, height);
+        addPlane(rightP0, rightP1, height);
+        addPlane(leftP0, rightP0, height);
+
+        addTriangle(utymap::math::Vector3(leftP0.x, leftP0.y + height, leftP0.z),
+            utymap::math::Vector3(leftP1.x, leftP1.y + height, leftP1.z),
+            utymap::math::Vector3(rightP0.x, rightP0.y + height, rightP0.z));
+
+        addTriangle(utymap::math::Vector3(rightP0.x, rightP0.y + height, rightP0.z),
+            utymap::math::Vector3(leftP1.x, leftP1.y + height, leftP1.z),
+            utymap::math::Vector3(rightP1.x, rightP1.y + height, rightP1.z));
     }
 
     const utymap::builders::BuilderContext& builderContext_;

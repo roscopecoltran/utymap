@@ -74,8 +74,8 @@ public:
                 double offset = static_cast<double>(j) / count;
                 auto end = count == 1 ? p1 : utymap::utils::GeoUtils::newPoint(p0, p1, offset);
                 buildSegment(utymap::math::Vector2(start.longitude, start.latitude),
-                    utymap::math::Vector2(start.longitude + (end.longitude - start.longitude) * ratio,
-                                          start.latitude + (end.latitude - start.latitude) * ratio));
+                             utymap::math::Vector2(start.longitude + (end.longitude - start.longitude) * ratio,
+                                                   start.latitude + (end.latitude - start.latitude) * ratio));
                 start = end;
             }
         }
@@ -84,7 +84,7 @@ public:
 private:
 
     /// Builds segment separately. NOTE better to connect them.
-    void buildSegment(const utymap::math::Vector2& p0, const utymap::math::Vector2& p1)
+    void buildSegment(const utymap::math::Vector2& p0, const utymap::math::Vector2& p1) const
     {
         // get segments.
         auto direction = (p1 - p0).normalized();
@@ -94,21 +94,16 @@ private:
         auto rightP0 = p0 - normal * width_;
         auto rightP1 = p1 - normal * width_;
 
-        auto bottom = builderContext_.eleProvider.getElevation(builderContext_.quadKey, p0.y, p0.x);
-        auto top = bottom + height_;
+        auto bottomLeftP0 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP0.y, leftP0.x);
+        auto bottomLeftP1 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP1.y, leftP1.x);
+        auto bottomRightP0 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP0.y, rightP0.x);
+        auto bottomRightP1 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP1.y, rightP1.x);
 
-        addPlane(leftP1, leftP0, bottom, top);
-        addPlane(rightP1, leftP1, bottom, top);
-        addPlane(rightP0, rightP1, bottom, top);
-        addPlane(leftP0, rightP0, bottom, top);
-
-        addTriangle(utymap::math::Vector3(leftP0.x, top, leftP0.y),
-                    utymap::math::Vector3(leftP1.x, top, leftP1.y),
-                    utymap::math::Vector3(rightP0.x, top, rightP0.y));
-        
-        addTriangle(utymap::math::Vector3(rightP0.x, top, rightP0.y),
-                    utymap::math::Vector3(leftP1.x, top, leftP1.y), 
-                    utymap::math::Vector3(rightP1.x, top, rightP1.y));
+        buildParallelepiped(utymap::math::Vector3(leftP0.x, bottomLeftP0, leftP0.y),
+                            utymap::math::Vector3(leftP1.x, bottomLeftP1, leftP1.y),
+                            utymap::math::Vector3(rightP0.x, bottomRightP0, rightP0.y),
+                            utymap::math::Vector3(rightP1.x, bottomRightP1, rightP1.y),
+                            height_);
     }
 
     Iterator begin_, end_;
