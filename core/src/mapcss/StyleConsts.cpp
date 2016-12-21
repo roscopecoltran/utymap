@@ -110,6 +110,12 @@ const std::string& StyleConsts::LevelKey()
     return value;
 }
 
+const std::string& StyleConsts::GapKey()
+{
+    static const std::string value = "gap";
+    return value;
+}
+
 const std::string& StyleConsts::DimenstionKey()
 {
     static const std::string value = "dimension";

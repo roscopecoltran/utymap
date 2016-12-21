@@ -20,7 +20,7 @@ public:
     WallGenerator(const utymap::builders::BuilderContext& builderContext,
                   utymap::builders::MeshContext& meshContext) :
         AbstractGenerator(builderContext, meshContext),
-        begin_(), end_(), width_(0), height_(0), length_(0), offset_(0)
+        begin_(), end_(), width_(0), height_(0), length_(0), gap_(0)
     {
     }
 
@@ -49,9 +49,9 @@ public:
         return *this;
     }
 
-    WallGenerator& setOffset(double offset)
+    WallGenerator& setGap(double gap)
     {
-        offset_ = offset;
+        gap_ = gap;
         return *this;
     }
 
@@ -60,7 +60,7 @@ public:
         if (begin_ == end_) return;
 
         auto size = static_cast<std::size_t>(std::distance(begin_, end_) - 1);
-        auto fullLength = length_ + offset_;
+        auto fullLength = length_ + gap_;
         auto ratio = length_ / fullLength;
         for (std::size_t i = 0; i < size; ++i) {
             const auto& p0 = *(begin_ + i);
@@ -107,7 +107,7 @@ private:
     }
 
     Iterator begin_, end_;
-    double width_, height_, length_, offset_;
+    double width_, height_, length_, gap_;
 };
 
 }}

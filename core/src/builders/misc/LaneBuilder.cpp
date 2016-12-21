@@ -42,7 +42,7 @@ void LaneBuilder::visitWay(const Way& way)
     generator
         .setWidth(width)
         .setHeight(style.getValue(LaneHeightKey))
-        .setOffset(length)
+        .setGap(length)
         .setLength(length);
 
     for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {

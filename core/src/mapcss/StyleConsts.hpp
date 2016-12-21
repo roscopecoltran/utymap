@@ -30,6 +30,7 @@ struct StyleConsts final {
     static const std::string& HeightKey();
     static const std::string& WidthKey();
     static const std::string& LengthKey();
+    static const std::string& GapKey();
     static const std::string& RadiusKey();
 
     static const std::string& LevelKey();

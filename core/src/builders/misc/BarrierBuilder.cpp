@@ -73,6 +73,7 @@ void BarrierBuilder::buildBarrier(const T& element)
         .setWidth(width)
         .setHeight(style.getValue(StyleConsts::HeightKey()))
         .setLength(style.getValue(StyleConsts::LengthKey()))
+        .setGap(style.getValue(StyleConsts::GapKey()))
         .generate();
 
     context_.meshBuilder.writeTextureMappingInfo(mesh, meshContext.appearanceOptions);
