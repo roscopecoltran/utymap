@@ -11,7 +11,6 @@
 #include "index/StringTable.hpp"
 #include "mapcss/StyleProvider.hpp"
 
-#include <string>
 #include <memory>
 
 namespace utymap { namespace index {
@@ -20,24 +19,24 @@ namespace utymap { namespace index {
 class GeoStore final
 {
 public:
-    explicit GeoStore(utymap::index::StringTable& stringTable);
+    explicit GeoStore(const utymap::index::StringTable& stringTable);
 
     ~GeoStore();
 
     /// Adds underlying element store for usage.
-    void registerStore(const std::string& storeKey, 
+    void registerStore(const std::string& storeKey,
                        std::unique_ptr<ElementStore> store);
 
     /// Adds element to selected store.
-    void add(const std::string& storeKey, 
+    void add(const std::string& storeKey,
              const utymap::entities::Element& element,
-             const utymap::LodRange& range, 
+             const utymap::LodRange& range,
              const utymap::mapcss::StyleProvider& styleProvider);
 
     /// Adds all data from file to selected store in given level of detail range.
-    void add(const std::string& storeKey, 
+    void add(const std::string& storeKey,
              const std::string& path,
-             const utymap::LodRange& range, 
+             const utymap::LodRange& range,
              const utymap::mapcss::StyleProvider& styleProvider);
 
     /// Adds all data from file to selected store in given quad key.
@@ -65,7 +64,7 @@ public:
                 utymap::entities::ElementVisitor& visitor);
 
     /// Checks whether there is data for given quadkey.
-    bool hasData(const QuadKey& quadKey);
+    bool hasData(const QuadKey& quadKey) const;
 
 private:
     class GeoStoreImpl;

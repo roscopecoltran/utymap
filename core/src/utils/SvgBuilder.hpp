@@ -174,7 +174,7 @@ private:
         int size = static_cast<int>(fmt.size()) * 2 + 50;
         std::string str;
         va_list ap;
-        while (1) {
+        while (true) {
             str.resize(size);
             va_start(ap, fmt);
             int n = vsnprintf(const_cast<char*>(str.data()), size, fmt.c_str(), ap);
@@ -186,7 +186,6 @@ private:
             if (n > -1) size = n + 1;
             else        size *= 2;
         }
-        return str;
     }
 
     static std::string colorToHex(const utymap::mapcss::Color& color)

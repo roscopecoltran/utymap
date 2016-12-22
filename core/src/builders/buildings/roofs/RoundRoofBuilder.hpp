@@ -50,7 +50,6 @@ private:
             return false;
 
         for (const auto range : polygon.outers) {
-            const auto size = range.second - range.first;
             // detect side with maximum length
             double maxSideLength = 0;
             auto maxSideIndex = range.first;

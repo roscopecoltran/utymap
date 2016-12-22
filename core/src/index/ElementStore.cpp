@@ -1,4 +1,3 @@
-#include <mapcss/StyleConsts.hpp>
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
@@ -8,6 +7,8 @@
 #include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementGeometryClipper.hpp"
+#include "index/ElementStore.hpp"
+#include <mapcss/StyleConsts.hpp>
 
 using namespace utymap;
 using namespace utymap::entities;

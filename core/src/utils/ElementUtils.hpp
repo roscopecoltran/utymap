@@ -8,12 +8,11 @@
 #include "utils/CoreUtils.hpp"
 
 #include <algorithm>
-#include <climits>
 
 namespace utymap { namespace utils {
 
 /// Sets tags to element.
-inline void setTags(utymap::index::StringTable& stringTable,
+inline void setTags(const utymap::index::StringTable& stringTable,
                     utymap::entities::Element& element,
                     const utymap::formats::Tags& tags)
 {
@@ -27,7 +26,7 @@ inline void setTags(utymap::index::StringTable& stringTable,
 }
 
 /// Convert format specific tags to entity ones.
-inline std::vector<utymap::entities::Tag> convertTags(utymap::index::StringTable& stringTable, 
+inline std::vector<utymap::entities::Tag> convertTags(const utymap::index::StringTable& stringTable, 
                                                       const utymap::formats::Tags& tags)
 {
     std::vector<utymap::entities::Tag> convertedTags(tags.size());

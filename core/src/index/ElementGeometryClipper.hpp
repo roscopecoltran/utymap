@@ -5,12 +5,7 @@
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
-#include "entities/Area.hpp"
-#include "entities/Relation.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "index/ElementStore.hpp"
 
 #include <functional>
 
@@ -31,13 +26,13 @@ public:
 
 private:
 
-    void visitNode(const utymap::entities::Node& node);
+    void visitNode(const utymap::entities::Node& node) override;
 
-    void visitWay(const utymap::entities::Way& way);
+    void visitWay(const utymap::entities::Way& way) override;
 
-    void visitArea(const utymap::entities::Area& area);
+    void visitArea(const utymap::entities::Area& area) override;
 
-    void visitRelation(const utymap::entities::Relation& relation);
+    void visitRelation(const utymap::entities::Relation& relation) override;
 
     Callback callback_;
     QuadKey quadKey_;

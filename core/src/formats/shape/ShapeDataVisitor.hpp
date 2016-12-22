@@ -25,7 +25,7 @@ struct ShapeDataVisitor final
     int areas;
     int relations;
 
-    ShapeDataVisitor(utymap::index::StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
+    ShapeDataVisitor(const utymap::index::StringTable& stringTable, std::function<bool(utymap::entities::Element&)> functor) :
         nodes(0),
         ways(0),
         areas(0),
@@ -97,7 +97,7 @@ struct ShapeDataVisitor final
     void complete() { }
 
 private:
-    utymap::index::StringTable& stringTable_;
+    const utymap::index::StringTable& stringTable_;
     std::function<bool(utymap::entities::Element&)> functor_;
 };
 

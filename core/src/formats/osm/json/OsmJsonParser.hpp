@@ -47,7 +47,7 @@ class OsmJsonParser
 
 public:
 
-    OsmJsonParser(utymap::index::StringTable& stringTable) :
+    OsmJsonParser(const utymap::index::StringTable& stringTable) :
         stringTable_(stringTable),
         idKey_(stringTable.getId(IdAttributeName)),
         featureKey_(stringTable.getId(FeatureAttributeName))

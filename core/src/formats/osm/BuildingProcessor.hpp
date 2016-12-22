@@ -52,7 +52,7 @@ public:
 
 private:
 
-    void addToRelation(std::shared_ptr<utymap::entities::Element> element, const std::string& role)
+    void addToRelation(std::shared_ptr<utymap::entities::Element> element, const std::string& role) const
     {
         // NOTE Outline is ignored as it SHOULD BE used only for 2D renders.
         if (role != "outline")

@@ -58,7 +58,7 @@ class GeoStore::GeoStoreImpl final
 
 public:
 
-    explicit GeoStoreImpl(StringTable& stringTable) :
+    explicit GeoStoreImpl(const StringTable& stringTable) :
         stringTable_(stringTable)
     {
     }
@@ -102,7 +102,7 @@ public:
         elementStore->commit();
     }
 
-    void add(const std::string& path, const StyleProvider& styleProvider, const std::function<bool(Element&)>& functor)
+    void add(const std::string& path, const StyleProvider& styleProvider, const std::function<bool(Element&)>& functor) const
     {
         switch (getFormatTypeFromPath(path)) {
             case FormatType::Shape: {
@@ -151,7 +151,7 @@ public:
         }
     }
 
-    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor)
+    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor) const
     {
         throw std::domain_error("Not implemented");
     }
@@ -166,7 +166,7 @@ public:
     }
 
 private:
-    StringTable& stringTable_;
+    const StringTable& stringTable_;
     std::map<std::string, std::unique_ptr<ElementStore>> storeMap_;
 
     static FormatType getFormatTypeFromPath(const std::string& path)
@@ -182,7 +182,7 @@ private:
     }
 };
 
-GeoStore::GeoStore(StringTable& stringTable) : pimpl_(utymap::utils::make_unique<GeoStoreImpl>(stringTable))
+GeoStore::GeoStore(const StringTable& stringTable) : pimpl_(utymap::utils::make_unique<GeoStoreImpl>(stringTable))
 {
 }
 
@@ -212,12 +212,12 @@ void utymap::index::GeoStore::add(const std::string& storeKey, const std::string
     pimpl_->add(storeKey, path, quadKey, styleProvider);
 }
 
-void utymap::index::GeoStore::add(const std::string &storeKey, const std::string &path, const utymap::BoundingBox& bbox, const LodRange& range, const utymap::mapcss::StyleProvider& styleProvider)
+void utymap::index::GeoStore::add(const std::string &storeKey, const std::string &path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
 {
     pimpl_->add(storeKey, path, bbox, range, styleProvider);
 }
 
-void utymap::index::GeoStore::search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
+void utymap::index::GeoStore::search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor)
 {
     pimpl_->search(quadKey, styleProvider, visitor);
 }
@@ -227,7 +227,7 @@ void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double rad
     pimpl_->search(coordinate, radius, styleProvider, visitor);
 }
 
-bool utymap::index::GeoStore::hasData(const QuadKey& quadKey)
+bool utymap::index::GeoStore::hasData(const QuadKey& quadKey) const
 {
     return pimpl_->hasData(quadKey);
 }

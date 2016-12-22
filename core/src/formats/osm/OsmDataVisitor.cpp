@@ -127,7 +127,7 @@ void OsmDataVisitor::complete()
   
 }
 
-OsmDataVisitor::OsmDataVisitor(StringTable& stringTable, std::function<bool(Element&)> add) 
+OsmDataVisitor::OsmDataVisitor(const StringTable& stringTable, std::function<bool(Element&)> add) 
     : stringTable_(stringTable), add_(add), context_()
 {
 }

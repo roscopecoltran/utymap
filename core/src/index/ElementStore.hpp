@@ -2,13 +2,11 @@
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "LodRange.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
-#include "LodRange.hpp"
 #include "mapcss/StyleProvider.hpp"
-
-#include <cstdint>
 
 namespace utymap { namespace index {
 
