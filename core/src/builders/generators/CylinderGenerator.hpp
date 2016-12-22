@@ -86,6 +86,9 @@ public:
                 addPlane(first, second, bottomHeight, topHeight);
             }
         }
+
+        builderContext_.meshBuilder.writeTextureMappingInfo(meshContext_.mesh,
+            meshContext_.appearanceOptions);
     }
 
 private:

@@ -157,3 +157,9 @@ const std::string& StyleConsts::TypeKey()
     static const std::string value = "type";
     return value;
 }
+
+const std::string& StyleConsts::StepKey()
+{
+    static const std::string value = "step";
+    return value;
+}

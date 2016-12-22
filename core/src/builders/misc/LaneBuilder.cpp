@@ -50,8 +50,6 @@ void LaneBuilder::visitWay(const Way& way)
             .setGeometry(way.coordinates.begin() + i, way.coordinates.begin() + i + 2)
             .generate();
     }
-
-    context_.meshBuilder.writeTextureMappingInfo(mesh_, meshContext.appearanceOptions);
 }
 
 void LaneBuilder::visitRelation(const Relation& relation)

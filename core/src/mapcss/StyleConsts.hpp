@@ -42,6 +42,7 @@ struct StyleConsts final {
     static const std::string& DimensionKey();
     static const std::string& DirectionKey();
     static const std::string& TypeKey();
+    static const std::string& StepKey();
 };
 
 }}

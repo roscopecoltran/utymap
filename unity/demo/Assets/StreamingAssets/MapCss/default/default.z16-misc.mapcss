@@ -2,16 +2,6 @@ relation|z16[type=multipolygon] {
     multipolygon: true;
 }
 
-node|z16[barrier=block] {
-    builders: barrier;
-    color: gradient(#c0c0c0);
-    radius: 0.2m;
-    height: 1m;
-    texture-index: 0;
-    texture-type: barrier;
-    texture-scale: 200;
-}
-
 way,area,relation|z16[barrier] {
     clip:true;
     builders: barrier;
@@ -24,6 +14,20 @@ way,area,relation|z16[barrier] {
     width: 0.05m;
     length: 3m;
     gap: 0.05m;
+    type: wall;
+}
+
+node,way,area|z16[barrier=bollard],
+node,way,area|z16[barrier=block] {
+    builders: barrier;
+    color: gradient(#c0c0c0);
+    radius: 0.2m;
+    height: 1m;
+    step: 5m;
+    texture-index: 0;
+    texture-type: metal;
+    texture-scale: 200;
+    type: pillar;
 }
 
 way,area,relation|z16[barrier=hedge] {

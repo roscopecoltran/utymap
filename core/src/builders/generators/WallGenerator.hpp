@@ -79,6 +79,9 @@ public:
                 start = end;
             }
         }
+
+        builderContext_.meshBuilder.writeTextureMappingInfo(meshContext_.mesh,
+            meshContext_.appearanceOptions);
     }
 
 private:
