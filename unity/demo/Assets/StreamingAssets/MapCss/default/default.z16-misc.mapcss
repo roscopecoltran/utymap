@@ -17,8 +17,8 @@ way,area,relation|z16[barrier] {
     type: wall;
 }
 
-node,way,area|z16[barrier=bollard],
-node,way,area|z16[barrier=block] {
+node,way,area,relation|z16[barrier=bollard],
+node,way,area,relation|z16[barrier=block] {
     builders: barrier;
     color: gradient(#c0c0c0);
     radius: 0.2m;

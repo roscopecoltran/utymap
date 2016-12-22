@@ -27,17 +27,28 @@ public:
     void complete() override { }
 
 private:
+    typedef std::vector<GeoCoordinate>::const_iterator Iterator;
+
     /// Builds barrier from element.
     template <typename T>
-    void build(const T& element);
+    void build(const T& element, Iterator begin, Iterator end);
 
     /// Builds barrier as wall.
     template <typename T>
-    void buildWall(const T& element, MeshContext& meshContext);
+    void buildWall(const T& element, Iterator begin, Iterator end, MeshContext& meshContext);
 
     /// Builds barrier as pillars.
     template <typename T>
-    void buildPillar(const T& element, MeshContext& meshContext);
+    void buildPillar(const T& element, Iterator begin, Iterator end, MeshContext& meshContext);
+
+    /// Set style if necessary.
+    bool setStyle(const utymap::entities::Element& element);
+
+    /// Reset style if necessary.
+    void resetStyle(bool isSet);
+
+    /// Holds style of the element.
+    std::unique_ptr<utymap::mapcss::Style> style_;
 };
 
 }}
