@@ -9,6 +9,9 @@ namespace utymap { namespace mapcss
 /// Specifies mapcss consts used by built-in builders.
 struct StyleConsts final {
 
+    static const std::string& ClipKey();
+    static const std::string& SkipKey();
+
     static const std::string& EleNoiseFreqKey();
     static const std::string& ColorNoiseFreqKey();
 
@@ -32,9 +35,13 @@ struct StyleConsts final {
     static const std::string& LengthKey();
     static const std::string& GapKey();
     static const std::string& RadiusKey();
+    static const std::string& MinHeightKey();
+    static const std::string& FrequencyKey();
 
     static const std::string& LevelKey();
-    static const std::string& DimenstionKey();
+    static const std::string& DimensionKey();
+    static const std::string& DirectionKey();
+    static const std::string& TypeKey();
 };
 
 }}

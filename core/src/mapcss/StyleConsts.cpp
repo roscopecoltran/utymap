@@ -2,6 +2,18 @@
 
 using namespace utymap::mapcss;
 
+const std::string& StyleConsts::ClipKey()
+{
+    static const std::string value = "clip";
+    return value;
+}
+
+const std::string& StyleConsts::SkipKey()
+{
+    static const std::string value = "skip";
+    return value;
+}
+
 const std::string& StyleConsts::EleNoiseFreqKey()
 {
     static const std::string value = "ele-noise-freq";
@@ -104,9 +116,21 @@ const std::string& StyleConsts::RadiusKey()
     return value;
 }
 
+const std::string& StyleConsts::MinHeightKey()
+{
+    static const std::string value = "min-height";
+    return value;
+}
+
+const std::string& StyleConsts::FrequencyKey()
+{
+    static const std::string value = "frequency";
+    return value;
+}
+
 const std::string& StyleConsts::LevelKey()
 {
-    static const std::string value = "radius";
+    static const std::string value = "level";
     return value;
 }
 
@@ -116,8 +140,20 @@ const std::string& StyleConsts::GapKey()
     return value;
 }
 
-const std::string& StyleConsts::DimenstionKey()
+const std::string& StyleConsts::DimensionKey()
 {
     static const std::string value = "dimension";
+    return value;
+}
+
+const std::string& StyleConsts::DirectionKey()
+{
+    static const std::string value = "direction";
+    return value;
+}
+
+const std::string& StyleConsts::TypeKey()
+{
+    static const std::string value = "type";
     return value;
 }

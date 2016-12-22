@@ -1,3 +1,4 @@
+#include <mapcss/StyleConsts.hpp>
 #include "builders/poi/TreeBuilder.hpp"
 #include "utils/MeshUtils.hpp"
 
@@ -13,18 +14,20 @@ namespace {
 
     const std::string TreeStepKey = "tree-step";
 
-    const std::string FoliageColorKey = "foliage-color";
-    const std::string FoliageRadius = "foliage-radius";
-    const std::string FoliageTextureIndexKey = "foliage-texture-index";
-    const std::string FoliageTextureTypeKey = "foliage-texture-type";
-    const std::string FoliageTextureScaleKey = "foliage-texture-scale";
+    const std::string FoliagePrefix = "foliage-";
+    const std::string FoliageGradientKey = FoliagePrefix + StyleConsts::GradientKey();
+    const std::string FoliageRadius = FoliagePrefix + StyleConsts::RadiusKey();
+    const std::string FoliageTextureIndexKey = FoliagePrefix + StyleConsts::TextureIndexKey();
+    const std::string FoliageTextureTypeKey = FoliagePrefix + StyleConsts::TextureTypeKey();
+    const std::string FoliageTextureScaleKey = FoliagePrefix + StyleConsts::TextureScaleKey();
 
-    const std::string TrunkColorKey = "trunk-color";
-    const std::string TrunkRadius = "trunk-radius";
-    const std::string TrunkHeight = "trunk-height";
-    const std::string TrunkTextureIndexKey = "trunk-texture-index";
-    const std::string TrunkTextureTypeKey = "trunk-texture-type";
-    const std::string TrunkTextureScaleKey = "trunk-texture-scale";
+    const std::string TrunkPrefix = "trunk-";
+    const std::string TrunkGradientKey = TrunkPrefix + StyleConsts::GradientKey();
+    const std::string TrunkRadius = TrunkPrefix + StyleConsts::RadiusKey();
+    const std::string TrunkHeight = TrunkPrefix + StyleConsts::HeightKey();;
+    const std::string TrunkTextureIndexKey = TrunkPrefix + StyleConsts::TextureIndexKey();;
+    const std::string TrunkTextureTypeKey = TrunkPrefix + StyleConsts::TextureTypeKey();
+    const std::string TrunkTextureScaleKey = TrunkPrefix + StyleConsts::TextureScaleKey();
 
     /// Gets a reference to texture region using parameters provided.
     const TextureRegion& getTextureRegion(const StyleProvider& styleProvider, 
@@ -86,8 +89,8 @@ std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext
     double foliageRadiusInDegrees = style.getValue(FoliageRadius, builderContext.boundingBox);
     double foliageRadiusInMeters = style.getValue(FoliageRadius, builderContext.boundingBox.height());
 
-    const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, TrunkColorKey);
-    const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, FoliageColorKey);
+    const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, TrunkGradientKey);
+    const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, FoliageGradientKey);
 
     const auto& trunkTexture = getTextureRegion(builderContext.styleProvider, style, TrunkTextureIndexKey, TrunkTextureTypeKey);
     const auto& foliageTexture = getTextureRegion(builderContext.styleProvider, style, FoliageTextureIndexKey, FoliageTextureTypeKey);

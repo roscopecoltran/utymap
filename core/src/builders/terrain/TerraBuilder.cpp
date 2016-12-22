@@ -74,7 +74,7 @@ public:
     explicit TerraBuilderImpl(const BuilderContext& context) :
         ElementBuilder(context), 
         style_(context.styleProvider.forCanvas(context.quadKey.levelOfDetail)),
-        generators_(), dimenstionKey_(context.stringTable.getId(StyleConsts::DimenstionKey()))
+        generators_(), dimenstionKey_(context.stringTable.getId(StyleConsts::DimensionKey()))
     {
         tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.minPoint.latitude));
         tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.minPoint.latitude));
@@ -181,7 +181,7 @@ private:
         // so, special trick with mapcss key is used.
         double value = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
         return style.has(dimenstionKey_)
-            ? value * style.getValue(StyleConsts::DimenstionKey(), context_.boundingBox)
+            ? value * style.getValue(StyleConsts::DimensionKey(), context_.boundingBox)
             : value;
     }
 

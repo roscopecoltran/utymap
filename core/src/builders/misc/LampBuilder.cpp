@@ -1,3 +1,4 @@
+#include <mapcss/StyleConsts.hpp>
 #include "builders/generators/TreeGenerator.hpp"
 #include "builders/misc/LampBuilder.hpp"
 #include "entities/Node.hpp"
@@ -15,20 +16,21 @@ namespace {
     const std::string WayMeshNamePrefix = "lamps:";
 
     const std::string LampStep = "lamp-step";
-    const std::string WidthKey = "width";
 
-    const std::string LampLightColorKey = "lamp-light-color";
-    const std::string LampLightRadius = "lamp-light-radius";
-    const std::string LampLightTextureIndexKey = "lamp-light-texture-index";
-    const std::string LampLightTextureTypeKey = "lamp-light-texture-type";
-    const std::string LampLightTextureScaleKey = "lamp-light-texture-scale";
+    const std::string LampLightPrefix = "lamp-light-";
+    const std::string LampLightGradientKey = LampLightPrefix + StyleConsts::GradientKey();
+    const std::string LampLightRadius = LampLightPrefix + StyleConsts::RadiusKey();
+    const std::string LampLightTextureIndexKey = LampLightPrefix + StyleConsts::TextureIndexKey();
+    const std::string LampLightTextureTypeKey = LampLightPrefix + StyleConsts::TextureTypeKey();
+    const std::string LampLightTextureScaleKey = LampLightPrefix + StyleConsts::TextureScaleKey();
 
-    const std::string LampPillarColorKey = "lamp-pillar-color";
-    const std::string LampPillarRadius = "lamp-pillar-radius";
-    const std::string LampPillarHeight = "lamp-pillar-height";
-    const std::string LampPillarTextureIndexKey = "lamp-pillar-texture-index";
-    const std::string LampPillarTextureTypeKey = "lamp-pillar-texture-type";
-    const std::string LampPillarTextureScaleKey = "lamp-pillar-texture-scale";
+    const std::string LampPillarPrefix = "lamp-pillar-";
+    const std::string LampPillarGradientKey = LampPillarPrefix + StyleConsts::GradientKey();
+    const std::string LampPillarRadius = LampPillarPrefix + StyleConsts::RadiusKey();
+    const std::string LampPillarHeight = LampPillarPrefix + StyleConsts::HeightKey();
+    const std::string LampPillarTextureIndexKey = LampPillarPrefix + StyleConsts::TextureIndexKey();
+    const std::string LampPillarTextureTypeKey = LampPillarPrefix + StyleConsts::TextureTypeKey();
+    const std::string LampPillarTextureScaleKey = LampPillarPrefix + StyleConsts::TextureScaleKey();
 
     /// Gets a reference to texture region using parameters provided.
     const TextureRegion& getTextureRegion(const StyleProvider& styleProvider,
@@ -57,7 +59,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
 {
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
-    double width = style.getValue(WidthKey, context_.boundingBox);
+    double width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
     double stepInMeters = style.getValue(LampStep);
 
     Mesh lampMesh("");
@@ -110,14 +112,14 @@ void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& m
     double foliageRadiusInDegrees = style.getValue(LampLightRadius, context_.boundingBox);
     double foliageRadiusInMeters = style.getValue(LampLightRadius, context_.boundingBox.height());
 
-    const auto& trunkGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampPillarColorKey);
-    const auto& foliageGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampLightColorKey);
+    const auto& trunkGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampPillarGradientKey);
+    const auto& foliageGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampLightGradientKey);
 
     const auto& trunkTexture = getTextureRegion(context_.styleProvider, style, LampPillarTextureIndexKey, LampPillarTextureTypeKey);
-    const auto& foliageTeture = getTextureRegion(context_.styleProvider, style, LampLightTextureIndexKey, LampLightTextureTypeKey);
+    const auto& foliageTexture = getTextureRegion(context_.styleProvider, style, LampLightTextureIndexKey, LampLightTextureTypeKey);
 
     auto generator = utymap::utils::make_unique<TreeGenerator>(context_, mesh, style,
-        trunkGradient, foliageGradient, trunkTexture, foliageTeture);
+        trunkGradient, foliageGradient, trunkTexture, foliageTexture);
 
     generator->setFoliageColorNoiseFreq(0);
     generator->setFoliageSize(Vector3(1.5 * foliageRadiusInDegrees, foliageRadiusInMeters, foliageRadiusInDegrees));

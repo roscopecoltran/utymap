@@ -14,11 +14,7 @@
 #include "builders/buildings/roofs/MansardRoofBuilder.hpp"
 #include "builders/buildings/roofs/SkillionRoofBuilder.hpp"
 #include "builders/buildings/roofs/RoundRoofBuilder.hpp"
-#include "math/Vector2.hpp"
-#include "math/Mesh.hpp"
-#include "utils/CoreUtils.hpp"
-#include "utils/ElementUtils.hpp"
-#include "utils/GradientUtils.hpp"
+#include "mapcss/StyleConsts.hpp"
 
 using namespace utymap;
 using namespace utymap::builders;
@@ -30,24 +26,23 @@ using namespace utymap::index;
 using namespace utymap::utils;
 
 namespace {
-    const std::string RoofTypeKey = "roof-type";
-    const std::string RoofHeightKey = "roof-height";
-    const std::string RoofColorKey = "roof-color";
-    const std::string RoofTextureIndexKey = "roof-texture-index";
-    const std::string RoofTextureTypeKey = "roof-texture-type";
-    const std::string RoofTextureScaleKey = "roof-texture-scale";
-    const std::string RoofDirectionKey = "roof-direction";
-
-    const std::string FacadeTypeKey = "facade-type";
-    const std::string FacadeColorKey = "facade-color";
-    const std::string FacadeTextureIndexKey = "facade-texture-index";
-    const std::string FacadeTextureTypeKey = "facade-texture-type";
-    const std::string FacadeTextureScaleKey = "facade-texture-scale";
-
-    const std::string HeightKey = "height";
-    const std::string MinHeightKey = "min-height";
-
     const std::string MeshNamePrefix = "building:";
+
+    const std::string RoofPrefix = "roof-";
+    const std::string RoofTypeKey = RoofPrefix + StyleConsts::TypeKey();
+    const std::string RoofHeightKey = RoofPrefix + StyleConsts::HeightKey();
+    const std::string RoofGradientKey = RoofPrefix + StyleConsts::GradientKey();
+    const std::string RoofTextureIndexKey = RoofPrefix + StyleConsts::TextureIndexKey();
+    const std::string RoofTextureTypeKey = RoofPrefix + StyleConsts::TextureTypeKey();
+    const std::string RoofTextureScaleKey = RoofPrefix + StyleConsts::TextureScaleKey();
+    const std::string RoofDirectionKey = RoofPrefix + StyleConsts::DirectionKey();
+
+    const std::string FacadePrefix = "facade-";
+    const std::string FacadeTypeKey = FacadePrefix + StyleConsts::TypeKey();
+    const std::string FacadeGradientKey = FacadePrefix + StyleConsts::GradientKey();
+    const std::string FacadeTextureIndexKey = FacadePrefix + StyleConsts::TextureIndexKey();
+    const std::string FacadeTextureTypeKey = FacadePrefix + StyleConsts::TextureTypeKey();
+    const std::string FacadeTextureScaleKey = FacadePrefix + StyleConsts::TextureScaleKey();
 
     /// Defines roof builder which does nothing.
     class EmptyRoofBuilder : public RoofBuilder {
@@ -279,12 +274,12 @@ private:
     {
         auto geoCoordinate = GeoCoordinate(polygon_->points[1], polygon_->points[0]);
 
-        double height = style.getValue(HeightKey);
+        double height = style.getValue(StyleConsts::HeightKey());
         // NOTE do not allow height to be zero. This might happen due to the issues in input osm data.
         if (height == 0)
             height = 10;
 
-        double minHeight = style.getValue(MinHeightKey);
+        double minHeight = style.getValue(StyleConsts::MinHeightKey());
 
         double elevation = context_.eleProvider.getElevation(context_.quadKey, geoCoordinate) + minHeight;
 
@@ -304,7 +299,7 @@ private:
     void attachRoof(Mesh& mesh, const Style& style, double elevation, double height) const
     {
         MeshContext roofMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
+            RoofGradientKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
 
         auto roofType = roofMeshContext.style.getString(RoofTypeKey);
         double roofHeight = roofMeshContext.style.getValue(RoofHeightKey);
@@ -322,8 +317,8 @@ private:
 
     void attachFloors(Mesh& mesh, const Style& style, double elevation, double height) const
     {
-        MeshContext floorMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            RoofColorKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
+        MeshContext floorMeshContext = MeshContext::create(mesh, style, context_.styleProvider,
+            RoofGradientKey, RoofTextureIndexKey, RoofTextureTypeKey, RoofTextureScaleKey, id_);
 
         FlatRoofBuilder floorBuilder(context_, floorMeshContext);
         floorBuilder.setMinHeight(elevation);
@@ -337,7 +332,7 @@ private:
     void attachFacade(Mesh& mesh, const Style& style, double elevation, double height) const
     {
         MeshContext facadeMeshContext = MeshContext::create(mesh, style, context_.styleProvider, 
-            FacadeColorKey, FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey, id_);
+            FacadeGradientKey, FacadeTextureIndexKey, FacadeTextureTypeKey, FacadeTextureScaleKey, id_);
 
         auto facadeType = facadeMeshContext.style.getString(FacadeTypeKey);
         auto facadeBuilder = FacadeBuilderFactoryMap.find(facadeType)->second(context_, facadeMeshContext);

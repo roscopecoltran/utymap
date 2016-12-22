@@ -1,10 +1,6 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
 #include "builders/QuadKeyBuilder.hpp"
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
-#include "entities/Area.hpp"
-#include "entities/Relation.hpp"
 #include "utils/CoreUtils.hpp"
 
 using namespace utymap;
@@ -15,7 +11,9 @@ using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::math;
 
-const std::string BuilderKeyName = "builders";
+namespace {
+    const std::string BuilderKeyName = "builders";
+}
 
 class QuadKeyBuilder::QuadKeyBuilderImpl
 {

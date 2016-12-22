@@ -1,3 +1,4 @@
+#include <mapcss/StyleConsts.hpp>
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
@@ -14,9 +15,6 @@ using namespace utymap::formats;
 using namespace utymap::mapcss;
 
 namespace {
-    const std::string ClipKey = "clip";
-    const std::string SkipKey = "skip";
-
     /// Creates bounding box of given element.
     class BoundingBoxVisitor : public ElementVisitor
     {
@@ -50,8 +48,8 @@ namespace {
 namespace utymap { namespace index {
 
 ElementStore::ElementStore(StringTable& stringTable) :
-    clipKeyId_(stringTable.getId(ClipKey)),
-    skipKeyId_(stringTable.getId(SkipKey))
+    clipKeyId_(stringTable.getId(StyleConsts::ClipKey())),
+    skipKeyId_(stringTable.getId(StyleConsts::SkipKey()))
 {
 }
 

@@ -1,12 +1,14 @@
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/poi/TreeBuilder.hpp"
+#include "mapcss/StyleConsts.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
+using namespace utymap::mapcss;
 using namespace utymap::math;
 
 namespace {
-    const std::string TreeFrequencyKey = "tree-frequency";
+    const std::string TreeFrequencyKey = "tree-" + StyleConsts::FrequencyKey();
     const std::string TreeChunkSize = "tree-chunk-size";
 }
 
