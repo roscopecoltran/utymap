@@ -212,7 +212,7 @@ private:
     }
 
     /// Merges regions into one taking into account level difference.
-    void mergeRegions(Layer& layer, std::shared_ptr<const RegionContext> regionContext) const
+    void mergeRegions(Layer& layer, const std::shared_ptr<const RegionContext>& regionContext) const
     {
         std::unordered_map<int, std::pair<std::shared_ptr<Region>, std::shared_ptr<Clipper>>> regionMap;
         for (const auto& current : layer) {

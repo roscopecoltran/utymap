@@ -29,7 +29,7 @@ public:
         nextId_ = static_cast<std::uint32_t>(indexFile_.tellg() / (sizeof(std::uint32_t) * 2));
         if (nextId_ > 0) {
             std::uint32_t count = nextId_;
-            offsets_.reserve(count);
+            offsets_.reserve(static_cast<std::size_t>(count));
             indexFile_.seekg(0, ios::beg);
             for (std::uint32_t i = 0; i < count; ++i) {
                 std::uint32_t hash, offset;

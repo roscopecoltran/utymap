@@ -242,7 +242,7 @@ private:
         int second = 0;
         int third = geometryOptions.flipSide ? 1 : 2;
 
-        for (std::size_t i = 0; i < io->numberoftriangles; i++) {
+        for (int i = 0; i < io->numberoftriangles; i++) {
             mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + first]);
             mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + second]);
             mesh.triangles.push_back(triStartIndex + io->trianglelist[i * io->numberofcorners + third]);

@@ -273,7 +273,7 @@ private:
     }
 
     /// Adds rule for element.
-    void addConditionRule(ConditionFilterMap* filtersPtr, const Rule rule, const Selector& selector)
+    void addConditionRule(ConditionFilterMap* filtersPtr, const Rule& rule, const Selector& selector)
     {
         ConditionFilter filter;
         addConditions(filter, selector.conditions);
@@ -288,7 +288,7 @@ private:
         filter.conditions.reserve(conditions.size());
         for (const Condition &condition : conditions) {
             ConditionType c;
-            if (condition.operation == "") c.type = OpType::Exists;
+            if (condition.operation.empty()) c.type = OpType::Exists;
             else if (condition.operation == "=") c.type = OpType::Equals;
             else if (condition.operation == "!=") c.type = OpType::NotEquals;
             else if (condition.operation == "<") c.type = OpType::Less;

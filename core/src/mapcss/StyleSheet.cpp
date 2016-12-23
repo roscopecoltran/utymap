@@ -42,7 +42,7 @@ std::ostream& utymap::mapcss::operator<<(std::ostream &stream, const Declaration
 
 std::ostream& utymap::mapcss::operator<<(std::ostream &stream, const Rule &r)
 {
-    for (auto i = 0; i < r.selectors.size(); ++i) {
+    for (std::size_t i = 0; i < r.selectors.size(); ++i) {
         stream << r.selectors[i];
         if (i != r.selectors.size() - 1) stream << ",";
     }

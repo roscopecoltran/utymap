@@ -131,7 +131,7 @@ private:
         return (current+=2) > max ? min : current;
     }
 
-    utymap::math::Vector3 restore(const utymap::math::Vector3& v, double radius, utymap::math::Vector3 center) const
+    utymap::math::Vector3 restore(const utymap::math::Vector3& v, double radius, const utymap::math::Vector3& center) const
     {
         // p' = q * p * qInversed
         return utymap::math::Vector3(center.x + v.x * radius, minHeight_ + v.y * height_, center.z + v.z * radius);

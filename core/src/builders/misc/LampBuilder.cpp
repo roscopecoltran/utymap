@@ -35,8 +35,8 @@ namespace {
     /// Gets a reference to texture region using parameters provided.
     const TextureRegion& getTextureRegion(const StyleProvider& styleProvider,
                                           const Style& style,
-                                          const std::string textureIndexKey,
-                                          const std::string textureTypeKey)
+                                          const std::string& textureIndexKey,
+                                          const std::string& textureTypeKey)
     {
         return styleProvider
             .getTexture(static_cast<std::uint16_t>(style.getValue(textureIndexKey)), style.getString(textureTypeKey))

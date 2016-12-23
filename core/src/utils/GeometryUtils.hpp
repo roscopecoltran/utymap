@@ -72,7 +72,7 @@ inline utymap::math::Vector2 getCentroid(const utymap::math::Polygon& polygon, c
         centroidY += polygon.points[i+1];
     }
 
-    auto count = (range.second - range.first) / 2.;
+    auto count = static_cast<double>(range.second - range.first) / 2.;
     centroidX /= count;
     centroidY /= count;
 
@@ -143,8 +143,8 @@ inline std::vector<utymap::math::Vector2> getOffsetLine(const utymap::math::Vect
     return vertices;
 }
 
-/// Returns true if given point is inside given simple polygon (including borders) represented by points. 
-inline bool isPointInPolygon(const utymap::math::Vector2& p, const std::vector<utymap::math::Vector2> points)
+/// Returns true if given point is inside given simple polygon (including borders) represented by points.
+inline bool isPointInPolygon(const utymap::math::Vector2& p, const std::vector<utymap::math::Vector2>& points)
 {
     std::size_t i, j, size = points.size();
     bool result = false;
