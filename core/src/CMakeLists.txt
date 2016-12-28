@@ -76,6 +76,9 @@ set(HEADER_FILES
         index/InMemoryElementStore.hpp
         index/PersistentElementStore.hpp
         index/StringTable.hpp
+        lsys/LSystem.hpp
+        lsys/Rules.hpp
+        lsys/Turtle.hpp
         mapcss/Color.hpp
         mapcss/ColorGradient.hpp
         mapcss/MapCssParser.hpp

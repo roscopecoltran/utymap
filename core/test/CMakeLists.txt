@@ -60,6 +60,7 @@ add_executable(${TEST}
         index/InMemoryElementStoreTest.cpp
         index/PersistentElementStoreTest.cpp
         index/StringTableTest.cpp
+        lsys/TurtleTest.cpp
         mapcss/MapCssParserTest.cpp
         mapcss/StyleDeclarationTest.cpp
         mapcss/StyleProviderTest.cpp
