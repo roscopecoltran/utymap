@@ -1,7 +1,7 @@
 #ifndef LSYS_RULES_HPP_DEFINED
 #define LSYS_RULES_HPP_DEFINED
 
-#include "Turtle.hpp"
+#include "lsys/Turtle.hpp"
 
 #include <memory>
 #include <string>

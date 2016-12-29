@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleLSystemWithOneGeneration_Build_PerformsExpectedC
 
     turtle.run(lsystem);
 
-    assert(turtle.path == "FfF");
+    BOOST_CHECK_EQUAL(turtle.path, "FfF");
 }
 
 BOOST_AUTO_TEST_CASE(GivenSimpleLSystemWithThreeGeneration_Build_PerformsExpectedCommands)
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(GivenSimpleLSystemWithThreeGeneration_Build_PerformsExpecte
 
     turtle.run(lsystem);
 
-    assert(turtle.path == "fffFffffff");
+    BOOST_CHECK_EQUAL(turtle.path, "fffFffffff");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
