@@ -1,10 +1,22 @@
 #ifndef LSYS_RULES_HPP_DEFINED
 #define LSYS_RULES_HPP_DEFINED
 
-#include "LSystem.hpp"
 #include "Turtle.hpp"
 
+#include <memory>
+#include <string>
+#include <typeindex>
+
 namespace utymap { namespace lsys {
+
+class Rule
+{
+public:
+    /// Applies the rule to turtle.
+    virtual void apply(Turtle& turtle) const = 0;
+
+    virtual ~Rule() {}
+};
 
 class MoveForwardRule final : public Rule
 {
@@ -22,13 +34,30 @@ public:
 class WordRule final : public Rule
 {
 public:
-    WordRule(const std::string& word) : word_(word)
+    WordRule(const std::string& word) : word(word)
     {
     }
 
-    void apply(Turtle& turtle) const override { turtle.say(word_); }
+    void apply(Turtle& turtle) const override { turtle.say(word); }
 
-const std::string word_;
+const std::string word;
+};
+
+/// Defines rule comparator which can distinguish differen rules taking care about specific word rule.
+struct RuleComparator
+{
+    bool operator()(const std::shared_ptr<Rule>& left, const std::shared_ptr<Rule>& right) const
+    {
+        auto leftType = std::type_index(typeid(*left));
+        auto rightType = std::type_index(typeid(*right));
+
+        if (leftType == wordRuleTypeIndex_ && rightType == wordRuleTypeIndex_)
+            return static_cast<const WordRule&>(*left).word < static_cast<const WordRule&>(*right).word;
+
+        return leftType < rightType;
+    }
+private:
+    const std::type_index wordRuleTypeIndex_ = std::type_index(typeid(WordRule));
 };
 
 }}

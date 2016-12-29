@@ -135,6 +135,7 @@ add_library(${LIBRARY_NAME}
         index/InMemoryElementStore.cpp
         index/PersistentElementStore.cpp
         index/StringTable.cpp
+        lsys/Turtle.cpp
         mapcss/MapCssParser.cpp
         mapcss/StyleConsts.cpp
         mapcss/StyleEvaluator.cpp

@@ -1,32 +1,21 @@
 #ifndef LSYS_LSYSTEM_HPP_DEFINED
 #define LSYS_LSYSTEM_HPP_DEFINED
 
+#include "lsys/Rules.hpp"
+
 #include <map>
 #include <memory>
-#include <typeindex>
 #include <vector>
 
 namespace utymap { namespace lsys {
 
-class Turtle;
-
-class Rule
-{
-public:
-    /// Returns word specified for this rule.
-    //virtual const std::string& word() const = 0;
-
-    /// Applies the rule to turtle.
-    virtual void apply(Turtle& turtle) const = 0;
-
-    virtual ~Rule() {}
-};
-
 /// Specifies lsystem created from lsys grammar.
 struct LSystem final
 {
+    /// Defines rule type;
+    typedef std::shared_ptr<Rule> RuleType;
     /// Defines type for list of rules.
-    typedef std::vector<std::shared_ptr<Rule>> Rules;
+    typedef std::vector<RuleType> Rules;
     /// Defines production type with its probability.
     typedef std::vector<std::pair<double, Rules>> Productions;
 
@@ -40,7 +29,7 @@ struct LSystem final
     Rules axiom;
 
     /// Specifies a map where key is word from V* alphabet and value is set of productions.
-    std::map<std::type_index, Productions> productions;
+    std::map<RuleType, Productions, RuleComparator> productions;
 };
 
 }}
