@@ -33,7 +33,7 @@ const LSystem::Rules& selector(const LSystem::Productions& productions)
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::discrete_distribution<> d(std::initializer_list<double>(probs.data(), probs.data() + probs.size()));
+    std::discrete_distribution<> d(std::initializer_list<double>(probs.data(), std::next(probs.data(), probs.size())));
 
     return productions.at(d(gen)).second;
 }
