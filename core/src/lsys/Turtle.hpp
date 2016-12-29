@@ -14,7 +14,7 @@ public:
     /// Specifies function type for selecting specific rules based on their probability.
     typedef std::function<const LSystem::Rules&(const LSystem::Productions&)> RuleSelector;
 
-    Turtle(const RuleSelector& selector) : selector_(selector)
+    explicit Turtle(const RuleSelector& selector) : selector_(selector)
     {
     }
 

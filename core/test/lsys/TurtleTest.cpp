@@ -13,7 +13,7 @@ namespace {
 class StringTurtle final : public Turtle
 {
 public:
-    StringTurtle(const Turtle::RuleSelector& selector) : Turtle(selector)
+    explicit StringTurtle(const Turtle::RuleSelector& selector) : Turtle(selector)
     {
     }
 
@@ -24,18 +24,24 @@ public:
     std::string path;
 };
 
-/// Randomization function
+/// Randomization function.
 const LSystem::Rules& selector(const LSystem::Productions& productions)
 {
-    std::vector<double> probs;
+    std::vector<double> weights;
     for (const auto& p : productions)
-        probs.push_back(p.first);
+        weights.push_back(p.first);
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::discrete_distribution<> d(std::initializer_list<double>(probs.data(), std::next(probs.data(), probs.size())));
 
-    return productions.at(d(gen)).second;
+    // NOTE replacement code in VS2013 for: std::discrete_distribution<> dist(first, last);
+    auto first = weights.cbegin();
+    auto count = std::distance(first, weights.cend());
+    std::discrete_distribution<> dist(count, -0.5, -0.5 + count, [&first](size_t i) {
+        return *std::next(first, i);
+    });
+
+    return productions.at(dist(gen)).second;
 }
 
 }
