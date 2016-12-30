@@ -18,9 +18,6 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace phx = boost::phoenix;
 
-const std::shared_ptr<MoveForwardRule> forward = std::make_shared<MoveForwardRule>();
-const std::shared_ptr<JumpForwardRule> jump = std::make_shared<JumpForwardRule>();
-
 BOOST_FUSION_ADAPT_STRUCT(
     LSystem,
     (int, generations)
@@ -29,6 +26,13 @@ BOOST_FUSION_ADAPT_STRUCT(
     (LSystem::Rules, axiom)
     //(LSystem::Productions, productions)
 )
+
+namespace {
+
+const std::shared_ptr<MoveForwardRule> forward = std::make_shared<MoveForwardRule>();
+const std::shared_ptr<JumpForwardRule> jump = std::make_shared<JumpForwardRule>();
+
+
 
 struct RuleTable : qi::symbols<char, LSystem::RuleType>
 {
@@ -110,7 +114,7 @@ void parse(Iterator begin, Iterator end, LSystem& lsystem)
     if (!phrase_parse(begin, end, grammar, ascii::space_type(), lsystem))
         throw std::domain_error(std::string("Cannot parse lsystem:") + grammar.error.str());
 }
-
+}
 
 LSystem LSystemParser::parse(const std::string& str) const
 {

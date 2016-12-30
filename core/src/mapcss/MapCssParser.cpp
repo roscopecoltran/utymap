@@ -96,6 +96,7 @@ BOOST_FUSION_ADAPT_STRUCT(
     (std::vector<Rule>, rules)
 )
 
+namespace {
 template<typename Iterator>
 void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet);
 
@@ -373,10 +374,6 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
     TextureGrammar<Iterator> texture;
 };
 
-MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)
-{
-}
-
 template<typename Iterator>
 void parse(const std::string& path, Iterator begin, Iterator end, Atlas& atlas)
 {
@@ -395,6 +392,11 @@ void parse(const std::string& directory, Iterator begin, Iterator end, StyleShee
 
     if (!phrase_parse(begin, end, grammar, skipper, stylesheet))
         throw utymap::MapCssException(grammar.error.str());
+}
+}
+
+MapCssParser::MapCssParser(const std::string& directory) : directory_(directory)
+{
 }
 
 StyleSheet MapCssParser::parse(const std::string& str) const
