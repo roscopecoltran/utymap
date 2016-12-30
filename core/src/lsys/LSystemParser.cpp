@@ -9,9 +9,6 @@
 #include <boost/spirit/include/phoenix_object.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 
-#include <istream>
-#include <vector>
-
 using namespace utymap::lsys;
 
 namespace qi = boost::spirit::qi;
@@ -24,15 +21,13 @@ BOOST_FUSION_ADAPT_STRUCT(
     (double, angle)
     (double, scale)
     (LSystem::Rules, axiom)
-    //(LSystem::Productions, productions)
+    (LSystem::Productions, productions)
 )
 
 namespace {
 
 const std::shared_ptr<MoveForwardRule> forward = std::make_shared<MoveForwardRule>();
 const std::shared_ptr<JumpForwardRule> jump = std::make_shared<JumpForwardRule>();
-
-
 
 struct RuleTable : qi::symbols<char, LSystem::RuleType>
 {
@@ -58,7 +53,21 @@ struct WordRuleFactory
 };
 
 template <typename Iterator>
-struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType()>
+struct CommentSkipper : public qi::grammar<Iterator>
+{
+    CommentSkipper() : CommentSkipper::base_type(start, "comment")
+    {
+        start =
+            ascii::space |
+            ('#' >> *(qi::char_ - '\n') >> '\n')
+        ;
+        start.name("comment");
+    }
+    qi::rule<Iterator> start;
+};
+
+template <typename Iterator>
+struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType(), CommentSkipper<Iterator>>
 {
     RuleGrammar() : RuleGrammar::base_type(start, "rule")
     {
@@ -67,17 +76,20 @@ struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType()>
         ;
 
         start = ruleTable | word;
+
+        word.name("word");
+        start.name("rule");
     }
 
     RuleTable ruleTable;
     boost::phoenix::function<WordRuleFactory> wordRuleFactory;
 
-    qi::rule<Iterator, LSystem::RuleType()> start;
-    qi::rule<Iterator, LSystem::RuleType()> word;
+    qi::rule<Iterator, LSystem::RuleType(), CommentSkipper<Iterator>> start;
+    qi::rule<Iterator, LSystem::RuleType(), CommentSkipper<Iterator>> word;
 };
 
 template <typename Iterator>
-struct LSystemGrammar : qi::grammar <Iterator, LSystem(), ascii::space_type>
+struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterator>>
 {
     LSystemGrammar() : LSystemGrammar::base_type(start, "lsystem")
     {
@@ -103,15 +115,16 @@ struct LSystemGrammar : qi::grammar <Iterator, LSystem(), ascii::space_type>
     }
     std::stringstream error;
     RuleGrammar<Iterator> rule;
-    qi::rule<Iterator, LSystem(), ascii::space_type> start;
+    qi::rule<Iterator, LSystem(), CommentSkipper<Iterator>> start;
 };
 
 template<typename Iterator>
 void parse(Iterator begin, Iterator end, LSystem& lsystem)
 {
     LSystemGrammar<Iterator> grammar;
+    CommentSkipper<Iterator> skipper;
 
-    if (!phrase_parse(begin, end, grammar, ascii::space_type(), lsystem))
+    if (!phrase_parse(begin, end, grammar, skipper, lsystem))
         throw std::domain_error(std::string("Cannot parse lsystem:") + grammar.error.str());
 }
 }
@@ -125,6 +138,6 @@ LSystem LSystemParser::parse(const std::string& str) const
 
 LSystem LSystemParser::parse(std::istream& istream) const
 {
-    // TODO
-    return LSystem();
+    std::string content((std::istreambuf_iterator<char>(istream)), std::istreambuf_iterator<char>());
+    return parse(content);
 }

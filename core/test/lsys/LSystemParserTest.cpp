@@ -33,4 +33,12 @@ BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasExpectedAmountOfAxiomRu
     BOOST_CHECK_EQUAL(LSystemParser().parse(simpleGrammar).axiom.size(), 7);
 }
 
+BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
+{
+    BOOST_CHECK_EQUAL(LSystemParser().parse("generations: 3"
+                                            "#angle:35\n"
+                                            "angle: 45"
+                                            "#angle:55").angle, 45);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
