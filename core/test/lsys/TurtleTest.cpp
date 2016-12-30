@@ -8,6 +8,9 @@ using namespace utymap::lsys;
 
 namespace {
 
+    std::shared_ptr<MoveForwardRule> move() { return std::make_shared<MoveForwardRule>(); }
+    std::shared_ptr<JumpForwardRule> jump() { return std::make_shared<JumpForwardRule>(); }
+
 /// Defines turtle which writes its actions using common lsystem grammar notation.
 class StringTurtle final : public Turtle
 {
@@ -29,14 +32,8 @@ BOOST_AUTO_TEST_CASE(GivenSimpleLSystemWithOneGeneration_Build_PerformsExpectedC
     LSystem lsystem;
     lsystem.generations = 1;
     lsystem.angle = 1;
-    lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
-    lsystem.productions[std::make_shared<MoveForwardRule>()].push_back(std::make_pair<double, LSystem::Rules>(
-            1,
-            {
-                std::make_shared<MoveForwardRule>(),
-                std::make_shared<JumpForwardRule>(),
-                std::make_shared<MoveForwardRule>()
-            }));
+    lsystem.axiom.push_back(move());
+    lsystem.productions[move()].push_back(std::make_pair<double, LSystem::Rules>(1, { move(), jump(), move() }));
 
     turtle.run(lsystem);
 
@@ -49,15 +46,8 @@ BOOST_AUTO_TEST_CASE(GivenSimpleLSystemWithThreeGeneration_Build_PerformsExpecte
     LSystem lsystem;
     lsystem.generations = 3;
     lsystem.angle = 1;
-    lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
-    lsystem.productions[std::make_shared<MoveForwardRule>()].push_back(std::make_pair<double, LSystem::Rules>(
-        1,
-        {
-            std::make_shared<JumpForwardRule>(),
-            std::make_shared<MoveForwardRule>(),
-            std::make_shared<JumpForwardRule>(),
-            std::make_shared<JumpForwardRule>()
-        }));
+    lsystem.axiom.push_back(move());
+    lsystem.productions[move()].push_back(std::make_pair<double, LSystem::Rules>(1, { jump(), move(), jump(), jump() }));
 
     turtle.run(lsystem);
 

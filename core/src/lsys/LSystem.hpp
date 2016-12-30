@@ -25,6 +25,9 @@ struct LSystem final
     /// Default angle value.
     double angle = 1;
 
+    /// Length scale factor.
+    double scale = 1;
+
     /// Specifies axiom.
     Rules axiom;
 

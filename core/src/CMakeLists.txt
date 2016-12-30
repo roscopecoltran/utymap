@@ -77,6 +77,7 @@ set(HEADER_FILES
         index/PersistentElementStore.hpp
         index/StringTable.hpp
         lsys/LSystem.hpp
+        lsys/LSystemParser.hpp
         lsys/Rules.hpp
         lsys/Turtle.hpp
         mapcss/Color.hpp
@@ -135,6 +136,7 @@ add_library(${LIBRARY_NAME}
         index/InMemoryElementStore.cpp
         index/PersistentElementStore.cpp
         index/StringTable.cpp
+        lsys/LSystemParser.cpp
         lsys/Turtle.cpp
         mapcss/MapCssParser.cpp
         mapcss/StyleConsts.cpp

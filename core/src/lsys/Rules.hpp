@@ -43,7 +43,7 @@ public:
 const std::string word;
 };
 
-/// Defines rule comparator which can distinguish differen rules taking care about specific word rule.
+/// Defines rule comparator which can distinguish different rules taking care about specific word rule.
 struct RuleComparator
 {
     bool operator()(const std::shared_ptr<Rule>& left, const std::shared_ptr<Rule>& right) const
