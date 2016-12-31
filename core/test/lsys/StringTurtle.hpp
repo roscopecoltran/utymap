@@ -9,9 +9,11 @@ namespace utymap { namespace tests {
 class StringTurtle final : public utymap::lsys::Turtle
 {
 public:
-    void moveForward() override  { path += "F"; }
+    void moveForward() override                 { path += "F"; }
 
-    void jumpForward() override  { path += "f"; }
+    void jumpForward() override                 { path += "f"; }
+
+    void say(const std::string& word) override  { path += word; }
 
     std::string path;
 };

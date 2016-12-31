@@ -1,8 +1,10 @@
 #include "lsys/LSystemParser.hpp"
 
+#include "lsys/StringTurtle.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::lsys;
+using namespace utymap::tests;
 
 namespace {
     const double ProbabilityPrecision = 0.01;
@@ -74,6 +76,23 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
                                 "A -> f f";
 
     BOOST_CHECK_EQUAL(LSystemParser().parse(grammar).angle, 45);
+}
+
+BOOST_AUTO_TEST_CASE(GivenGrammarWithProbabilities_WhenParse_ThenStringTurtleBuildsProperPath)
+{
+    StringTurtle turtle;
+    const std::string grammar = "generations: 2"
+                                "angle: 45"
+                                "scale: 1.2"
+                                "axiom: A f\n"
+                                "f(0) -> f\n"
+                                "f(1) -> F F\n"
+                                "F -> f\n"
+                                "A -> f f";
+
+    turtle.run(LSystemParser().parse(grammar));
+
+    BOOST_CHECK_EQUAL(turtle.path, "FFFFff");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
