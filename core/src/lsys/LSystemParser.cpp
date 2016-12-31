@@ -15,19 +15,7 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace phx = boost::phoenix;
 
-namespace {
-    typedef std::pair<LSystem::RuleType, LSystem::Productions> ProductionPair;
-    typedef std::map<LSystem::RuleType, LSystem::Productions, RuleComparator> ProductionMap;
-
-    /// Helper structure for parsing production map.
-    struct Production
-    {
-        LSystem::RuleType predcessor;
-        double probability = 1;
-        LSystem::Rules successor;
-    };
-}
-
+typedef std::map<LSystem::RuleType, LSystem::Productions, RuleComparator> ProductionMap;
 
 BOOST_FUSION_ADAPT_STRUCT(
     LSystem,
@@ -36,13 +24,6 @@ BOOST_FUSION_ADAPT_STRUCT(
     (double, scale)
     (LSystem::Rules, axiom)
     (ProductionMap, productions)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-    Production,
-    (LSystem::RuleType, predcessor)
-    (double, probability)
-    (LSystem::Rules, successor)
 )
 
 namespace {
@@ -63,26 +44,25 @@ struct RuleTable : qi::symbols<char, LSystem::RuleType>
 
 struct WordRuleFactory
 {
-    template <typename T1>
+    template <typename Arg>
     struct result { typedef LSystem::RuleType type; };
 
-    template<typename Item>
-    LSystem::RuleType operator()(const Item& c) const
+    template<typename Arg>
+    LSystem::RuleType operator()(const Arg& c) const
     {
         return std::make_shared<WordRule>(std::string(1, c));
     }
 };
 
-struct ProductionFactory
+struct ProductionInserter
 {
-    template <typename T1>
-    struct result { typedef ProductionPair type; };
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    struct result { typedef void type; };
 
-    template<typename Item>
-    ProductionPair operator()(const Item& p) const
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    void operator()(Arg1& dict, Arg2& predcessor, Arg3& probability, Arg4& successor) const
     {
-        auto prods = { std::make_pair(p.probability, p.successor) };
-        return std::make_pair(p.predcessor, prods);
+        dict[predcessor].push_back(std::make_pair(probability, successor));
     }
 };
 
@@ -132,27 +112,17 @@ struct ProductionGrammar : qi::grammar <Iterator, ProductionMap(), CommentSkippe
                 qi::attr(1)
         ;
 
-        production =
-            rule >
+        start =
+            (rule >
             probability >
             "->" >
-            +rule
-        ;
-
-        pair =
-            production[qi::_val = factory(qi::_1)]
-        ;
-
-        start =
-            pair % '\n'
+            +rule)[inserter(qi::_val, qi::_1, qi::_2, qi::_3)] % '\n'
         ;
     }
 
-    boost::phoenix::function<ProductionFactory> factory;
+    boost::phoenix::function< ProductionInserter> inserter;
     RuleGrammar<Iterator> rule;
     qi::rule<Iterator, double(), CommentSkipper<Iterator>> probability;
-    qi::rule<Iterator, Production(), CommentSkipper<Iterator>> production;
-    qi::rule<Iterator, ProductionPair(), CommentSkipper<Iterator>> pair;
     qi::rule<Iterator, ProductionMap(), CommentSkipper<Iterator>> start;
 };
 
