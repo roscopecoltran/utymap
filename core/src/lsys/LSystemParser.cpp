@@ -15,13 +15,34 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace phx = boost::phoenix;
 
+namespace {
+    typedef std::pair<LSystem::RuleType, LSystem::Productions> ProductionPair;
+    typedef std::map<LSystem::RuleType, LSystem::Productions, RuleComparator> ProductionMap;
+
+    /// Helper structure for parsing production map.
+    struct Production
+    {
+        LSystem::RuleType predcessor;
+        double probability = 1;
+        LSystem::Rules successor;
+    };
+}
+
+
 BOOST_FUSION_ADAPT_STRUCT(
     LSystem,
     (int, generations)
     (double, angle)
     (double, scale)
     (LSystem::Rules, axiom)
-    (LSystem::Productions, productions)
+    (ProductionMap, productions)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+    Production,
+    (LSystem::RuleType, predcessor)
+    (double, probability)
+    (LSystem::Rules, successor)
 )
 
 namespace {
@@ -52,13 +73,26 @@ struct WordRuleFactory
     }
 };
 
+struct ProductionFactory
+{
+    template <typename T1>
+    struct result { typedef ProductionPair type; };
+
+    template<typename Item>
+    ProductionPair operator()(const Item& p) const
+    {
+        auto prods = { std::make_pair(p.probability, p.successor) };
+        return std::make_pair(p.predcessor, prods);
+    }
+};
+
 template <typename Iterator>
-struct CommentSkipper : public qi::grammar<Iterator>
+struct CommentSkipper : qi::grammar<Iterator>
 {
     CommentSkipper() : CommentSkipper::base_type(start, "comment")
     {
         start =
-            ascii::space |
+            qi::lit(' ') |
             ('#' >> *(qi::char_ - '\n') >> '\n')
         ;
         start.name("comment");
@@ -72,7 +106,7 @@ struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType(), CommentSkipper<
     RuleGrammar() : RuleGrammar::base_type(start, "rule")
     {
         word =
-            qi::lexeme[ascii::char_ - ' '][qi::_val = wordRuleFactory(qi::_1)]
+            qi::lexeme[ascii::char_ - (qi::lit(' ') | '\n')][qi::_val = wordRuleFactory(qi::_1)]
         ;
 
         start = ruleTable | word;
@@ -89,18 +123,56 @@ struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType(), CommentSkipper<
 };
 
 template <typename Iterator>
+struct ProductionGrammar : qi::grammar <Iterator, ProductionMap(), CommentSkipper<Iterator>>
+{
+    ProductionGrammar() : ProductionGrammar::base_type(start, "production")
+    {
+        probability = 
+                ('(' > qi::double_ > ')') |
+                qi::attr(1)
+        ;
+
+        production =
+            rule >
+            probability >
+            "->" >
+            +rule
+        ;
+
+        pair =
+            production[qi::_val = factory(qi::_1)]
+        ;
+
+        start =
+            pair % '\n'
+        ;
+    }
+
+    boost::phoenix::function<ProductionFactory> factory;
+    RuleGrammar<Iterator> rule;
+    qi::rule<Iterator, double(), CommentSkipper<Iterator>> probability;
+    qi::rule<Iterator, Production(), CommentSkipper<Iterator>> production;
+    qi::rule<Iterator, ProductionPair(), CommentSkipper<Iterator>> pair;
+    qi::rule<Iterator, ProductionMap(), CommentSkipper<Iterator>> start;
+};
+
+template <typename Iterator>
 struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterator>>
 {
     LSystemGrammar() : LSystemGrammar::base_type(start, "lsystem")
     {
         start =
-            (qi::lit("generations:") > qi::int_) ^
-            (qi::lit("angle:") > qi::double_) ^
-            (qi::lit("scale:") > qi::double_) ^
-            (qi::lit("axiom:") > +rule % ' ')
+            (qi::lit("generations:") > qi::int_) >
+            (qi::lit("angle:") > qi::double_) >
+            (qi::lit("scale:") > qi::double_) >
+            (qi::lit("axiom:") > +rule > '\n') >
+            production
         ;
 
         start.name("lsystem");
+        rule.name("production");
+        production.name("production");
+
         qi::on_error<qi::fail>
         (
             start,
@@ -114,7 +186,9 @@ struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterato
         );
     }
     std::stringstream error;
+
     RuleGrammar<Iterator> rule;
+    ProductionGrammar<Iterator> production;
     qi::rule<Iterator, LSystem(), CommentSkipper<Iterator>> start;
 };
 

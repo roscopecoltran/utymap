@@ -8,7 +8,8 @@
 
 namespace utymap { namespace lsys {
 
-/// Parses lsystem.
+/// Parses lsystem from internal lsys format.
+/// lsys format is context-free stochastic L-system.
 class LSystemParser final
 {
 public:
