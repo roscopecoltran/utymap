@@ -5,9 +5,9 @@
 #include "GeoCoordinate.hpp"
 #include "formats/FormatTypes.hpp"
 
-#include <cstdint>
-
 using namespace utymap::formats;
+
+namespace utymap { namespace tests {
 
 struct CountableShapeDataVisitor
 {
@@ -52,5 +52,7 @@ struct CountableShapeDataVisitor
         relations++;
     }
 };
+
+}}
 
 #endif // TESTS_FORMATS_COUNTABLESHAPEDATAVISITOR_HPP_DEFINED

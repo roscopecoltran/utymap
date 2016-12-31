@@ -13,6 +13,7 @@ using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::math;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "area,relation|z1[building=yes] { "

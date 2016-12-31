@@ -14,6 +14,7 @@ using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: true; }";

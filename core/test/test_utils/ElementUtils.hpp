@@ -4,16 +4,15 @@
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "index/StringTable.hpp"
-#include "mapcss/StyleProvider.hpp"
 
 #include <cstdint>
-#include <string>
 #include <initializer_list>
+
+namespace utymap { namespace tests {
 
 class ElementUtils
 {
 public:
-
     template <typename T>
     static T createElement(utymap::index::StringTable& stringTable,
                            std::uint64_t id,
@@ -51,5 +50,6 @@ public:
     }
 };
 
+}}
 
 #endif // TEST_ELEMENTUTILS_HPP_DEFINED

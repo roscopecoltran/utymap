@@ -11,6 +11,7 @@
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::mapcss;
+using namespace utymap::tests;
 
 namespace {
     struct MapCss_StyleDeclarationFixture

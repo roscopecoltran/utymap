@@ -9,6 +9,8 @@
 
 #include <cstdio>
 
+namespace utymap { namespace tests {
+
 class DependencyProvider
 {
 public:
@@ -67,5 +69,7 @@ private:
     std::shared_ptr<utymap::index::StringTable> stringTable_;
     std::shared_ptr<utymap::mapcss::StyleProvider> styleProvider_;
 };
+
+}}
 
 #endif  // TEST_DEPENDENCYPROVIDER_HPP_DEFINED

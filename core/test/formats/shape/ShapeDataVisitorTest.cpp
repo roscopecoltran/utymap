@@ -11,6 +11,7 @@ using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::formats;
 using namespace utymap::mapcss;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "way|z1-16[test=Foo] { key:val; }";

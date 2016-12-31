@@ -17,6 +17,7 @@ using namespace utymap::mapcss;
 using namespace utymap::math;
 using namespace utymap::index;
 using namespace utymap::utils;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "node|z1[natural=tree] { color:gradient(red);}";

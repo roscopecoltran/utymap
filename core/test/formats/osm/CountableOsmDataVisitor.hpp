@@ -10,6 +10,8 @@
 
 using namespace utymap::formats;
 
+namespace utymap { namespace tests {
+
 struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
 {
     int bounds;
@@ -60,7 +62,7 @@ struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
 
     void visitRelation(const utymap::entities::Relation&) override 
     { 
-        ++relations; 
+        ++relations;
     }
 
     void add(utymap::entities::Element& element)
@@ -68,5 +70,7 @@ struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
         element.accept(*this);
     }
 };
+
+}}
 
 #endif // TESTS_FORMATS_COUNTABLEOSMDATAVISITOR_HPP_DEFINED

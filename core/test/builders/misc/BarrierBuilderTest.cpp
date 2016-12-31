@@ -9,6 +9,7 @@ using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::math;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "way|z16[barrier] {" 

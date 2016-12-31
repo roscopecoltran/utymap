@@ -8,6 +8,7 @@
 #include "test_utils/DependencyProvider.hpp"
 
 using namespace utymap::formats;
+using namespace utymap::tests;
 
 namespace {
     struct Formats_Osm_Json_OsmJsonParserFixture

@@ -7,6 +7,7 @@
 #include <fstream>
 
 using namespace utymap::formats;
+using namespace utymap::tests;
 
 namespace {
 

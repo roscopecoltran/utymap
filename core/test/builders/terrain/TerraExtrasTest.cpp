@@ -10,6 +10,7 @@ using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
 using namespace utymap::math;
+using namespace utymap::tests;
 
 namespace {
     const ColorGradient gradient = ColorGradient();

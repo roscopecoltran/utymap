@@ -7,6 +7,7 @@
 
 using namespace utymap::entities;
 using namespace utymap::formats;
+using namespace utymap::tests;
 
 namespace {
     struct Formats_Osm_OsmDataVisitorFixture

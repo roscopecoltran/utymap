@@ -9,6 +9,7 @@
 #include "test_utils/ElementUtils.hpp"
 
 using namespace utymap::entities;
+using namespace utymap::tests;
 
 namespace {
     struct Counter : public ElementVisitor

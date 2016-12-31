@@ -15,6 +15,7 @@ using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::formats;
 using namespace utymap::index;
+using namespace utymap::tests;
 
 namespace {
 

@@ -10,6 +10,7 @@
 
 using namespace utymap::entities;
 using namespace utymap::mapcss;
+using namespace utymap::tests;
 
 namespace {
     struct Index_StyleProviderFixture

@@ -13,6 +13,7 @@ using namespace utymap::heightmap;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::math;
+using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "node|z16[natural=tree], way|z16[natural=tree_row] { "
