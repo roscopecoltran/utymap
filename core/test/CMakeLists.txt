@@ -27,6 +27,7 @@ set(HEADER_FILES
         config.hpp
         formats/osm/CountableOsmDataVisitor.hpp
         formats/shape/CountableShapeDataVisitor.hpp
+        lsys/StringTurtle.hpp
         test_utils/DependencyProvider.hpp
         test_utils/ElementUtils.hpp
         )

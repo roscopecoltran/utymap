@@ -2,26 +2,16 @@
 #include "lsys/Turtle.hpp"
 #include "lsys/Rules.hpp"
 
+#include "lsys/StringTurtle.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::lsys;
+using namespace utymap::tests;
 
 namespace {
 
     std::shared_ptr<MoveForwardRule> move() { return std::make_shared<MoveForwardRule>(); }
     std::shared_ptr<JumpForwardRule> jump() { return std::make_shared<JumpForwardRule>(); }
-
-/// Defines turtle which writes its actions using common lsystem grammar notation.
-class StringTurtle final : public Turtle
-{
-public:
-    void moveForward() override  { path += "F"; }
-
-    void jumpForward() override  { path += "f"; }
-
-    std::string path;
-};
-
 }
 
 BOOST_AUTO_TEST_SUITE(Lsys_Turtle)
