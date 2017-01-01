@@ -13,6 +13,35 @@ public:
 
     void jumpForward() override                 { path += "f"; }
 
+
+    void turnLeft() override                     { path += "+"; }
+
+    void turnRight() override                    { path += "-"; }
+
+    void turnAround() override                   { path += "|"; }
+
+    void pitchUp() override                      { path += "^"; }
+
+    void pitchDown() override                    { path += "&"; }
+
+    void rollLeft() override                     { path += "\\"; }
+
+    void rollRight() override                    { path += "/"; }
+
+
+    void increment() override                    { path += "#"; }
+
+    void decrement() override                    { path += "!"; }
+
+    void scaleUp() override                      { path += ">"; }
+
+    void scaleDown() override                    { path += "<"; }
+
+
+    void save() override                         { path += "["; }
+
+    void restore() override                      { path += "]"; }
+
     void say(const std::string& word) override  { path += word; }
 
     std::string path;

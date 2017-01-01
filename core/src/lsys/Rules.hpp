@@ -9,6 +9,7 @@
 
 namespace utymap { namespace lsys {
 
+/// Specifies base class for rule visiting.
 class Rule
 {
 public:
@@ -18,17 +19,35 @@ public:
     virtual ~Rule() {}
 };
 
-class MoveForwardRule final : public Rule
-{
-public:
-    void apply(Turtle& turtle) const override { turtle.moveForward(); }
-};
+class MoveForwardRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.moveForward(); } };
 
-class JumpForwardRule final : public Rule
-{
-public:
-    void apply(Turtle& turtle) const override { turtle.jumpForward(); }
-};
+class JumpForwardRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.jumpForward(); } };
+
+class TurnLeftRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.turnLeft(); } };
+
+class TurnRightRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.turnRight(); } };
+
+class TurnAroundRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.turnAround(); } };
+
+class PitchUpRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.pitchUp(); } };
+
+class PitchDownRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.pitchDown(); } };
+
+class RollLeftRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.rollLeft(); } };
+
+class RollRightRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.rollRight(); } };
+
+class IncrementRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.increment(); } };
+
+class DecrementRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.decrement(); } };
+
+class ScaleUpRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.scaleUp(); } };
+
+class ScaleDownRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.scaleDown(); } };
+
+class SaveRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.save(); } };
+
+class RestoreRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.restore(); } };
 
 /// Defines rule for custom words.
 class WordRule final : public Rule

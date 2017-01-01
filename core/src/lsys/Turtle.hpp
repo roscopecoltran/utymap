@@ -7,30 +7,60 @@ namespace utymap { namespace lsys {
 
 struct LSystem;
 
-/// Defines abstract turtle behaviour.
+/// Defines abstract turtle behaviour by utilizing common l-system notation.
 class Turtle
 {
 public:
-    /// Moves forward emitting segment: F
+    /// F: Move forward by line length drawing a line.
     virtual void moveForward() {}
 
-    /// Jumps forward without emitting segment: f
+    /// f: Move forward by line length without drawing a line.
     virtual void jumpForward() {}
 
-    /// Turns left: +
+   
+    /// +: Turn left by turning angle.
     virtual void turnLeft() {}
 
-    /// Turns right: -
+    /// -: Turn right by turning angle.
     virtual void turnRight() {}
+
+    /// |: Turn around (ie: turn by 180 degrees).
+    virtual void turnAround() {}
+
+    /// ^: Pitch up by turning angle.
+    virtual void pitchUp() {}
+
+    /// &: Pitch down by turning angle.
+    virtual void pitchDown() {}
+
+    /// \: Roll left by turning angle.
+    virtual void rollLeft() {}
+
+    /// /: Roll right by turning angle.
+    virtual void rollRight() {}
+
+
+    /// #: Increment the line width by line width increment.
+    virtual void increment() {}
+
+    /// !: Decrement the line width by line width increment.
+    virtual void decrement() {}
+
+    /// >: Multiply the line length by the line length scale factor.
+    virtual void scaleUp() {}
+
+    /// <: Divide the line length by the line length scale factor.
+    virtual void scaleDown() {}
+
+
+    /// [: Saves current state on stack.
+    virtual void save() {}
+
+    /// ]: Restores current state from stack.
+    virtual void restore() {}
 
     /// Performs instructions specific for given word.
     virtual void say(const std::string& word) {}
-
-    /// Saves current state on stack.
-    virtual void memorize() {}
-
-    /// Restores current state from stack.
-    virtual void restore() {}
 
     virtual ~Turtle() {}
 
