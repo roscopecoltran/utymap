@@ -10,7 +10,8 @@ namespace {
     const double ProbabilityPrecision = 0.01;
     const std::string SimpleGrammar = "generations: 3"
                                       "angle: 45"
-                                      "scale: 1.2"
+                                      "width: 0.1"
+                                      "length: 1.1"
                                       "axiom: D F A f f F K\n"
                                       "F(1) -> F f\n"
                                       "f(0.8) -> F\n"
@@ -31,12 +32,17 @@ BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasGenerations)
 
 BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasAngle)
 {
-    BOOST_CHECK_EQUAL(LSystemParser().parse(SimpleGrammar).angle, 45);
+    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).angle, 45, ProbabilityPrecision);
 }
 
-BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasScale)
+BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasWidth)
 {
-    BOOST_CHECK_EQUAL(LSystemParser().parse(SimpleGrammar).scale, 1.2);
+    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).width, 0.1, ProbabilityPrecision);
+}
+
+BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasLength)
+{
+    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).length, 1.1, ProbabilityPrecision);
 }
 
 BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasExpectedAmountOfAxiomRules)
@@ -71,7 +77,8 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
                                 "#angle:35\n"
                                 "angle: 45"
                                 "#angle:55\n"
-                                "scale: 1.2"
+                                "width: 1.2"
+                                "length: 1.2"
                                 "axiom: A\n"
                                 "A -> f f";
 
@@ -83,7 +90,8 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithProbabilities_WhenParse_ThenStringTurtleBui
     StringTurtle turtle;
     const std::string grammar = "generations: 2"
                                 "angle: 45"
-                                "scale: 1.2"
+                                "width: 1.2"
+                                "length: 1.2"
                                 "axiom: A f\n"
                                 "f(0) -> f\n"
                                 "f(1) -> F F\n"

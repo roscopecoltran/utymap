@@ -22,11 +22,14 @@ struct LSystem final
     /// Amount of generations.
     int generations = 1;
 
-    /// Default angle value.
+    /// Default turn angle value.
     double angle = 1;
 
-    /// Length scale factor.
-    double scale = 1;
+    /// Default width increment/decrement value.
+    double width = 0.5;
+
+    /// Default length scale factor.
+    double length = 1;
 
     /// Specifies axiom.
     Rules axiom;
