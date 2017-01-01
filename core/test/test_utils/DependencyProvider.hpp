@@ -8,6 +8,7 @@
 #include "mapcss/StyleProvider.hpp"
 
 #include <cstdio>
+#include <iostream>
 
 namespace utymap { namespace tests {
 
@@ -19,8 +20,12 @@ public:
     ~DependencyProvider()
     {
         stringTable_.reset();
-        std::remove("string.idx");
-        std::remove("string.dat");
+
+        bool hasError = std::remove("string.idx") > 0;
+        hasError = std::remove("string.dat") > 0 || hasError;
+
+        if (hasError)
+            std::cout << "Error while deleting index files.";
     }
 
     std::shared_ptr<utymap::index::StringTable> getStringTable()
