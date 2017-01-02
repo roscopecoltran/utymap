@@ -2,6 +2,7 @@
 #define MATH_VECTOR3_HPP_DEFINED
 
 #include <cmath>
+#include <climits>
 
 namespace utymap { namespace math {
 
