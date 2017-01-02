@@ -5,21 +5,20 @@
 using namespace utymap::lsys;
 using namespace utymap::math;
 
-Turtle3d::Turtle3d() :
-    mesh_(""), states_()
+Turtle3d::Turtle3d() : states_()
 {
 }
 
 void Turtle3d::turnLeft()
 {
-    auto rotation = createRotation(-state_.angle);
+    auto rotation = createRotation(-angle_);
     state_.direction = rotation * state_.direction;
     state_.right = rotation * state_.right;
 }
 
 void Turtle3d::turnRight()
 {
-    auto rotation = createRotation(state_.angle);
+    auto rotation = createRotation(angle_);
     state_.direction = rotation * state_.direction;
     state_.right = rotation * state_.right;
 }
@@ -33,38 +32,42 @@ void Turtle3d::turnAround()
 
 void Turtle3d::pitchUp()
 {
-    state_.direction = createRotation(state_.angle) * state_.direction;
+    state_.direction = createRotation(angle_) * state_.direction;
 }
 
 void Turtle3d::pitchDown()
 {
-    state_.direction = createRotation(-state_.angle) * state_.direction;
+    state_.direction = createRotation(-angle_) * state_.direction;
 }
 
 void Turtle3d::rollLeft()
 {
-    state_.right = createRotation(-state_.angle) * state_.right;
+    state_.right = createRotation(-angle_) * state_.right;
 }
 
 void Turtle3d::rollRight()
 {
-    state_.right = createRotation(state_.angle) * state_.right;
+    state_.right = createRotation(angle_) * state_.right;
 }
 
 void Turtle3d::increment()
 {
+    state_.width += widthStep_;
 }
 
 void Turtle3d::decrement()
 {
+    state_.width -= widthStep_;
 }
 
 void Turtle3d::scaleUp()
 {
+    state_.length *= lengthScale_;
 }
 
 void Turtle3d::scaleDown()
 {
+    state_.length /= lengthScale_;
 }
 
 void Turtle3d::save()
@@ -80,9 +83,9 @@ void Turtle3d::restore()
 
 void Turtle3d::run(const LSystem& lsystem)
 {
-    state_.angle = utymap::utils::deg2Rad(lsystem.angle);
-    state_.width = lsystem.width;
-    state_.length = lsystem.length;
+    angle_ = utymap::utils::deg2Rad(lsystem.angle);
+    lengthScale_ = lsystem.length;
+    widthStep_ = lsystem.width;
 
     Turtle::run(lsystem);
 }

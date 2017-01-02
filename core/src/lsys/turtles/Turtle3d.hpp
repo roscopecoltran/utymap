@@ -2,7 +2,6 @@
 #define LSYS_TURTLES_TURTLE3D_HPP_DEFINED
 
 #include "lsys/Turtle.hpp"
-#include "math/Mesh.hpp"
 #include "math/Vector3.hpp"
 #include "math/Quaternion.hpp"
 
@@ -49,7 +48,6 @@ protected:
     /// Defines turtle state.
     struct State
     {
-        double angle;
         double length;
         double width;
 
@@ -58,13 +56,19 @@ protected:
         utymap::math::Vector3 right = utymap::math::Vector3::right();
     };
 
-    utymap::math::Mesh mesh_;
     State state_;
 
 private:
-
     /// Creates rotation quaternion from current state.
     utymap::math::Quaternion createRotation(double angle) const;
+
+    /// Angle defined by lsystem.
+    double angle_= 0;
+    /// Length scale defined by lsystem.
+    double lengthScale_ = 1;
+    /// Width step defined by lsystem.
+    double widthStep_ = 0;
+    /// Stack for storing states.
     std::stack<State> states_;
 };
 
