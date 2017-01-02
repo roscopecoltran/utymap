@@ -65,7 +65,7 @@ public:
     virtual ~Turtle() {}
 
     /// Runs turtle using lsystem provided.
-    void run(const LSystem& lsystem);
+    virtual void run(const LSystem& lsystem);
 };
 
 }}

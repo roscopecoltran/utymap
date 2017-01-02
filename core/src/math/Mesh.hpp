@@ -2,6 +2,7 @@
 #define MATH_MESH_HPP_DEFINED
 
 #include <string>
+#include <vector>
 
 namespace utymap { namespace math {
 

@@ -53,12 +53,35 @@ struct Vector3
             : Vector3(); // degenerative case
     }
 
+    /// Creates vector which points up.
+    static Vector3 up()
+    {
+        return Vector3(0, 1, 0);
+    }
+
+    /// Creates vector which points right.
+    static Vector3 right()
+    {
+        return Vector3(1, 0, 0);
+    }
+
+    /// Creates vector with zero coordinates.
+    static Vector3 zero()
+    {
+        return Vector3();
+    }
+
     static double distance(const Vector3& v1, const Vector3& v2)
     {
         double dx = v1.x - v2.x;
         double dy = v1.y - v2.y;
         double dz = v1.z - v2.z;
         return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    static double dot(const Vector3& a, const Vector3& b)
+    {
+        return a.x * b.x +a.y * b.y + a.z * b.z;
     }
 
     static Vector3 cross(const Vector3& a, const Vector3& b)

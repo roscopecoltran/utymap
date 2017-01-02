@@ -33,11 +33,6 @@ struct Quaternion final
         w = w*q.w - x*q.x - y*q.y - z*q.z;
     }
 
-    double norm() const
-    {
-        return x*x + y*y + z*z + w*w;
-    }
-
     /// Multiples quanternions:
     // [ww' - dot(v, v'), wv' + w'v + cross(v, v')]
     Quaternion operator*(const Quaternion& q) const
@@ -48,18 +43,23 @@ struct Quaternion final
                           w*q.w - x*q.x - y*q.y - z*q.z);
     }
 
-    /// Rotates vector by this quaternion.
-    /// This implementation is different from reference one: p' = p * v * p_inverted.
-    Vector3 rotate(const Vector3& v) const
+    /// Multiples quaternion by given vector. Result is rotated vector by this quaternion.
+    /// NOTE This implementation is different from reference one: p' = p * v * p_inverted.
+    Vector3 operator*(const Vector3& v) const
     {
         Quaternion q(v.x * w + v.z * y - v.y * z,
-                     v.y * w + v.x * z - v.z * x,
-                     v.z * w + v.y * x - v.x * y,
-                     v.x * x + v.y * y + v.z * z);
+            v.y * w + v.x * z - v.z * x,
+            v.z * w + v.y * x - v.x * y,
+            v.x * x + v.y * y + v.z * z);
 
         return Vector3(w * q.x + x * q.w + y * q.z - z * q.y,
-                       w * q.y + y * q.w + z * q.x - x * q.z,
-                       w * q.z + z * q.w + x * q.y - y * q.x) * (1. / norm());
+            w * q.y + y * q.w + z * q.x - x * q.z,
+            w * q.z + z * q.w + x * q.y - y * q.x) * (1. / norm());
+    }
+
+    double norm() const
+    {
+        return x*x + y*y + z*z + w*w;
     }
 
     /// Returns inversed.
@@ -69,23 +69,28 @@ struct Quaternion final
         return Quaternion(-x*in, -y*in, -z*in, w*in);
     }
 
+    /// Creates indentity quaternion.
+    static Quaternion identity()
+    {
+        return Quaternion(Vector3(0, 0, 0), 1);
+    }
+
     /// Creates a unit quaternion rotating by axis angle representation.
     static Quaternion fromAngleAxis(double angle, const Vector3& v)
     {
         double halfAngle = angle * 0.5;
-        double sinA = std::sin(halfAngle);
-        return Quaternion(v.x*sinA, v.y*sinA, v.z*sinA, std::cos(halfAngle));
+        return Quaternion(v * std::sin(halfAngle), std::cos(halfAngle));
     }
     
     /// Creates unit quaternion from euler angles in radians.
     static Quaternion fromEulerAngles(const Vector3& v)
     {
-        double t0 = std::cos(v.x * 0.5f);
-        double t1 = std::sin(v.x * 0.5f);
-        double t2 = std::cos(v.y * 0.5f);
-        double t3 = std::sin(v.y * 0.5f);
-        double t4 = std::cos(v.z * 0.5f);
-        double t5 = std::sin(v.z * 0.5f);
+        double t0 = std::cos(v.x * 0.5);
+        double t1 = std::sin(v.x * 0.5);
+        double t2 = std::cos(v.y * 0.5);
+        double t3 = std::sin(v.y * 0.5);
+        double t4 = std::cos(v.z * 0.5);
+        double t5 = std::sin(v.z * 0.5);
 
         return Quaternion(t0 * t3 * t4 - t1 * t2 * t5,
                           t0 * t2 * t5 + t1 * t3 * t4,

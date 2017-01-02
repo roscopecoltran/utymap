@@ -113,10 +113,10 @@ private:
             auto q0t = q0.slerp(q0, q1, j / static_cast<double>(RadialSegmentCount));
             auto q1t = q1.slerp(q0, q1, (j + 1) / static_cast<double>(RadialSegmentCount));
             
-            const auto front1 = restore(q0t.rotate(frontRot), frontRadius, frontCenter);
-            const auto front2 = restore(q1t.rotate(frontRot), frontRadius, frontCenter);
-            const auto back1 = restore(q0t.rotate(backRot), backRadius, backCenter);
-            const auto back2 = restore(q1t.rotate(backRot), backRadius, backCenter);
+            const auto front1 = restore(q0t * frontRot, frontRadius, frontCenter);
+            const auto front2 = restore(q1t * frontRot, frontRadius, frontCenter);
+            const auto back1 = restore(q0t * backRot, backRadius, backCenter);
+            const auto back2 = restore(q1t * backRot, backRadius, backCenter);
 
             addTriangle(frontCenter, front2, front1, u0, u0, u0);
             addTriangle(backCenter, back1, back2, u0, u0, u0);
