@@ -1,97 +1,84 @@
-#include "lsys/turtles/TreeTurtle.hpp"
+#include "lsys/turtles/Turtle3d.hpp"
 #include "lsys/LSystem.hpp"
 #include "utils/MathUtils.hpp"
 
 using namespace utymap::lsys;
 using namespace utymap::math;
 
-
-TreeTurtle::TreeTurtle() :
+Turtle3d::Turtle3d() :
     mesh_(""), states_()
 {
 }
 
-void TreeTurtle::moveForward()
-{
-}
-
-void TreeTurtle::jumpForward()
-{
-}
-
-void TreeTurtle::turnLeft()
+void Turtle3d::turnLeft()
 {
     auto rotation = createRotation(-state_.angle);
     state_.direction = rotation * state_.direction;
     state_.right = rotation * state_.right;
 }
 
-void TreeTurtle::turnRight()
+void Turtle3d::turnRight()
 {
     auto rotation = createRotation(state_.angle);
     state_.direction = rotation * state_.direction;
     state_.right = rotation * state_.right;
 }
 
-void TreeTurtle::turnAround()
+void Turtle3d::turnAround()
 {
     auto rotation = createRotation(utymap::utils::deg2Rad(180));
     state_.direction = rotation * state_.direction;
     state_.right = rotation * state_.right;
 }
 
-void TreeTurtle::pitchUp()
+void Turtle3d::pitchUp()
 {
     state_.direction = createRotation(state_.angle) * state_.direction;
 }
 
-void TreeTurtle::pitchDown()
+void Turtle3d::pitchDown()
 {
     state_.direction = createRotation(-state_.angle) * state_.direction;
 }
 
-void TreeTurtle::rollLeft()
+void Turtle3d::rollLeft()
 {
     state_.right = createRotation(-state_.angle) * state_.right;
 }
 
-void TreeTurtle::rollRight()
+void Turtle3d::rollRight()
 {
     state_.right = createRotation(state_.angle) * state_.right;
 }
 
-void TreeTurtle::increment()
+void Turtle3d::increment()
 {
 }
 
-void TreeTurtle::decrement()
+void Turtle3d::decrement()
 {
 }
 
-void TreeTurtle::scaleUp()
+void Turtle3d::scaleUp()
 {
 }
 
-void TreeTurtle::scaleDown()
+void Turtle3d::scaleDown()
 {
 }
 
-void TreeTurtle::save()
+void Turtle3d::save()
 {
     states_.push(state_);
 }
 
-void TreeTurtle::restore()
+void Turtle3d::restore()
 {
     state_ = states_.top();
     states_.pop();
 }
 
-void TreeTurtle::say(const std::string& word)
-{
-}
-
-void TreeTurtle::run(const LSystem& lsystem)
+void Turtle3d::run(const LSystem& lsystem)
 {
     state_.angle = utymap::utils::deg2Rad(lsystem.angle);
     state_.width = lsystem.width;
@@ -100,7 +87,7 @@ void TreeTurtle::run(const LSystem& lsystem)
     Turtle::run(lsystem);
 }
 
-utymap::math::Quaternion TreeTurtle::createRotation(double angle) const
+utymap::math::Quaternion Turtle3d::createRotation(double angle) const
 {
     return Quaternion::fromAngleAxis(angle, Vector3::cross(state_.direction, state_.right));
 }
