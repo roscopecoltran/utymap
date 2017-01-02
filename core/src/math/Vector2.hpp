@@ -6,7 +6,7 @@
 
 namespace utymap { namespace math {
 
-/// Represents vector2 which can be used as point or direction in 2d space
+/// Represents primitive which can be used as point or direction in 2d space.
 struct Vector2
 {
     double x;
