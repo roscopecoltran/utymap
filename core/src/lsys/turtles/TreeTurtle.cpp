@@ -35,6 +35,9 @@ void TreeTurtle::turnRight()
 
 void TreeTurtle::turnAround()
 {
+    auto rotation = createRotation(utymap::utils::deg2Rad(180));
+    state_.direction = rotation * state_.direction;
+    state_.right = rotation * state_.right;
 }
 
 void TreeTurtle::pitchUp()

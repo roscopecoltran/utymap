@@ -1,6 +1,8 @@
 #ifndef MATH_VECTOR3_HPP_DEFINED
 #define MATH_VECTOR3_HPP_DEFINED
 
+#include <cmath>
+
 namespace utymap { namespace math {
 
 /// Represents vector3 which can be used as point or direction in 3d space
