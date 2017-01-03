@@ -15,7 +15,7 @@ static double pi = std::acos(-1);
 
 namespace utymap { namespace utils {
 
-/// Clamps value in range
+/// Clamps value in range.
 inline double clamp(double n, double minValue, double maxValue)
 {
     return std::max(minValue, std::min(n, maxValue));
@@ -27,10 +27,17 @@ inline double deg2Rad(double degrees)
     return pi*degrees / 180.0;
 }
 
-/// converts radians to degrees
+/// converts radians to degrees.
 inline double rad2Deg(double radians)
 {
     return 180.0*radians / pi;
+}
+
+/// Performs linear interpolation.
+template <typename T>
+inline double lerp(T a, T b, double r)
+{
+    return a * (1.0 - r) + b * r;
 }
 
 }}

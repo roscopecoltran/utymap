@@ -15,6 +15,13 @@ struct Vector3
     Vector3() : x(0), y(0), z(0)  { }
     Vector3(double x, double y, double z) : x(x), y(y), z(z) { }
 
+    bool operator==(const Vector3& rhs) const
+    {
+        return std::fabs(x - rhs.x) < std::numeric_limits<double>::epsilon() &&
+               std::fabs(y - rhs.y) < std::numeric_limits<double>::epsilon() &&
+               std::fabs(z - rhs.z) < std::numeric_limits<double>::epsilon();
+    }
+
     Vector3 operator*(double scale) const
     {
         return Vector3(x * scale, y *scale, z * scale);
