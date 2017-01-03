@@ -9,6 +9,11 @@ Turtle3d::Turtle3d() : states_()
 {
 }
 
+void Turtle3d::jumpForward()
+{
+    state_.position = state_.position + state_.direction * state_.length;
+}
+
 void Turtle3d::turnLeft()
 {
     auto rotation = createRotation(-angle_);

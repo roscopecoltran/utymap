@@ -10,11 +10,13 @@
 namespace utymap { namespace lsys {
 
 /// Defines turtle which executes commands in 3d space.
-class Turtle3d final : public utymap::lsys::Turtle
+class Turtle3d : public utymap::lsys::Turtle
 {
 public:
 
     Turtle3d();
+
+    void jumpForward() override;
 
     void turnLeft() override;
 
