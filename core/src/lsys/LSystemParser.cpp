@@ -38,7 +38,7 @@ struct RuleTable : qi::symbols<char, LSystem::RuleType>
     {
         add
             ("F", forward)
-            ("f", jump)
+            ("G", jump)
         ;
     }
 };
@@ -51,7 +51,7 @@ struct WordRuleFactory
     template<typename Arg>
     LSystem::RuleType operator()(const Arg& c) const
     {
-        return std::make_shared<WordRule>(std::string(1, c));
+        return std::make_shared<WordRule>(std::string(c.begin(), c.end()));
     }
 };
 
@@ -87,7 +87,7 @@ struct RuleGrammar : qi::grammar <Iterator, LSystem::RuleType(), CommentSkipper<
     RuleGrammar() : RuleGrammar::base_type(start, "rule")
     {
         word =
-            qi::lexeme[ascii::char_ - (qi::lit(' ') | '\n')][qi::_val = wordRuleFactory(qi::_1)]
+            qi::lexeme[+ascii::alpha][qi::_val = wordRuleFactory(qi::_1)]
         ;
 
         start = ruleTable | word;

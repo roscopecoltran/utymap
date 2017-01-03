@@ -14,7 +14,7 @@ public:
     /// F: Move forward by line length drawing a line.
     virtual void moveForward() {}
 
-    /// f: Move forward by line length without drawing a line.
+    /// G: Move forward by line length without drawing a line.
     virtual void jumpForward() {}
 
    

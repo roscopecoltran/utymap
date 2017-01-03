@@ -11,7 +11,7 @@ class StringTurtle final : public utymap::lsys::Turtle
 public:
     void moveForward() override                 { path += "F"; }
 
-    void jumpForward() override                 { path += "f"; }
+    void jumpForward() override                 { path += "G"; }
 
 
     void turnLeft() override                     { path += "+"; }
