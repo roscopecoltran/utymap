@@ -34,7 +34,8 @@ public:
     }
 
     /// Sets radius of cylinder for first and last segments.
-    CylinderGenerator& setRadius(const utymap::math::Vector3& radius1, const utymap::math::Vector3& radius2)
+    CylinderGenerator& setRadius(const utymap::math::Vector3& radius1,
+                                 const utymap::math::Vector3& radius2)
     {
         radius1_ = radius1;
         radius2_ = radius2;
@@ -42,7 +43,8 @@ public:
     }
 
     /// Sets orientation of cylinder in 3D space.
-    CylinderGenerator& SetDirection(const utymap::math::Vector3& direction, const utymap::math::Vector3& right)
+    CylinderGenerator& SetDirection(const utymap::math::Vector3& direction,
+                                    const utymap::math::Vector3& right)
     {
         direction_ = direction;
         right_ = right;
