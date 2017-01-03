@@ -2,9 +2,11 @@
 #define UTILS_GEOMETRYUTILS_HPP_DEFINED
 
 #include "GeoCoordinate.hpp"
+#include "mapcss/Style.hpp"
 #include "math/Polygon.hpp"
 #include "math/Rectangle.hpp"
 #include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
 
 #include <algorithm>
 
@@ -77,6 +79,16 @@ inline utymap::math::Vector2 getCentroid(const utymap::math::Polygon& polygon, c
     centroidY /= count;
 
     return utymap::math::Vector2(centroidX, centroidY);
+}
+
+/// Gets size as Vector3 with scaled axis values.
+inline utymap::math::Vector3 getSize(const utymap::BoundingBox boundingBox,
+                                     const utymap::mapcss::Style& style,
+                                     const std::string& key)
+{
+    double radiusInDegrees = style.getValue(key, boundingBox);
+    double radiusInMeters = style.getValue(key, boundingBox.height());
+    return utymap::math::Vector3(1.5 * radiusInDegrees, radiusInMeters, radiusInDegrees);
 }
 
 /// Iterates through polygon outers and call visitor with rectangle of this outer

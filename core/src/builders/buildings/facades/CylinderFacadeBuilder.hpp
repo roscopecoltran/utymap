@@ -30,7 +30,7 @@ public:
                 .setHeight(height_)
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
-                .setRadius(size.y)
+                .setRadius(utymap::math::Vector3(size.x, height_, size.y))
                 .setColorNoiseFreq(0)
                 .generate();
         });

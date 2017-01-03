@@ -4,6 +4,7 @@
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Relation.hpp"
+#include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
@@ -109,9 +110,6 @@ void LampBuilder::visitRelation(const utymap::entities::Relation& relation)
 void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& mesh) const
 {
     // NOTE silently reuse tree builder..
-    double foliageRadiusInDegrees = style.getValue(LampLightRadius, context_.boundingBox);
-    double foliageRadiusInMeters = style.getValue(LampLightRadius, context_.boundingBox.height());
-
     const auto& trunkGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampPillarGradientKey);
     const auto& foliageGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampLightGradientKey);
 
@@ -122,11 +120,11 @@ void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& m
         trunkGradient, foliageGradient, trunkTexture, foliageTexture);
 
     generator->setFoliageColorNoiseFreq(0);
-    generator->setFoliageSize(Vector3(1.5 * foliageRadiusInDegrees, foliageRadiusInMeters, foliageRadiusInDegrees));
+    generator->setFoliageSize(utymap::utils::getSize(context_.boundingBox, style, LampLightRadius));
     generator->setFoliageTextureScale(style.getValue(LampLightTextureScaleKey));
     generator->setFoliageRecursionLevel(0);
     generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkRadius(style.getValue(LampPillarRadius, context_.boundingBox));
+    generator->setTrunkSize(utymap::utils::getSize(context_.boundingBox, style, LampPillarRadius));
     generator->setTrunkHeight(style.getValue(LampPillarHeight, context_.boundingBox.height()));
     generator->setTrunkTextureScale(style.getValue(LampPillarTextureScaleKey));
     generator->setPosition(position);

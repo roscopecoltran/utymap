@@ -26,7 +26,7 @@ public:
             position_(),
             foliageSize_(),
             trunkHeight_(0),
-            trunkRadius_(0),
+            trunkSize_(),
             foliageRecursionLevel_(1)
     {
     }
@@ -48,9 +48,9 @@ public:
     }
 
     /// Sets radius of trunk
-    TreeGenerator& setTrunkRadius(double radius)
+    TreeGenerator& setTrunkSize(const utymap::math::Vector3& size)
     {
-        trunkRadius_ = radius;
+        trunkSize_ = size;
         return *this;
     }
 
@@ -101,7 +101,7 @@ public:
         trunkGenerator
             .setCenter(position_)
             .setHeight(trunkHeight_)
-            .setRadius(trunkRadius_)
+            .setRadius(trunkSize_)
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
             .setVertexNoiseFreq(0)
@@ -133,7 +133,8 @@ private:
     IcoSphereGenerator foliageGenerator;
     utymap::math::Vector3 position_;
     utymap::math::Vector3 foliageSize_;
-    double trunkHeight_, trunkRadius_;
+    utymap::math::Vector3 trunkSize_;
+    double trunkHeight_;
     int foliageRecursionLevel_;
 };
 }}

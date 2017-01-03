@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
             .setHeight(10)
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
-            .setRadius(1)
+            .setRadius(Vector3(0.5, 0.5, 0.5))
             .setColorNoiseFreq(0.1)
             .generate();
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenera
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
             .setTrunkHeight(5)
-            .setTrunkRadius(0.5)
+            .setTrunkSize(Vector3(0.5, 0.5, 0.5))
             .setFoliageSize(Vector3(4, 4, 4))
             .setTrunkColorNoiseFreq(0.1)
             .setFoliageColorNoiseFreq(0.1)

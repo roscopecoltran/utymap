@@ -14,7 +14,7 @@ public:
     CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
                       utymap::builders::MeshContext& meshContext) :
             AbstractGenerator(builderContext, meshContext),
-            center_(), radialSegments_(0), radius_(0), height_(0), maxSegmentHeight_(0)
+            center_(), radialSegments_(0), radius_(), height_(0), maxSegmentHeight_(0)
     {
     }
 
@@ -26,7 +26,7 @@ public:
     }
 
     /// Sets radius of cylinder.
-    CylinderGenerator& setRadius(double radius)
+    CylinderGenerator& setRadius(const utymap::math::Vector3& radius)
     {
         radius_ = radius;
         return *this;
@@ -63,12 +63,12 @@ public:
             double secondAngle = (j == radialSegments_ - 1 ? 0 : j + 1) * angleStep;
 
             auto first = utymap::math::Vector2(
-                    radius_ * std::cos(firstAngle) + center_.x,
-                    radius_ * std::sin(firstAngle) + center_.z);
+                    radius_.x * std::cos(firstAngle) + center_.x,
+                    radius_.z * std::sin(firstAngle) + center_.z);
 
             auto second = utymap::math::Vector2(
-                    radius_ * std::cos(secondAngle) + center_.x,
-                    radius_ * std::sin(secondAngle) + center_.z);
+                    radius_.x * std::cos(secondAngle) + center_.x,
+                    radius_.z * std::sin(secondAngle) + center_.z);
 
             // bottom cap
             addTriangle(center_,
@@ -92,9 +92,9 @@ public:
     }
 
 private:
-    utymap::math::Vector3 center_;
+    utymap::math::Vector3 center_, radius_;
     int radialSegments_;
-    double radius_, height_, maxSegmentHeight_;
+    double height_, maxSegmentHeight_;
 
 };
 

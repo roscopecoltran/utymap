@@ -1,5 +1,6 @@
 #include <mapcss/StyleConsts.hpp>
 #include "builders/poi/TreeBuilder.hpp"
+#include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
@@ -86,9 +87,6 @@ void TreeBuilder::visitRelation(const utymap::entities::Relation& relation)
 
 std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext& builderContext, Mesh& mesh, const Style& style)
 {
-    double foliageRadiusInDegrees = style.getValue(FoliageRadius, builderContext.boundingBox);
-    double foliageRadiusInMeters = style.getValue(FoliageRadius, builderContext.boundingBox.height());
-
     const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, TrunkGradientKey);
     const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, FoliageGradientKey);
 
@@ -99,10 +97,10 @@ std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext
         trunkGradient, foliageGradient, trunkTexture, foliageTexture);
 
     generator->setFoliageColorNoiseFreq(0);
-    generator->setFoliageSize(Vector3(1.5 * foliageRadiusInDegrees, foliageRadiusInMeters, foliageRadiusInDegrees));
+    generator->setFoliageSize(utymap::utils::getSize(builderContext.boundingBox, style, FoliageRadius));
     generator->setFoliageTextureScale(style.getValue(FoliageTextureScaleKey));
     generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkRadius(style.getValue(TrunkRadius, builderContext.boundingBox));
+    generator->setTrunkSize(utymap::utils::getSize(builderContext.boundingBox, style, TrunkRadius));
     generator->setTrunkHeight(style.getValue(TrunkHeight, builderContext.boundingBox.height()));
     generator->setTrunkTextureScale(style.getValue(TrunkTextureScaleKey));
 

@@ -7,6 +7,7 @@
 #include "entities/Relation.hpp"
 #include "mapcss/StyleConsts.hpp"
 #include "utils/GradientUtils.hpp"
+#include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap;
@@ -110,7 +111,7 @@ void BarrierBuilder::buildPillar(const T& element, Iterator begin, Iterator end,
     generator
         .setCenter(center)
         .setHeight(meshContext.style.getValue(StyleConsts::HeightKey()))
-        .setRadius(meshContext.style.getValue(StyleConsts::RadiusKey(), context_.boundingBox))
+        .setRadius(utymap::utils::getSize(context_.boundingBox, meshContext.style, StyleConsts::RadiusKey()))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
         .setVertexNoiseFreq(0)
