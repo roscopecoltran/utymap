@@ -117,6 +117,8 @@ void BarrierBuilder::buildPillar(const T& element, Iterator begin, Iterator end,
         .setVertexNoiseFreq(0)
         .generate();
 
+    context_.meshBuilder.writeTextureMappingInfo(meshContext.mesh, meshContext.appearanceOptions);
+
     // NOTE single coordinate, no need to replicate
     if (size == 1) {
         context_.meshCallback(meshContext.mesh);

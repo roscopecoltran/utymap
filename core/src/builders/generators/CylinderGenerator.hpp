@@ -43,7 +43,7 @@ public:
     }
 
     /// Sets orientation of cylinder in 3D space.
-    CylinderGenerator& SetDirection(const utymap::math::Vector3& direction,
+    CylinderGenerator& setDirection(const utymap::math::Vector3& direction,
                                     const utymap::math::Vector3& right)
     {
         direction_ = direction;
@@ -106,9 +106,6 @@ public:
                     addTriangle(center2, v3, v2);
             }
         }
-
-        builderContext_.meshBuilder.writeTextureMappingInfo(meshContext_.mesh,
-            meshContext_.appearanceOptions);
     }
 
 private:

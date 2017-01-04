@@ -39,6 +39,8 @@ public:
                 .setVertexNoiseFreq(0.0)
                 .setColorNoiseFreq(0)
                 .generate();
+
+            builderContext_.meshBuilder.writeTextureMappingInfo(meshContext_.mesh, meshContext_.appearanceOptions);
         });
     }
 };
