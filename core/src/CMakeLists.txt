@@ -76,6 +76,7 @@ set(HEADER_FILES
         index/InMemoryElementStore.hpp
         index/PersistentElementStore.hpp
         index/StringTable.hpp
+        lsys/turtles/TreeTurtle.hpp
         lsys/turtles/Turtle3d.hpp
         lsys/LSystem.hpp
         lsys/LSystemParser.hpp
@@ -137,6 +138,7 @@ add_library(${LIBRARY_NAME}
         index/InMemoryElementStore.cpp
         index/PersistentElementStore.cpp
         index/StringTable.cpp
+        lsys/turtles/TreeTurtle.cpp
         lsys/turtles/Turtle3d.cpp
         lsys/LSystemParser.cpp
         lsys/Turtle.cpp
