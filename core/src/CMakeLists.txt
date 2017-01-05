@@ -90,6 +90,7 @@ set(HEADER_FILES
         mapcss/StyleEvaluator.hpp
         mapcss/StyleDeclaration.hpp
         mapcss/StyleProvider.hpp
+        mapcss/TextureAtlasParser.hpp
         math/LineLinear.hpp
         math/Mesh.hpp
         math/Polygon.hpp
@@ -145,6 +146,7 @@ add_library(${LIBRARY_NAME}
         mapcss/StyleConsts.cpp
         mapcss/StyleEvaluator.cpp
         mapcss/StyleProvider.cpp
+        mapcss/TextureAtlasParser.cpp
         utils/GradientUtils.cpp
         utils/NoiseUtils.cpp
         )

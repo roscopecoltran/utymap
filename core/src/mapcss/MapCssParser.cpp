@@ -1,6 +1,9 @@
+#include "Exceptions.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/MapCssParser.hpp"
-#include "Exceptions.hpp"
+#include "mapcss/TextureAtlasParser.hpp"
+#include "lsys/LSystemParser.hpp"
+#include "utils/CoreUtils.hpp"
 
 #define BOOST_SPIRIT_USE_PHOENIX_V3
 #include <boost/bind.hpp>
@@ -23,41 +26,6 @@ namespace ascii = boost::spirit::ascii;
 namespace phoenix = boost::phoenix;
 
 using namespace utymap::mapcss;
-
-namespace {
-struct Region
-{
-    std::string groupName;
-    int x;
-    int y;
-    int width;
-    int height;
-};
-
-struct Atlas
-{
-    int index;
-    int width;
-    int height;
-    std::vector<Region> regions;
-};
-}
-BOOST_FUSION_ADAPT_STRUCT(
-    Region,
-    (std::string, groupName)
-    (int, x)
-    (int, y)
-    (int, width)
-    (int, height)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-    Atlas,
-    (int, index)
-    (int, width)
-    (int, height)
-    (std::vector<Region>, regions)
-)
 
 BOOST_FUSION_ADAPT_STRUCT(
     Condition,
@@ -100,9 +68,6 @@ namespace {
 template<typename Iterator>
 void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet);
 
-template<typename Iterator>
-void parse(const std::string& path, Iterator begin, Iterator end, Atlas& atlas);
-
 template <typename Iterator>
 struct CommentSkipper : public qi::grammar<Iterator>
 {
@@ -116,41 +81,6 @@ struct CommentSkipper : public qi::grammar<Iterator>
         start.name("comment");
     }
     qi::rule<Iterator> start;
-};
-
-template <typename Iterator>
-struct RegionGrammar : qi::grammar < Iterator, Region(), CommentSkipper<Iterator> >
-{
-    RegionGrammar() : RegionGrammar::base_type(start, "region")
-    {
-        start =
-            qi::lexeme[+(ascii::char_ - ',')] >> ',' >>
-            qi::int_ >> ',' >>
-            qi::int_ >> ',' >>
-            qi::int_ >> ',' >>
-            qi::int_
-            ;
-
-        start.name("region");
-    }
-    qi::rule<Iterator, Region(), CommentSkipper<Iterator> > start;
-};
-
-template <typename Iterator>
-struct AtlasGrammar : qi::grammar < Iterator, Atlas(), CommentSkipper<Iterator>>
-{
-    AtlasGrammar() : AtlasGrammar::base_type(start, "atlas")
-    {
-        start =
-            qi::int_ >> ',' >>
-            qi::int_ >> ',' >>
-            qi::int_ >>
-            +(region)
-        ;
-    }
-
-    RegionGrammar<Iterator> region;
-    qi::rule<Iterator, Atlas(), CommentSkipper<Iterator>> start;
 };
 
 template <typename Iterator>
@@ -296,46 +226,65 @@ private:
 };
 
 template <typename Iterator>
-struct TextureGrammar : qi::grammar < Iterator, CommentSkipper<Iterator> >
+struct ExtraImportGrammar : qi::grammar < Iterator, CommentSkipper<Iterator> >
 {
-    TextureGrammar(const std::string& directory, StyleSheet& stylesheet) : TextureGrammar::base_type(start, "texture"),
-        directory(directory),  stylesheet(stylesheet)
+    ExtraImportGrammar(const std::string& directory, StyleSheet& stylesheet) :
+        ExtraImportGrammar::base_type(start, "extra"),
+        directory(directory), stylesheet(stylesheet),
+        textureAtlasParser(),
+        lsystemParser()
     {
-        start =
-            ascii::string("@texture url(\"") >
+        fileName =
             qi::as_string[qi::lexeme[+(ascii::char_ - (qi::lit('"')))]]
-              [boost::bind(&TextureGrammar::parseAtlas, this, _1)]
+        ;
+
+        atlas =
+            ascii::string("@texture url(\"") >
+            fileName[boost::bind(&ExtraImportGrammar::addAtlas, this, _1)]
             > "\");"
-                ;
-            start.name("texture");
+        ;
+
+        lsystem =
+            ascii::string("@lsystem url(\"") >
+            fileName[boost::bind(&ExtraImportGrammar::addLSystem, this, _1)]
+            > "\");"
+        ;
+
+        start = atlas | lsystem;
+
+        start.name("extra");
     }
 
 private:
-    void parseAtlas(const std::string& url)
+    void addAtlas(const std::string& url) const
+    {  
+        stylesheet.textures.push_back(textureAtlasParser.parse(getContent(url)));
+    }
+
+    /// Parses lsystem from url and adds it to stylesheet.
+    void addLSystem(const std::string& url) const
     {
-        std::ifstream atlasFile(directory + url);
-        if (!atlasFile.good()) {
-             return;
-        }
-        std::string atlasContent((std::istreambuf_iterator<char>(atlasFile)), std::istreambuf_iterator<char>());
+        auto name = utymap::utils::removeExtension(url);
+        //auto lsystem = lsystemParser.parse(getContent(url));
+        //stylesheet.lsystems[name] = lsystem;
+    }
 
-        Atlas atlas;
-        ::parse(url, atlasContent.begin(), atlasContent.end(), atlas);
-
-        std::unordered_map<std::string, TextureGroup> groups;
-        for (const auto& region : atlas.regions) {
-            groups[region.groupName]
-                .add(static_cast<std::uint16_t>(atlas.width),
-                     static_cast<std::uint16_t>(atlas.height),
-                     utymap::math::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
-        }
-
-        stylesheet.textures.emplace_back(atlas.index, groups);
+    std::string getContent(const std::string& path) const
+    {
+        std::ifstream file(directory + path);
+        if (!file.good())
+            throw utymap::MapCssException(std::string("Cannot find:") + directory + path);
+        return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     }
 
     qi::rule<Iterator, CommentSkipper<Iterator>> start;
+    qi::rule<Iterator, CommentSkipper<Iterator>> atlas;
+    qi::rule<Iterator, CommentSkipper<Iterator>> lsystem;
+    qi::rule<Iterator, std::string(), CommentSkipper<Iterator>> fileName;
     const std::string directory;
     StyleSheet& stylesheet;
+    TextureAtlasParser textureAtlasParser;
+    utymap::lsys::LSystemParser lsystemParser;
 };
 
 template <typename Iterator>
@@ -371,18 +320,8 @@ struct StyleSheetGrammar : qi::grammar < Iterator, StyleSheet(), CommentSkipper<
     qi::rule<Iterator, StyleSheet(), CommentSkipper<Iterator>> start;
     RuleGrammar<Iterator> rule;
     ImportGrammar<Iterator> import;
-    TextureGrammar<Iterator> texture;
+    ExtraImportGrammar<Iterator> texture;
 };
-
-template<typename Iterator>
-void parse(const std::string& path, Iterator begin, Iterator end, Atlas& atlas)
-{
-    AtlasGrammar<Iterator> grammar;
-    CommentSkipper<Iterator> skipper;
-
-    if (!phrase_parse(begin, end, grammar, skipper, atlas))
-        throw utymap::MapCssException(std::string("Cannot parse: '") + path);
-}
 
 template<typename Iterator>
 void parse(const std::string& directory, Iterator begin, Iterator end, StyleSheet& stylesheet)

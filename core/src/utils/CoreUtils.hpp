@@ -15,6 +15,13 @@ std::string toString(T t)
     return boost::lexical_cast<std::string>(t);
 }
 
+inline std::string removeExtension(const std::string& filename) {
+    auto lastdot = filename.find_last_of(".");
+    return lastdot == std::string::npos
+        ? filename
+        : filename.substr(0, lastdot);
+}
+
 template<typename T>
 T lexicalCast(const std::string& value)
 {
