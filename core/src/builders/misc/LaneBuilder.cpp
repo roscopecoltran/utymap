@@ -16,6 +16,7 @@ namespace {
 
     const std::string LaneWidthKey = StylePrefix + StyleConsts::WidthKey();
     const std::string LaneHeightKey = StylePrefix + StyleConsts::HeightKey();
+    const std::string LaneMinHeightKey = StylePrefix + StyleConsts::MinHeightKey();
     const std::string LaneLengthKey = StylePrefix + StyleConsts::LengthKey();
 
     const std::string LaneGradientKey = StylePrefix + StyleConsts::GradientKey();
@@ -41,6 +42,7 @@ void LaneBuilder::visitWay(const Way& way)
     WallGenerator generator(context_, meshContext);
     generator
         .setWidth(width)
+        .setHeightOffset(style.getValue(LaneMinHeightKey))
         .setHeight(style.getValue(LaneHeightKey))
         .setGap(length)
         .setLength(length);

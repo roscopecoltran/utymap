@@ -20,7 +20,7 @@ public:
     WallGenerator(const utymap::builders::BuilderContext& builderContext,
                   utymap::builders::MeshContext& meshContext) :
         AbstractGenerator(builderContext, meshContext),
-        begin_(), end_(), width_(0), height_(0), length_(0), gap_(0)
+        begin_(), end_(), width_(0), height_(0), heightOffset_(0), length_(0), gap_(0)
     {
     }
 
@@ -40,6 +40,12 @@ public:
     WallGenerator& setHeight(double height)
     {
         height_ = height;
+        return *this;
+    }
+
+    WallGenerator& setHeightOffset(double offset)
+    {
+        heightOffset_ = offset;
         return *this;
     }
 
@@ -97,10 +103,10 @@ private:
         auto rightP0 = p0 - normal * width_;
         auto rightP1 = p1 - normal * width_;
 
-        auto bottomLeftP0 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP0.y, leftP0.x);
-        auto bottomLeftP1 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP1.y, leftP1.x);
-        auto bottomRightP0 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP0.y, rightP0.x);
-        auto bottomRightP1 = builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP1.y, rightP1.x);
+        auto bottomLeftP0 = heightOffset_ + builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP0.y, leftP0.x);
+        auto bottomLeftP1 = heightOffset_ + builderContext_.eleProvider.getElevation(builderContext_.quadKey, leftP1.y, leftP1.x);
+        auto bottomRightP0 = heightOffset_ + builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP0.y, rightP0.x);
+        auto bottomRightP1 = heightOffset_ + builderContext_.eleProvider.getElevation(builderContext_.quadKey, rightP1.y, rightP1.x);
 
         buildParallelepiped(utymap::math::Vector3(leftP0.x, bottomLeftP0, leftP0.y),
                             utymap::math::Vector3(leftP1.x, bottomLeftP1, leftP1.y),
@@ -110,7 +116,7 @@ private:
     }
 
     Iterator begin_, end_;
-    double width_, height_, length_, gap_;
+    double width_, height_, heightOffset_, length_, gap_;
 };
 
 }}

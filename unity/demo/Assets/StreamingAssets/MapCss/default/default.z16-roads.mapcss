@@ -94,6 +94,7 @@ way|z16[highway][lanes] {
 way|z16[highway][lanes>1] {
     builders: terrain,lamp,lane;
 
+    lane-min-height:-0.2m;
     lane-height:0.01m;
     lane-width: 0.1m;
     lane-length: 2m;
