@@ -1,4 +1,4 @@
-#include "lsys/turtles/Turtle3d.hpp"
+#include "lsys/Turtle3d.hpp"
 #include "lsys/LSystem.hpp"
 #include "utils/MathUtils.hpp"
 

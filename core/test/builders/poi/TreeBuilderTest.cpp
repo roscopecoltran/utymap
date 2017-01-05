@@ -1,6 +1,8 @@
 #include "QuadKey.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Relation.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include "test_utils/DependencyProvider.hpp"

@@ -23,9 +23,6 @@ public:
     void visitRelation(const utymap::entities::Relation&) override;
 
     void complete() override { }
-
-private:
-    void buildMesh(const utymap::mapcss::Style&, const utymap::math::Vector3& position, utymap::math::Mesh&) const;
 };
 
 }}

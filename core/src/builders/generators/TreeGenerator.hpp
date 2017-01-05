@@ -1,142 +1,57 @@
 #ifndef BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED
 #define BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED
 
-#include "builders/generators/AbstractGenerator.hpp"
+#include "builders/BuilderContext.hpp"
+#include "builders/MeshContext.hpp"
 #include "builders/generators/CylinderGenerator.hpp"
 #include "builders/generators/IcoSphereGenerator.hpp"
+#include "lsys/Turtle3d.hpp"
+
+#include <functional>
+#include <unordered_map>
 
 namespace utymap { namespace builders {
 
-/// Generates tree.
-class TreeGenerator
+/// Defines generator which generates a tree using lsystem.
+class TreeGenerator final: public utymap::lsys::Turtle3d
 {
+    /// Maps word from lsystem grammar to the corresponding member function.
+    static std::unordered_map<std::string, void(TreeGenerator::*)()> WordMap;
 public:
     TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  utymap::math::Mesh& mesh,
                   const utymap::mapcss::Style& style,
-                  const utymap::mapcss::ColorGradient& trunkGradient,
-                  const utymap::mapcss::ColorGradient& foliageGradient,
-                  const utymap::mapcss::TextureRegion& trunkTextureRegion,
-                  const utymap::mapcss::TextureRegion& foliageTextureRegion) :
-            builderContext_(builderContext),
-            trunkGeneratorMeshContext(mesh, style, trunkGradient, trunkTextureRegion),
-            foliageGeneratorMeshContext(mesh, style, foliageGradient, foliageTextureRegion),
-            trunkGenerator(builderContext, trunkGeneratorMeshContext),
-            foliageGenerator(builderContext, foliageGeneratorMeshContext),
-            position_(),
-            foliageSize_(),
-            trunkHeight_(0),
-            trunkSize_(),
-            foliageRecursionLevel_(1)
-    {
-    }
+                  utymap::math::Mesh& mesh);
 
-    TreeGenerator(const TreeGenerator&) = delete;
+    TreeGenerator& setPosition(const utymap::math::Vector3& position);
 
-    /// Sets position of tree
-    TreeGenerator& setPosition(const utymap::math::Vector3& position)
-    {
-        position_ = position;
-        return *this;
-    }
+    void moveForward() override;
 
-    /// Sets heigh of trunk
-    TreeGenerator& setTrunkHeight(double height)
-    {
-        trunkHeight_ = height;
-        return *this;
-    }
-
-    /// Sets radius of trunk
-    TreeGenerator& setTrunkSize(const utymap::math::Vector3& size)
-    {
-        trunkSize_ = size;
-        return *this;
-    }
-
-    /// Sets radius of foliage
-    TreeGenerator& setFoliageSize(const utymap::math::Vector3& size)
-    {
-        foliageSize_ = size;
-        return *this;
-    }
-
-    /// Sets trunk color noise freq
-    TreeGenerator& setTrunkColorNoiseFreq(double noiseFreq)
-    {
-        trunkGenerator.setColorNoiseFreq(noiseFreq);
-        return *this;
-    }
-
-    /// Sets foliage color noise freq.
-    TreeGenerator& setFoliageColorNoiseFreq(double noiseFreq)
-    {
-        foliageGenerator.setColorNoiseFreq(noiseFreq);
-        return *this;
-    }
-
-    /// Sets trunk texture scale
-    TreeGenerator& setTrunkTextureScale(double scale)
-    {
-        trunkGeneratorMeshContext.appearanceOptions.textureScale = scale;
-        return *this;
-    }
-
-    /// Sets foliage texture scale.
-    TreeGenerator& setFoliageTextureScale(double scale)
-    {
-        foliageGeneratorMeshContext.appearanceOptions.textureScale = scale;
-        return *this;
-    }
-
-    TreeGenerator& setFoliageRecursionLevel(int level)
-    {
-        foliageRecursionLevel_ = level;
-        return *this;
-    }
-
-    void generate()
-    {
-        // generate trunk
-        trunkGenerator
-            .setCenter(position_)
-            .setHeight(trunkHeight_)
-            .setRadius(trunkSize_)
-            .setMaxSegmentHeight(5)
-            .setRadialSegments(7)
-            .setVertexNoiseFreq(0)
-            .generate();
-
-        builderContext_.meshBuilder.writeTextureMappingInfo(trunkGeneratorMeshContext.mesh, 
-                                                            trunkGeneratorMeshContext.appearanceOptions);
-
-        // generate foliage
-        foliageGenerator
-            .setCenter(utymap::math::Vector3(
-                position_.x,
-                position_.y + trunkHeight_ + foliageSize_.y - 0.1,
-                position_.z))
-            .setSize(foliageSize_)
-            .setRecursionLevel(foliageRecursionLevel_)
-            .setVertexNoiseFreq(0)
-            .generate();
-
-        builderContext_.meshBuilder.writeTextureMappingInfo(foliageGeneratorMeshContext.mesh,
-                                                            foliageGeneratorMeshContext.appearanceOptions);
-    }
+    void say(const std::string& word) override;
 
 private:
+    /// Adds leaf.
+    void addLeaf();
+
+    /// Adds trunk.
+    void addTrunk();
+
+    /// Adds cone.
+    void addCone();
+
     const utymap::builders::BuilderContext& builderContext_;
-    utymap::builders::MeshContext trunkGeneratorMeshContext;
-    utymap::builders::MeshContext foliageGeneratorMeshContext;
-    CylinderGenerator trunkGenerator;
-    IcoSphereGenerator foliageGenerator;
-    utymap::math::Vector3 position_;
-    utymap::math::Vector3 foliageSize_;
-    utymap::math::Vector3 trunkSize_;
-    double trunkHeight_;
-    int foliageRecursionLevel_;
+
+    utymap::builders::MeshContext cylinderContext_;
+    utymap::builders::MeshContext icoSphereContext_;
+
+    utymap::builders::CylinderGenerator cylinderGenerator_;
+    utymap::builders::IcoSphereGenerator icoSphereGenerator_;
+
+    utymap::math::Vector3 trunkSize_ = utymap::math::Vector3::zero();
+    utymap::math::Vector3 leafSize_ = utymap::math::Vector3::zero();
+
+    //
 };
+
 }}
 
 #endif // BUILDERS_GENERATORS_TREEGENERATOR_HPP_DEFINED

@@ -2,6 +2,7 @@
 #include "builders/generators/IcoSphereGenerator.hpp"
 #include "builders/generators/TreeGenerator.hpp"
 #include "entities/Node.hpp"
+#include "lsys/LSystem.hpp"
 #include "utils/GradientUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -87,16 +88,11 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    TreeGenerator treeGenerator(builderContext, mesh, style, 
-        ColorGradient(), ColorGradient(), TextureRegion(), TextureRegion());
+    // TODO
+    TreeGenerator treeGenerator(builderContext, style, mesh);
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
-            .setTrunkHeight(5)
-            .setTrunkSize(Vector3(0.5, 0.5, 0.5))
-            .setFoliageSize(Vector3(4, 4, 4))
-            .setTrunkColorNoiseFreq(0.1)
-            .setFoliageColorNoiseFreq(0.1)
-            .generate();
+            .run(lsys::LSystem());
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);

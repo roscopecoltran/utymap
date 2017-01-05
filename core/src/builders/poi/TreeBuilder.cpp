@@ -1,7 +1,11 @@
 #include <mapcss/StyleConsts.hpp>
 #include "builders/poi/TreeBuilder.hpp"
+#include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Relation.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
+#include "lsys/LSystem.hpp"
 
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -14,45 +18,17 @@ namespace {
     const std::string WayMeshNamePrefix = "trees:";
 
     const std::string TreeStepKey = "tree-step";
-
-    const std::string FoliagePrefix = "foliage-";
-    const std::string FoliageGradientKey = FoliagePrefix + StyleConsts::GradientKey();
-    const std::string FoliageRadius = FoliagePrefix + StyleConsts::RadiusKey();
-    const std::string FoliageTextureIndexKey = FoliagePrefix + StyleConsts::TextureIndexKey();
-    const std::string FoliageTextureTypeKey = FoliagePrefix + StyleConsts::TextureTypeKey();
-    const std::string FoliageTextureScaleKey = FoliagePrefix + StyleConsts::TextureScaleKey();
-
-    const std::string TrunkPrefix = "trunk-";
-    const std::string TrunkGradientKey = TrunkPrefix + StyleConsts::GradientKey();
-    const std::string TrunkRadius = TrunkPrefix + StyleConsts::RadiusKey();
-    const std::string TrunkHeight = TrunkPrefix + StyleConsts::HeightKey();;
-    const std::string TrunkTextureIndexKey = TrunkPrefix + StyleConsts::TextureIndexKey();;
-    const std::string TrunkTextureTypeKey = TrunkPrefix + StyleConsts::TextureTypeKey();
-    const std::string TrunkTextureScaleKey = TrunkPrefix + StyleConsts::TextureScaleKey();
-
-    /// Gets a reference to texture region using parameters provided.
-    const TextureRegion& getTextureRegion(const StyleProvider& styleProvider, 
-                                          const Style& style,
-                                          const std::string& textureIndexKey,
-                                          const std::string& textureTypeKey)
-    {
-        return styleProvider
-            .getTexture(static_cast<std::uint16_t>(style.getValue(textureIndexKey)),
-                        style.getString(textureTypeKey))
-            .random(0);
-    }
 }
 
 void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
     Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
     Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
-    
-    auto generator = createGenerator(context_, mesh, style);
-
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
-    generator->setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude));
-    generator->generate();
+    
+    TreeGenerator(context_, style, mesh)
+        .setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
+        .run(lsys::LSystem());
 
     context_.meshCallback(mesh);
 }
@@ -63,9 +39,9 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
     Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
-    auto generator = TreeBuilder::createGenerator(context_, treeMesh, style);
-    generator->setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
-    generator->generate();
+    TreeGenerator(context_, style, treeMesh)
+        .setPosition(Vector3(0, 0, 0))// NOTE we will override coordinates later
+        .run(lsys::LSystem());
 
     double treeStepInMeters = style.getValue(TreeStepKey);
 
@@ -83,26 +59,4 @@ void TreeBuilder::visitRelation(const utymap::entities::Relation& relation)
     for (const auto& element : relation.elements) {
         element->accept(*this);
     }
-}
-
-std::unique_ptr<TreeGenerator> TreeBuilder::createGenerator(const BuilderContext& builderContext, Mesh& mesh, const Style& style)
-{
-    const auto& trunkGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, TrunkGradientKey);
-    const auto& foliageGradient = GradientUtils::evaluateGradient(builderContext.styleProvider, style, FoliageGradientKey);
-
-    const auto& trunkTexture = getTextureRegion(builderContext.styleProvider, style, TrunkTextureIndexKey, TrunkTextureTypeKey);
-    const auto& foliageTexture = getTextureRegion(builderContext.styleProvider, style, FoliageTextureIndexKey, FoliageTextureTypeKey);
-
-    auto generator = utymap::utils::make_unique<TreeGenerator>(builderContext, mesh, style, 
-        trunkGradient, foliageGradient, trunkTexture, foliageTexture);
-
-    generator->setFoliageColorNoiseFreq(0);
-    generator->setFoliageSize(utymap::utils::getSize(builderContext.boundingBox, style, FoliageRadius));
-    generator->setFoliageTextureScale(style.getValue(FoliageTextureScaleKey));
-    generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkSize(utymap::utils::getSize(builderContext.boundingBox, style, TrunkRadius));
-    generator->setTrunkHeight(style.getValue(TrunkHeight, builderContext.boundingBox.height()));
-    generator->setTrunkTextureScale(style.getValue(TrunkTextureScaleKey));
-
-    return generator;
 }

@@ -2,14 +2,8 @@
 #define BUILDERS_POI_TREEBUILDER_HPP_DEFINED
 
 #include "builders/ElementBuilder.hpp"
-#include "builders/BuilderContext.hpp"
-#include "builders/MeshContext.hpp"
 #include "builders/generators/TreeGenerator.hpp"
-#include "entities/Node.hpp"
-#include "entities/Way.hpp"
 #include "entities/Area.hpp"
-#include "entities/Relation.hpp"
-#include "math/Mesh.hpp"
 
 namespace utymap { namespace builders {
 
@@ -31,11 +25,6 @@ public:
     void visitRelation(const utymap::entities::Relation& relation) override;
 
     void complete() override { }
-
-    /// Creates tree generator which can be used to produce multiple trees inside mesh.
-    static std::unique_ptr<TreeGenerator> createGenerator(const utymap::builders::BuilderContext& builderContext,
-                                                          utymap::math::Mesh& mesh,
-                                                          const utymap::mapcss::Style& style);
 };
 
 }}

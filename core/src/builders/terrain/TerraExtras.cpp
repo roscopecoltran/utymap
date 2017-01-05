@@ -1,6 +1,7 @@
 #include "builders/terrain/TerraExtras.hpp"
-#include "builders/poi/TreeBuilder.hpp"
+#include "builders/generators/TreeGenerator.hpp"
 #include "mapcss/StyleConsts.hpp"
+#include "lsys/LSystem.hpp"
 #include "utils/MeshUtils.hpp"
 
 using namespace utymap::builders;
@@ -14,11 +15,12 @@ namespace {
 
 void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::Context& extrasContext)
 {
+    // TODO
     // generate tree mesh
     Mesh treeMesh("");
-    auto generator = TreeBuilder::createGenerator(builderContext, treeMesh, extrasContext.style);
-    generator->setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
-    generator->generate();
+    TreeGenerator generator(builderContext, extrasContext.style, treeMesh);
+    generator.setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
+    generator.run(lsys::LSystem());
 
     // forest mesh contains all trees belong to one chunk.
     Mesh forestMesh("forest");

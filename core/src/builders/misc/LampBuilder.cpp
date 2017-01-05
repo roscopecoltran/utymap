@@ -4,6 +4,7 @@
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Relation.hpp"
+#include "lsys/LSystem.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
 
@@ -17,32 +18,6 @@ namespace {
     const std::string WayMeshNamePrefix = "lamps:";
 
     const std::string LampStep = "lamp-step";
-
-    const std::string LampLightPrefix = "lamp-light-";
-    const std::string LampLightGradientKey = LampLightPrefix + StyleConsts::GradientKey();
-    const std::string LampLightRadius = LampLightPrefix + StyleConsts::RadiusKey();
-    const std::string LampLightTextureIndexKey = LampLightPrefix + StyleConsts::TextureIndexKey();
-    const std::string LampLightTextureTypeKey = LampLightPrefix + StyleConsts::TextureTypeKey();
-    const std::string LampLightTextureScaleKey = LampLightPrefix + StyleConsts::TextureScaleKey();
-
-    const std::string LampPillarPrefix = "lamp-pillar-";
-    const std::string LampPillarGradientKey = LampPillarPrefix + StyleConsts::GradientKey();
-    const std::string LampPillarRadius = LampPillarPrefix + StyleConsts::RadiusKey();
-    const std::string LampPillarHeight = LampPillarPrefix + StyleConsts::HeightKey();
-    const std::string LampPillarTextureIndexKey = LampPillarPrefix + StyleConsts::TextureIndexKey();
-    const std::string LampPillarTextureTypeKey = LampPillarPrefix + StyleConsts::TextureTypeKey();
-    const std::string LampPillarTextureScaleKey = LampPillarPrefix + StyleConsts::TextureScaleKey();
-
-    /// Gets a reference to texture region using parameters provided.
-    const TextureRegion& getTextureRegion(const StyleProvider& styleProvider,
-                                          const Style& style,
-                                          const std::string& textureIndexKey,
-                                          const std::string& textureTypeKey)
-    {
-        return styleProvider
-            .getTexture(static_cast<std::uint16_t>(style.getValue(textureIndexKey)), style.getString(textureTypeKey))
-            .random(0);
-    }
 }
 
 void LampBuilder::visitNode(const utymap::entities::Node& node)
@@ -51,7 +26,9 @@ void LampBuilder::visitNode(const utymap::entities::Node& node)
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
     Mesh lampMesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
-    buildMesh(style, Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude), lampMesh);
+    TreeGenerator(context_, style, lampMesh)
+        .setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
+        .run(lsys::LSystem());
     
     context_.meshCallback(lampMesh);
 }
@@ -66,7 +43,9 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
     Mesh lampMesh("");
     Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
 
-    buildMesh(style, Vector3(0, 0, 0), lampMesh);
+    TreeGenerator(context_, style, lampMesh)
+        .setPosition(Vector3(0, 0, 0))
+        .run(lsys::LSystem());
 
     for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
         const auto& p0 = way.coordinates[i];
@@ -105,28 +84,4 @@ void LampBuilder::visitRelation(const utymap::entities::Relation& relation)
 {
     for (const auto& element : relation.elements)
         element->accept(*this);
-}
-
-void LampBuilder::buildMesh(const Style& style, const Vector3& position, Mesh& mesh) const
-{
-    // NOTE silently reuse tree builder..
-    const auto& trunkGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampPillarGradientKey);
-    const auto& foliageGradient = GradientUtils::evaluateGradient(context_.styleProvider, style, LampLightGradientKey);
-
-    const auto& trunkTexture = getTextureRegion(context_.styleProvider, style, LampPillarTextureIndexKey, LampPillarTextureTypeKey);
-    const auto& foliageTexture = getTextureRegion(context_.styleProvider, style, LampLightTextureIndexKey, LampLightTextureTypeKey);
-
-    auto generator = utymap::utils::make_unique<TreeGenerator>(context_, mesh, style,
-        trunkGradient, foliageGradient, trunkTexture, foliageTexture);
-
-    generator->setFoliageColorNoiseFreq(0);
-    generator->setFoliageSize(utymap::utils::getSize(context_.boundingBox, style, LampLightRadius));
-    generator->setFoliageTextureScale(style.getValue(LampLightTextureScaleKey));
-    generator->setFoliageRecursionLevel(0);
-    generator->setTrunkColorNoiseFreq(0);
-    generator->setTrunkSize(utymap::utils::getSize(context_.boundingBox, style, LampPillarRadius));
-    generator->setTrunkHeight(style.getValue(LampPillarHeight, context_.boundingBox.height()));
-    generator->setTrunkTextureScale(style.getValue(LampPillarTextureScaleKey));
-    generator->setPosition(position);
-    generator->generate();
 }

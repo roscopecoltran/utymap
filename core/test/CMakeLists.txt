@@ -63,7 +63,6 @@ add_executable(${TEST}
         index/StringTableTest.cpp
         lsys/LSystemParserTest.cpp
         lsys/RulesTest.cpp
-        lsys/TreeTurtleTest.cpp
         lsys/TurtleTest.cpp
         mapcss/MapCssParserTest.cpp
         mapcss/StyleDeclarationTest.cpp
