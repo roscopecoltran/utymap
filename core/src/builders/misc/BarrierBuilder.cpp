@@ -105,13 +105,15 @@ void BarrierBuilder::buildPillar(const T& element, Iterator begin, Iterator end,
     auto center = size == 1
         ? Vector3(begin->longitude, context_.eleProvider.getElevation(context_.quadKey, *begin), begin->latitude)
         : Vector3(0, 0, 0);
+    
+    auto radius = utymap::utils::getSize(context_.boundingBox, meshContext.style, StyleConsts::RadiusKey());
+    auto height = meshContext.style.getValue(StyleConsts::HeightKey());
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
     CylinderGenerator generator(context_, meshContext);
     generator
         .setCenter(center)
-        .setHeight(meshContext.style.getValue(StyleConsts::HeightKey()))
-        .setRadius(utymap::utils::getSize(context_.boundingBox, meshContext.style, StyleConsts::RadiusKey()))
+        .setSize(Vector3(radius.x, height, radius.z))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
         .setVertexNoiseFreq(0)

@@ -27,10 +27,9 @@ public:
             CylinderGenerator cylinderGenerator(builderContext_, meshContext_);
             cylinderGenerator
                 .setCenter(utymap::math::Vector3(center2d.x, minHeight_, center2d.y))
-                .setHeight(height_)
                 .setMaxSegmentHeight(5)
                 .setRadialSegments(7)
-                .setRadius(utymap::math::Vector3(size.x, height_, size.y))
+                .setSize(utymap::math::Vector3(size.x, height_, size.y))
                 .setColorNoiseFreq(0)
                 .generate();
 

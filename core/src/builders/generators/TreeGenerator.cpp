@@ -39,9 +39,9 @@ std::unordered_map<std::string, void(TreeGenerator::*)()> TreeGenerator::WordMap
 TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
     builderContext_(builderContext),
     cylinderContext_(MeshContext::create(mesh, style, builderContext.styleProvider,
-    TrunkGradientKey, TrunkTextureIndexKey, TrunkTextureTypeKey, TrunkTextureScaleKey)),
+        TrunkGradientKey, TrunkTextureIndexKey, TrunkTextureTypeKey, TrunkTextureScaleKey)),
     icoSphereContext_(MeshContext::create(mesh, style, builderContext.styleProvider,
-    LeafGradientKey, LeafTextureIndexKey, LeafTextureTypeKey, LeafTextureScaleKey)),
+        LeafGradientKey, LeafTextureIndexKey, LeafTextureTypeKey, LeafTextureScaleKey)),
     cylinderGenerator_(builderContext, cylinderContext_),
     icoSphereGenerator_(builderContext, icoSphereContext_),
     trunkSize_(utymap::utils::getSize(builderContext.boundingBox, style, TrunkRadius)),
@@ -89,8 +89,7 @@ void TreeGenerator::addTrunk()
     auto size = trunkSize_ * state_.length;
     cylinderGenerator_
         .setCenter(state_.position)
-        .setHeight(size.y)
-        .setRadius(size)
+        .setSize(size)
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
@@ -103,8 +102,7 @@ void TreeGenerator::addCone()
     auto size = trunkSize_ * state_.length;
     cylinderGenerator_
         .setCenter(state_.position)
-        .setHeight(size.y)
-        .setRadius(size, Vector3(0, 0, 0))
+        .setSize(size, Vector3(0, 0, 0))
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,

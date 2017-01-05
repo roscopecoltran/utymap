@@ -2,11 +2,13 @@
 #include "builders/generators/IcoSphereGenerator.hpp"
 #include "builders/generators/TreeGenerator.hpp"
 #include "entities/Node.hpp"
-#include "lsys/LSystem.hpp"
+#include "lsys/LSystemParser.hpp"
 #include "utils/GradientUtils.hpp"
 
 #include <boost/test/unit_test.hpp>
+#include <fstream>
 
+#include "config.hpp"
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
@@ -89,10 +91,9 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
     CylinderGenerator cylinderGenerator(builderContext, meshContext);
     cylinderGenerator
             .setCenter(Vector3(0, 0, 0))
-            .setHeight(10)
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
-            .setRadius(Vector3(0.5, 0.5, 0.5))
+            .setSize(Vector3(0.5, 10, 0.5))
             .setColorNoiseFreq(0.1)
             .generate();
 
@@ -103,11 +104,12 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    // TODO
+    std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
+    auto lsystem = utymap::lsys::LSystemParser().parse(file);
     TreeGenerator treeGenerator(builderContext, style, mesh);
     treeGenerator
             .setPosition(Vector3(0, 0, 0))
-            .run(lsys::LSystem());
+            .run(lsystem);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);

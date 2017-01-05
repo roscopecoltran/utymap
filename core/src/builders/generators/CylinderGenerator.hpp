@@ -25,20 +25,20 @@ public:
         return *this;
     }
 
-    /// Sets radius of cylinder.
-    CylinderGenerator& setRadius(const utymap::math::Vector3& radius)
+    /// Sets size of cylinder.
+    CylinderGenerator& setSize(const utymap::math::Vector3& size)
     {
-        radius1_ = radius;
-        radius2_ = radius;
+        size1_ = size;
+        size2_ = size;
         return *this;
     }
 
-    /// Sets radius of cylinder for first and last segments.
-    CylinderGenerator& setRadius(const utymap::math::Vector3& radius1,
-                                 const utymap::math::Vector3& radius2)
+    /// Sets size of cylinder for first and last segments.
+    CylinderGenerator& setSize(const utymap::math::Vector3& size1,
+                               const utymap::math::Vector3& size2)
     {
-        radius1_ = radius1;
-        radius2_ = radius2;
+        size1_ = size1;
+        size2_ = size2;
         return *this;
     }
 
@@ -48,13 +48,6 @@ public:
     {
         direction_ = direction;
         right_ = right;
-        return *this;
-    }
-
-    /// Sets radius of cylinder.
-    CylinderGenerator& setHeight(double height)
-    {
-        height_ = height;
         return *this;
     }
 
@@ -74,8 +67,8 @@ public:
 
     void generate() override
     {
-        int heightSegments = static_cast<int>(std::ceil(height_ / maxSegmentHeight_));
-        double heightStep = height_ / heightSegments;
+        int heightSegments = maxSegmentHeight_ != 0 ? static_cast<int>(std::ceil(size1_.y / maxSegmentHeight_)) : 1;
+        double heightStep = size1_.y / heightSegments;
         double angleStep = 2 * pi / radialSegments_;
 
         for (int j = 0; j < radialSegments_; ++j) {
@@ -112,14 +105,14 @@ private:
 
     bool isCone() const
     {
-        return radius2_ == utymap::math::Vector3::zero();
+        return size2_ == utymap::math::Vector3::zero();
     }
 
     utymap::math::Vector3 getRadius(double value) const
     {
-        return utymap::math::Vector3(utymap::utils::lerp(radius2_.x, radius1_.x, value),
-                                     utymap::utils::lerp(radius2_.y, radius1_.y, value),
-                                     utymap::utils::lerp(radius2_.z, radius1_.z, value));
+        return utymap::math::Vector3(utymap::utils::lerp(size2_.x, size1_.x, value),
+                                     utymap::utils::lerp(size2_.y, size1_.y, value),
+                                     utymap::utils::lerp(size2_.z, size1_.z, value));
     }
 
     static utymap::math::Vector3 scale(const utymap::math::Vector3& value, const utymap::math::Vector3& size)
@@ -130,10 +123,10 @@ private:
     utymap::math::Vector3 center_ = utymap::math::Vector3::zero();
     utymap::math::Vector3 direction_ = utymap::math::Vector3::up();
     utymap::math::Vector3 right_ = utymap::math::Vector3::right();
-    utymap::math::Vector3 radius1_ = utymap::math::Vector3::zero();
-    utymap::math::Vector3 radius2_ = utymap::math::Vector3::zero();
-    double height_ = 0, maxSegmentHeight_ = 0;
-    int radialSegments_ = 0;
+    utymap::math::Vector3 size1_ = utymap::math::Vector3::zero();
+    utymap::math::Vector3 size2_ = utymap::math::Vector3::zero();
+    double maxSegmentHeight_ = 0;
+    int radialSegments_ = 5;
 
 };
 
