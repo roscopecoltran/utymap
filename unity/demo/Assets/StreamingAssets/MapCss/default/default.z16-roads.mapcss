@@ -26,19 +26,21 @@ way|z16[highway] {
     terrain-layer: pedestrian;
     width: 1m;
 
+    lsystem: lamp;
     lamp-step: 30m;
-    lamp-light-color: gradient(yellow);
-    lamp-light-radius: 0.4m;
-    lamp-light-texture-index: 0;
-    lamp-light-texture-type: background;
-    lamp-light-texture-scale: 50;
 
-    lamp-pillar-color: gradient(black);
-    lamp-pillar-radius: 0.1m;
-    lamp-pillar-height: 8m;
-    lamp-pillar-texture-index: 0;
-    lamp-pillar-texture-type: background;
-    lamp-pillar-texture-scale: 200;
+    leaf-color: gradient(yellow);
+    leaf-radius: 0.4m;
+    leaf-texture-index: 0;
+    leaf-texture-type: background;
+    leaf-texture-scale: 50;
+
+    trunk-color: gradient(black);
+    trunk-radius: 0.1m;
+    trunk-height: 8m;
+    trunk-texture-index: 0;
+    trunk-texture-type: background;
+    trunk-texture-scale: 200;
 }
 
 way|z16[highway=path][foot=designated] {
@@ -85,7 +87,7 @@ way|z16[highway=tertiary_link] {
 }
 
 way|z16[highway][lanes] {
-    width: eval("tag('lanes') * 2");
+    width: eval("tag('lanes') * 1.8");
     dimension: 1m;
 }
 

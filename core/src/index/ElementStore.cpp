@@ -16,6 +16,8 @@ using namespace utymap::formats;
 using namespace utymap::mapcss;
 
 namespace {
+    const std::string TrueValue = "true";
+
     /// Creates bounding box of given element.
     class BoundingBoxVisitor : public ElementVisitor
     {
@@ -89,7 +91,7 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
     bool wasStored = false;
     for (int lod = range.start; lod <= range.end; ++lod) {
         Style style = styleProvider.forElement(element, lod);
-        if (style.empty() || style.has(skipKeyId_, "true")) 
+        if (style.empty() || style.has(skipKeyId_, TrueValue))
             continue;
 
         // initialize bounding box only once
@@ -101,7 +103,7 @@ bool ElementStore::store(const Element& element, const LodRange& range, const St
              if (!visitor(bboxVisitor.boundingBox, quadKeyBbox))
                  return;
 
-            if (style.has(clipKeyId_, "true"))
+            if (style.has(clipKeyId_, TrueValue))
                 geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
             else
                 storeImpl(element, quadKey);

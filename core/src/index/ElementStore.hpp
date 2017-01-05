@@ -55,7 +55,7 @@ private:
                const utymap::mapcss::StyleProvider& styleProvider,
                const Visitor& visitor);
 
-    std::uint32_t clipKeyId_, skipKeyId_;
+    const std::uint32_t clipKeyId_, skipKeyId_;
 };
 
 }}

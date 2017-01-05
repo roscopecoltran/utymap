@@ -16,7 +16,7 @@ using namespace utymap::tests;
 namespace {
     const ColorGradient gradient = ColorGradient();
     const std::string stylesheetStr = "area|z16[amenity=forest] {"
-                                        "lsystem:tree;"
+                                        "lsystem: tree;"
                                         "tree-frequency: 30;"
                                         "tree-chunk-size: 30;"
                                         "leaf-color: gradient(green);"
@@ -43,10 +43,11 @@ namespace {
 
     struct Builders_Terrain_TerraExtrasFixture
     {
-        Builders_Terrain_TerraExtrasFixture():
+        Builders_Terrain_TerraExtrasFixture() :
+            quadKey(16, 35203, 21493),
             dependencyProvider(),
             builderContext(
-                QuadKey(16, 0, 0),
+                quadKey,
                 *dependencyProvider.getStyleProvider(createStyleSheet()),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
@@ -61,9 +62,9 @@ namespace {
             auto mesh = std::make_shared<Mesh>("area");
             Polygon polygon(4, 0);
             polygon.addContour(std::vector < Vector2 > {{0, 0}, { 10, 0 }, { 10, 10 }, { 0, 10 } });
-            MeshBuilder builder(QuadKey(16, 0, 0), *dependencyProvider.getElevationProvider());
-            builder.addPolygon(*mesh, polygon, 
-                MeshBuilder::GeometryOptions(5, 0 ,0, 0), 
+            MeshBuilder builder(quadKey, *dependencyProvider.getElevationProvider());
+            builder.addPolygon(*mesh, polygon,
+                MeshBuilder::GeometryOptions(5, 0 ,0, 0),
                 MeshBuilder::AppearanceOptions(gradient, 0, 0, TextureRegion(), 0));
             return mesh;
         }
@@ -88,6 +89,7 @@ namespace {
             isVerified = true;
         }
 
+        QuadKey quadKey;
         DependencyProvider dependencyProvider;
         BuilderContext builderContext;
         bool isVerified;
@@ -101,8 +103,7 @@ BOOST_AUTO_TEST_CASE(GivenMesh_WhenAddForest_ThenTreesAreAdded)
     auto mesh = generateMesh();
     auto style = generateStyle();
     TerraExtras::Context extrasContext(*mesh, style);
-    extrasContext.startVertex = 0, extrasContext.startTriangle = 0, 
-        extrasContext.startColor = 0;
+    extrasContext.startVertex = 0, extrasContext.startTriangle = 0, extrasContext.startColor = 0;
 
     TerraExtras::addForest(builderContext, extrasContext);
 
