@@ -16,6 +16,7 @@ struct StyleConsts final {
     static const std::string& ColorNoiseFreqKey();
 
     static const std::string& GradientKey();
+    static const std::string& LSystemKey();
 
     static const std::string& TextureIndexKey();
     static const std::string& TextureTypeKey();

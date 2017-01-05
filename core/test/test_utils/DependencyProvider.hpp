@@ -46,11 +46,15 @@ public:
 
     std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const std::string& stylesheetStr)
     {
+        auto stylesheet = utymap::mapcss::MapCssParser().parse(stylesheetStr);
+        return getStyleProvider(stylesheet);
+    }
+
+    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider(const utymap::mapcss::StyleSheet& stylesheet)
+    {
         if (styleProvider_ == nullptr) {
             utymap::mapcss::MapCssParser parser;
-            styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(
-                parser.parse(stylesheetStr), 
-                *getStringTable());
+            styleProvider_ = std::make_shared<utymap::mapcss::StyleProvider>(stylesheet, *getStringTable());
         }
         return styleProvider_;
     }

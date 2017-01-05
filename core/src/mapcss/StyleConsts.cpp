@@ -32,6 +32,12 @@ const std::string& StyleConsts::GradientKey()
     return value;
 }
 
+const std::string& StyleConsts::LSystemKey()
+{
+    static const std::string value = "lsystem";
+    return value;
+}
+
 const std::string& StyleConsts::TextureIndexKey()
 {
     static const std::string value = "texture-index";

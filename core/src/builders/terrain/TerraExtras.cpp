@@ -15,16 +15,17 @@ namespace {
 
 void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::Context& extrasContext)
 {
-    // TODO
     // generate tree mesh
+    const auto& lsystem = builderContext.styleProvider
+        .getLsystem(extrasContext.style.getString(StyleConsts::LSystemKey()));
     Mesh treeMesh("");
-    TreeGenerator generator(builderContext, extrasContext.style, treeMesh);
-    generator.setPosition(Vector3(0, 0, 0)); // NOTE we will override coordinates later
-    generator.run(lsys::LSystem());
-
+    TreeGenerator(builderContext, extrasContext.style, treeMesh)
+        .setPosition(Vector3(0, 0, 0)) // NOTE we will override coordinates later
+        .run(lsystem);
+  
     // forest mesh contains all trees belong to one chunk.
     Mesh forestMesh("forest");
-  
+
     // go through mesh region triangles and insert copy of the tree
     std::size_t step = 3 * static_cast<std::size_t>(std::max(extrasContext.style.getValue(TreeFrequencyKey), 1.));
     int chunkSize = static_cast<int>(std::max(extrasContext.style.getValue(TreeChunkSize), 1.));

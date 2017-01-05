@@ -21,7 +21,22 @@ using namespace utymap::utils;
 using namespace utymap::tests;
 
 namespace {
-    const std::string stylesheet = "node|z1[natural=tree] { color:gradient(red);}";
+    const std::string stylesheet =
+        "node|z1[natural=tree] {"
+            "lsystem: tree;"
+            "leaf-color: gradient(green);"
+            "leaf-radius: 2.5m;"
+            "leaf-texture-index: 0;"
+            "leaf-texture-type: tree;"
+            "leaf-texture-scale: 50;"
+            "trunk-color: gradient(gray);"
+            "trunk-radius: 0.3m;"
+            "trunk-height: 1.5m;"
+            "trunk-texture-index: 0;"
+            "trunk-texture-type: background;"
+            "trunk-texture-scale: 200;"
+        "}";
+
     struct Builders_Generators_GeneratorFixture
     {
         Builders_Generators_GeneratorFixture() :

@@ -24,11 +24,13 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
 {
     Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
     Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
+
+    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
     
     TreeGenerator(context_, style, mesh)
         .setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
-        .run(lsys::LSystem());
+        .run(lsystem);
 
     context_.meshCallback(mesh);
 }
@@ -37,11 +39,13 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
 {
     Mesh treeMesh("");
     Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
+
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
+    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
 
     TreeGenerator(context_, style, treeMesh)
         .setPosition(Vector3(0, 0, 0))// NOTE we will override coordinates later
-        .run(lsys::LSystem());
+        .run(lsystem);
 
     double treeStepInMeters = style.getValue(TreeStepKey);
 

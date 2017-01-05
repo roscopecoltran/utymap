@@ -10,15 +10,36 @@ using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::mapcss;
 using namespace utymap::math;
+using namespace utymap::lsys;
 using namespace utymap::tests;
 
 namespace {
     const ColorGradient gradient = ColorGradient();
-    const std::string stylesheet = "area|z16[amenity=forest] { "
-                                    "tree-frequency: 30; tree-chunk-size: 30;"
-                                    "foliage-color: gradient(green);"
-                                    "trunk-color:gradient(red); foliage-radius:2.5m;"
-                                    "trunk-radius:0.2m; trunk-height:4m; }";
+    const std::string stylesheetStr = "area|z16[amenity=forest] {"
+                                        "lsystem:tree;"
+                                        "tree-frequency: 30;"
+                                        "tree-chunk-size: 30;"
+                                        "leaf-color: gradient(green);"
+                                        "leaf-radius: 2.5m;"
+                                        "leaf-texture-index: 0;"
+                                        "leaf-texture-type: tree;"
+                                        "leaf-texture-scale: 50;"
+                                        "trunk-color: gradient(gray);"
+                                        "trunk-radius: 0.3m;"
+                                        "trunk-height: 1.5m;"
+                                        "trunk-texture-index: 0;"
+                                        "trunk-texture-type: background;"
+                                        "trunk-texture-scale: 200;"
+                                    "}";
+
+    StyleSheet createStyleSheet()
+    {
+        auto stylesheet = utymap::mapcss::MapCssParser().parse(stylesheetStr);
+        LSystem lsystem;
+        lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
+        stylesheet.lsystems.emplace("tree", lsystem);
+        return stylesheet;
+    }
 
     struct Builders_Terrain_TerraExtrasFixture
     {
@@ -26,7 +47,7 @@ namespace {
             dependencyProvider(),
             builderContext(
                 QuadKey(16, 0, 0),
-                *dependencyProvider.getStyleProvider(stylesheet),
+                *dependencyProvider.getStyleProvider(createStyleSheet()),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_Terrain_TerraExtrasFixture::verifyMesh, this, std::placeholders::_1),
@@ -52,7 +73,7 @@ namespace {
             Area area = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 0, 
                 { { "amenity", "forest" } },
                 { { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } });
-            return dependencyProvider.getStyleProvider(stylesheet)->forElement(area, 16);
+            return dependencyProvider.getStyleProvider(createStyleSheet())->forElement(area, 16);
         }
 
         void verifyMesh(const Mesh& mesh)

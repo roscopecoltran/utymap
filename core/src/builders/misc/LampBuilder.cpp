@@ -23,12 +23,14 @@ namespace {
 void LampBuilder::visitNode(const utymap::entities::Node& node)
 {
     Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
+
+    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
     Mesh lampMesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
     TreeGenerator(context_, style, lampMesh)
         .setPosition(Vector3(node.coordinate.longitude, elevation, node.coordinate.latitude))
-        .run(lsys::LSystem());
+        .run(lsystem);
     
     context_.meshCallback(lampMesh);
 }
@@ -37,6 +39,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
 {
     Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
+    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
     double width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
     double stepInMeters = style.getValue(LampStep);
 
@@ -45,7 +48,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
 
     TreeGenerator(context_, style, lampMesh)
         .setPosition(Vector3(0, 0, 0))
-        .run(lsys::LSystem());
+        .run(lsystem);
 
     for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
         const auto& p0 = way.coordinates[i];
