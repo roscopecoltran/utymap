@@ -48,8 +48,6 @@ private:
 
     utymap::math::Vector3 trunkSize_ = utymap::math::Vector3::zero();
     utymap::math::Vector3 leafSize_ = utymap::math::Vector3::zero();
-
-    //
 };
 
 }}

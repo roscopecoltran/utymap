@@ -15,14 +15,26 @@ using namespace utymap::heightmap;
 using namespace utymap::index;
 using namespace utymap::mapcss;
 using namespace utymap::math;
+using namespace utymap::lsys;
 using namespace utymap::tests;
 
 namespace {
-    const std::string stylesheet = "node|z16[natural=tree], way|z16[natural=tree_row] { "
-                                        "foliage-color: gradient(green);"
-                                        "trunk-color:gradient(red); foliage-radius:2.5m;"
-                                        "trunk-radius:0.2m; trunk-height:4m;"
-                                        "tree-step: 3m; }";
+    const std::string stylesheetStr =
+        "node|z16[natural=tree], way|z16[natural=tree_row] { "
+            "tree-step: 3m;"
+            "lsystem: tree;"
+            "leaf-color: gradient(green);"
+            "leaf-radius: 2.5m;"
+            "leaf-texture-index: 0;"
+            "leaf-texture-type: tree;"
+            "leaf-texture-scale: 50;"
+            "trunk-color: gradient(gray);"
+            "trunk-radius: 0.3m;"
+            "trunk-height: 1.5m;"
+            "trunk-texture-index: 0;"
+            "trunk-texture-type: background;"
+            "trunk-texture-scale: 200;"
+        "}";
 
     struct Builders_Poi_TreeBuilderFixture
     {
@@ -30,7 +42,7 @@ namespace {
             dependencyProvider(),
             context(
                 QuadKey(16, 35204, 21494),
-                *dependencyProvider.getStyleProvider(stylesheet),
+                *dependencyProvider.getStyleProvider(createStyleSheet()),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 [&](const Mesh& mesh) {
@@ -41,6 +53,15 @@ namespace {
             }, nullptr),
             isCalled(false)
         {
+        }
+
+        StyleSheet createStyleSheet() const
+        {
+            auto stylesheet = utymap::mapcss::MapCssParser().parse(stylesheetStr);
+            LSystem lsystem;
+            lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
+            stylesheet.lsystems.emplace("tree", lsystem);
+            return stylesheet;
         }
 
         DependencyProvider dependencyProvider;
