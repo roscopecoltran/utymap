@@ -256,24 +256,26 @@ struct ExtraImportGrammar : qi::grammar < Iterator, CommentSkipper<Iterator> >
     }
 
 private:
-    void addAtlas(const std::string& url) const
+    /// Parses texture atlas from url and adds it to stylesheet.
+    void addAtlas(const std::string& fileName) const
     {  
-        stylesheet.textures.push_back(textureAtlasParser.parse(getContent(url)));
+        stylesheet.textures.push_back(textureAtlasParser.parse(getContent(fileName)));
     }
 
     /// Parses lsystem from url and adds it to stylesheet.
-    void addLSystem(const std::string& url) const
+    void addLSystem(const std::string& fileName) const
     {
-        auto name = utymap::utils::removeExtension(url);
-        //auto lsystem = lsystemParser.parse(getContent(url));
-        //stylesheet.lsystems[name] = lsystem;
+        auto name = utymap::utils::removeExtension(fileName);
+        auto lsystem = lsystemParser.parse(getContent(fileName));
+        stylesheet.lsystems.emplace(name, lsystem);
     }
 
-    std::string getContent(const std::string& path) const
+    /// Gets content of the file.
+    std::string getContent(const std::string& fileName) const
     {
-        std::ifstream file(directory + path);
+        std::ifstream file(directory + fileName);
         if (!file.good())
-            throw utymap::MapCssException(std::string("Cannot find:") + directory + path);
+            throw utymap::MapCssException(std::string("Cannot find:") + directory + fileName);
         return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     }
 

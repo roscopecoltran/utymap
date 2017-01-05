@@ -4,3 +4,6 @@
 @import url("default.z1-z16.mapcss");
 
 @texture url("default.z16.txt");
+
+@lsystem url("tree.lsys");
+@lsystem url("lamp.lsys");

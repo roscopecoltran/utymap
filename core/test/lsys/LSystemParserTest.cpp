@@ -8,10 +8,10 @@ using namespace utymap::tests;
 
 namespace {
     const double ProbabilityPrecision = 0.01;
-    const std::string SimpleGrammar = "generations: 3"
-                                      "angle: 45"
-                                      "width: 0.1"
-                                      "length: 1.1"
+    const std::string SimpleGrammar = "generations: 3\n"
+                                      "angle: 45\n"
+                                      "width: 0.1\n"
+                                      "length: 1.1\n"
                                       "axiom: D F ab G G F K\n"
                                       "F(1) -> F G\n"
                                       "G(0.8) -> F\n"
@@ -73,12 +73,12 @@ BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasExpectedAmountOfProduct
 
 BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
 {
-    const std::string grammar = "generations: 3"
+    const std::string grammar = "generations: 3\n"
                                 "#angle:35\n"
-                                "angle: 45"
+                                "angle: 45\n"
                                 "#angle:55\n"
-                                "width: 1.2"
-                                "length: 1.2"
+                                "width: 1.2\n"
+                                "length: 1.2\n"
                                 "axiom: A\n"
                                 "A -> G G";
 
@@ -88,10 +88,10 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
 BOOST_AUTO_TEST_CASE(GivenGrammarWithProbabilities_WhenParse_ThenStringTurtleBuildsProperPath)
 {
     StringTurtle turtle;
-    const std::string grammar = "generations: 2"
-                                "angle: 45"
-                                "width: 1.2"
-                                "length: 1.2"
+    const std::string grammar = "generations: 2\n"
+                                "angle: 45\n"
+                                "width: 1.2\n"
+                                "length: 1.2\n"
                                 "axiom: A G\n"
                                 "G(0) -> G\n"
                                 "G(1) -> F F\n"
@@ -106,10 +106,10 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithProbabilities_WhenParse_ThenStringTurtleBui
 BOOST_AUTO_TEST_CASE(GivenGrammarWithWords_WhenParse_ThenStringTurtleBuildsProperPath)
 {
     StringTurtle turtle;
-    const std::string grammar = "generations: 1"
-                                "angle: 45"
-                                "width: 1.2"
-                                "length: 1.2"
+    const std::string grammar = "generations: 1\n"
+                                "angle: 45\n"
+                                "width: 1.2\n"
+                                "length: 1.2\n"
                                 "axiom: root F G leaf\n"
                                 "root(0) -> G\n"
                                 "root(1) -> F trunk\n"

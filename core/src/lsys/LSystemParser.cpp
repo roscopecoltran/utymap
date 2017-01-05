@@ -133,10 +133,10 @@ struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterato
     LSystemGrammar() : LSystemGrammar::base_type(start, "lsystem")
     {
         start =
-            (qi::lit("generations:") > qi::int_) >
-            (qi::lit("angle:") > qi::double_) >
-            (qi::lit("width:") > qi::double_) >
-            (qi::lit("length:") > qi::double_) >
+            (qi::lit("generations:") > qi::int_) >> qi::space >
+            (qi::lit("angle:") > qi::double_) >> qi::space >
+            (qi::lit("width:") > qi::double_) >> qi::space >
+            (qi::lit("length:") > qi::double_) >> qi::space >
             (qi::lit("axiom:") > +rule > '\n') >
             production
         ;
