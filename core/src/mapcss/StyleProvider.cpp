@@ -189,11 +189,7 @@ public:
     FilterCollection filters;
     StringTable& stringTable;
 
-    std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
-    std::unordered_map<std::uint16_t, std::unique_ptr<const TextureAtlas>> textures;
-
-    StyleProviderImpl(const StyleSheet& stylesheet, 
-                      StringTable& stringTable) :
+    StyleProviderImpl(const StyleSheet& stylesheet, StringTable& stringTable) :
         filters(),
         stringTable(stringTable),
         gradients(),
@@ -231,6 +227,10 @@ public:
         for (const auto& texture: stylesheet.textures) {
             textures.emplace(texture.index(), utymap::utils::make_unique<const TextureAtlas>(texture));
         }
+
+        for (const auto& lsystem : stylesheet.lsystems) {
+            lsystems.emplace(lsystem.first, utymap::utils::make_unique<const utymap::lsys::LSystem>(lsystem.second));
+        }
     }
 
     const ColorGradient& getGradient(const std::string& key)
@@ -250,10 +250,19 @@ public:
     const TextureGroup& getTexture(std::uint16_t index, const std::string& key) const
     {
         auto texturePair = textures.find(index);
-        if (texturePair == textures.end()) {
+        if (texturePair == textures.end())
             texturePair = textures.find(DefaultTextureIndex);
-        }
+        
         return texturePair->second->get(key);
+    }
+
+    const utymap::lsys::LSystem& getLsystem(const std::string& key) const
+    {
+        auto lsystemPair = lsystems.find(key);
+        if (lsystemPair == lsystems.end())
+            throw MapCssException("Invalid lsystem: " + key);
+
+        return *lsystemPair->second;
     }
 
 private:
@@ -331,6 +340,10 @@ private:
     }
 
     std::mutex lock_;
+
+    std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
+    std::unordered_map<std::uint16_t, std::unique_ptr<const TextureAtlas>> textures;
+    std::unordered_map<std::string, std::unique_ptr<const utymap::lsys::LSystem>> lsystems;
 };
 
 StyleProvider::StyleProvider(const StyleSheet& stylesheet, StringTable& stringTable) :
@@ -379,4 +392,9 @@ const ColorGradient& StyleProvider::getGradient(const std::string& key) const
 const TextureGroup& StyleProvider::getTexture(std::uint16_t index, const std::string& key) const
 {
     return pimpl_->getTexture(index, key);
+}
+
+const utymap::lsys::LSystem& StyleProvider::getLsystem(const std::string& key) const
+{
+    return pimpl_->getLsystem(key);
 }

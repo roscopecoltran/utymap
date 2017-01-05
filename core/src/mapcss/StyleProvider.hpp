@@ -6,6 +6,7 @@
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/Style.hpp"
+#include "lsys/Lsystem.hpp"
 
 #include <string>
 #include <memory>
@@ -31,16 +32,19 @@ public:
     bool hasStyle(const utymap::entities::Element&, int levelOfDetails) const;
 
     /// Returns style for given element at given level of details.
-    utymap::mapcss::Style forElement(const utymap::entities::Element&, int levelOfDetails) const;
+    Style forElement(const utymap::entities::Element&, int levelOfDetails) const;
 
     /// Returns style for canvas at given level of details.
-    utymap::mapcss::Style forCanvas(int levelOfDetails) const;
+    Style forCanvas(int levelOfDetails) const;
 
     /// Returns color gradient for given key.
     const ColorGradient& getGradient(const std::string& key) const;
 
     /// Returns texture group from given atlas using key.
     const TextureGroup& getTexture(std::uint16_t index, const std::string& key) const;
+
+    /// Returns lsystem with given id.
+    const utymap::lsys::LSystem& getLsystem(const std::string& key) const;
 
 private:
     class StyleProviderImpl;
