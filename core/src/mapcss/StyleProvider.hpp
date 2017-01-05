@@ -6,7 +6,7 @@
 #include "mapcss/ColorGradient.hpp"
 #include "mapcss/StyleSheet.hpp"
 #include "mapcss/Style.hpp"
-#include "lsys/Lsystem.hpp"
+#include "lsys/LSystem.hpp"
 
 #include <string>
 #include <memory>
