@@ -30,6 +30,7 @@ struct Region
 
 struct Atlas
 {
+    int id;
     int width;
     int height;
     std::vector<Region> regions;
@@ -48,6 +49,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
     Atlas,
+    (int, id)
     (int, width)
     (int, height)
     (std::vector<Region>, regions)
@@ -78,6 +80,7 @@ struct AtlasGrammar : qi::grammar < Iterator, Atlas(), qi::space_type>
     {
         start =
             qi::int_ >> ',' >>
+            qi::int_ >> ',' >>
             qi::int_ >>
             +(region)
         ;
@@ -104,8 +107,7 @@ TextureAtlas parse(Iterator begin, Iterator end)
             utymap::math::Rectangle(region.x, region.y, region.x + region.width, region.y + region.height));
     }
 
-    // TODO remove index.
-    return TextureAtlas(0, groups);
+    return TextureAtlas(atlas.id, groups);
 }
 
 TextureAtlas TextureAtlasParser::parse(const std::string& content) const
