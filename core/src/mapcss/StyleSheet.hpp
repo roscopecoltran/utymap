@@ -2,6 +2,7 @@
 #define MAPCSS_STYLESHEET_HPP_DEFINED
 
 #include "math/Rectangle.hpp"
+#include "lsys/LSystem.hpp"
 
 #include <cstdint>
 #include <string>
@@ -141,16 +142,10 @@ struct Rule final
 /// Represents stylesheet.
 struct StyleSheet final
 {
-    std::vector<TextureAtlas> textures;
     std::vector<Rule> rules;
+    std::vector<TextureAtlas> textures;
+    std::unordered_map<std::string, utymap::lsys::LSystem> lsystems;
 };
-
-std::ostream& operator<<(std::ostream &stream, const Condition &c);
-std::ostream& operator<<(std::ostream &stream, const Zoom &z);
-std::ostream& operator<<(std::ostream &stream, const Selector &s);
-std::ostream& operator<<(std::ostream &stream, const Declaration &d);
-std::ostream& operator<<(std::ostream &stream, const Rule &r);
-std::ostream& operator<<(std::ostream &stream, const StyleSheet &s);
 
 }}
 #endif // MAPCSS_STYLESHEET_HPP_DEFINED

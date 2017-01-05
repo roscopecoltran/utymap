@@ -145,7 +145,6 @@ add_library(${LIBRARY_NAME}
         mapcss/StyleConsts.cpp
         mapcss/StyleEvaluator.cpp
         mapcss/StyleProvider.cpp
-        mapcss/StyleSheet.cpp
         utils/GradientUtils.cpp
         utils/NoiseUtils.cpp
         )
