@@ -45,6 +45,7 @@ namespace {
             dependencyProvider(),
             mesh(""),
             gradient(),
+            textureRegion(),
             style(dependencyProvider.getStyleProvider(stylesheet)
                 ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
             builderContext(
@@ -54,13 +55,14 @@ namespace {
             *dependencyProvider.getElevationProvider(),
             [](const Mesh&) {},
             [](const Element&) {}),
-            meshContext(mesh, style, gradient, TextureRegion())
+            meshContext(mesh, style, gradient, textureRegion)
         {
         }
 
         DependencyProvider dependencyProvider;
         Mesh mesh;
         ColorGradient gradient;
+        TextureRegion textureRegion;
         Style style;
         BuilderContext builderContext;
         MeshContext meshContext;
@@ -71,8 +73,7 @@ BOOST_FIXTURE_TEST_SUITE(Builders_Generators_Generator, Builders_Generators_Gene
 
 BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    IcoSphereGenerator icoSphereGenerator(builderContext, meshContext);
-    icoSphereGenerator
+    IcoSphereGenerator(builderContext, meshContext)
         .setCenter(Vector3(0, 0, 0))
         .setSize(Vector3(10, 10, 10))
         .setRecursionLevel(2)
@@ -88,8 +89,7 @@ BOOST_AUTO_TEST_CASE(GivenIcoSphereGeneratorWithSimpleData_WhenGenerate_ThenCanG
 
 BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
-    CylinderGenerator cylinderGenerator(builderContext, meshContext);
-    cylinderGenerator
+    CylinderGenerator(builderContext, meshContext)
             .setCenter(Vector3(0, 0, 0))
             .setMaxSegmentHeight(5)
             .setRadialSegments(7)
@@ -106,10 +106,10 @@ BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenera
 {
     std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
     auto lsystem = utymap::lsys::LSystemParser().parse(file);
-    TreeGenerator treeGenerator(builderContext, style, mesh);
-    treeGenerator
-            .setPosition(Vector3(0, 0, 0))
-            .run(lsystem);
+
+    TreeGenerator(builderContext, style, mesh)
+        .setPosition(Vector3(0, 0, 0))
+        .run(lsystem);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);

@@ -72,7 +72,7 @@ public:
         std::uint16_t textureId;
 
         /// Texture coordinates map inside atlas.
-        utymap::mapcss::TextureRegion textureRegion;
+        const utymap::mapcss::TextureRegion& textureRegion;
 
         /// Texture scale.
         double textureScale;
@@ -85,7 +85,7 @@ public:
             gradient(gradient),
             colorNoiseFreq(colorNoiseFreq),
             textureId(textureId),
-            textureRegion(std::move(textureRegion)),
+            textureRegion(textureRegion),
             textureScale(textureScale)
         {
         }

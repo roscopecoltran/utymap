@@ -49,9 +49,9 @@ struct RegionContext final
             );
 
         auto textureIndex = static_cast<std::uint16_t>(style.getValue(prefix + StyleConsts::TextureIndexKey()));
-        auto textureRegion = context.styleProvider
-            .getTexture(textureIndex, style.getString(prefix + StyleConsts::TextureTypeKey()))
-            .random(0);   // TODO use seed for randomization
+        const auto& textureRegion = context.styleProvider
+                .getTexture(textureIndex, style.getString(prefix + StyleConsts::TextureTypeKey()))
+                .random(0);   // TODO use seed for randomization
 
         double scale = style.getValue(prefix + StyleConsts::TextureScaleKey());
 

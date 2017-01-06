@@ -20,14 +20,16 @@ namespace {
             eleProvider(), 
             builder(utymap::QuadKey(1, 1, 0), eleProvider), 
             gradient(),
+            textureRegion(),
             geometryOptions(0, 0, 0, 0),
-            appearanceOptions(gradient, 0, 0, TextureRegion(), 0)
+            appearanceOptions(gradient, 0, 0, textureRegion, 0)
         {
         }
 
         FlatElevationProvider eleProvider;
         MeshBuilder builder;
         ColorGradient gradient;
+        TextureRegion textureRegion;
         MeshBuilder::GeometryOptions geometryOptions;
         MeshBuilder::AppearanceOptions appearanceOptions;
     };
@@ -126,13 +128,14 @@ BOOST_AUTO_TEST_CASE(GivenPolygonWithSharePoint_WhenAddPolygon_ThenRefinesCorrec
 
 BOOST_AUTO_TEST_CASE(GivenSimpleSquareWithTextureOptions_WhenAddPolygon_ThenTextureIsApplied)
 {
+    
     Mesh mesh("");
     Polygon polygon(4, 0);
     polygon.addContour(std::vector<DPoint> { {0, 0}, { 10, 0 }, { 10, 10 }, { 0, 10 } });
-    appearanceOptions.textureRegion = TextureRegion(100, 100, 0, 0, 100, 100);
-    appearanceOptions.textureScale = 1;
+    TextureRegion newTextureRegion(100, 100, 0, 0, 100, 100);
+    MeshBuilder::AppearanceOptions newAppearanceOptions(gradient, 0, 0, newTextureRegion, 1);
 
-    builder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
+    builder.addPolygon(mesh, polygon, geometryOptions, newAppearanceOptions);
 
     BOOST_CHECK(mesh.uvs.size() > 0);
     BOOST_CHECK_EQUAL(mesh.vertices.size() * 2 / 3, mesh.uvs.size());
@@ -144,10 +147,10 @@ BOOST_AUTO_TEST_CASE(GivenSimpleSquareWithScale_WhenAddPolygon_ThenScaledTexture
     Polygon polygon(4, 0);
     MeshBuilder localBuilder(utymap::QuadKey(16, 35205, 21489), eleProvider);
     polygon.addContour(std::vector<DPoint> { {13.3874549, 52.530385}, { 13.38747790, 52.53038981 }, { 13.38764498, 52.53042475 }, { 13.38781206, 52.53045970 } });
-    appearanceOptions.textureRegion = TextureRegion(1025, 1025, 513, 513, 512, 512);
-    appearanceOptions.textureScale = 100;
+    TextureRegion newTextureRegion(1025, 1025, 513, 513, 512, 512);
+    MeshBuilder::AppearanceOptions newAppearanceOptions(gradient, 0, 0, newTextureRegion, 100);
 
-    localBuilder.addPolygon(mesh, polygon, geometryOptions, appearanceOptions);
+    localBuilder.addPolygon(mesh, polygon, geometryOptions, newAppearanceOptions);
 
     BOOST_CHECK(mesh.uvs.size() > 0);
     BOOST_CHECK_EQUAL(mesh.vertices.size() * 2 / 3, mesh.uvs.size());

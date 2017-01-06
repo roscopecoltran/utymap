@@ -15,6 +15,7 @@ using namespace utymap::tests;
 
 namespace {
     const ColorGradient gradient = ColorGradient();
+    const TextureRegion textureRegion = TextureRegion();
     const std::string stylesheetStr = "area|z16[amenity=forest] {"
                                         "lsystem: tree;"
                                         "tree-frequency: 30;"
@@ -65,7 +66,7 @@ namespace {
             MeshBuilder builder(quadKey, *dependencyProvider.getElevationProvider());
             builder.addPolygon(*mesh, polygon,
                 MeshBuilder::GeometryOptions(5, 0 ,0, 0),
-                MeshBuilder::AppearanceOptions(gradient, 0, 0, TextureRegion(), 0));
+                MeshBuilder::AppearanceOptions(gradient, 0, 0, textureRegion, 0));
             return mesh;
         }
 
