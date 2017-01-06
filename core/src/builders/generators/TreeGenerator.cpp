@@ -53,6 +53,8 @@ TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& 
 
     icoSphereGenerator_
         .setRecursionLevel(1);
+
+    trunkSize_.y = style.getValue(TrunkHeight);
 }
 
 TreeGenerator& TreeGenerator::setPosition(const utymap::math::Vector3& position)

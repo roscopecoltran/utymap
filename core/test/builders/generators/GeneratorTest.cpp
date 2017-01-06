@@ -49,12 +49,12 @@ namespace {
             style(dependencyProvider.getStyleProvider(stylesheet)
                 ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
             builderContext(
-            QuadKey{ 1, 1, 1 },
-            *dependencyProvider.getStyleProvider(stylesheet),
-            *dependencyProvider.getStringTable(),
-            *dependencyProvider.getElevationProvider(),
-            [](const Mesh&) {},
-            [](const Element&) {}),
+            QuadKey(1, 35205, 21489),
+                *dependencyProvider.getStyleProvider(stylesheet),
+                *dependencyProvider.getStringTable(),
+                *dependencyProvider.getElevationProvider(),
+                [](const Mesh&) {},
+                [](const Element&) {}),
             meshContext(mesh, style, gradient, textureRegion)
         {
         }
@@ -104,11 +104,12 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
 
 BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
+    GeoCoordinate center(52.53178, 13.38750);
     std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
     auto lsystem = utymap::lsys::LSystemParser().parse(file);
 
     TreeGenerator(builderContext, style, mesh)
-        .setPosition(Vector3(0, 0, 0))
+        .setPosition(Vector3(center.longitude, 0, center.latitude))
         .run(lsystem);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);

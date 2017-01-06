@@ -50,8 +50,8 @@ protected:
     /// Defines turtle state.
     struct State
     {
-        double length;
-        double width;
+        double length = 1;
+        double width = 0;
 
         utymap::math::Vector3 position = utymap::math::Vector3::zero();
         utymap::math::Vector3 direction = utymap::math::Vector3::up();
