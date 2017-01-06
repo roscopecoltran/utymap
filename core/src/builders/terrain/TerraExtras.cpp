@@ -16,11 +16,12 @@ namespace {
 void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::Context& extrasContext)
 {
     // generate tree mesh
+    auto center = builderContext.boundingBox.center();
     const auto& lsystem = builderContext.styleProvider
         .getLsystem(extrasContext.style.getString(StyleConsts::LSystemKey()));
     Mesh treeMesh("");
     TreeGenerator(builderContext, extrasContext.style, treeMesh)
-        .setPosition(Vector3(0, 0, 0)) // NOTE we will override coordinates later
+        .setPosition(center, 0) // NOTE we will override coordinates later
         .run(lsystem);
   
     // forest mesh contains all trees belong to one chunk.
@@ -44,7 +45,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
 
         double elevation = builderContext.eleProvider.getElevation(builderContext.quadKey, centroidY, centroidX);
 
-        utymap::utils::copyMesh(Vector3(centroidX, elevation, centroidY), treeMesh, forestMesh);
+        utymap::utils::copyMesh(Vector3(centroidX - center.longitude, elevation, centroidY - center.latitude), treeMesh, forestMesh);
         // return chunk if necessary.
         if (++treesProcessed == chunkSize) {
             builderContext.meshCallback(forestMesh);

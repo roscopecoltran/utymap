@@ -25,19 +25,18 @@ way|z16[highway] {
     builders: terrain,lamp;
     terrain-layer: pedestrian;
     width: 1m;
-
-    lsystem: lamp;
     lamp-step: 30m;
 
+    lsystem: lamp;
+    tree-width: 0.1m;
+    tree-height: 8m;
+
     leaf-color: gradient(yellow);
-    leaf-radius: 0.4m;
     leaf-texture-index: 0;
     leaf-texture-type: background;
     leaf-texture-scale: 50;
 
     trunk-color: gradient(black);
-    trunk-radius: 0.1m;
-    trunk-height: 8m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;
@@ -92,7 +91,7 @@ way|z16[highway][lanes] {
 }
 
 way|z16[highway][lanes>1] {
-    builders: terrain,lamp,lane;
+    builders: terrain,lane;
 
     lane-min-height:-0.2m;
     lane-height:0.01m;

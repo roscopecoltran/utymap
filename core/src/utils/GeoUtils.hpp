@@ -13,6 +13,11 @@ namespace utymap { namespace utils {
 
 class GeoUtils final
 {
+    /// The circumference at the equator (latitude 0)
+    static const int LatitudeEquator = 40075160;
+    /// Distance of full circle around the earth through the poles.
+    static const int CircleDistance = 40008000;
+
 public:
     static const int MinLevelOfDetails = 1;
     static const int MaxLevelOfDetails = 19;
@@ -23,6 +28,17 @@ public:
         return QuadKey(levelOfDetail,
                        lonToTileX(clamp(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail),
                        latToTileY(clamp(coordinate.latitude, -85.05112877, 85.05112877), levelOfDetail));
+    }
+
+    /// Converts given world coordinate represented by (x, y) to geocoordinate.
+    static GeoCoordinate worldToGeo(const GeoCoordinate& worldZero, double x, double y)
+    {
+        double latitudeCircumference = LatitudeEquator * std::cos(utymap::utils::deg2Rad(worldZero.latitude));
+
+        auto deltaLongitude = (x * 360) / latitudeCircumference;
+        auto deltaLatitude = (y * 360) / CircleDistance;
+
+        return GeoCoordinate(worldZero.latitude + deltaLatitude, worldZero.longitude + deltaLongitude);
     }
 
     /// Converts quadkey to bounding box

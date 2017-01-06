@@ -1,6 +1,7 @@
 #include "builders/generators/TreeGenerator.hpp"
 #include <mapcss/StyleConsts.hpp>
 #include "utils/GeometryUtils.hpp"
+#include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
 #include <functional>
@@ -15,18 +16,19 @@ using namespace utymap::utils;
 namespace {
     const std::string LeafPrefix = "leaf-";
     const std::string LeafGradientKey = LeafPrefix + StyleConsts::GradientKey();
-    const std::string LeafRadius = LeafPrefix + StyleConsts::RadiusKey();
     const std::string LeafTextureIndexKey = LeafPrefix + StyleConsts::TextureIndexKey();
     const std::string LeafTextureTypeKey = LeafPrefix + StyleConsts::TextureTypeKey();
     const std::string LeafTextureScaleKey = LeafPrefix + StyleConsts::TextureScaleKey();
 
     const std::string TrunkPrefix = "trunk-";
     const std::string TrunkGradientKey = TrunkPrefix + StyleConsts::GradientKey();
-    const std::string TrunkRadius = TrunkPrefix + StyleConsts::RadiusKey();
-    const std::string TrunkHeight = TrunkPrefix + StyleConsts::HeightKey();;
     const std::string TrunkTextureIndexKey = TrunkPrefix + StyleConsts::TextureIndexKey();;
     const std::string TrunkTextureTypeKey = TrunkPrefix + StyleConsts::TextureTypeKey();
     const std::string TrunkTextureScaleKey = TrunkPrefix + StyleConsts::TextureScaleKey();
+
+    const std::string TreePrefix = "tree-";
+    const std::string TreeHeight = TreePrefix + StyleConsts::HeightKey();
+    const std::string TreeWidth = TreePrefix + StyleConsts::WidthKey();
 }
 
 std::unordered_map<std::string, void(TreeGenerator::*)()> TreeGenerator::WordMap =
@@ -44,8 +46,8 @@ TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& 
         LeafGradientKey, LeafTextureIndexKey, LeafTextureTypeKey, LeafTextureScaleKey)),
     cylinderGenerator_(builderContext, cylinderContext_),
     icoSphereGenerator_(builderContext, icoSphereContext_),
-    trunkSize_(utymap::utils::getSize(builderContext.boundingBox, style, TrunkRadius)),
-    leafSize_(utymap::utils::getSize(builderContext.boundingBox, style, LeafRadius))
+    translationFunc_(std::bind(&TreeGenerator::translate, this, std::placeholders::_1)),
+    minHeight_(0)
 {
     cylinderGenerator_
         .setMaxSegmentHeight(0)
@@ -54,12 +56,18 @@ TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& 
     icoSphereGenerator_
         .setRecursionLevel(1);
 
-    trunkSize_.y = style.getValue(TrunkHeight);
+    state_.length = style.getValue(TreeHeight);
+    state_.width = style.getValue(TreeWidth);
 }
 
-TreeGenerator& TreeGenerator::setPosition(const utymap::math::Vector3& position)
+TreeGenerator& TreeGenerator::setPosition(const utymap::GeoCoordinate& coordinate, double height)
 {
-    state_.position = position;
+    position_ = coordinate;
+    minHeight_ = height;
+
+    cylinderGenerator_.setTranslation(translationFunc_);
+    icoSphereGenerator_.setTranslation(translationFunc_);
+
     return *this;
 }
 
@@ -75,10 +83,9 @@ void TreeGenerator::say(const std::string& word)
 
 void TreeGenerator::addLeaf()
 {
-    auto size = leafSize_ * state_.length;
     icoSphereGenerator_
         .setCenter(state_.position)
-        .setSize(size)
+        .setSize(Vector3(state_.width, state_.width, state_.width))
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(icoSphereContext_.mesh,
@@ -88,10 +95,9 @@ void TreeGenerator::addLeaf()
 
 void TreeGenerator::addTrunk()
 {
-    auto size = trunkSize_ * state_.length;
     cylinderGenerator_
         .setCenter(state_.position)
-        .setSize(size)
+        .setSize(Vector3(state_.width, state_.length, state_.width))
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
@@ -101,13 +107,18 @@ void TreeGenerator::addTrunk()
 
 void TreeGenerator::addCone()
 {
-    auto size = trunkSize_ * state_.length;
     cylinderGenerator_
         .setCenter(state_.position)
-        .setSize(size, Vector3(0, 0, 0))
+        .setSize(Vector3(state_.width, state_.length, state_.width), Vector3(0, 0, 0))
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
                                                         cylinderContext_.appearanceOptions);
     jumpForward();
+}
+
+Vector3 TreeGenerator::translate(const utymap::math::Vector3& v) const
+{
+    auto coordinate = GeoUtils::worldToGeo(position_, v.x, v.z);
+    return Vector3(coordinate.longitude, v.y + minHeight_, coordinate.latitude);
 }

@@ -108,15 +108,15 @@ area,relation|z16[leisure=garden] {
     tree-chunk-size: 30;
 
     lsystem: tree;
+    tree-width: 0.2m;
+    tree-height: 1m;
+
     leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-radius: 2.5m;
     leaf-texture-index: 0;
     leaf-texture-type: tree;
     leaf-texture-scale: 50;
 
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-radius: 0.3m;
-    trunk-height: 1.5m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;
@@ -134,15 +134,15 @@ area,relation|z16[landuse=forest] {
     texture-type: grass;
 
     lsystem: tree;
+    tree-width: 0.2m;
+    tree-height: 1m;
+
     leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-radius: 2.5m;
     leaf-texture-index: 0;
     leaf-texture-type: tree;
     leaf-texture-scale: 50;
 
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-radius: 0.3m;
-    trunk-height: 1.5m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;

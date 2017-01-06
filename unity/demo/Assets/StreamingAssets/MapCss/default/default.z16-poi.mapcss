@@ -280,16 +280,16 @@ node|z16[natural=tree] {
     lsystem: tree;
     clip: true;
 
+    tree-width: 0.2m;
+    tree-height: 1m;
+
     tree-step: 10m;
     leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-radius: 2.5m;
     leaf-texture-index: 0;
     leaf-texture-type: tree;
     leaf-texture-scale: 50;
 
     trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-radius: 0.3m;
-    trunk-height: 1.5m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;
@@ -299,15 +299,15 @@ node|z16[highway=street_lamp] {
     builders: lamp;
     lsystem: lamp;
 
+    tree-width: 0.1m;
+    tree-height: 8m;
+
     leaf-color: gradient(yellow);
-    leaf-radius: 0.4m;
     leaf-texture-index: 0;
     leaf-texture-type: background;
     leaf-texture-scale: 50;
 
     trunk-color: gradient(black);
-    trunk-radius: 0.1m;
-    trunk-height: 8m;
     trunk-texture-index: 0;
     trunk-texture-type: background;
     trunk-texture-scale: 200;

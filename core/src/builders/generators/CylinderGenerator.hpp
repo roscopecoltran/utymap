@@ -11,7 +11,6 @@ namespace utymap { namespace builders {
 class CylinderGenerator : public AbstractGenerator
 {
 public:
-
     CylinderGenerator(const utymap::builders::BuilderContext& builderContext,
         utymap::builders::MeshContext& meshContext) :
         AbstractGenerator(builderContext, meshContext)
@@ -82,10 +81,10 @@ public:
                 auto center1 = center_ + direction_ * (heightStep * i);
                 auto center2 = center_ + direction_ * (heightStep * (i + 1));
 
-                auto v0 = center1 + scale(direction1 * right_, radius1);
-                auto v1 = center1 + scale(direction2 * right_, radius1);
-                auto v2 = center2 + scale(direction2 * right_, radius2);
-                auto v3 = center2 + scale(direction1 * right_, radius2);
+                auto v0 = translate(center1 + scale(direction1 * right_, radius1));
+                auto v1 = translate(center1 + scale(direction2 * right_, radius1));
+                auto v2 = translate(center2 + scale(direction2 * right_, radius2));
+                auto v3 = translate(center2 + scale(direction1 * right_, radius2));
 
                 // add side.
                 addTriangle(v1, v2, v0);
@@ -93,10 +92,10 @@ public:
 
                 // add bottom cap part.
                 if (i == 0)
-                    addTriangle(center1, v1, v0);
+                    addTriangle(translate(center1), v1, v0);
                 // add top cap part.
                 if (i == heightSegments - 1 && !isCone())
-                    addTriangle(center2, v3, v2);
+                    addTriangle(translate(center2), v3, v2);
             }
         }
     }
@@ -115,7 +114,7 @@ private:
                                      utymap::utils::lerp(size2_.z, size1_.z, value));
     }
 
-    static utymap::math::Vector3 scale(const utymap::math::Vector3& value, const utymap::math::Vector3& size)
+    utymap::math::Vector3 scale(const utymap::math::Vector3& value, const utymap::math::Vector3& size) const
     {
         return utymap::math::Vector3(value.x * size.x, value.y * size.y, value.z * size.z);
     }

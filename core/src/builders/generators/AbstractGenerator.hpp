@@ -5,18 +5,22 @@
 #include "builders/MeshContext.hpp"
 #include "utils/NoiseUtils.hpp"
 
+#include <functional>
+
 namespace utymap { namespace builders {
 
 /// Specifies basic behaviour of mesh generators.
 class AbstractGenerator
 {
 public:
+    typedef std::function<utymap::math::Vector3(const utymap::math::Vector3&)> TranslateFunc;
 
     AbstractGenerator(const utymap::builders::BuilderContext& builderContext,
                       utymap::builders::MeshContext& meshContext):
         builderContext_(builderContext),
         meshContext_(meshContext),
-        vertNoiseFreq_(0)
+        vertNoiseFreq_(0),
+        translateFunc_(nullptr)
     {
     }
 
@@ -39,7 +43,21 @@ public:
         return *this;
     }
 
+    /// Sets translation function used to translate coordinates.
+    AbstractGenerator& setTranslation(TranslateFunc& translateFunc)
+    {
+        translateFunc_ = &translateFunc;
+        return *this;
+    }
+
 protected:
+
+    /// Translate given coordinate if translation function is present.
+    utymap::math::Vector3 translate(const utymap::math::Vector3& v) const
+    {
+        return translateFunc_ != nullptr ? (*translateFunc_)(v) : v;
+    }
+
     /// Adds triangle to mesh.
     void addTriangle(const utymap::math::Vector3& v0,
                      const utymap::math::Vector3& v1,
@@ -108,6 +126,7 @@ protected:
 
 private:
     double vertNoiseFreq_;
+    TranslateFunc* translateFunc_;
 };
 
 }}

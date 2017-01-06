@@ -6,16 +6,16 @@
 
 namespace utymap { namespace utils {
 
-/// Copies mesh into existing one adjusting position.
-inline void copyMesh(const utymap::math::Vector3& position, const utymap::math::Mesh& source, utymap::math::Mesh& destination)
+/// Copies mesh into existing one with offset.
+inline void copyMesh(const utymap::math::Vector3& offset, const utymap::math::Mesh& source, utymap::math::Mesh& destination)
 {
     int startIndex = static_cast<int>(destination.vertices.size() / 3);
 
     // copy adjusted vertices
     for (std::size_t i = 0; i < source.vertices.size();) {
-        destination.vertices.push_back(source.vertices[i++] + position.x);
-        destination.vertices.push_back(source.vertices[i++] + position.z);
-        destination.vertices.push_back(source.vertices[i++] + position.y);
+        destination.vertices.push_back(source.vertices[i++] + offset.x);
+        destination.vertices.push_back(source.vertices[i++] + offset.z);
+        destination.vertices.push_back(source.vertices[i++] + offset.y);
     }
 
     // copy adjusted triangles
@@ -37,7 +37,8 @@ inline void copyMesh(const utymap::math::Vector3& position, const utymap::math::
 }
 
 /// Copies mesh along two coordinates.
-inline void copyMeshAlong(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& p1, const utymap::GeoCoordinate& p2,
+inline void copyMeshAlong(const utymap::QuadKey& quadKey, const utymap::GeoCoordinate& position,
+                          const utymap::GeoCoordinate& p1, const utymap::GeoCoordinate& p2,
                           const utymap::math::Mesh& source, utymap::math::Mesh& destination, double stepInMeters,
                           const utymap::heightmap::ElevationProvider& eleProvider)
 {
@@ -45,10 +46,13 @@ inline void copyMeshAlong(const utymap::QuadKey& quadKey, const utymap::GeoCoord
     int count = static_cast<int>(distanceInMeters / stepInMeters);
 
     for (int j = 0; j < count; ++j) {
-        GeoCoordinate position = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / count);
+        GeoCoordinate newPosition = GeoUtils::newPoint(p1, p2, static_cast<double>(j) / count);
 
-        double elevation = eleProvider.getElevation(quadKey, position);
-        utymap::utils::copyMesh(utymap::math::Vector3(position.longitude, elevation, position.latitude), source, destination);
+        double elevation = eleProvider.getElevation(quadKey, newPosition);
+        utymap::utils::copyMesh(utymap::math::Vector3(newPosition.longitude - position.longitude,
+                                                      elevation,
+                                                      newPosition.latitude - position.latitude),
+            source, destination);
     }
 }
 

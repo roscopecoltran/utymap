@@ -26,14 +26,13 @@ namespace {
     const std::string stylesheet =
         "node|z1[natural=tree] {"
             "lsystem: tree;"
+            "tree-width: 0.2m;"
+            "tree-height: 1m;"
             "leaf-color: gradient(green);"
-            "leaf-radius: 2.5m;"
             "leaf-texture-index: 0;"
             "leaf-texture-type: tree;"
             "leaf-texture-scale: 50;"
             "trunk-color: gradient(gray);"
-            "trunk-radius: 0.3m;"
-            "trunk-height: 1.5m;"
             "trunk-texture-index: 0;"
             "trunk-texture-type: background;"
             "trunk-texture-scale: 200;"
@@ -109,12 +108,13 @@ BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenera
     auto lsystem = utymap::lsys::LSystemParser().parse(file);
 
     TreeGenerator(builderContext, style, mesh)
-        .setPosition(Vector3(center.longitude, 0, center.latitude))
+        .setPosition(center, 0)
         .run(lsystem);
 
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);
     BOOST_CHECK_GT(mesh.colors.size(), 0);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

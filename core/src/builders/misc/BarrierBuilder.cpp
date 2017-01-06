@@ -101,18 +101,16 @@ void BarrierBuilder::buildPillar(const T& element, Iterator begin, Iterator end,
     auto size = std::distance(begin, end);
     if (size == 0)
         return;
-
-    auto center = size == 1
-        ? Vector3(begin->longitude, context_.eleProvider.getElevation(context_.quadKey, *begin), begin->latitude)
-        : Vector3(0, 0, 0);
-    
+   
     auto radius = utymap::utils::getSize(context_.boundingBox, meshContext.style, StyleConsts::RadiusKey());
     auto height = meshContext.style.getValue(StyleConsts::HeightKey());
 
     Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
     CylinderGenerator generator(context_, meshContext);
     generator
-        .setCenter(center)
+        .setCenter(Vector3(begin->longitude,
+                           context_.eleProvider.getElevation(context_.quadKey, *begin),
+                           begin->latitude))
         .setSize(Vector3(radius.x, height, radius.z))
         .setMaxSegmentHeight(5)
         .setRadialSegments(7)
@@ -131,7 +129,8 @@ void BarrierBuilder::buildPillar(const T& element, Iterator begin, Iterator end,
     for (std::size_t i = 0; i < static_cast<std::size_t>(size - 1); ++i) {
         const auto p0 = (begin + i);
         const auto p1 = (begin + i + 1);
-        utymap::utils::copyMeshAlong(context_.quadKey, *p0, *p1, meshContext.mesh, mesh, treeStepInMeters, context_.eleProvider);
+        utymap::utils::copyMeshAlong(context_.quadKey, *begin, *p0, *p1,
+            meshContext.mesh, mesh, treeStepInMeters, context_.eleProvider);
     }
     context_.meshCallback(mesh);
 }

@@ -22,7 +22,8 @@ public:
                   const utymap::mapcss::Style& style,
                   utymap::math::Mesh& mesh);
 
-    TreeGenerator& setPosition(const utymap::math::Vector3& position);
+    /// Sets start geo position.
+    TreeGenerator& setPosition(const utymap::GeoCoordinate& coordinate, double height);
 
     void moveForward() override;
 
@@ -38,6 +39,9 @@ private:
     /// Adds cone.
     void addCone();
 
+    /// Maps given vertex to the cooresponding geocoordinate using position.
+    utymap::math::Vector3 translate(const utymap::math::Vector3& v) const;
+
     const utymap::builders::BuilderContext& builderContext_;
 
     utymap::builders::MeshContext cylinderContext_;
@@ -46,8 +50,10 @@ private:
     utymap::builders::CylinderGenerator cylinderGenerator_;
     utymap::builders::IcoSphereGenerator icoSphereGenerator_;
 
-    utymap::math::Vector3 trunkSize_ = utymap::math::Vector3::zero();
-    utymap::math::Vector3 leafSize_ = utymap::math::Vector3::zero();
+    AbstractGenerator::TranslateFunc translationFunc_;
+
+    utymap::GeoCoordinate position_;
+    double minHeight_;
 };
 
 }}
