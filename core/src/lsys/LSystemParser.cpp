@@ -31,6 +31,19 @@ namespace {
 
 const std::shared_ptr<MoveForwardRule> forward = std::make_shared<MoveForwardRule>();
 const std::shared_ptr<JumpForwardRule> jump = std::make_shared<JumpForwardRule>();
+const std::shared_ptr<TurnLeftRule> turnLeft = std::make_shared<TurnLeftRule>();
+const std::shared_ptr<TurnRightRule> turnRight = std::make_shared<TurnRightRule>();
+const std::shared_ptr<TurnAroundRule> turnAround = std::make_shared<TurnAroundRule>();
+const std::shared_ptr<PitchUpRule> pitchUp = std::make_shared<PitchUpRule>();
+const std::shared_ptr<PitchDownRule> pitchDown = std::make_shared<PitchDownRule>();
+const std::shared_ptr<RollLeftRule> rollLeft = std::make_shared<RollLeftRule>();
+const std::shared_ptr<RollRightRule> rollRight = std::make_shared<RollRightRule>();
+const std::shared_ptr<IncrementRule> increment = std::make_shared<IncrementRule>();
+const std::shared_ptr<DecrementRule> decrement = std::make_shared<DecrementRule>();
+const std::shared_ptr<ScaleUpRule> scaleUp = std::make_shared<ScaleUpRule>();
+const std::shared_ptr<ScaleDownRule> scaleDown = std::make_shared<ScaleDownRule>();
+const std::shared_ptr<SaveRule> save = std::make_shared<SaveRule>();
+const std::shared_ptr<RestoreRule> restore = std::make_shared<RestoreRule>();
 
 struct RuleTable : qi::symbols<char, LSystem::RuleType>
 {
@@ -39,6 +52,19 @@ struct RuleTable : qi::symbols<char, LSystem::RuleType>
         add
             ("F", forward)
             ("G", jump)
+            ("+", turnLeft)
+            ("-", turnRight)
+            ("|", turnAround)
+            ("^", pitchUp)
+            ("&", pitchDown)
+            ("\\", rollLeft)
+            ("/", rollRight)
+            ("#", increment)
+            ("!", decrement)
+            (">", scaleUp)
+            ("<", scaleDown)
+            ("[", save)
+            ("]", restore)
         ;
     }
 };
