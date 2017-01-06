@@ -59,7 +59,7 @@ struct RuleTable : qi::symbols<char, LSystem::RuleType>
             ("&", pitchDown)
             ("\\", rollLeft)
             ("/", rollRight)
-            ("#", increment)
+            ("$", increment)
             ("!", decrement)
             (">", scaleUp)
             ("<", scaleDown)
