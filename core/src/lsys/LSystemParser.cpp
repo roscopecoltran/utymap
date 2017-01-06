@@ -21,8 +21,7 @@ BOOST_FUSION_ADAPT_STRUCT(
     LSystem,
     (int, generations)
     (double, angle)
-    (double, width)
-    (double, length)
+    (double, scale)
     (LSystem::Rules, axiom)
     (ProductionMap, productions)
 )
@@ -161,8 +160,7 @@ struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterato
         start =
             (qi::lit("generations:") > qi::int_) >> qi::space >
             (qi::lit("angle:") > qi::double_) >> qi::space >
-            (qi::lit("width:") > qi::double_) >> qi::space >
-            (qi::lit("length:") > qi::double_) >> qi::space >
+            (qi::lit("scale:") > qi::double_) >> qi::space >
             (qi::lit("axiom:") > +rule > '\n') >
             production
         ;

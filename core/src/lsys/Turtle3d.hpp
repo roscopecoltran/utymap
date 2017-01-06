@@ -66,10 +66,8 @@ private:
 
     /// Angle defined by lsystem.
     double angle_= 0;
-    /// Length scale defined by lsystem.
-    double lengthScale_ = 1;
-    /// Width step defined by lsystem.
-    double widthStep_ = 0;
+    /// Scale factor defined by lsystem.
+    double scale_ = 1;
     /// Stack for storing states.
     std::stack<State> states_;
 };

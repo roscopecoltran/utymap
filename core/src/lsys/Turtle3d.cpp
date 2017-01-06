@@ -57,22 +57,22 @@ void Turtle3d::rollRight()
 
 void Turtle3d::increment()
 {
-    state_.width += widthStep_;
+    state_.width *= scale_;
 }
 
 void Turtle3d::decrement()
 {
-    state_.width -= widthStep_;
+    state_.width /= scale_;
 }
 
 void Turtle3d::scaleUp()
 {
-    state_.length *= lengthScale_;
+    state_.length *= scale_;
 }
 
 void Turtle3d::scaleDown()
 {
-    state_.length /= lengthScale_;
+    state_.length /= scale_;
 }
 
 void Turtle3d::save()
@@ -89,8 +89,7 @@ void Turtle3d::restore()
 void Turtle3d::run(const LSystem& lsystem)
 {
     angle_ = utymap::utils::deg2Rad(lsystem.angle);
-    lengthScale_ = lsystem.length;
-    widthStep_ = lsystem.width;
+    scale_ = lsystem.scale;
 
     Turtle::run(lsystem);
 }

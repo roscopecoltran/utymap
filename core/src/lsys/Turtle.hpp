@@ -40,10 +40,10 @@ public:
     virtual void rollRight() {}
 
 
-    /// $: Increment the line width by line width increment.
+    /// $: Increment the line width by line width scale factor.
     virtual void increment() {}
 
-    /// !: Decrement the line width by line width increment.
+    /// !: Decrement the line width by line width scale factor.
     virtual void decrement() {}
 
     /// >: Multiply the line length by the line length scale factor.

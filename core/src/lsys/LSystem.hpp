@@ -25,11 +25,8 @@ struct LSystem final
     /// Default turn angle value.
     double angle = 1;
 
-    /// Default width increment/decrement value.
-    double width = 0.5;
-
-    /// Default length scale factor.
-    double length = 1;
+    /// Default scale factor.
+    double scale = 1;
 
     /// Specifies axiom.
     Rules axiom;

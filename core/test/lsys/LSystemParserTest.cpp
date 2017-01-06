@@ -10,8 +10,7 @@ namespace {
     const double ProbabilityPrecision = 0.01;
     const std::string SimpleGrammar = "generations: 3\n"
                                       "angle: 45\n"
-                                      "width: 0.1\n"
-                                      "length: 1.1\n"
+                                      "scale: 0.1\n"
                                       "axiom: D F ab G G F K\n"
                                       "F(1) -> F G\n"
                                       "G(0.8) -> F\n"
@@ -35,14 +34,9 @@ BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasAngle)
     BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).angle, 45, ProbabilityPrecision);
 }
 
-BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasWidth)
+BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasScale)
 {
-    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).width, 0.1, ProbabilityPrecision);
-}
-
-BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasLength)
-{
-    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).length, 1.1, ProbabilityPrecision);
+    BOOST_CHECK_CLOSE(LSystemParser().parse(SimpleGrammar).scale, 0.1, ProbabilityPrecision);
 }
 
 BOOST_AUTO_TEST_CASE(GivenSimpleGrammar_WhenParse_ThenHasExpectedAmountOfAxiomRules)
@@ -90,8 +84,7 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithProbabilities_WhenParse_ThenStringTurtleBui
     StringTurtle turtle;
     const std::string grammar = "generations: 2\n"
                                 "angle: 45\n"
-                                "width: 1.2\n"
-                                "length: 1.2\n"
+                                "scale: 1.2\n"
                                 "axiom: A G\n"
                                 "G(0) -> G\n"
                                 "G(1) -> F F\n"
@@ -108,8 +101,7 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithWords_WhenParse_ThenStringTurtleBuildsPrope
     StringTurtle turtle;
     const std::string grammar = "generations: 1\n"
                                 "angle: 45\n"
-                                "width: 1.2\n"
-                                "length: 1.2\n"
+                                "scale: 1.2\n"
                                 "axiom: root F G leaf\n"
                                 "root(0) -> G\n"
                                 "root(1) -> F trunk\n"
