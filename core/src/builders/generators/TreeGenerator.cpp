@@ -97,6 +97,7 @@ void TreeGenerator::addTrunk()
 {
     cylinderGenerator_
         .setCenter(state_.position)
+        .setDirection(state_.direction, state_.right)
         .setSize(Vector3(state_.width, state_.length, state_.width))
         .generate();
 
@@ -109,6 +110,7 @@ void TreeGenerator::addCone()
 {
     cylinderGenerator_
         .setCenter(state_.position)
+        .setDirection(state_.direction, state_.right)
         .setSize(Vector3(state_.width, state_.length, state_.width), Vector3(0, 0, 0))
         .generate();
 
