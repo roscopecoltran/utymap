@@ -43,6 +43,9 @@ private:
     /// Maps given vertex to the cooresponding geocoordinate using position.
     utymap::math::Vector3 translate(const utymap::math::Vector3& v) const;
 
+    /// Gets size from current state.
+    utymap::math::Vector3 getSize() const;
+
     const utymap::builders::BuilderContext& builderContext_;
 
     std::vector<utymap::builders::MeshBuilder::AppearanceOptions> appearances_;

@@ -108,7 +108,7 @@ void LSystemGenerator::addSphere()
 {
     icoSphereGenerator_
         .setCenter(state_.position)
-        .setSize(Vector3(state_.width, state_.width, state_.width))
+        .setSize(getSize())
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(icoSphereContext_.mesh,
@@ -121,7 +121,7 @@ void LSystemGenerator::addCylinder()
     cylinderGenerator_
         .setCenter(state_.position)
         .setDirection(state_.direction, state_.right)
-        .setSize(Vector3(state_.width, state_.length, state_.width))
+        .setSize(getSize())
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
@@ -134,7 +134,7 @@ void LSystemGenerator::addCone()
     cylinderGenerator_
         .setCenter(state_.position)
         .setDirection(state_.direction, state_.right)
-        .setSize(Vector3(state_.width, state_.length, state_.width), Vector3(0, 0, 0))
+        .setSize(getSize(), Vector3(0, 0, 0))
         .generate();
 
     builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
@@ -146,4 +146,9 @@ Vector3 LSystemGenerator::translate(const utymap::math::Vector3& v) const
 {
     auto coordinate = GeoUtils::worldToGeo(position_, v.x, v.z);
     return Vector3(coordinate.longitude, v.y + minHeight_, coordinate.latitude);
+}
+
+utymap::math::Vector3 LSystemGenerator::getSize() const
+{
+    return Vector3(state_.width, state_.length, state_.width);
 }
