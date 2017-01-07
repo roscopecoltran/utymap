@@ -8,6 +8,7 @@
 #include "lsys/Turtle3d.hpp"
 
 #include <functional>
+#include <memory>
 #include <vector>
 #include <unordered_map>
 
@@ -28,6 +29,8 @@ public:
 
     void moveForward() override;
 
+    void switchStyle() override;
+
     void say(const std::string& word) override;
 
 private:
@@ -40,6 +43,9 @@ private:
     /// Adds cone.
     void addCone();
 
+    /// Updates styles.
+    void updateStyles();
+
     /// Maps given vertex to the cooresponding geocoordinate using position.
     utymap::math::Vector3 translate(const utymap::math::Vector3& v) const;
 
@@ -50,8 +56,8 @@ private:
 
     std::vector<utymap::builders::MeshBuilder::AppearanceOptions> appearances_;
 
-    utymap::builders::MeshContext cylinderContext_;
-    utymap::builders::MeshContext icoSphereContext_;
+    std::unique_ptr<utymap::builders::MeshContext> cylinderContext_;
+    std::unique_ptr<utymap::builders::MeshContext> icoSphereContext_;
 
     utymap::builders::CylinderGenerator cylinderGenerator_;
     utymap::builders::IcoSphereGenerator icoSphereGenerator_;

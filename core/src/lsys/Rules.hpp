@@ -41,6 +41,8 @@ class IncrementRule final : public Rule { public: void apply(Turtle& turtle) con
 
 class DecrementRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.decrement(); } };
 
+class SwitchStyleRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.switchStyle(); } };
+
 class ScaleUpRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.scaleUp(); } };
 
 class ScaleDownRule final : public Rule { public: void apply(Turtle& turtle) const override { turtle.scaleDown(); } };

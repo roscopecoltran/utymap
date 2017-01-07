@@ -75,6 +75,11 @@ void Turtle3d::scaleDown()
     state_.length /= scale_;
 }
 
+void Turtle3d::switchStyle()
+{
+    ++state_.texture;
+}
+
 void Turtle3d::save()
 {
     states_.push(state_);

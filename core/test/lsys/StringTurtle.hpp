@@ -38,6 +38,8 @@ public:
     void scaleDown() override                    { path += "<"; }
 
 
+    void switchStyle() override                    { path += "@"; }
+
     void save() override                         { path += "["; }
 
     void restore() override                      { path += "]"; }

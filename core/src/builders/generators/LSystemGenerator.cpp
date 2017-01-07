@@ -63,10 +63,10 @@ std::unordered_map<std::string, void(LSystemGenerator::*)()> LSystemGenerator::W
 LSystemGenerator::LSystemGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
     builderContext_(builderContext),
     appearances_(createAppearances(builderContext, style)),
-    cylinderContext_(MeshContext(mesh, style, getAppearanceByIndex(0, appearances_))),
-    icoSphereContext_(MeshContext(mesh, style, getAppearanceByIndex(1, appearances_))),
-    cylinderGenerator_(builderContext, cylinderContext_),
-    icoSphereGenerator_(builderContext, icoSphereContext_),
+    cylinderContext_(utymap::utils::make_unique<MeshContext>(mesh, style, getAppearanceByIndex(0, appearances_))),
+    icoSphereContext_(utymap::utils::make_unique<MeshContext>(mesh, style, getAppearanceByIndex(1, appearances_))),
+    cylinderGenerator_(builderContext, *cylinderContext_),
+    icoSphereGenerator_(builderContext, *icoSphereContext_),
     translationFunc_(std::bind(&LSystemGenerator::translate, this, std::placeholders::_1)),
     minHeight_(0)
 {
@@ -99,6 +99,12 @@ void LSystemGenerator::moveForward()
     addCylinder();
 }
 
+void LSystemGenerator::switchStyle()
+{
+    Turtle3d::switchStyle();
+    updateStyles();
+}
+
 void LSystemGenerator::say(const std::string& word)
 {
     (this->*WordMap.at(word))();
@@ -111,8 +117,8 @@ void LSystemGenerator::addSphere()
         .setSize(getSize())
         .generate();
 
-    builderContext_.meshBuilder.writeTextureMappingInfo(icoSphereContext_.mesh,
-                                                        icoSphereContext_.appearanceOptions);
+    builderContext_.meshBuilder.writeTextureMappingInfo(icoSphereContext_->mesh,
+                                                        icoSphereContext_->appearanceOptions);
     jumpForward();
 }
 
@@ -124,8 +130,8 @@ void LSystemGenerator::addCylinder()
         .setSize(getSize())
         .generate();
 
-    builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
-                                                        cylinderContext_.appearanceOptions);
+    builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_->mesh,
+                                                        cylinderContext_->appearanceOptions);
     jumpForward();
 }
 
@@ -137,9 +143,20 @@ void LSystemGenerator::addCone()
         .setSize(getSize(), Vector3(0, 0, 0))
         .generate();
 
-    builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_.mesh,
-                                                        cylinderContext_.appearanceOptions);
+    builderContext_.meshBuilder.writeTextureMappingInfo(cylinderContext_->mesh,
+                                                        cylinderContext_->appearanceOptions);
     jumpForward();
+}
+
+void LSystemGenerator::updateStyles()
+{
+    cylinderContext_ = utymap::utils::make_unique<MeshContext>(cylinderContext_->mesh, cylinderContext_->style,
+        getAppearanceByIndex(state_.texture, appearances_));
+    icoSphereContext_ = utymap::utils::make_unique<MeshContext>(icoSphereContext_->mesh, icoSphereContext_->style,
+        getAppearanceByIndex(state_.texture + 1, appearances_));
+
+    cylinderGenerator_.setContext(*cylinderContext_);
+    icoSphereGenerator_.setContext(*icoSphereContext_);
 }
 
 Vector3 LSystemGenerator::translate(const utymap::math::Vector3& v) const

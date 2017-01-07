@@ -52,6 +52,9 @@ public:
     /// <: Divide the line length by the line length scale factor.
     virtual void scaleDown() {}
 
+    /// @: Switch to next style.
+    virtual void switchStyle() {}
+
 
     /// [: Saves current state on stack.
     virtual void save() {}

@@ -40,6 +40,8 @@ public:
 
     void scaleDown() override;
 
+    void switchStyle() override;
+
     void save() override;
 
     void restore() override;

@@ -41,6 +41,7 @@ const std::shared_ptr<IncrementRule> increment = std::make_shared<IncrementRule>
 const std::shared_ptr<DecrementRule> decrement = std::make_shared<DecrementRule>();
 const std::shared_ptr<ScaleUpRule> scaleUp = std::make_shared<ScaleUpRule>();
 const std::shared_ptr<ScaleDownRule> scaleDown = std::make_shared<ScaleDownRule>();
+const std::shared_ptr<SwitchStyleRule> switchStyle = std::make_shared<SwitchStyleRule>();
 const std::shared_ptr<SaveRule> save = std::make_shared<SaveRule>();
 const std::shared_ptr<RestoreRule> restore = std::make_shared<RestoreRule>();
 
@@ -62,6 +63,7 @@ struct RuleTable : qi::symbols<char, LSystem::RuleType>
             ("!", decrement)
             (">", scaleUp)
             ("<", scaleDown)
+            ("@", switchStyle)
             ("[", save)
             ("]", restore)
         ;
