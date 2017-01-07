@@ -34,8 +34,8 @@ namespace {
 std::unordered_map<std::string, void(TreeGenerator::*)()> TreeGenerator::WordMap =
 {
     { "cone", &TreeGenerator::addCone },
-    { "leaf", &TreeGenerator::addLeaf },
-    { "trunk", &TreeGenerator::addTrunk },
+    { "leaf", &TreeGenerator::addSphere },
+    { "trunk", &TreeGenerator::addCylinder },
 };
 
 TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
@@ -73,7 +73,7 @@ TreeGenerator& TreeGenerator::setPosition(const utymap::GeoCoordinate& coordinat
 
 void TreeGenerator::moveForward()
 {
-    addTrunk();
+    addCylinder();
 }
 
 void TreeGenerator::say(const std::string& word)
@@ -81,7 +81,7 @@ void TreeGenerator::say(const std::string& word)
     (this->*WordMap.at(word))();
 }
 
-void TreeGenerator::addLeaf()
+void TreeGenerator::addSphere()
 {
     icoSphereGenerator_
         .setCenter(state_.position)
@@ -93,7 +93,7 @@ void TreeGenerator::addLeaf()
     jumpForward();
 }
 
-void TreeGenerator::addTrunk()
+void TreeGenerator::addCylinder()
 {
     cylinderGenerator_
         .setCenter(state_.position)

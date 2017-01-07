@@ -30,11 +30,11 @@ public:
     void say(const std::string& word) override;
 
 private:
-    /// Adds leaf.
-    void addLeaf();
+    /// Adds sphere.
+    void addSphere();
 
-    /// Adds trunk.
-    void addTrunk();
+    /// Adds cylinder.
+    void addCylinder();
 
     /// Adds cone.
     void addCone();
