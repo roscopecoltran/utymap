@@ -1,4 +1,5 @@
 #include <mapcss/StyleConsts.hpp>
+#include "builders/generators/LSystemGenerator.hpp"
 #include "builders/poi/TreeBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -28,7 +29,7 @@ void TreeBuilder::visitNode(const utymap::entities::Node& node)
     const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
     
-    TreeGenerator(context_, style, mesh)
+    LSystemGenerator(context_, style, mesh)
         .setPosition(node.coordinate, elevation)
         .run(lsystem);
 
@@ -44,7 +45,7 @@ void TreeBuilder::visitWay(const utymap::entities::Way& way)
     const auto center = context_.boundingBox.center();
     const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
 
-    TreeGenerator(context_, style, treeMesh)
+    LSystemGenerator(context_, style, treeMesh)
         .setPosition(center, 0)
         .run(lsystem);
 

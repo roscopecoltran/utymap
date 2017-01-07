@@ -2,7 +2,6 @@
 #define BUILDERS_POI_TREEBUILDER_HPP_DEFINED
 
 #include "builders/ElementBuilder.hpp"
-#include "builders/generators/TreeGenerator.hpp"
 #include "entities/Area.hpp"
 
 namespace utymap { namespace builders {

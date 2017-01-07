@@ -14,17 +14,17 @@
 namespace utymap { namespace builders {
 
 /// Defines generator which generates a tree using lsystem.
-class TreeGenerator final: public utymap::lsys::Turtle3d
+class LSystemGenerator final: public utymap::lsys::Turtle3d
 {
     /// Maps word from lsystem grammar to the corresponding member function.
-    static std::unordered_map<std::string, void(TreeGenerator::*)()> WordMap;
+    static std::unordered_map<std::string, void(LSystemGenerator::*)()> WordMap;
 public:
-    TreeGenerator(const utymap::builders::BuilderContext& builderContext,
-                  const utymap::mapcss::Style& style,
-                  utymap::math::Mesh& mesh);
+    LSystemGenerator(const utymap::builders::BuilderContext& builderContext,
+                     const utymap::mapcss::Style& style,
+                     utymap::math::Mesh& mesh);
 
     /// Sets start geo position.
-    TreeGenerator& setPosition(const utymap::GeoCoordinate& coordinate, double height);
+    LSystemGenerator& setPosition(const utymap::GeoCoordinate& coordinate, double height);
 
     void moveForward() override;
 

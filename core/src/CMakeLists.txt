@@ -36,7 +36,7 @@ set(HEADER_FILES
         builders/generators/AbstractGenerator.hpp
         builders/generators/CylinderGenerator.hpp
         builders/generators/IcoSphereGenerator.hpp
-        builders/generators/TreeGenerator.hpp
+        builders/generators/LSystemGenerator.hpp
         builders/generators/WallGenerator.hpp
         builders/misc/BarrierBuilder.hpp
         builders/misc/LampBuilder.hpp
@@ -119,7 +119,7 @@ add_library(${LIBRARY_NAME}
         ${LIB_SOURCE}/shapefile/safileio.c
         ${LIB_SOURCE}/shapefile/shpopen.c
         builders/MeshBuilder.cpp
-        builders/generators/TreeGenerator.cpp
+        builders/generators/LSystemGenerator.cpp
         builders/misc/BarrierBuilder.cpp
         builders/misc/LampBuilder.cpp
         builders/misc/LaneBuilder.cpp

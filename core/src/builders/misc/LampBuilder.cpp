@@ -1,5 +1,5 @@
 #include <mapcss/StyleConsts.hpp>
-#include "builders/generators/TreeGenerator.hpp"
+#include "builders/generators/LSystemGenerator.hpp"
 #include "builders/misc/LampBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -28,7 +28,7 @@ void LampBuilder::visitNode(const utymap::entities::Node& node)
     double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
     Mesh lampMesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
-    TreeGenerator(context_, style, lampMesh)
+    LSystemGenerator(context_, style, lampMesh)
         .setPosition(node.coordinate, elevation)
         .run(lsystem);
     
@@ -47,7 +47,7 @@ void LampBuilder::visitWay(const utymap::entities::Way& way)
     Mesh lampMesh("");
     Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));   
 
-    TreeGenerator(context_, style, lampMesh)
+    LSystemGenerator(context_, style, lampMesh)
         .setPosition(center, 0)
         .run(lsystem);
 

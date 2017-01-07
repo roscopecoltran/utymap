@@ -1,6 +1,6 @@
 #include "builders/generators/CylinderGenerator.hpp"
 #include "builders/generators/IcoSphereGenerator.hpp"
-#include "builders/generators/TreeGenerator.hpp"
+#include "builders/generators/LSystemGenerator.hpp"
 #include "entities/Node.hpp"
 #include "lsys/LSystemParser.hpp"
 #include "utils/GradientUtils.hpp"
@@ -96,13 +96,13 @@ BOOST_AUTO_TEST_CASE(GivenCylinderGeneratorWithSimpleData_WhenGenerate_ThenCanGe
     BOOST_CHECK_GT(mesh.colors.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
+BOOST_AUTO_TEST_CASE(GivenLSystemGeneratorWithSimpleData_WhenGenerate_ThenCanGenerateMesh)
 {
     GeoCoordinate center(52.53178, 13.38750);
     std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
     auto lsystem = utymap::lsys::LSystemParser().parse(file);
 
-    TreeGenerator(builderContext, style, mesh)
+    LSystemGenerator(builderContext, style, mesh)
         .setPosition(center, 0)
         .run(lsystem);
 

@@ -1,5 +1,5 @@
 #include "builders/terrain/TerraExtras.hpp"
-#include "builders/generators/TreeGenerator.hpp"
+#include "builders/generators/LSystemGenerator.hpp"
 #include "mapcss/StyleConsts.hpp"
 #include "lsys/LSystem.hpp"
 #include "utils/MeshUtils.hpp"
@@ -20,7 +20,7 @@ void TerraExtras::addForest(const BuilderContext& builderContext, TerraExtras::C
     const auto& lsystem = builderContext.styleProvider
         .getLsystem(extrasContext.style.getString(StyleConsts::LSystemKey()));
     Mesh treeMesh("");
-    TreeGenerator(builderContext, extrasContext.style, treeMesh)
+    LSystemGenerator(builderContext, extrasContext.style, treeMesh)
         .setPosition(center, 0) // NOTE we will override coordinates later
         .run(lsystem);
   

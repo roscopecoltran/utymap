@@ -1,4 +1,4 @@
-#include "builders/generators/TreeGenerator.hpp"
+#include "builders/generators/LSystemGenerator.hpp"
 #include <mapcss/StyleConsts.hpp>
 #include "utils/CoreUtils.hpp"
 #include "utils/GeometryUtils.hpp"
@@ -53,21 +53,21 @@ namespace {
     }
 }
 
-std::unordered_map<std::string, void(TreeGenerator::*)()> TreeGenerator::WordMap =
+std::unordered_map<std::string, void(LSystemGenerator::*)()> LSystemGenerator::WordMap =
 {
-    { "cone", &TreeGenerator::addCone },
-    { "sphere", &TreeGenerator::addSphere },
-    { "cylinder", &TreeGenerator::addCylinder },
+    { "cone", &LSystemGenerator::addCone },
+    { "sphere", &LSystemGenerator::addSphere },
+    { "cylinder", &LSystemGenerator::addCylinder },
 };
 
-TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
+LSystemGenerator::LSystemGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
     builderContext_(builderContext),
     appearances_(createAppearances(builderContext, style)),
     cylinderContext_(MeshContext(mesh, style, getAppearanceByIndex(0, appearances_))),
     icoSphereContext_(MeshContext(mesh, style, getAppearanceByIndex(1, appearances_))),
     cylinderGenerator_(builderContext, cylinderContext_),
     icoSphereGenerator_(builderContext, icoSphereContext_),
-    translationFunc_(std::bind(&TreeGenerator::translate, this, std::placeholders::_1)),
+    translationFunc_(std::bind(&LSystemGenerator::translate, this, std::placeholders::_1)),
     minHeight_(0)
 {
     cylinderGenerator_
@@ -83,7 +83,7 @@ TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& 
     state_.width = size;
 }
 
-TreeGenerator& TreeGenerator::setPosition(const utymap::GeoCoordinate& coordinate, double height)
+LSystemGenerator& LSystemGenerator::setPosition(const utymap::GeoCoordinate& coordinate, double height)
 {
     position_ = coordinate;
     minHeight_ = height;
@@ -94,17 +94,17 @@ TreeGenerator& TreeGenerator::setPosition(const utymap::GeoCoordinate& coordinat
     return *this;
 }
 
-void TreeGenerator::moveForward()
+void LSystemGenerator::moveForward()
 {
     addCylinder();
 }
 
-void TreeGenerator::say(const std::string& word)
+void LSystemGenerator::say(const std::string& word)
 {
     (this->*WordMap.at(word))();
 }
 
-void TreeGenerator::addSphere()
+void LSystemGenerator::addSphere()
 {
     icoSphereGenerator_
         .setCenter(state_.position)
@@ -116,7 +116,7 @@ void TreeGenerator::addSphere()
     jumpForward();
 }
 
-void TreeGenerator::addCylinder()
+void LSystemGenerator::addCylinder()
 {
     cylinderGenerator_
         .setCenter(state_.position)
@@ -129,7 +129,7 @@ void TreeGenerator::addCylinder()
     jumpForward();
 }
 
-void TreeGenerator::addCone()
+void LSystemGenerator::addCone()
 {
     cylinderGenerator_
         .setCenter(state_.position)
@@ -142,7 +142,7 @@ void TreeGenerator::addCone()
     jumpForward();
 }
 
-Vector3 TreeGenerator::translate(const utymap::math::Vector3& v) const
+Vector3 LSystemGenerator::translate(const utymap::math::Vector3& v) const
 {
     auto coordinate = GeoUtils::worldToGeo(position_, v.x, v.z);
     return Vector3(coordinate.longitude, v.y + minHeight_, coordinate.latitude);
