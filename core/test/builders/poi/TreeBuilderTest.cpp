@@ -20,20 +20,14 @@ using namespace utymap::tests;
 
 namespace {
     const std::string stylesheetStr =
-        "node|z16[natural=tree], way|z16[natural=tree_row] { "
+        "node|z16[natural=tree], way|z16[natural=tree_row] {"
             "tree-step: 3m;"
-            "lsystem: tree;"
-            "leaf-color: gradient(green);"
-            "leaf-radius: 2.5m;"
-            "leaf-texture-index: 0;"
-            "leaf-texture-type: tree;"
-            "leaf-texture-scale: 50;"
-            "trunk-color: gradient(gray);"
-            "trunk-radius: 0.3m;"
-            "trunk-height: 1.5m;"
-            "trunk-texture-index: 0;"
-            "trunk-texture-type: background;"
-            "trunk-texture-scale: 200;"
+            "lsys: tree;"
+            "lsys-size: 1m;"
+            "lsys-colors: gray,yellow;"
+            "lsys-texture-indices: 0,0;"
+            "lsys-texture-types: background,grass;"
+            "lsys-texture-scales: 50,200;"
         "}";
 
     struct Builders_Poi_TreeBuilderFixture
