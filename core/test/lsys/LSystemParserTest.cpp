@@ -71,8 +71,7 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithComment_WhenParse_ThenSkipsCommentLine)
                                 "#angle:35\n"
                                 "angle: 45\n"
                                 "#angle:55\n"
-                                "width: 1.2\n"
-                                "length: 1.2\n"
+                                "scale: 1.2\n"
                                 "axiom: A\n"
                                 "A -> G G";
 
