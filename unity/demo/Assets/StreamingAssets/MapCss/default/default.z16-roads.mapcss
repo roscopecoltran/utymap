@@ -27,7 +27,7 @@ way|z16[highway] {
     width: 1m;
     lamp-step: 30m;
     lsys: lamp;
-    lsys-size: 0.3m;
+    lsys-size: 1m;
     lsys-colors: black,yellow;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,background;

@@ -108,7 +108,7 @@ area,relation|z16[leisure=garden] {
     tree-chunk-size: 30;
 
     lsys: tree;
-    lsys-size: 0.15m;
+    lsys-size: 1m;
     lsys-colors: gray,green;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,tree;
@@ -126,7 +126,7 @@ area,relation|z16[landuse=forest] {
     tree-chunk-size: 30;
     texture-type: grass;
     lsys: tree;
-    lsys-size: 0.15m;
+    lsys-size: 1m;
     lsys-colors: gray,green;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,tree;
