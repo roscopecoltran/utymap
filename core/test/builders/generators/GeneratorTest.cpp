@@ -25,17 +25,12 @@ using namespace utymap::tests;
 namespace {
     const std::string stylesheet =
         "node|z1[natural=tree] {"
-            "lsystem: tree;"
-            "tree-width: 0.2m;"
-            "tree-height: 1m;"
-            "leaf-color: gradient(green);"
-            "leaf-texture-index: 0;"
-            "leaf-texture-type: tree;"
-            "leaf-texture-scale: 50;"
-            "trunk-color: gradient(gray);"
-            "trunk-texture-index: 0;"
-            "trunk-texture-type: background;"
-            "trunk-texture-scale: 200;"
+            "lsys: tree;"
+            "lsys-size: 1m;"
+            "lsys-colors: gray,yellow;"
+            "lsys-texture-indices: 0,0;"
+            "lsys-texture-types: background,grass;"
+            "lsys-texture-scales: 50,200;"
         "}";
 
     struct Builders_Generators_GeneratorFixture
@@ -114,7 +109,6 @@ BOOST_AUTO_TEST_CASE(GivenTreeGeneratorWithSimpleData_WhenGenerate_ThenCanGenera
     BOOST_CHECK_GT(mesh.vertices.size(), 0);
     BOOST_CHECK_GT(mesh.triangles.size(), 0);
     BOOST_CHECK_GT(mesh.colors.size(), 0);
-
 }
 
 BOOST_AUTO_TEST_SUITE_END()

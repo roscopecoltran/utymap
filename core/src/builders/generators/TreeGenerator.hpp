@@ -8,6 +8,7 @@
 #include "lsys/Turtle3d.hpp"
 
 #include <functional>
+#include <vector>
 #include <unordered_map>
 
 namespace utymap { namespace builders {
@@ -43,6 +44,8 @@ private:
     utymap::math::Vector3 translate(const utymap::math::Vector3& v) const;
 
     const utymap::builders::BuilderContext& builderContext_;
+
+    std::vector<utymap::builders::MeshBuilder::AppearanceOptions> appearances_;
 
     utymap::builders::MeshContext cylinderContext_;
     utymap::builders::MeshContext icoSphereContext_;

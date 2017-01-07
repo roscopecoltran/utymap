@@ -107,19 +107,12 @@ area,relation|z16[leisure=garden] {
     tree-frequency: 60;
     tree-chunk-size: 30;
 
-    lsystem: tree;
-    tree-width: 0.2m;
-    tree-height: 1m;
-
-    leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-texture-index: 0;
-    leaf-texture-type: tree;
-    leaf-texture-scale: 50;
-
-    trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-texture-index: 0;
-    trunk-texture-type: background;
-    trunk-texture-scale: 200;
+    lsys: tree;
+    lsys-size: 0.15m;
+    lsys-colors: gray,green;
+    lsys-texture-indices: 0,0;
+    lsys-texture-types: background,tree;
+    lsys-texture-scales: 200,50;
 }
 area,relation|z16[natural=wood],
 area,relation|z16[leisure=nature_reserve],
@@ -132,20 +125,12 @@ area,relation|z16[landuse=forest] {
     tree-frequency: 10;
     tree-chunk-size: 30;
     texture-type: grass;
-
-    lsystem: tree;
-    tree-width: 0.2m;
-    tree-height: 1m;
-
-    leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-texture-index: 0;
-    leaf-texture-type: tree;
-    leaf-texture-scale: 50;
-
-    trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-texture-index: 0;
-    trunk-texture-type: background;
-    trunk-texture-scale: 200;
+    lsys: tree;
+    lsys-size: 0.15m;
+    lsys-colors: gray,green;
+    lsys-texture-indices: 0,0;
+    lsys-texture-types: background,tree;
+    lsys-texture-scales: 200,50;
 }
 area,relation|z16[landuse=farmland],
 area,relation|z16[landuse=scrub] {

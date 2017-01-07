@@ -1,5 +1,5 @@
 generations: 1
 angle: 0
-scale: 7
+scale: 1.5
 axiom: root
-root -> trunk trunk G $ leaf
+root -> cylinder sphere

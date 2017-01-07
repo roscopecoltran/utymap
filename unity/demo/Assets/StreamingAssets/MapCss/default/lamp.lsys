@@ -2,4 +2,4 @@ generations: 1
 angle: 0
 scale: 3
 axiom: root
-root -> trunk $ leaf
+root -> cylinder sphere

@@ -34,7 +34,7 @@ const std::string& StyleConsts::GradientKey()
 
 const std::string& StyleConsts::LSystemKey()
 {
-    static const std::string value = "lsystem";
+    static const std::string value = "lsys";
     return value;
 }
 
@@ -119,6 +119,12 @@ const std::string& StyleConsts::LengthKey()
 const std::string& StyleConsts::RadiusKey()
 {
     static const std::string value = "radius";
+    return value;
+}
+
+const std::string& StyleConsts::SizeKey()
+{
+    static const std::string value = "size";
     return value;
 }
 

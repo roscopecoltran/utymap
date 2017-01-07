@@ -50,8 +50,12 @@ protected:
     /// Defines turtle state.
     struct State
     {
+        /// Specifies current length.
         double length = 0;
+        /// Specifies current width (radius).
         double width = 0;
+        /// Specifies current selected texture index.
+        std::size_t texture = 0;
 
         utymap::math::Vector3 position = utymap::math::Vector3::zero();
         utymap::math::Vector3 direction = utymap::math::Vector3::up();

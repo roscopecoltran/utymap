@@ -36,6 +36,7 @@ struct StyleConsts final {
     static const std::string& LengthKey();
     static const std::string& GapKey();
     static const std::string& RadiusKey();
+    static const std::string& SizeKey();
     static const std::string& MinHeightKey();
     static const std::string& FrequencyKey();
 

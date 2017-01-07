@@ -26,20 +26,12 @@ way|z16[highway] {
     terrain-layer: pedestrian;
     width: 1m;
     lamp-step: 30m;
-
-    lsystem: lamp;
-    tree-width: 0.1m;
-    tree-height: 8m;
-
-    leaf-color: gradient(yellow);
-    leaf-texture-index: 0;
-    leaf-texture-type: background;
-    leaf-texture-scale: 50;
-
-    trunk-color: gradient(black);
-    trunk-texture-index: 0;
-    trunk-texture-type: background;
-    trunk-texture-scale: 200;
+    lsys: lamp;
+    lsys-size: 0.3m;
+    lsys-colors: black,yellow;
+    lsys-texture-indices: 0,0;
+    lsys-texture-types: background,background;
+    lsys-texture-scales: 200,200;
 }
 
 way|z16[highway=path][foot=designated] {

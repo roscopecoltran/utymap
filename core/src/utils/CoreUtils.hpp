@@ -3,7 +3,9 @@
 
 #include <chrono>
 #include <string>
+#include <sstream>
 #include <memory>
+#include <vector>
 
 #include <boost/lexical_cast.hpp>
 
@@ -20,6 +22,19 @@ inline std::string removeExtension(const std::string& filename) {
     return lastdot == std::string::npos
         ? filename
         : filename.substr(0, lastdot);
+}
+
+inline std::vector<std::string> splitBy(const char c, const std::string& str)
+{
+    std::stringstream ss(str);
+    std::vector<std::string> result;
+
+    while (ss.good()) {
+        std::string substr;
+        getline(ss, substr, c);
+        result.push_back(substr);
+    }
+    return result;
 }
 
 template<typename T>

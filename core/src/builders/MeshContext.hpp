@@ -19,12 +19,19 @@ struct MeshContext
 
   MeshContext(utymap::math::Mesh& mesh,
               const utymap::mapcss::Style& style,
+              const utymap::builders::MeshBuilder::AppearanceOptions& appearanceOptions) :
+              mesh(mesh),
+              style(style),
+              geometryOptions(0, 0, std::numeric_limits<double>::lowest(), 0),
+              appearanceOptions(appearanceOptions)
+  {
+  }
+
+  MeshContext(utymap::math::Mesh& mesh,
+              const utymap::mapcss::Style& style,
               const utymap::mapcss::ColorGradient& gradient,
               const utymap::mapcss::TextureRegion& region) :
-      mesh(mesh), 
-      style(style),
-      geometryOptions(0, 0, std::numeric_limits<double>::lowest(), 0),
-      appearanceOptions(gradient, 0, 0, region, 0)
+     MeshContext(mesh, style, utymap::builders::MeshBuilder::AppearanceOptions(gradient, 0, 0, region, 0))
   {
   }
 
@@ -33,7 +40,7 @@ struct MeshContext
                             const utymap::mapcss::StyleProvider& styleProvider,
                             std::uint64_t seed = 0)
   {
-      return MeshContext::create(mesh, 
+      return MeshContext::create(mesh,
           style,
           styleProvider,
           utymap::mapcss::StyleConsts::GradientKey(),

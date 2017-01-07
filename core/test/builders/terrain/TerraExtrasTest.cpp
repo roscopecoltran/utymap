@@ -17,20 +17,12 @@ namespace {
     const ColorGradient gradient = ColorGradient();
     const TextureRegion textureRegion = TextureRegion();
     const std::string stylesheetStr = "area|z16[amenity=forest] {"
-                                        "lsystem: tree;"
-                                        "tree-frequency: 30;"
-                                        "tree-chunk-size: 30;"
-                                        "leaf-color: gradient(green);"
-                                        "leaf-radius: 2.5m;"
-                                        "leaf-texture-index: 0;"
-                                        "leaf-texture-type: tree;"
-                                        "leaf-texture-scale: 50;"
-                                        "trunk-color: gradient(gray);"
-                                        "trunk-radius: 0.3m;"
-                                        "trunk-height: 1.5m;"
-                                        "trunk-texture-index: 0;"
-                                        "trunk-texture-type: background;"
-                                        "trunk-texture-scale: 200;"
+                                        "lsys: tree;"
+                                        "lsys-size: 1m;"
+                                        "lsys-colors: gray,yellow;"
+                                        "lsys-texture-indices: 0,0;"
+                                        "lsys-texture-types: background,grass;"
+                                        "lsys-texture-scales: 50,200;"
                                     "}";
 
     StyleSheet createStyleSheet()

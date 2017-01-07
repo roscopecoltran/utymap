@@ -277,38 +277,22 @@ node|z16[waterway=weir]                                                { rect:52
 way,relation|z16[natural=tree_row],
 node|z16[natural=tree] {
     builders: tree;
-    lsystem: tree;
     clip: true;
-
-    tree-width: 0.2m;
-    tree-height: 1m;
-
     tree-step: 10m;
-    leaf-color: gradient(#80c34c, #406126 50%, #101809);
-    leaf-texture-index: 0;
-    leaf-texture-type: tree;
-    leaf-texture-scale: 50;
-
-    trunk-color: gradient(#f4a460, #614126 50%, #302013);
-    trunk-texture-index: 0;
-    trunk-texture-type: background;
-    trunk-texture-scale: 200;
+    lsys: tree;
+    lsys-size: 0.15m;
+    lsys-colors: gray,green;
+    lsys-texture-indices: 0,0;
+    lsys-texture-types: background,tree;
+    lsys-texture-scales: 200,50;
 }
 
 node|z16[highway=street_lamp] {
     builders: lamp;
-    lsystem: lamp;
-
-    tree-width: 0.1m;
-    tree-height: 8m;
-
-    leaf-color: gradient(yellow);
-    leaf-texture-index: 0;
-    leaf-texture-type: background;
-    leaf-texture-scale: 50;
-
-    trunk-color: gradient(black);
-    trunk-texture-index: 0;
-    trunk-texture-type: background;
-    trunk-texture-scale: 200;
+    lsys: lamp;
+    lsys-size: 0.1m;
+    lsys-colors: black,yellow;
+    lsys-texture-indices: 0,0;
+    lsys-texture-types: background,background;
+    lsys-texture-scales: 200,200;
 }

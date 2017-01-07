@@ -1,5 +1,6 @@
 #include "builders/generators/TreeGenerator.hpp"
 #include <mapcss/StyleConsts.hpp>
+#include "utils/CoreUtils.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
@@ -14,36 +15,56 @@ using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {
-    const std::string LeafPrefix = "leaf-";
-    const std::string LeafGradientKey = LeafPrefix + StyleConsts::GradientKey();
-    const std::string LeafTextureIndexKey = LeafPrefix + StyleConsts::TextureIndexKey();
-    const std::string LeafTextureTypeKey = LeafPrefix + StyleConsts::TextureTypeKey();
-    const std::string LeafTextureScaleKey = LeafPrefix + StyleConsts::TextureScaleKey();
 
-    const std::string TrunkPrefix = "trunk-";
-    const std::string TrunkGradientKey = TrunkPrefix + StyleConsts::GradientKey();
-    const std::string TrunkTextureIndexKey = TrunkPrefix + StyleConsts::TextureIndexKey();;
-    const std::string TrunkTextureTypeKey = TrunkPrefix + StyleConsts::TextureTypeKey();
-    const std::string TrunkTextureScaleKey = TrunkPrefix + StyleConsts::TextureScaleKey();
+    const std::string Prefix = "lsys-";
+    const std::string SizeKey = Prefix + StyleConsts::SizeKey();
+    const std::string GradientsKey= Prefix + "colors";
+    const std::string TextureIndicesKey = Prefix + "texture-indices";
+    const std::string TextureTypesKey = Prefix + "texture-types";
+    const std::string TextureScalesKey = Prefix + "texture-scales";
 
-    const std::string TreePrefix = "tree-";
-    const std::string TreeHeight = TreePrefix + StyleConsts::HeightKey();
-    const std::string TreeWidth = TreePrefix + StyleConsts::WidthKey();
+    /// Parses appearances from comma separated representation.
+    std::vector<MeshBuilder::AppearanceOptions> createAppearances(const BuilderContext& builderContext, const Style& style)
+    {
+        auto colorStrings = utymap::utils::splitBy(',', style.getString(GradientsKey));
+        auto indices = utymap::utils::splitBy(',', style.getString(TextureIndicesKey));
+        auto types = utymap::utils::splitBy(',', style.getString(TextureTypesKey));
+        auto scales = utymap::utils::splitBy(',', style.getString(TextureScalesKey));
+
+        std::vector<MeshBuilder::AppearanceOptions> appearances;
+        appearances.reserve(colorStrings.size());
+        for (std::size_t i = 0; i < colorStrings.size(); ++i) {
+            auto textureIndex = utymap::utils::lexicalCast<std::uint16_t>(indices.at(i));
+            appearances.push_back(MeshBuilder::AppearanceOptions(
+                builderContext.styleProvider.getGradient(colorStrings.at(i)),
+                0,
+                textureIndex,
+                builderContext.styleProvider.getTexture(textureIndex, types.at(i)).random(0),
+                utymap::utils::lexicalCast<double>(scales.at(i))));
+        }
+
+        return appearances;
+    }
+
+    /// Gets appearance by index safely.
+    const MeshBuilder::AppearanceOptions& getAppearanceByIndex(std::size_t index, const std::vector<MeshBuilder::AppearanceOptions>& appearances)
+    {
+        return appearances.at(index % appearances.size());
+    }
 }
 
 std::unordered_map<std::string, void(TreeGenerator::*)()> TreeGenerator::WordMap =
 {
     { "cone", &TreeGenerator::addCone },
-    { "leaf", &TreeGenerator::addSphere },
-    { "trunk", &TreeGenerator::addCylinder },
+    { "sphere", &TreeGenerator::addSphere },
+    { "cylinder", &TreeGenerator::addCylinder },
 };
 
 TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& style, Mesh& mesh) :
     builderContext_(builderContext),
-    cylinderContext_(MeshContext::create(mesh, style, builderContext.styleProvider,
-        TrunkGradientKey, TrunkTextureIndexKey, TrunkTextureTypeKey, TrunkTextureScaleKey)),
-    icoSphereContext_(MeshContext::create(mesh, style, builderContext.styleProvider,
-        LeafGradientKey, LeafTextureIndexKey, LeafTextureTypeKey, LeafTextureScaleKey)),
+    appearances_(createAppearances(builderContext, style)),
+    cylinderContext_(MeshContext(mesh, style, getAppearanceByIndex(0, appearances_))),
+    icoSphereContext_(MeshContext(mesh, style, getAppearanceByIndex(1, appearances_))),
     cylinderGenerator_(builderContext, cylinderContext_),
     icoSphereGenerator_(builderContext, icoSphereContext_),
     translationFunc_(std::bind(&TreeGenerator::translate, this, std::placeholders::_1)),
@@ -56,8 +77,10 @@ TreeGenerator::TreeGenerator(const BuilderContext& builderContext, const Style& 
     icoSphereGenerator_
         .setRecursionLevel(1);
 
-    state_.length = style.getValue(TreeHeight);
-    state_.width = style.getValue(TreeWidth);
+    double size = style.getValue(SizeKey);
+
+    state_.length = size;
+    state_.width = size;
 }
 
 TreeGenerator& TreeGenerator::setPosition(const utymap::GeoCoordinate& coordinate, double height)
