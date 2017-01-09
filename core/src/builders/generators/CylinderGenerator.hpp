@@ -116,7 +116,8 @@ private:
 
     utymap::math::Vector3 scale(const utymap::math::Vector3& value, const utymap::math::Vector3& size) const
     {
-        return utymap::math::Vector3(value.x * size.x, value.y * size.y, value.z * size.z);
+        /// NOTE use size.x for value.y to handle rotations
+        return utymap::math::Vector3(value.x * size.x, value.y * size.x, value.z * size.z);
     }
 
     utymap::math::Vector3 center_ = utymap::math::Vector3::zero();
