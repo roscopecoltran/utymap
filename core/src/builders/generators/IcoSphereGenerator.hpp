@@ -178,15 +178,15 @@ private:
         for (auto i = 0; i < faces.size(); ++i) {
             auto face = faces[i];
             addTriangle(
-                scale(vertexList_[face.V1]) + center_,
-                scale(vertexList_[face.V2]) + center_,
-                scale(vertexList_[face.V3]) + center_);
+                translate(scale(vertexList_[face.V1]) + center_),
+                translate(scale(vertexList_[face.V2]) + center_),
+                translate(scale(vertexList_[face.V3]) + center_));
         }
     }
 
     utymap::math::Vector3 scale(const utymap::math::Vector3& v) const
     {
-        return translate(utymap::math::Vector3(v.x * size_.x, v.y * size_.y, v.z * size_.z));
+        return utymap::math::Vector3(v.x * size_.x, v.y * size_.y, v.z * size_.z);
     }
 
 utymap::math::Vector3 center_;
