@@ -109,7 +109,7 @@ area,relation|z16[leisure=garden] {
 
     lsys: tree;
     lsys-size: 1m;
-    lsys-colors: gray,green;
+    lsys-colors: brown,green;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,tree;
     lsys-texture-scales: 200,50;
@@ -127,7 +127,7 @@ area,relation|z16[landuse=forest] {
     texture-type: grass;
     lsys: tree;
     lsys-size: 1m;
-    lsys-colors: gray,green;
+    lsys-colors: brown,green;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,tree;
     lsys-texture-scales: 200,50;

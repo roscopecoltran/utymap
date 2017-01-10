@@ -6,4 +6,5 @@
 @texture url("default.z16.txt");
 
 @lsystem url("tree.lsys");
+@lsystem url("conifer.lsys");
 @lsystem url("lamp.lsys");

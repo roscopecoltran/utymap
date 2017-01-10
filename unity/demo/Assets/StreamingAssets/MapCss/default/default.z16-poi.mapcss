@@ -281,10 +281,15 @@ node|z16[natural=tree] {
     tree-step: 10m;
     lsys: tree;
     lsys-size: 1m;
-    lsys-colors: gray,green;
+    lsys-colors: brown,green;
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,tree;
     lsys-texture-scales: 200,50;
+}
+
+node|z16[natural=tree][type=conifer],
+node|z16[natural=tree][leaf_type=needleleaved] {
+    lsys: conifer;
 }
 
 node|z16[highway=street_lamp] {
