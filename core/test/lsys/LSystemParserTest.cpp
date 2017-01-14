@@ -3,6 +3,9 @@
 #include "lsys/StringTurtle.hpp"
 #include <boost/test/unit_test.hpp>
 
+#include "config.hpp"
+#include <fstream>
+
 using namespace utymap::lsys;
 using namespace utymap::tests;
 
@@ -110,6 +113,16 @@ BOOST_AUTO_TEST_CASE(GivenGrammarWithWords_WhenParse_ThenStringTurtleBuildsPrope
     turtle.run(LSystemParser().parse(grammar));
 
     BOOST_CHECK_EQUAL(turtle.path, "FtrunkFFtrunkGleaf");
+}
+
+BOOST_AUTO_TEST_CASE(GivenGrammarInFile_WhenParse_ThenGrammarIsParsed)
+{
+    StringTurtle turtle;
+    std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
+
+    turtle.run(LSystemParser().parse(file));
+
+    BOOST_CHECK_EQUAL(turtle.path, "cylindersphere");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
