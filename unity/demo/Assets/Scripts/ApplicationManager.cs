@@ -111,7 +111,7 @@ namespace Assets.Scripts
         ///     Console is way to debug/investigate app behavior on real devices when 
         ///     regular debugger is not applicable.
         /// </remarks>
-        public void CreateDebugConsole(bool isOpen = true)
+        public void CreateDebugConsole(bool isOpen = false)
         {
             // NOTE DebugConsole is based on some adapted solution found in Internet
             var consoleGameObject = new GameObject("_DebugConsole_");
