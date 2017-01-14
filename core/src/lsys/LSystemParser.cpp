@@ -100,8 +100,8 @@ struct CommentSkipper : qi::grammar<Iterator>
     CommentSkipper() : CommentSkipper::base_type(start, "comment")
     {
         start =
-            qi::lit(' ') |
-            ('#' >> *(qi::char_ - '\n') >> '\n')
+            ' ' |
+            '#' >> *(qi::char_ - '\n') >> '\n'
         ;
         start.name("comment");
     }
@@ -160,15 +160,15 @@ struct LSystemGrammar : qi::grammar <Iterator, LSystem(), CommentSkipper<Iterato
     LSystemGrammar() : LSystemGrammar::base_type(start, "lsystem")
     {
         start =
-            (qi::lit("generations:") > qi::int_) >> qi::space >
-            (qi::lit("angle:") > qi::double_) >> qi::space >
-            (qi::lit("scale:") > qi::double_) >> qi::space >
-            (qi::lit("axiom:") > +rule > '\n') >
+            "generations:" > qi::int_ >> +ascii::space >
+            "angle:" > qi::double_ >> +ascii::space >
+            "scale:" > qi::double_ >> +ascii::space >
+            "axiom:" > +rule > '\n' >
             production
         ;
 
         start.name("lsystem");
-        rule.name("production");
+        rule.name("rule");
         production.name("production");
 
         qi::on_error<qi::fail>
