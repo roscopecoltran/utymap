@@ -119,6 +119,7 @@ add_library(${LIBRARY_NAME}
         ${LIB_SOURCE}/shapefile/safileio.c
         ${LIB_SOURCE}/shapefile/shpopen.c
         builders/MeshBuilder.cpp
+        builders/generators/IcoSphereGenerator.cpp
         builders/generators/LSystemGenerator.cpp
         builders/misc/BarrierBuilder.cpp
         builders/misc/LampBuilder.cpp
