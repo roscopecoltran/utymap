@@ -127,8 +127,6 @@ namespace Assets.Scripts.Environment
         private static void CopyStreamingAsset(string srcAssetRelativePath, string destAbsoluteDirPath, ITrace trace)
         {
             string destAbsolutePath = Path.Combine(destAbsoluteDirPath, srcAssetRelativePath);
-            if (File.Exists(destAbsolutePath))
-                return;
 
             // ensure all parent directories exist
             var parentDirectory = Path.GetDirectoryName(destAbsolutePath);
