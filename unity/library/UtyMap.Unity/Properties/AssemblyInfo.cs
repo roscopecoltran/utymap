@@ -6,13 +6,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("UtyMap for Unity3D")]
 [assembly: AssemblyProduct("UtyMap.Unity")]
 [assembly: AssemblyCopyright("Copyright © Ilya Builuk, 2014-2016")]
+[assembly: AssemblyVersion("1.3.*")]
 
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("97791a51-a81b-45d4-a6fc-5dfa9ebcc603")]
-
-[assembly: AssemblyVersion("1.2.*")]
-[assembly: AssemblyFileVersion("1.2.*")]
 
 [assembly: InternalsVisibleTo("UtyMap.Unity.Tests")]

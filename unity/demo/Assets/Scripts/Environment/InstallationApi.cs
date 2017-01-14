@@ -7,10 +7,10 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 
 namespace Assets.Scripts.Environment
 {
-    /// <summary> Provides installation API. </summary>
+    /// <summary> Provides the way to extract embedded data to persistent storage. </summary>
     internal static class InstallationApi
     {
-        private const string Version = "1.1";
+        private const string Version = "1.3";
         private const string MarkerFileName = "install_log.txt";
 
         /// <summary> Ensures required filesystem structure. Should be called from main thread. </summary>
@@ -24,6 +24,7 @@ namespace Assets.Scripts.Environment
             CopyFiles(GetMapCssFileNames(), trace);
             CopyFiles(GetNaturalEarthFileNames(), trace);
             CopyFiles(GetOsmFileNames(), trace);
+            CopyFiles(GetLsysFileNames(), trace);
 #endif
             CreateDirectories(GetDirectories());
 
@@ -51,6 +52,16 @@ namespace Assets.Scripts.Environment
                 "z16-terrain.mapcss",
                 "z16-water.mapcss"
             }.Select(f => "MapCss/default/default." + f);
+        }
+
+        private static IEnumerable<string> GetLsysFileNames()
+        {
+            return new List<string>()
+            {
+                "conifer.lsys",
+                "lamp.lsys",
+                "tree.lsys"
+            }.Select(f => "MapCss/default/" + f);
         }
 
         private static IEnumerable<string> GetNaturalEarthFileNames()
