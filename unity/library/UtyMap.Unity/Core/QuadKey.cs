@@ -63,6 +63,38 @@ namespace UtyMap.Unity.Core
                 quadKey.Append(digit);
             }
             return quadKey.ToString();
-        }      
+        }
+
+        /// <summary> Returns quadkey from its string representation. </summary>
+        /// <exception cref="ArgumentException"> Throws if has invalid digit sequence. </exception>
+        public static QuadKey FromString(string value)
+        {
+            int tileX = 0, tileY = 0;
+            int levelOfDetail = value.Length;
+            for (int i = levelOfDetail; i > 0; i--)
+            {
+                int mask = 1 << (i - 1);
+                switch (value[levelOfDetail - i])
+                {
+                    case '0':
+                        break;
+                    case '1':
+                        tileX |= mask;
+                        break;
+                    case '2':
+                        tileY |= mask;
+                        break;
+                    case '3':
+                        tileX |= mask;
+                        tileY |= mask;
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid QuadKey digit sequence.");
+                }
+            }
+
+            return new QuadKey(tileX, tileY, levelOfDetail);
+        }
     }
 }
