@@ -13,7 +13,9 @@ using Mesh = UtyMap.Unity.Core.Models.Mesh;
 
 namespace UtyMap.Unity.Maps.Data
 {
-    /// <summary> Adapts map data received from utymap API to the type used by the app. </summary>
+    /// <summary>
+    /// Adapts map tile data received from utymap API to the type used by the app.
+    /// </summary>
     internal class MapDataAdapter
     {
         private const string TraceCategory = "mapdata.loader";
@@ -22,7 +24,7 @@ namespace UtyMap.Unity.Maps.Data
         private readonly IObserver<Union<Element, Mesh>> _observer;
         private readonly ITrace _trace;
 
-        private static Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
+        private static Regex ElementNameRegex = new Regex("^(building|barrier):([0-9]*)");
 
         public MapDataAdapter(Tile tile, IObserver<Union<Element, Mesh>> observer, ITrace trace)
         {
@@ -102,14 +104,13 @@ namespace UtyMap.Unity.Maps.Data
                     unityUvs3 = new Vector2[worldPoints.Length];
                 }
 
-                /// ?
                 // TODO this is not scalable: think about better solution for elements clipped by tile rect.
-                //if (!name.StartsWith("barrier"))
-                //    _tile.Register(id);
+                if (!name.StartsWith("barrier"))
+                    _tile.Register(id);
             }
 
             if (worldPoints.Length >= 65000)
-                _trace.Warn(TraceCategory, "mesh '{0}' has more vertices than allowed: {1}. " +
+                _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed: {1}. " +
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
             Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);

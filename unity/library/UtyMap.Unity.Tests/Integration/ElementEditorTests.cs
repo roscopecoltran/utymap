@@ -16,8 +16,8 @@ namespace UtyMap.Unity.Tests.Integration
     public class ElementEditorTests
     {
         private CompositionRoot _compositionRoot;
-        private IElementEditor _elementEditor;
-        private IMapDataLoader _dataLoader;
+        private IMapDataEditor _mapDataEditor;
+        private IMapDataStore _dataStore;
         private Stylesheet _stylesheet;
         private IProjection _projection;
 
@@ -25,8 +25,8 @@ namespace UtyMap.Unity.Tests.Integration
         public void Setup()
         {
             _compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint);
-            _elementEditor = _compositionRoot.GetService<IElementEditor>();
-            _dataLoader = _compositionRoot.GetService<IMapDataLoader>();
+            _mapDataEditor = _compositionRoot.GetService<IMapDataEditor>();
+            _dataStore = _compositionRoot.GetService<IMapDataStore>();
             _stylesheet = _compositionRoot.GetService<Stylesheet>();
             _projection = _compositionRoot.GetService<IProjection>();           
         }
@@ -47,10 +47,10 @@ namespace UtyMap.Unity.Tests.Integration
                 new Dictionary<string, string>() { { "featurecla", "Populated place" } }, 
                 new Dictionary<string, string>());
 
-            _elementEditor.Add(MapStorageType.InMemory, node, levelOfDetails);
+            _mapDataEditor.Add(MapDataStorageType.InMemory, node, levelOfDetails);
 
             Union<Element, Mesh> result = default(Union<Element, Mesh>);
-            _dataLoader
+            _dataStore
                 .Load(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection))
                 .Do(u => result = u)
                 .Wait();

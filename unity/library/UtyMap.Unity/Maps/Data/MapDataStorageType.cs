@@ -1,7 +1,7 @@
 namespace UtyMap.Unity.Maps.Data
 {
     /// <summary> Specifies type of map data storage. </summary>
-    public enum MapStorageType
+    public enum MapDataStorageType
     {
         /// <summary> In memory. </summary>
         InMemory,

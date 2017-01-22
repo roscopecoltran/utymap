@@ -63,12 +63,10 @@ namespace UtyMap.Unity
 
             // core services 
             _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
-            _container.Register(Component.For<IElementEditor>().Use<ElementEditor>());
-            _container.Register(Component.For<ITileController>().Use<TileController>().SetConfig(_configSection));
+            _container.Register(Component.For<IMapDataEditor>().Use<MapDataEditor>());
 
             _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
-            _container.Register(Component.For<IMapDataLoader>().Use<MapDataLoader>().SetConfig(_configSection));
-            _container.Register(Component.For<MapElevationLoader>().Use<MapElevationLoader>().SetConfig(_configSection));
+            _container.Register(Component.For<IMapDataStore>().Use<MapDataStore>().SetConfig(_configSection));
 
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 

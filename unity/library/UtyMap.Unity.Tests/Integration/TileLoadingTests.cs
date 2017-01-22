@@ -16,7 +16,7 @@ namespace UtyMap.Unity.Tests.Integration
     {
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;
         private CompositionRoot _compositionRoot;
-        private IMapDataLoader _mapDataLoader;
+        private IMapDataStore _mapDataStore;
         private ITileController _tileController;
         private bool _isCalled;
 
@@ -27,7 +27,7 @@ namespace UtyMap.Unity.Tests.Integration
             _compositionRoot = TestHelper.GetCompositionRoot(_worldZeroPoint);
 
             // get local references
-            _mapDataLoader = _compositionRoot.GetService<IMapDataLoader>();
+            _mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             _tileController = _compositionRoot.GetService<ITileController>();
             _isCalled = false;
         }
@@ -97,8 +97,8 @@ namespace UtyMap.Unity.Tests.Integration
         {
             var range = new Range<int>(lod, lod);
             _compositionRoot
-                .GetService<IMapDataLoader>()
-                .AddToStore(MapStorageType.InMemory, mapDataPath, _tileController.Stylesheet, range);
+                .GetService<IMapDataStore>()
+                .Add(MapDataStorageType.InMemory, mapDataPath, _tileController.Stylesheet, range);
         }
 
         /// <summary> Loads quadkey waiting for completion callback. </summary>
@@ -107,7 +107,7 @@ namespace UtyMap.Unity.Tests.Integration
             var manualResetEvent = new ManualResetEvent(false);
             var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
 
-            _mapDataLoader
+            _mapDataStore
                 .Load(tile)
                 .SubscribeOn(Scheduler.CurrentThread)
                 .ObserveOn(Scheduler.CurrentThread)

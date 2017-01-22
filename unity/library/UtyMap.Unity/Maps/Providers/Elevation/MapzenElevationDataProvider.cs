@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using UtyDepend;
 using UtyDepend.Config;
 using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Formats;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
-namespace UtyMap.Unity.Maps.Providers
+namespace UtyMap.Unity.Maps.Providers.Elevation
 {
-    public class MapzenElevationDataProvider : MapDataProvider, IConfigurable
+    internal class MapzenElevationDataProvider : RemoteMapDataProvider, IConfigurable
     {
         private string _mapDataServerUri;
         private string _mapDataApiKey;
@@ -30,13 +28,16 @@ namespace UtyMap.Unity.Maps.Providers
         }
 
         /// <inheritdoc />
-        public override IObservable<string> Get(Tile tile)
+        protected override string GetUri(QuadKey quadKey)
         {
-            var directory = Path.Combine(_elePath, tile.QuadKey.LevelOfDetail.ToString());
-            var filePath = Path.Combine(directory, tile.QuadKey + _mapDataFormatExtension);
-            var uri = String.Format(_mapDataServerUri, GetJsonPayload(tile.QuadKey), _mapDataApiKey);
+            return String.Format(_mapDataServerUri, GetJsonPayload(quadKey), _mapDataApiKey);
+        }
 
-            return Get(tile, uri, filePath);
+        /// <inheritdoc />
+        protected override string GetFilePath(QuadKey quadKey)
+        {
+            var directory = Path.Combine(_elePath, quadKey.LevelOfDetail.ToString());
+            return Path.Combine(directory, quadKey + _mapDataFormatExtension);
         }
 
         /// <inheritdoc />

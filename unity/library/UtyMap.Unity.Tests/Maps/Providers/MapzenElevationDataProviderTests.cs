@@ -12,6 +12,7 @@ using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Maps.Providers;
+using UtyMap.Unity.Maps.Providers.Elevation;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
 
@@ -26,7 +27,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         private Mock<IConfigSection> _config;
         private Mock<Stream> _writeStream;
         
-        private Tile _tile;
+        private QuadKey _quadKey;
         private byte[] _responseBytes;
 
         private MapzenElevationDataProvider _eleProvider;
@@ -48,8 +49,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
             _writeStream = new Mock<Stream>();
             _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\",\"height\":[43,38,37,37]}");
 
-            _tile = new Tile(GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 16), new Stylesheet(""), 
-                new CartesianProjection(TestHelper.WorldZeroPoint));
+            _quadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 16);
 
             _networkService
                 .Setup(ns => ns.GetAndGetBytes(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>()))
@@ -67,7 +67,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanRequestPolyline()
         {
-            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
+            _eleProvider.Get(_quadKey).Wait(TimeSpan.FromSeconds(5));
 
             _networkService.Verify(ns => ns.GetAndGetBytes("elevation.mapzen.com/height?json={\"range\":false,\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\"}&api_key=ggg", It.IsAny<Dictionary<string, string>>()));
         }
@@ -75,7 +75,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanCreateDataFile()
         {
-            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
+            _eleProvider.Get(_quadKey).Wait(TimeSpan.FromSeconds(5));
 
             _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", 
                 Path.Combine("16", "1202102332220103.ele"))));
@@ -84,7 +84,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         [Test]
         public void CanGetElevationFilePath()
         {
-            var filePath = _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
+            var filePath = _eleProvider.Get(_quadKey).Wait(TimeSpan.FromSeconds(5));
 
             Assert.AreEqual(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele")), filePath);
         }
@@ -94,7 +94,7 @@ namespace UtyMap.Unity.Tests.Maps.Providers
         {
             var expectedBytes = Encoding.UTF8.GetBytes("43 38 37 37");
 
-            _eleProvider.Get(_tile).Wait(TimeSpan.FromSeconds(5));
+            _eleProvider.Get(_quadKey).Wait(TimeSpan.FromSeconds(5));
 
             _writeStream.Verify(ws => ws.Write(expectedBytes, 0, expectedBytes.Length));
         }

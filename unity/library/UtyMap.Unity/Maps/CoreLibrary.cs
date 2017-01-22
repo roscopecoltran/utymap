@@ -48,34 +48,34 @@ namespace UtyMap.Unity.Maps
         }
 
         /// <summary>
-        ///     Adds map data to in-memory storage to specific level of detail range.
+        ///     Adds map data to in-memory dataStorage to specific level of detail range.
         ///     Supported formats: shapefile, osm xml, osm pbf.
         /// </summary>
-        /// <param name="storageType"> Map data storage. </param>
+        /// <param name="dataStorageType"> Map data dataStorage. </param>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
         /// <param name="levelOfDetails"> Specifies level of details for which data should be imported. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void AddToStore(MapStorageType storageType, string stylePath, string path, Range<int> levelOfDetails, OnError onError)
+        public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, Range<int> levelOfDetails, OnError onError)
         {
-            addToStoreInRange(GetStoreKey(storageType), stylePath, path, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
+            addToStoreInRange(GetStoreKey(dataStorageType), stylePath, path, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
         }
 
         /// <summary>
-        ///     Adds map data to in-memory storage to specific quadkey.
+        ///     Adds map data to in-memory dataStorage to specific quadkey.
         ///     Supported formats: shapefile, osm xml, osm pbf.
         /// </summary>
-        /// <param name="storageType"> Map data storage. </param>
+        /// <param name="dataStorageType"> Map data dataStorage. </param>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
         /// <param name="quadKey"> QuadKey. </param>
         /// <param name="onError"> OnError callback. </param>
-        public static void AddToStore(MapStorageType storageType, string stylePath, string path, QuadKey quadKey, OnError onError)
+        public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, QuadKey quadKey, OnError onError)
         {
-            addToStoreInQuadKey(GetStoreKey(storageType), stylePath, path, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, onError);
+            addToStoreInQuadKey(GetStoreKey(dataStorageType), stylePath, path, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, onError);
         }
 
-        public static void AddElementToStore(MapStorageType storageType, string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
+        public static void AddElementToStore(MapDataStorageType dataStorageType, string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
         {
             double[] coordinates = new double[element.Geometry.Length*2];
             for (int i = 0; i < element.Geometry.Length; ++i)
@@ -92,7 +92,7 @@ namespace UtyMap.Unity.Maps
                 tags[i*2 + 1] = element.Tags[tagKeys[i]];
             }
 
-            addToStoreElement(GetStoreKey(storageType), stylePath, element.Id,
+            addToStoreElement(GetStoreKey(dataStorageType), stylePath, element.Id,
                 coordinates, coordinates.Length,
                 tags, tags.Length, 
                 levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
@@ -138,9 +138,9 @@ namespace UtyMap.Unity.Maps
 
         #region Private members
 
-        private static string GetStoreKey(MapStorageType storageType)
+        private static string GetStoreKey(MapDataStorageType dataStorageType)
         {
-            return storageType == MapStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
+            return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
         }
 
         #endregion

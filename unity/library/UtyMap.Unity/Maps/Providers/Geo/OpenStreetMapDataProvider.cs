@@ -2,15 +2,15 @@
 using System.IO;
 using UtyDepend;
 using UtyDepend.Config;
-using UtyMap.Unity.Core.Tiling;
+using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyRx;
 
-namespace UtyMap.Unity.Maps.Providers
+namespace UtyMap.Unity.Maps.Providers.Geo
 {
     /// <summary> Downloads map data from openstreemap servers. </summary>
-    public class OpenStreetMapDataProvider : MapDataProvider, IConfigurable
+    internal class OpenStreetMapDataProvider : RemoteMapDataProvider, IConfigurable
     {
         private string _cachePath;
         private string _mapDataFormatExtension;
@@ -26,26 +26,29 @@ namespace UtyMap.Unity.Maps.Providers
         }
 
         /// <inheritdoc />
-        public override IObservable<string> Get(Tile tile)
-        {
-            var filePath = Path.Combine(_cachePath, tile.QuadKey + _mapDataFormatExtension);
-            var padding = 0.001;
-            var query = tile.BoundingBox;
-            var queryString = String.Format(_mapDataServerQuery,
-                query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
-                query.MaxPoint.Latitude + padding, query.MaxPoint.Longitude + padding);
-            var uri = String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
-
-            return Get(tile, uri, filePath);
-        }
-
-        /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
             _mapDataServerUri = configSection.GetString(@"data/osm/server", null);
             _mapDataServerQuery = configSection.GetString(@"data/osm/query", null);
             _mapDataFormatExtension = "." + configSection.GetString(@"data/osm/format", "xml");
             _cachePath = configSection.GetString(@"data/cache", null);
+        }
+
+        /// <inheritdoc />
+        protected override string GetUri(QuadKey quadKey)
+        {
+            var padding = 0.001;
+            var query = GeoUtils.QuadKeyToBoundingBox(quadKey);
+            var queryString = String.Format(_mapDataServerQuery,
+                query.MinPoint.Latitude - padding, query.MinPoint.Longitude - padding,
+                query.MaxPoint.Latitude + padding, query.MaxPoint.Longitude + padding);
+            return String.Format("{0}{1}", _mapDataServerUri, Uri.EscapeDataString(queryString));
+        }
+
+        /// <inheritdoc />
+        protected override string GetFilePath(QuadKey quadKey)
+        {
+            return Path.Combine(_cachePath, quadKey + _mapDataFormatExtension);
         }
     }
 }

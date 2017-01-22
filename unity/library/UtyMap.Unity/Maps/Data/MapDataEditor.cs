@@ -8,38 +8,38 @@ using UtyDepend;
 namespace UtyMap.Unity.Maps.Data
 {
     /// <summary> Specifies behavior of element editor. </summary>
-    public interface IElementEditor
+    public interface IMapDataEditor
     {
         /// <summary> Adds element. </summary>
-        void Add(MapStorageType storageType, Element element, Range<int> levelOfDetails);
+        void Add(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails);
 
         /// <summary> Edits element. </summary>
-        void Edit(MapStorageType storageType, Element element, Range<int> levelOfDetails);
+        void Edit(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails);
 
         /// <summary> Marks element with given id. </summary>
-        void Delete(MapStorageType storageType, long elementId, Range<int> levelOfDetails);
+        void Delete(MapDataStorageType dataStorageType, long elementId, Range<int> levelOfDetails);
     }
 
     /// <summary>
-    ///     Default implementation of <see cref="IElementEditor"/> which
+    ///     Default implementation of <see cref="IMapDataEditor"/> which
     ///     works with in-memory store.
     /// </summary>
-    internal class ElementEditor : IElementEditor
+    internal class MapDataEditor : IMapDataEditor
     {
         private readonly Stylesheet _stylesheet;
         private readonly IPathResolver _resolver;
 
         [Dependency]
-        public ElementEditor(Stylesheet stylesheet, IPathResolver resolver)
+        public MapDataEditor(Stylesheet stylesheet, IPathResolver resolver)
         {
             _stylesheet = stylesheet;
             _resolver = resolver;
         }
 
         /// <inheritdoc />
-        public void Add(MapStorageType storageType, Element element, Range<int> levelOfDetails)
+        public void Add(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails)
         {
-            CoreLibrary.AddElementToStore(storageType,
+            CoreLibrary.AddElementToStore(dataStorageType,
                 _resolver.Resolve(_stylesheet.Path),
                 element, levelOfDetails, message =>
                 {
@@ -49,13 +49,13 @@ namespace UtyMap.Unity.Maps.Data
         }
 
         /// <inheritdoc />
-        public void Edit(MapStorageType storageType, Element element, Range<int> levelOfDetails)
+        public void Edit(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public void Delete(MapStorageType storageType, long elementId, Range<int> levelOfDetails)
+        public void Delete(MapDataStorageType dataStorageType, long elementId, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }

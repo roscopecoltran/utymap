@@ -14,14 +14,14 @@ namespace UtyMap.Unity.Tests.Maps.Data
     public class MapTileAdapterTests
     {
         private Mock<IObserver<Union<Element, Mesh>>> _observer;
-        private MapTileAdapter _adapter;
+        private MapDataAdapter _adapter;
             
         [TestFixtureSetUp]
         public void SetUp()
         {
             var tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object);
             _observer = new Mock<IObserver<Union<Element, Mesh>>>();
-            _adapter = new MapTileAdapter(tile, _observer.Object, new DefaultTrace());
+            _adapter = new MapDataAdapter(tile, _observer.Object, new DefaultTrace());
         }
 
         [TestCase("barrier")]

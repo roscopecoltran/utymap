@@ -18,10 +18,10 @@ namespace UtyMap.Unity.Tests
 
             var compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint);
 
-            var tileController = compositionRoot.GetService<ITileController>();
-            var mapDataLoader = compositionRoot.GetService<IMapDataLoader>();
+            //var tileController = compositionRoot.GetService<ITileController>();
+            //var mapDataLoader = compositionRoot.GetService<IMapDataStore>();
 
-            mapDataLoader.AddToStore(MapStorageType.InMemory,
+            /*mapDataLoader.Add(MapDataStorageType.InMemory,
                 TestHelper.BerlinXmlData,
                 compositionRoot.GetService<Stylesheet>(),
                 new Range<int>(LevelOfDetails, LevelOfDetails));
@@ -33,7 +33,9 @@ namespace UtyMap.Unity.Tests
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(u => { });
 
-            tileController.OnPosition(TestHelper.WorldZeroPoint, LevelOfDetails);
+            tileController.OnPosition(TestHelper.WorldZeroPoint, LevelOfDetails);*/
+
+            var store = compositionRoot.GetService<IMapDataStore>();
         }
     }
 }
