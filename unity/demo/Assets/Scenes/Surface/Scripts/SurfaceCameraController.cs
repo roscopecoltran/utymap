@@ -25,7 +25,7 @@ namespace Assets.Scenes.Surface.Scripts
 
         public GameObject Planet;
 
-        private readonly Dictionary<QuadKey, GameObject> _loadedQuadKeys = new Dictionary<QuadKey, GameObject>();
+        private readonly HashSet<QuadKey> _loadedQuadKeys = new HashSet<QuadKey>();
 
         void Start()
         {
@@ -119,23 +119,27 @@ namespace Assets.Scenes.Surface.Scripts
             var projection = new CartesianProjection(_geoOrigin);
             // TODO
             foreach (var quadKey in quadKeys)
-                if (!_loadedQuadKeys.ContainsKey(quadKey))
-                    _loadedQuadKeys.Add(quadKey, QuadTreeSystem.BuildQuadTree(parent, quadKey, projection));
+                if (!_loadedQuadKeys.Contains(quadKey))
+                {
+                    QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
+                    _loadedQuadKeys.Add(quadKey);
+                }
         }
 
         private void DestroyExcept(List<QuadKey> quadKeys)
         {
-            var keyToDelete = new List<QuadKey>();
-            foreach (var key in _loadedQuadKeys.Keys)
+            // TODO can be improved
+            foreach (var trans in Planet.GetComponentsInChildren<Transform>())
             {
-                if (!quadKeys.Contains(key))
-                    keyToDelete.Add(key);
-            }
+                if (trans.gameObject == Planet)
+                    continue;
 
-            foreach (var key in keyToDelete)
-            {
-                GameObject.Destroy(_loadedQuadKeys[key]);
-                _loadedQuadKeys.Remove(key);
+                var quadKey = QuadKey.FromString(trans.name);
+                if (!quadKeys.Contains(quadKey))
+                {
+                    GameObject.Destroy(trans.gameObject);
+                    _loadedQuadKeys.Remove(quadKey);
+                }
             }
         }
 
