@@ -14,6 +14,8 @@ namespace UtyMap.Unity.Tests
 
         private static void Main(string[] args)
         {
+            Scheduler.MainThread = Scheduler.CurrentThread;
+
             var compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint);
 
             var tileController = compositionRoot.GetService<ITileController>();
