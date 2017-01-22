@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace UtyMap.Unity.Explorer.Customization
@@ -7,7 +6,6 @@ namespace UtyMap.Unity.Explorer.Customization
     /// <summary> Maintains list of customization properties. </summary>
     public sealed class CustomizationService
     {
-        private readonly Dictionary<string, Type> _modelBehaviours;
         private readonly Dictionary<string, Material> _sharedMaterials;
 
         /// <summary> Creates instance of <see cref="CustomizationService"/>. </summary>
