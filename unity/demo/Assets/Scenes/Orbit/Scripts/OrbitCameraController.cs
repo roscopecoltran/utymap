@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UtyMap.Unity.Core;
@@ -128,8 +129,8 @@ namespace Assets.Scenes.Orbit.Scripts
         {
             var projection = new SphericalProjection(_radius);
             // TODO
-            //foreach (var quadKey in quadKeys)
-            //    QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
+            foreach (var quadKey in quadKeys)
+                QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
         }
 
         /// <summary> Destroys gameobject by its name if it exists. </summary>

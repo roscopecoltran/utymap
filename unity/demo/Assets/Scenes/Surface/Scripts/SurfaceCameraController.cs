@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts;
 using UnityEngine;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Utils;
@@ -72,7 +73,7 @@ namespace Assets.Scenes.Surface.Scripts
         private void UpdateLod()
         {
             var distance = transform.position.y - _closestDistance;
-            _currentLod = Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
+            _currentLod = Mathf.Clamp(_maxLod - (int)Math.Round(distance / _lodStep), _minLod, _maxLod);
         }
 
         /// <summary> Builds planet on initial lod. </summary>
@@ -117,9 +118,9 @@ namespace Assets.Scenes.Surface.Scripts
         {
             var projection = new CartesianProjection(_geoOrigin);
             // TODO
-            //foreach (var quadKey in quadKeys)
-            //    if (!_loadedQuadKeys.ContainsKey(quadKey))
-            //        _loadedQuadKeys.Add(quadKey, QuadTreeSystem.BuildQuadTree(parent, quadKey, projection));
+            foreach (var quadKey in quadKeys)
+                if (!_loadedQuadKeys.ContainsKey(quadKey))
+                    _loadedQuadKeys.Add(quadKey, QuadTreeSystem.BuildQuadTree(parent, quadKey, projection));
         }
 
         private void DestroyExcept(List<QuadKey> quadKeys)
