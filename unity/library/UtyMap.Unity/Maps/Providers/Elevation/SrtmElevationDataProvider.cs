@@ -12,7 +12,7 @@ using UtyMap.Unity.Infrastructure.IO.Compression;
 namespace UtyMap.Unity.Maps.Providers.Elevation
 {
     /// <summary> Downloads SRTM data from NASA server. </summary>
-    internal class SrtmElevationDataProvider : RemoteMapDataProvider, IConfigurable
+    internal class SrtmElevationDataProvider : RemoteMapDataProvider
     {
         private const string TraceCategory = "mapdata.srtm";
         private readonly object _lock = new object();
@@ -46,7 +46,7 @@ namespace UtyMap.Unity.Maps.Providers.Elevation
         #region Public methods
 
         /// <inheritdoc />
-        public void Configure(IConfigSection configSection)
+        public override void Configure(IConfigSection configSection)
         {
             _server = configSection.GetString(@"data/srtm/server");
             _schemaPath = configSection.GetString(@"data/srtm/schema");

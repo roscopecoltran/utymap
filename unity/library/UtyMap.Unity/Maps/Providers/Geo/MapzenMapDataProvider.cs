@@ -9,7 +9,7 @@ using UtyMap.Unity.Infrastructure.IO;
 namespace UtyMap.Unity.Maps.Providers.Geo
 {
     /// <summary> Downloads map data from mapzen servers. </summary>
-    internal class MapzenMapDataProvider : RemoteMapDataProvider, IConfigurable
+    internal class MapzenMapDataProvider : RemoteMapDataProvider
     {
         private string _cachePath;
 
@@ -25,7 +25,7 @@ namespace UtyMap.Unity.Maps.Providers.Geo
         }
 
         /// <inheritdoc />
-        public void Configure(IConfigSection configSection)
+        public override void Configure(IConfigSection configSection)
         {
             _mapDataServerUri = configSection.GetString(@"data/mapzen/server", null);
             _mapDataFormatExtension = "." + configSection.GetString(@"data/mapzen/format", "json");

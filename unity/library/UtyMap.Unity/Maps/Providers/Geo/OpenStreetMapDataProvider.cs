@@ -10,7 +10,7 @@ using UtyMap.Unity.Infrastructure.IO;
 namespace UtyMap.Unity.Maps.Providers.Geo
 {
     /// <summary> Downloads map data from openstreemap servers. </summary>
-    internal class OpenStreetMapDataProvider : RemoteMapDataProvider, IConfigurable
+    internal class OpenStreetMapDataProvider : RemoteMapDataProvider
     {
         private string _cachePath;
         private string _mapDataFormatExtension;
@@ -26,7 +26,7 @@ namespace UtyMap.Unity.Maps.Providers.Geo
         }
 
         /// <inheritdoc />
-        public void Configure(IConfigSection configSection)
+        public override void Configure(IConfigSection configSection)
         {
             _mapDataServerUri = configSection.GetString(@"data/osm/server", null);
             _mapDataServerQuery = configSection.GetString(@"data/osm/query", null);

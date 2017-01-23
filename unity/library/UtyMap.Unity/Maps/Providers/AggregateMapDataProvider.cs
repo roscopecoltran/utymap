@@ -7,75 +7,131 @@ using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Maps.Providers.Elevation;
 using UtyMap.Unity.Maps.Providers.Geo;
+using UtyRx;
 
 namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> 
     ///     Aggregates different map data providers and decides which one to use for specific tiles.
     /// </summary>
-    internal sealed class AggregateMapDataProvider : MapDataProvider, IConfigurable
+    internal sealed class AggregateMapDataProvider : MapDataProvider
     {
-        // NOTE make these ranges configurable to control what should be
-        // loaded on specific at specific LOD.
-        private readonly Range<int> OsmTileRange = new Range<int>(16, 16);
-        private readonly Range<int> ElevationTileRange = new Range<int>(15, 16);
-
-        private readonly OpenStreetMapDataProvider _osmMapDataProvider;
-        private readonly MapzenMapDataProvider _mapzenMapDataProvider;
-
-        private readonly MapzenElevationDataProvider _mapzenElevationDataProvider;
-        private readonly SrtmElevationDataProvider _srtmElevationDataProvider;
-
-        private ElevationDataType _eleDataType;
+        private IMapDataProvider _eleProvider;
+        private IMapDataProvider _dataProvider;
        
         [Dependency]
         public AggregateMapDataProvider(IFileSystemService fileSystemService, INetworkService networkService, ITrace trace)
         {
-            _osmMapDataProvider = new OpenStreetMapDataProvider(fileSystemService, networkService, trace);
-            _mapzenMapDataProvider = new MapzenMapDataProvider(fileSystemService, networkService, trace);
+            _eleProvider = new ElevationProvider(
+                new MapzenElevationDataProvider(fileSystemService, networkService, trace),
+                new SrtmElevationDataProvider(fileSystemService, networkService, trace));
 
-            _mapzenElevationDataProvider = new MapzenElevationDataProvider(fileSystemService, networkService, trace);
-            _srtmElevationDataProvider = new SrtmElevationDataProvider(fileSystemService, networkService, trace);
+            _dataProvider = new DataProvider(
+                new OpenStreetMapDataProvider(fileSystemService, networkService, trace),
+                new MapzenMapDataProvider(fileSystemService, networkService, trace));
+
+            _eleProvider.Subscribe(t => _dataProvider.OnNext(t.Item1));
+            _dataProvider.Subscribe(Notify);
         }
 
         /// <inheritdoc />
-        public void Configure(IConfigSection configSection)
-        {
-            _osmMapDataProvider.Configure(configSection);
-            _mapzenMapDataProvider.Configure(configSection);
-
-            _srtmElevationDataProvider.Configure(configSection);
-            _mapzenElevationDataProvider.Configure(configSection);
-
-            _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
-        }
-
         public override void OnNext(Tile value)
         {
-            DownloadElevationData(value);
-            DownloadMapData(value);
+            _eleProvider.OnNext(value);
         }
 
-        private void DownloadElevationData(Tile value)
+        /// <inheritdoc />
+        public override void Configure(IConfigSection configSection)
         {
-            if (!ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
-                return;
-
-            if (_eleDataType == ElevationDataType.Grid)
-                _mapzenElevationDataProvider.OnNext(value);
-            else if (_eleDataType == ElevationDataType.Srtm)
-                _srtmElevationDataProvider.OnNext(value);
+            _eleProvider.Configure(configSection);
+            _dataProvider.Configure(configSection);
         }
 
-        private void DownloadMapData(Tile value)
+        #region Nested classes
+
+        /// <summary> Encapsulates elevation processing. </summary>
+        private class ElevationProvider : MapDataProvider
         {
-            if (CoreLibrary.HasData(value.QuadKey))
-                return;
+            private readonly Range<int> ElevationTileRange = new Range<int>(15, 16);
 
-            if (OsmTileRange.Contains(value.QuadKey.LevelOfDetail))
-                _osmMapDataProvider.OnNext(value);
-            else 
-                _mapzenMapDataProvider.OnNext(value);
+            private ElevationDataType _eleDataType = ElevationDataType.Flat;
+            
+            private readonly IMapDataProvider _mapzenEleProvider;
+            private readonly IMapDataProvider _srtmEleProvider;
+
+            public ElevationProvider(IMapDataProvider mapzenEleProvider, IMapDataProvider srtmEleProvider)
+            {
+                _mapzenEleProvider = mapzenEleProvider;
+                _srtmEleProvider = srtmEleProvider;
+            }
+
+            /// <inheritdoc />
+            public override void OnNext(Tile value)
+            {
+                if (_eleDataType != ElevationDataType.Flat &&  ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
+                {
+                    if (_eleDataType == ElevationDataType.Grid)
+                        _mapzenEleProvider.OnNext(value);
+                    else
+                        _srtmEleProvider.OnNext(value);
+                }
+                else
+                    Notify(new Tuple<Tile, string>(value, ""));
+            }
+
+            /// <inheritdoc />
+            public override void Configure(IConfigSection configSection)
+            {
+                _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
+                
+                _mapzenEleProvider.Configure(configSection);
+                _mapzenEleProvider.Subscribe(Notify);
+
+                _srtmEleProvider.Configure(configSection);
+                _srtmEleProvider.Subscribe(Notify);
+            }
         }
+
+        /// <summary> Encapsulates map data processing. </summary>
+        class DataProvider : MapDataProvider
+        {
+            private readonly Range<int> OsmTileRange = new Range<int>(16, 16);
+
+            private readonly IMapDataProvider _osmMapDataProvider;
+            private readonly IMapDataProvider _mapzenMapDataProvider;
+
+            public DataProvider(IMapDataProvider osmMapDataProvider, IMapDataProvider mapzenMapDataProvider)
+            {
+                _osmMapDataProvider = osmMapDataProvider;
+                _mapzenMapDataProvider = mapzenMapDataProvider;
+            }
+
+            /// <inheritdoc />
+            public override void OnNext(Tile value)
+            {
+                if (CoreLibrary.HasData(value.QuadKey))
+                {
+                    Notify(new Tuple<Tile, string>(value, ""));
+                    return;
+                }
+
+                if (OsmTileRange.Contains(value.QuadKey.LevelOfDetail))
+                    _osmMapDataProvider.OnNext(value);
+                else
+                    _mapzenMapDataProvider.OnNext(value);
+            }
+
+            /// <inheritdoc />
+            public override void Configure(IConfigSection configSection)
+            {
+                _osmMapDataProvider.Configure(configSection);
+                _osmMapDataProvider.Subscribe(Notify);
+
+                _mapzenMapDataProvider.Configure(configSection);
+                _mapzenMapDataProvider.Subscribe(Notify);
+            }
+        }
+
+        #endregion
     }
 }

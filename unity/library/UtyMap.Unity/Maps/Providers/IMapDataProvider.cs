@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UtyDepend.Config;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -10,7 +11,7 @@ using UtyRx;
 namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> Provides file path to map data. </summary>
-    public interface IMapDataProvider : ISubject<Tile, Tuple<Tile, string>>
+    public interface IMapDataProvider : ISubject<Tile, Tuple<Tile, string>>, IConfigurable
     {
     }
 
@@ -20,6 +21,7 @@ namespace UtyMap.Unity.Maps.Providers
         private readonly List<IObserver<Tuple<Tile, string>>> _observers = new List<IObserver<Tuple<Tile, string>>>();
 
         public abstract void OnNext(Tile value);
+        public abstract void Configure(IConfigSection configSection);
 
         public virtual void OnCompleted()
         {

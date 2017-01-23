@@ -12,7 +12,7 @@ using UtyMap.Unity.Infrastructure.IO;
 
 namespace UtyMap.Unity.Maps.Providers.Elevation
 {
-    internal class MapzenElevationDataProvider : RemoteMapDataProvider, IConfigurable
+    internal class MapzenElevationDataProvider : RemoteMapDataProvider
     {
         private string _mapDataServerUri;
         private string _mapDataApiKey;
@@ -114,7 +114,7 @@ namespace UtyMap.Unity.Maps.Providers.Elevation
         }
 
         /// <inheritdoc />
-        public void Configure(IConfigSection configSection)
+        public override void Configure(IConfigSection configSection)
         {
             _mapDataServerUri = configSection.GetString(@"data/mapzen/ele_server");
             _mapDataApiKey = configSection.GetString(@"data/mapzen/api_key");
