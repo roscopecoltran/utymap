@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;

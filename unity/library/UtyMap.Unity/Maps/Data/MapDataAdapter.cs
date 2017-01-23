@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -13,9 +12,7 @@ using Mesh = UtyMap.Unity.Core.Models.Mesh;
 
 namespace UtyMap.Unity.Maps.Data
 {
-    /// <summary>
-    /// Adapts map tile data received from utymap API to the type used by the app.
-    /// </summary>
+    /// <summary> Adapts map tile data received from utymap API to the type used by the app. </summary>
     internal class MapDataAdapter
     {
         private const string TraceCategory = "mapdata.loader";

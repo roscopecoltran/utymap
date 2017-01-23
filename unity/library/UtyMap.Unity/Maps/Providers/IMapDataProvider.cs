@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
@@ -9,15 +10,16 @@ using UtyRx;
 namespace UtyMap.Unity.Maps.Providers
 {
     /// <summary> Provides file path to map data. </summary>
-    public interface IMapDataProvider : ISubject<QuadKey, string>
+    public interface IMapDataProvider : ISubject<Tile, Tuple<Tile, string>>
     {
     }
 
+    /// <summary> Generalzes subscription processing. </summary>
     internal abstract class MapDataProvider : IMapDataProvider
     {
-        private readonly List<IObserver<string>> _observers = new List<IObserver<string>>();
+        private readonly List<IObserver<Tuple<Tile, string>>> _observers = new List<IObserver<Tuple<Tile, string>>>();
 
-        public abstract void OnNext(QuadKey value);
+        public abstract void OnNext(Tile value);
 
         public virtual void OnCompleted()
         {
@@ -29,7 +31,7 @@ namespace UtyMap.Unity.Maps.Providers
             _observers.ForEach(o => o.OnError(error));
         }
 
-        public virtual IDisposable Subscribe(IObserver<string> observer)
+        public virtual IDisposable Subscribe(IObserver<Tuple<Tile, string>> observer)
         {
             // TODO handle unsubscribe
             _observers.Add(observer);
@@ -37,9 +39,9 @@ namespace UtyMap.Unity.Maps.Providers
         }
 
         /// <summary> Notifies observers. </summary>
-        protected void Notify(string filePath)
+        protected void Notify(Tuple<Tile, string> value)
         {
-            _observers.ForEach(o => o.OnNext(filePath));
+            _observers.ForEach(o => o.OnNext(value));
         }
     }
 
@@ -60,29 +62,31 @@ namespace UtyMap.Unity.Maps.Providers
             _trace = trace;
         }
 
-        public override void OnNext(QuadKey value)
+        public override void OnNext(Tile value)
         {
-            var filePath = GetFilePath(value);
-            var uri = GetUri(value);
+            var filePath = GetFilePath(value.QuadKey);
+            var uri = GetUri(value.QuadKey);
 
-            if (!_fileSystemService.Exists(filePath))
+            if (_fileSystemService.Exists(filePath))
             {
-                _trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, value.ToString(), uri);
-                _networkService.GetAndGetBytes(uri)
-                    .ObserveOn(Scheduler.ThreadPool)
-                    .Subscribe(bytes =>
-                    {
-                        _trace.Debug(TraceCategory, "saving bytes: {0}", bytes.Length.ToString());
-                        lock (_lockObj)
-                        {
-                            if (!_fileSystemService.Exists(filePath))
-                                using (var stream = _fileSystemService.WriteStream(filePath))
-                                    WriteBytes(stream, bytes);
-                        }
-                    });
+                Notify(new Tuple<Tile, string>(value, filePath));
+                return;
             }
 
-            Notify(filePath);
+            _trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, value.ToString(), uri);
+            _networkService.GetAndGetBytes(uri)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Subscribe(bytes =>
+                {
+                    _trace.Debug(TraceCategory, "saving bytes: {0}", bytes.Length.ToString());
+                    lock (_lockObj)
+                    {
+                        if (!_fileSystemService.Exists(filePath))
+                            using (var stream = _fileSystemService.WriteStream(filePath))
+                                WriteBytes(stream, bytes);
+                    }
+                    Notify(new Tuple<Tile, string>(value, filePath));
+                });
         }
 
         /// <summary> Gets download uri for given quad key </summary>

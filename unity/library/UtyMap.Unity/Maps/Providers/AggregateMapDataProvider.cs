@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using UtyDepend;
+﻿using UtyDepend;
 using UtyDepend.Config;
-using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Maps.Providers.Elevation;
 using UtyMap.Unity.Maps.Providers.Geo;
-using UtyRx;
 
 namespace UtyMap.Unity.Maps.Providers
 {
@@ -39,7 +36,6 @@ namespace UtyMap.Unity.Maps.Providers
 
             _mapzenElevationDataProvider = new MapzenElevationDataProvider(fileSystemService, networkService, trace);
             _srtmElevationDataProvider = new SrtmElevationDataProvider(fileSystemService, networkService, trace);
-
         }
 
         /// <inheritdoc />
@@ -51,35 +47,35 @@ namespace UtyMap.Unity.Maps.Providers
             _srtmElevationDataProvider.Configure(configSection);
             _mapzenElevationDataProvider.Configure(configSection);
 
-            _eleDataType = (ElevationDataType)configSection.GetInt("data/elevation/type", 2);
+            _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
         }
 
-        public override void OnNext(QuadKey quadKey)
+        public override void OnNext(Tile value)
         {
-            DownloadElevationData(quadKey);
-            DownloadMapData(quadKey);
+            DownloadElevationData(value);
+            DownloadMapData(value);
         }
 
-        private void DownloadElevationData(QuadKey quadKey)
+        private void DownloadElevationData(Tile value)
         {
-            if (!ElevationTileRange.Contains(quadKey.LevelOfDetail))
+            if (!ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
                 return;
 
             if (_eleDataType == ElevationDataType.Grid)
-                _mapzenElevationDataProvider.OnNext(quadKey);
-            else
-                _srtmElevationDataProvider.OnNext(quadKey);
+                _mapzenElevationDataProvider.OnNext(value);
+            else if (_eleDataType == ElevationDataType.Srtm)
+                _srtmElevationDataProvider.OnNext(value);
         }
 
-        private void DownloadMapData(QuadKey quadKey)
+        private void DownloadMapData(Tile value)
         {
-            if (CoreLibrary.HasData(quadKey))
+            if (CoreLibrary.HasData(value.QuadKey))
                 return;
 
-            if (OsmTileRange.Contains(quadKey.LevelOfDetail))
-                _osmMapDataProvider.OnNext(quadKey);
+            if (OsmTileRange.Contains(value.QuadKey.LevelOfDetail))
+                _osmMapDataProvider.OnNext(value);
             else 
-                _mapzenMapDataProvider.OnNext(quadKey);
+                _mapzenMapDataProvider.OnNext(value);
         }
     }
 }

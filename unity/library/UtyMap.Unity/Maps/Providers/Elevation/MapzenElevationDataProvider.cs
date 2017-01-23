@@ -9,7 +9,6 @@ using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Formats;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyRx;
 
 namespace UtyMap.Unity.Maps.Providers.Elevation
 {

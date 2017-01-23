@@ -56,8 +56,7 @@
     <Compile Include="Core\Models\ModelBuilder.cs" />
     <Compile Include="Core\QuadKey.cs" />
     <Compile Include="Core\Stylesheet.cs" />
-    <Compile Include="Core\Tiling\Tile.cs" />
-    <Compile Include="Core\Tiling\TileController.cs" />
+    <Compile Include="Core\Models\Tile.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\GeoUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />

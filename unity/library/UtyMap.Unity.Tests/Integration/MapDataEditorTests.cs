@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using NUnit.Framework;
@@ -13,7 +12,7 @@ using UtyRx;
 namespace UtyMap.Unity.Tests.Integration
 {
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
-    public class ElementEditorTests
+    public class MapDataEditorTests
     {
         private CompositionRoot _compositionRoot;
         private IMapDataEditor _mapDataEditor;
@@ -28,7 +27,7 @@ namespace UtyMap.Unity.Tests.Integration
             _mapDataEditor = _compositionRoot.GetService<IMapDataEditor>();
             _dataStore = _compositionRoot.GetService<IMapDataStore>();
             _stylesheet = _compositionRoot.GetService<Stylesheet>();
-            _projection = _compositionRoot.GetService<IProjection>();           
+            _projection = _compositionRoot.GetService<IProjection>();
         }
 
         [TestFixtureTearDown]
@@ -40,26 +39,24 @@ namespace UtyMap.Unity.Tests.Integration
         [Test]
         public void CanAddNode()
         {
+            // ARRANGE
             var levelOfDetails = new Range<int>(1, 1);
             var node = new Element(7,
                 new GeoCoordinate[] { new GeoCoordinate(5, 5) },
                 new double[] { 0 }, 
                 new Dictionary<string, string>() { { "featurecla", "Populated place" } }, 
                 new Dictionary<string, string>());
+            Union<Element, Mesh> result = default(Union<Element, Mesh>);
 
+            // ACT
             _mapDataEditor.Add(MapDataStorageType.InMemory, node, levelOfDetails);
 
-            Union<Element, Mesh> result = default(Union<Element, Mesh>);
-            _dataStore
-                .Load(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection))
-                .Do(u => result = u)
-                .Wait();
+            // ASSERT
+            _dataStore.Do(u => result = u);
+            _dataStore.OnNext(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection));
             result.Match(
-                e => CompareElements(node, e), 
-                mesh =>
-                {
-                    throw new ArgumentException();
-                });
+                e => CompareElements(node, e),
+                mesh => { throw new ArgumentException(); });
         }
 
         private void CompareElements(Element expected, Element actual)

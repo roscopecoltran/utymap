@@ -1,6 +1,4 @@
-﻿using UtyMap.Unity.Core.Tiling;
-
-namespace UtyMap.Unity.Core.Models
+﻿namespace UtyMap.Unity.Core.Models
 {
     /// <summary> Responsible for building models. </summary>
     public interface IModelBuilder

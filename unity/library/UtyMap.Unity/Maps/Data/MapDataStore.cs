@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -58,9 +57,10 @@ namespace UtyMap.Unity.Maps.Data
             _mapDataProvider = mapDataProvider;
             _pathResolver = pathResolver;
 
-            _mapDataProvider.Subscribe(filePath =>
-                Add(_mapDataStorageType, filePath, tile.Stylesheet, tile.QuadKey)
-               .ContinueWith(_ => CreateLoadSequence(tile)));
+            _mapDataProvider
+                .Subscribe(value =>
+                    Add(_mapDataStorageType, value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
+                    .ContinueWith(_ => CreateLoadSequence(value.Item1)));
         }
 
         #region Interface implementations
@@ -105,7 +105,7 @@ namespace UtyMap.Unity.Maps.Data
         /// <inheritdoc />
         public void OnNext(Tile tile)
         {
-            _mapDataProvider.OnNext(tile.QuadKey);
+            _mapDataProvider.OnNext(tile);
         }
 
         /// <inheritdoc />

@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Tiling;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using NUnit.Framework;
@@ -17,7 +16,8 @@ namespace UtyMap.Unity.Tests.Integration
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;
         private CompositionRoot _compositionRoot;
         private IMapDataStore _mapDataStore;
-        private ITileController _tileController;
+        private Stylesheet _stylesheet;
+        private IProjection _projection;
         private bool _isCalled;
 
         [TestFixtureSetUp]
@@ -25,10 +25,10 @@ namespace UtyMap.Unity.Tests.Integration
         {
             // initialize services
             _compositionRoot = TestHelper.GetCompositionRoot(_worldZeroPoint);
-
+            _stylesheet = _compositionRoot.GetService<Stylesheet>();
+            _projection = _compositionRoot.GetService<IProjection>();
             // get local references
             _mapDataStore = _compositionRoot.GetService<IMapDataStore>();
-            _tileController = _compositionRoot.GetService<ITileController>();
             _isCalled = false;
         }
 
@@ -98,20 +98,19 @@ namespace UtyMap.Unity.Tests.Integration
             var range = new Range<int>(lod, lod);
             _compositionRoot
                 .GetService<IMapDataStore>()
-                .Add(MapDataStorageType.InMemory, mapDataPath, _tileController.Stylesheet, range);
+                .Add(MapDataStorageType.InMemory, mapDataPath, _stylesheet, range);
         }
 
         /// <summary> Loads quadkey waiting for completion callback. </summary>
         private void LoadQuadKeySync(QuadKey quadKey)
         {
             var manualResetEvent = new ManualResetEvent(false);
-            var tile = new Tile(quadKey, _tileController.Stylesheet, _tileController.Projection);
-
             _mapDataStore
-                .Load(tile)
                 .SubscribeOn(Scheduler.CurrentThread)
                 .ObserveOn(Scheduler.CurrentThread)
                 .Subscribe(AssertData, () => manualResetEvent.Set());
+
+            _mapDataStore.OnNext(new Tile(quadKey, _stylesheet, _projection));
 
             manualResetEvent.WaitOne();
         }

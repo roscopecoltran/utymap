@@ -1,5 +1,7 @@
-﻿using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Tiling;
+﻿using System;
+using UtyMap.Unity.Core;
+using UtyMap.Unity.Core.Models;
+using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Tests.Helpers;
@@ -14,28 +16,35 @@ namespace UtyMap.Unity.Tests
 
         private static void Main(string[] args)
         {
+            // select main thread scheduler
             Scheduler.MainThread = Scheduler.CurrentThread;
 
-            var compositionRoot = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint);
+            // get store and select theme represented by stylesheet
+            var store = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint)
+                                  .GetService<IMapDataStore>();
+            var stylesheet = new Stylesheet(TestHelper.DefaultMapCss);
 
-            //var tileController = compositionRoot.GetService<ITileController>();
-            //var mapDataLoader = compositionRoot.GetService<IMapDataStore>();
-
-            /*mapDataLoader.Add(MapDataStorageType.InMemory,
-                TestHelper.BerlinXmlData,
-                compositionRoot.GetService<Stylesheet>(),
-                new Range<int>(LevelOfDetails, LevelOfDetails));
-
-            tileController
-                .Where(tile => !tile.IsDisposed)
-                .SelectMany(tile => mapDataLoader.Load(tile))
+            // 1. add data to store
+            store.Add(MapDataStorageType.InMemory,
+                      TestHelper.BerlinXmlData,
+                      stylesheet,
+                      new Range<int>(LevelOfDetails, LevelOfDetails));
+            
+            // 2. start listening for processed data
+            store
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOn(Scheduler.MainThread)
-                .Subscribe(u => { });
+                // Convert element or mesh into your environment specific representation.
+                .Subscribe(u => u.Match(e => Console.WriteLine("Element:{0}", e.Id), m => Console.WriteLine("Mesh:{0}", m.Name)),
+                           ex => Console.WriteLine("Error: {0}", ex));
 
-            tileController.OnPosition(TestHelper.WorldZeroPoint, LevelOfDetails);*/
+            // 3. start loading of specific region
+            store.OnNext(new Tile(
+                GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, LevelOfDetails),
+                stylesheet,
+                new CartesianProjection(TestHelper.WorldZeroPoint)));
 
-            var store = compositionRoot.GetService<IMapDataStore>();
+            Console.ReadLine();
         }
     }
 }

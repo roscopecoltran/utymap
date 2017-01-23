@@ -3,7 +3,7 @@ using UnityEngine;
 using UtyMap.Unity.Core.Utils;
 using UtyMap.Unity.Infrastructure.Primitives;
 
-namespace UtyMap.Unity.Core.Tiling
+namespace UtyMap.Unity.Core.Models
 {
     /// <summary> Represents map tile. </summary>
     public class Tile
