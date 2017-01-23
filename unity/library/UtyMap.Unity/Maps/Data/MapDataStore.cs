@@ -38,7 +38,7 @@ namespace UtyMap.Unity.Maps.Data
     {
         private readonly object _lockGuard = new object();
 
-        private const string TraceCategory = "mapdata.loader";
+        private const string TraceCategory = "mapdata.store";
 
         private readonly IMapDataProvider _mapDataProvider;
         private readonly MapDataLoader _mapDataLoader;
@@ -49,7 +49,6 @@ namespace UtyMap.Unity.Maps.Data
         private MapDataStorageType _mapDataStorageType;
 
         private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
-
 
         [Dependency]
         public MapDataStore(IMapDataProvider mapDataProvider, IPathResolver pathResolver, ITrace trace)
@@ -130,6 +129,8 @@ namespace UtyMap.Unity.Maps.Data
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
+            _mapDataLoader.Configure(configSection);
+
             var stringPath = _pathResolver.Resolve(configSection.GetString("data/index/strings"));
             var mapDataPath = _pathResolver.Resolve(configSection.GetString("data/index/spatial"));
             
@@ -168,66 +169,6 @@ namespace UtyMap.Unity.Maps.Data
                 return Observable.Throw<int>(new MapDataException(errorMsg));
 
             return Observable.Return(100);
-        }
-
-        /// <inheritdoc />
-        private class MapDataLoader : ISubject<Tile, Union<Element, Mesh>>, IConfigurable
-        {
-            private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
-            private readonly IPathResolver _pathResolver;
-            private readonly ITrace _trace;
-
-            private ElevationDataType _eleDataType = ElevationDataType.Flat;
-
-            public MapDataLoader(IPathResolver pathResolver, ITrace trace)
-            {
-                _pathResolver = pathResolver;
-                _trace = trace;
-            }
-
-            /// <inheritdoc />
-            public void OnCompleted()
-            {
-                _observers.ForEach(o => o.OnCompleted());
-            }
-
-            /// <inheritdoc />
-            public void OnError(Exception error)
-            {
-                _observers.ForEach(o => o.OnError(error));
-            }
-
-            /// <inheritdoc />
-            public void OnNext(Tile tile)
-            {
-                var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
-
-                _trace.Info(TraceCategory, "loading tile: {0} using style: {1}", tile.ToString(), stylesheetPathResolved);
-                var adapter = new MapDataAdapter(tile, _observers, _trace);
-
-                CoreLibrary.LoadQuadKey(
-                    stylesheetPathResolved,
-                    tile.QuadKey,
-                    _eleDataType,
-                    adapter.AdaptMesh,
-                    adapter.AdaptElement,
-                    adapter.AdaptError);
-
-                _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
-            }
-
-            /// <inheritdoc />
-            public IDisposable Subscribe(IObserver<Union<Element, Mesh>> observer)
-            {
-                _observers.Add(observer);
-                return Disposable.Empty;
-            }
-
-            /// <inheritdoc />
-            public void Configure(IConfigSection configSection)
-            {
-                _eleDataType = (ElevationDataType)configSection.GetInt("data/elevation/type", 0);
-            }
         }
 
         #endregion

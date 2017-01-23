@@ -82,6 +82,7 @@
     <Compile Include="Infrastructure\Primitives\Union.cs" />
     <Compile Include="Maps\Data\MapDataEditor.cs" />
     <Compile Include="Maps\Data\ElevationDataType.cs" />
+    <Compile Include="Maps\Data\MapDataLoader.cs" />
     <Compile Include="Maps\Data\MapDataStore.cs" />
     <Compile Include="Maps\Data\MapDataAdapter.cs" />
     <Compile Include="Maps\Geocoding\IGeocoder.cs" />
