@@ -18,15 +18,15 @@ namespace UtyMap.Unity.Maps.Data
         private const string TraceCategory = "mapdata.loader";
 
         private readonly Tile _tile;
-        private readonly IObserver<Union<Element, Mesh>> _observer;
+        private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
         private readonly ITrace _trace;
 
         private static Regex ElementNameRegex = new Regex("^(building|barrier):([0-9]*)");
 
-        public MapDataAdapter(Tile tile, IObserver<Union<Element, Mesh>> observer, ITrace trace)
+        public MapDataAdapter(Tile tile, List<IObserver<Union<Element, Mesh>>> observers, ITrace trace)
         {
             _tile = tile;
-            _observer = observer;
+            _observers = observers;
             _trace = trace;
         }
 
@@ -111,7 +111,7 @@ namespace UtyMap.Unity.Maps.Data
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
             Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
-            _observer.OnNext(new Union<Element, Mesh>(mesh));
+            _observers.ForEach(o => o.OnNext(new Union<Element, Mesh>(mesh)));
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
@@ -127,7 +127,7 @@ namespace UtyMap.Unity.Maps.Data
             }
 
             Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
-            _observer.OnNext(new Union<Element, Mesh>(element));
+            _observers.ForEach(o => o.OnNext(new Union<Element, Mesh>(element)));
         }
 
         /// <summary> Adapts error message </summary>
@@ -135,7 +135,7 @@ namespace UtyMap.Unity.Maps.Data
         {
             var exception = new MapDataException(message);
             _trace.Error(TraceCategory, exception, "cannot load tile: {0}", _tile.ToString());
-            _observer.OnError(exception);
+            _observers.ForEach(o => o.OnError(exception));
         }
 
         #region Private members

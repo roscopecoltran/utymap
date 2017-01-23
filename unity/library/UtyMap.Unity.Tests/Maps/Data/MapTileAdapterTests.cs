@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using UtyMap.Unity.Core;
 using UtyMap.Unity.Core.Models;
@@ -20,7 +21,7 @@ namespace UtyMap.Unity.Tests.Maps.Data
         {
             var tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object);
             _observer = new Mock<IObserver<Union<Element, Mesh>>>();
-            _adapter = new MapDataAdapter(tile, _observer.Object, new DefaultTrace());
+            _adapter = new MapDataAdapter(tile, new List<IObserver<Union<Element, Mesh>>>() { _observer.Object }, new DefaultTrace());
         }
 
         [TestCase("barrier")]
