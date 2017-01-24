@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts;
 using UnityEngine;
-using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Utils;
+using UtyMap.Unity;
+using UtyMap.Unity.Utils;
 
 namespace Assets.Scenes.Surface.Scripts
 {
@@ -121,8 +120,8 @@ namespace Assets.Scenes.Surface.Scripts
             foreach (var quadKey in quadKeys)
                 if (!_loadedQuadKeys.Contains(quadKey))
                 {
-                    QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
-                    _loadedQuadKeys.Add(quadKey);
+                   // QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
+                   // _loadedQuadKeys.Add(quadKey);
                 }
         }
 

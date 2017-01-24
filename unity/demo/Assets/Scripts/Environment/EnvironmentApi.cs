@@ -3,7 +3,7 @@
     internal static class EnvironmentApi
     {
         /// <summary> Returns application version. </summary>
-        public static string Version { get { return "0.1"; } }
+        public static string Version { get { return "1.4"; } }
 
         /// <summary> Returns directory where UtyMap stores files. </summary>
         /// <remarks> Read/write access is required. </remarks>

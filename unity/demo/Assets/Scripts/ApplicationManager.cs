@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using Assets.Scripts.Console;
+using Assets.Scripts.Debug;
 using Assets.Scripts.Environment;
-using Assets.Scripts.Reactive;
+using Assets.Scripts.Environment.Reactive;
+using Assets.Scripts.Scene;
 using UnityEngine;
 using UtyMap.Unity;
-using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Explorer.Customization;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
@@ -19,7 +16,7 @@ namespace Assets.Scripts
 {
     /// <summary> Provides unified way to work with application state from different scenes. </summary>
     /// <remarks> This class should be only one singleton in demo app. </remarks>
-    class ApplicationManager
+    internal class ApplicationManager
     {
         private const string FatalCategoryName = "Fatal";
 
@@ -83,15 +80,17 @@ namespace Assets.Scripts
 
                 // create entry point for utymap functionallity
                 _compositionRoot = new CompositionRoot(_container, config)
+                    // override default services with unity specific implementation
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
-                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<DemoPathResolver>()))
-                    .RegisterAction((c, _) => c.Register(Component.For<IModelBuilder>().Use<DemoModelBuilder>()))
-                    .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<DemoNetworkService>()))
-                    .RegisterAction((c, _) => c.Register(Component.For<CustomizationService>().Use<CustomizationService>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<UnityPathResolver>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<UnityNetworkService>()))
+                    // register scene specific services
+                    .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
+                    .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))
+                    // register default mapcss
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
 
-                // this is the way to insert custom extensions from outside. You may need to do it for
-                // some scenes.
+                // this is the way to insert custom extensions from outside. You may need to do it for some scenes.
                 initAction(_compositionRoot);
 
                 // setup object graph
@@ -124,20 +123,14 @@ namespace Assets.Scripts
 
         #endregion
 
-        #region Service locator: use these methods carefully.
-
         /// <summary> Gets service of T from container. </summary>
+        /// <remarks>
+        ///    Extensive usage of this methid leads to service locator antipatter. 
+        ///    So use it carefully.
+        /// </remarks>
         public T GetService<T>()
         {
             return _container.Resolve<T>();
         }
-
-        /// <summary> Gets services of T from container. sS</summary>
-        public IEnumerable<T> GetServices<T>()
-        {
-            return _container.ResolveAll<T>();
-        }
-
-        #endregion
     }
 }

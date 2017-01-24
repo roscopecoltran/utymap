@@ -10,7 +10,6 @@ namespace Assets.Scripts.Environment
     /// <summary> Provides the way to extract embedded data to persistent storage. </summary>
     internal static class InstallationApi
     {
-        private const string Version = "1.3";
         private const string MarkerFileName = "install_log.txt";
 
         /// <summary> Ensures required filesystem structure. Should be called from main thread. </summary>
@@ -104,12 +103,12 @@ namespace Assets.Scripts.Environment
         private static bool IsInstalled()
         {
             var file = Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName);
-            return File.Exists(file) && File.ReadAllText(file) == Version;
+            return File.Exists(file) && File.ReadAllText(file) == EnvironmentApi.Version;
         }
 
         private static void MarkAsInstalled()
         {
-            File.WriteAllText(Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName), Version);
+            File.WriteAllText(Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName), EnvironmentApi.Version);
         }
 
         private static void CopyFiles(IEnumerable<string> files, ITrace trace)
