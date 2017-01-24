@@ -106,7 +106,11 @@ namespace UtyMap.Unity.Tests.Data
             _mapDataStore
                 .SubscribeOn(Scheduler.CurrentThread)
                 .ObserveOn(Scheduler.CurrentThread)
-                .Subscribe(AssertData, () => manualResetEvent.Set());
+                .Subscribe(r =>
+                {
+                    AssertData(r);
+                    manualResetEvent.Set();
+                });
 
             _mapDataStore.OnNext(new Tile(quadKey, _stylesheet, _projection));
 
