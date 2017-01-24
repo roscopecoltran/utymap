@@ -1,10 +1,8 @@
 ﻿using System;
-using UtyMap.Unity.Core;
-using UtyMap.Unity.Core.Models;
-using UtyMap.Unity.Core.Utils;
+using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Maps.Data;
 using UtyMap.Unity.Tests.Helpers;
+using UtyMap.Unity.Utils;
 using UtyRx;
 
 namespace UtyMap.Unity.Tests
@@ -34,8 +32,9 @@ namespace UtyMap.Unity.Tests
             store
                 .SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOn(Scheduler.MainThread)
-                // Convert element or mesh into your environment specific representation.
-                .Subscribe(u => u.Match(e => Console.WriteLine("Element:{0}", e.Id), m => Console.WriteLine("Mesh:{0}", m.Name)),
+                // convert element or mesh into your specific representation
+                .Subscribe(u => u.Match(e => Console.WriteLine("Element: {0}", e.Id),
+                                        m => Console.WriteLine("Mesh: {0}", m.Name)),
                            ex => Console.WriteLine("Error: {0}", ex));
 
             // 3. start loading of specific region

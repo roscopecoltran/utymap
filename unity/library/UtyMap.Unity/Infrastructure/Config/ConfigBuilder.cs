@@ -1,5 +1,5 @@
 ﻿using UtyDepend.Config;
-using UtyMap.Unity.Maps.Data;
+using UtyMap.Unity.Data;
 
 namespace UtyMap.Unity.Infrastructure.Config
 {

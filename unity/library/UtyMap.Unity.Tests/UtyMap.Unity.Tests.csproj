@@ -60,10 +60,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\TileLoadingTests.cs" />
-    <Compile Include="Integration\MapDataEditorTests.cs" />
-    <Compile Include="Maps\Data\MapTileAdapterTests.cs" />
-    <Compile Include="Maps\Providers\MapzenElevationDataProviderTests.cs" />
+    <Compile Include="Data\TileLoadingTests.cs" />
+    <Compile Include="Data\MapDataEditorTests.cs" />
+    <Compile Include="Data\MapTileAdapterTests.cs" />
+    <Compile Include="Providers\MapzenElevationDataProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\ConsoleTrace.cs" />
     <Compile Include="Helpers\PerformanceLogger.cs" />
@@ -78,9 +78,7 @@
       <Name>UtyMap.Unity</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

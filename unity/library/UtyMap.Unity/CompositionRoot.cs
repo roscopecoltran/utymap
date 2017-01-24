@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using UtyMap.Unity.Core.Models;
 using UtyMap.Unity.Infrastructure;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyMap.Unity.Maps.Data;
-using UtyMap.Unity.Maps.Geocoding;
 using UtyDepend;
 using UtyDepend.Config;
-using UtyMap.Unity.Maps.Providers;
+using UtyMap.Unity.Data;
+using UtyMap.Unity.Data.Providers;
+using UtyMap.Unity.Geocoding;
 
 namespace UtyMap.Unity
 {
@@ -50,7 +49,7 @@ namespace UtyMap.Unity
             if (_isInitialized)
                 throw new InvalidOperationException(Strings.SetupIsCalledMoreThanOnce);
 
-            // register all services which has to be registered, but concrete implementation 
+            // register all services which has to be registered, but concrete implementation
             // can be overriden in custom action by RegisterAction
 
             // infrastructure services
@@ -60,13 +59,12 @@ namespace UtyMap.Unity
             _container.Register(Component.For<IFileSystemService>().Use<FileSystemService>());
             _container.Register(Component.For<INetworkService>().Use<NetworkService>());
 
-            // core services 
-            _container.Register(Component.For<IModelBuilder>().Use<ModelBuilder>());
+            // core services
             _container.Register(Component.For<IMapDataEditor>().Use<MapDataEditor>());
-
             _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
             _container.Register(Component.For<IMapDataStore>().Use<MapDataStore>().SetConfig(_configSection));
 
+            // additional sevices
             _container.Register(Component.For<IGeocoder>().Use<NominatimGeocoder>().SetConfig(_configSection));
 
             // go through all actions to add/override services.

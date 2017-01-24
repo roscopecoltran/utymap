@@ -1,11 +1,10 @@
 ﻿using System;
-using UtyMap.Unity.Core;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyDepend;
 using UtyDepend.Config;
-using UtyMap.Unity.Maps.Data;
+using UtyMap.Unity.Data;
 
 namespace UtyMap.Unity.Tests.Helpers
 {
