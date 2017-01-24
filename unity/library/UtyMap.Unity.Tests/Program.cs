@@ -14,23 +14,31 @@ namespace UtyMap.Unity.Tests
 
         private static void Main(string[] args)
         {
-            // select main thread scheduler
+            // select main thread scheduler. it is different for Unity
             Scheduler.MainThread = Scheduler.CurrentThread;
 
             // get store and select theme represented by stylesheet
             var store = TestHelper.GetCompositionRoot(TestHelper.WorldZeroPoint)
                                   .GetService<IMapDataStore>();
+            // create stylesheet from default mapcss
             var stylesheet = new Stylesheet(TestHelper.DefaultMapCss);
 
-            // 1. add data to store
+            // 1. add map data to store
             store.Add(MapDataStorageType.InMemory,
+                      // file with map data
                       TestHelper.BerlinXmlData,
+                      // mapcss stylesheet to control what is loaded
                       stylesheet,
+                      // load data only for specific LOD (alternative API is available)
                       new Range<int>(LevelOfDetails, LevelOfDetails));
             
             // 2. start listening for processed data
             store
+                // limiting speed of element processing
+                .ThrottleFirst(TimeSpan.FromMilliseconds(300))
+                // move extensive processing away from main thread
                 .SubscribeOn(Scheduler.ThreadPool)
+                // but process results on main thread
                 .ObserveOn(Scheduler.MainThread)
                 // convert element or mesh into your specific representation
                 .Subscribe(u => u.Match(e => Console.WriteLine("Element: {0}", e.Id),
@@ -39,8 +47,11 @@ namespace UtyMap.Unity.Tests
 
             // 3. start loading of specific region
             store.OnNext(new Tile(
+                // specify quadkey
                 GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, LevelOfDetails),
+                // specify stylesheet which is used to create meshes
                 stylesheet,
+                // specify projection used by map data adapter
                 new CartesianProjection(TestHelper.WorldZeroPoint)));
 
             Console.ReadLine();

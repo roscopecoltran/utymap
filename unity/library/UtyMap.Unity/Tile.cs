@@ -6,7 +6,7 @@ using UtyMap.Unity.Utils;
 namespace UtyMap.Unity
 {
     /// <summary> Represents map tile. </summary>
-    public class Tile
+    public class Tile : IDisposable
     {
         /// <summary> Stores element ids loaded in this tile. </summary>
         private readonly SafeHashSet<long> _localIds = new SafeHashSet<long>();
@@ -29,9 +29,6 @@ namespace UtyMap.Unity
         /// <summary> Sets game object which holds all children objects. </summary>
         public GameObject GameObject { get; set; }
 
-        /// <summary> True if tile was disposed. </summary>
-        public bool IsDisposed { get; private set; }
-
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
@@ -45,12 +42,6 @@ namespace UtyMap.Unity
             BoundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);
         }
 
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return String.Format("({0},{1}:{2})", QuadKey.TileX, QuadKey.TileY, QuadKey);
-        }
-
         /// <summary> Checks whether element with specific id is registered. </summary>
         /// <param name="id">Element id.</param>
         /// <returns> True if registration is found. </returns>
@@ -60,10 +51,20 @@ namespace UtyMap.Unity
         }
 
         /// <summary> Register element with given id inside to prevent multiple loading. </summary>
+        /// <remarks> 
+        ///     Mostly used for objects which cross tile borders, but their geometry is 
+        ///     not clipped (buildings one of examples) 
+        /// </remarks>
         internal void Register(long id)
         {
             _localIds.Add(id);
             GlobalIds.Add(id);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return String.Format("({0},{1}:{2})", QuadKey.TileX, QuadKey.TileY, QuadKey);
         }
 
         #region IDisposable implementation
@@ -75,8 +76,6 @@ namespace UtyMap.Unity
             foreach (var id in _localIds)
                 GlobalIds.Remove(id);
             _localIds.Clear();
-
-            IsDisposed = true;
         }
 
         #endregion

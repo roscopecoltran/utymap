@@ -11,6 +11,7 @@ using Mesh = UtyMap.Unity.Mesh;
 namespace UtyMap.Unity.Data
 {
     /// <summary> Adapts map tile data received from utymap API to the type used by the app. </summary>
+    /// TODO refactor this class to reduce complexity
     internal class MapDataAdapter
     {
         private const string TraceCategory = "mapdata.loader";
@@ -19,7 +20,7 @@ namespace UtyMap.Unity.Data
         private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
         private readonly ITrace _trace;
 
-        private static Regex ElementNameRegex = new Regex("^(building|barrier):([0-9]*)");
+        private static Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
 
         public MapDataAdapter(Tile tile, List<IObserver<Union<Element, Mesh>>> observers, ITrace trace)
         {
@@ -98,10 +99,6 @@ namespace UtyMap.Unity.Data
                     unityUvs2 = new Vector2[worldPoints.Length];
                     unityUvs3 = new Vector2[worldPoints.Length];
                 }
-
-                // TODO this is not scalable: think about better solution for elements clipped by tile rect.
-                if (!name.StartsWith("barrier"))
-                    _tile.Register(id);
             }
 
             if (worldPoints.Length >= 65000)

@@ -98,13 +98,6 @@ namespace UtyMap.Unity.Infrastructure.Config
             return this;
         }
 
-        /// <summary> Sets distance (in tile count) between current and tile to be unloaded. </summary>
-        public ConfigBuilder SetTileDistance(int distance)
-        {
-            Add<int>(@"tile/max_tile_distance", distance);
-            return this;
-        }
-
         public ConfigBuilder SetElevationType(ElevationDataType type)
         {
             Add<int>(@"data/elevation/type", (int)type);

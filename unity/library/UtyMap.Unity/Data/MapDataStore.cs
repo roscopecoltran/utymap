@@ -31,7 +31,7 @@ namespace UtyMap.Unity.Data
         IObservable<int> Add(MapDataStorageType dataStorage, string dataPath, Stylesheet stylesheet, QuadKey quadKey);
     }
 
-    /// <summary> Default implementation of tile loader. </summary>
+    /// <summary> Default implementation of map data store. </summary>
     internal class MapDataStore : IMapDataStore, IDisposable, IConfigurable
     {
         private readonly object _lockGuard = new object();

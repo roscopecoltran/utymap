@@ -8,7 +8,7 @@ using UtyRx;
 
 namespace UtyMap.Unity.Data
 {
-    /// <inheritdoc />
+    /// <summary> Loads data from core library. </summary>
     internal class MapDataLoader : ISubject<Tile, Union<Element, Mesh>>, IConfigurable
     {
         private const string TraceCategory = "mapdata.loader";

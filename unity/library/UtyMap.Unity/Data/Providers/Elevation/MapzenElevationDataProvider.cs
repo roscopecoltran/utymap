@@ -121,7 +121,6 @@ namespace UtyMap.Unity.Data.Providers.Elevation
 
             // TODO this parameter depends on height data precision and tile size
             _eleGrid = configSection.GetInt(@"data/mapzen/ele_grid", 10);
-
             _elePath = configSection.GetString(@"data/elevation/local", null);
         }
     }

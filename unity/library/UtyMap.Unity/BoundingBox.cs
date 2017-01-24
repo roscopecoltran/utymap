@@ -3,11 +3,7 @@ using UtyMap.Unity.Utils;
 
 namespace UtyMap.Unity
 {
-    /// <summary>
-    ///     Represents bounding box.
-    ///     See details:
-    ///     http://stackoverflow.com/questions/238260/how-to-calculate-the-bounding-box-for-a-given-lat-lng-location
-    /// </summary>
+    /// <summary> Represents geo bounding box. </summary>
     public class BoundingBox
     {
         /// <summary> Point with maximum latitude and longitude. </summary>
@@ -43,6 +39,7 @@ namespace UtyMap.Unity
                 Math.Max(MaxPoint.Longitude, coordinate.Longitude));
         }
 
+        /// <summary> Returns center of bounding box. </summary>
         public GeoCoordinate Center()
         {
             return new GeoCoordinate(
@@ -91,7 +88,7 @@ namespace UtyMap.Unity
 
         # region Creation
 
-        /// <summary> Creates bounding box as rectangle. </summary>
+        /// <summary> Creates bounding box as rectangle of given size. </summary>
         /// <param name="center">Center point.</param>
         /// <param name="width">Width in meters.</param>
         /// <param name="height">Heigh in meters.</param>
@@ -121,9 +118,9 @@ namespace UtyMap.Unity
                 new GeoCoordinate(MathUtils.Rad2Deg(latMax), MathUtils.Rad2Deg(lonMax)));
         }
 
-        /// <summary> Creates bounding box as square. </summary>
+        /// <summary> Creates bounding box as square of given size. </summary>
         /// <param name="center">Center.</param>
-        /// <param name="sideInMeters">Length of the bounding box.</param>
+        /// <param name="sideInMeters">Side length in meters.</param>
         public static BoundingBox Create(GeoCoordinate center, float sideInMeters)
         {
             return Create(center, sideInMeters, sideInMeters);

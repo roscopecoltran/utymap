@@ -20,7 +20,6 @@ namespace UtyMap.Unity.Data
         public MapDataException(string formatStr, string message)
             : base(String.Format(formatStr, message))
         {
-            
         }
     }
 }

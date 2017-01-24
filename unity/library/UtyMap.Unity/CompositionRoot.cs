@@ -11,10 +11,12 @@ using UtyMap.Unity.Geocoding;
 
 namespace UtyMap.Unity
 {
-    /// <summary> Represents application's composition root. </summary>
-    /// <remarks> 
-    ///     At this level, application setups object graph by specifying 
-    ///     concrete implementations. 
+    /// <summary>
+    ///    Represents application's composition root.
+    /// </summary>
+    /// <remarks>
+    ///     At this level, application setups object graph by specifying
+    ///     concrete interface implementations.
     ///  </remarks>
     public class CompositionRoot : IDisposable
     {
