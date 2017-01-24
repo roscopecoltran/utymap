@@ -7,12 +7,12 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
-using Mesh = UtyMap.Unity.Mesh;
+using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Data
 {
     /// <summary> Defines behavior of class responsible of mapdata processing. </summary>
-    public interface IMapDataStore : ISubject<Tile, Union<Element, Mesh>>
+    public interface IMapDataStore : ISubject<Tile, Return>
     {
         /// <summary> Adds mapdata to the specific dataStorage. </summary>
         /// <param name="dataStorage"> Storage type. </param>
@@ -46,7 +46,7 @@ namespace UtyMap.Unity.Data
         
         private MapDataStorageType _mapDataStorageType;
 
-        private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
+        private readonly List<IObserver<Return>> _observers = new List<IObserver<Return>>();
 
         [Dependency]
         public MapDataStore(IMapDataProvider mapDataProvider, IPathResolver pathResolver, ITrace trace)
@@ -117,7 +117,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public IDisposable Subscribe(IObserver<Union<Element, Mesh>> observer)
+        public IDisposable Subscribe(IObserver<Return> observer)
         {
             // TODO handle unsubscribe
             _observers.Add(observer);

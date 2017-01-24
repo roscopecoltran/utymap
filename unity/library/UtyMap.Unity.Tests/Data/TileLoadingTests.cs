@@ -114,12 +114,12 @@ namespace UtyMap.Unity.Tests.Data
         }
 
         /// <summary> Checks whether data satisfied minimal correctness critirea. </summary>
-        private void AssertData(Union<Element, Mesh> data)
+        private void AssertData(Tuple<Tile, Union<Element, Mesh>> data)
         {
             _isCalled = true;
             var elements = 0;
             var meshes = 0;
-            data.Match(
+            data.Item2.Match(
                 element =>
                 {
                     Assert.Greater(element.Geometry.Length, 0);

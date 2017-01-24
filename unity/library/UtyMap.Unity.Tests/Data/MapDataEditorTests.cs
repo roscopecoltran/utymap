@@ -7,6 +7,8 @@ using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Tests.Helpers;
 using UtyRx;
 
+using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
+
 namespace UtyMap.Unity.Tests.Data
 {
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
@@ -44,15 +46,17 @@ namespace UtyMap.Unity.Tests.Data
                 new double[] { 0 }, 
                 new Dictionary<string, string>() { { "featurecla", "Populated place" } }, 
                 new Dictionary<string, string>());
-            Union<Element, Mesh> result = default(Union<Element, Mesh>);
+            var result = default(Return);
 
             // ACT
             _mapDataEditor.Add(MapDataStorageType.InMemory, node, levelOfDetails);
 
             // ASSERT
-            _dataStore.Do(u => result = u);
+            _dataStore
+                .SubscribeOn(Scheduler.CurrentThread)
+                .Subscribe(u => result = u);
             _dataStore.OnNext(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection));
-            result.Match(
+            result.Item2.Match(
                 e => CompareElements(node, e),
                 mesh => { throw new ArgumentException(); });
         }

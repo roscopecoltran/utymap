@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UtyDepend.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
-using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
+
+using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Data
 {
     /// <summary> Loads data from core library. </summary>
-    internal class MapDataLoader : ISubject<Tile, Union<Element, Mesh>>, IConfigurable
+    internal class MapDataLoader : ISubject<Tile, Return>, IConfigurable
     {
         private const string TraceCategory = "mapdata.loader";
 
-        private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
+        private readonly List<IObserver<Return>> _observers = new List<IObserver<Return>>();
         private readonly IPathResolver _pathResolver;
         private readonly ITrace _trace;
 
@@ -57,7 +58,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public IDisposable Subscribe(IObserver<Union<Element, Mesh>> observer)
+        public IDisposable Subscribe(IObserver<Return> observer)
         {
             _observers.Add(observer);
             return Disposable.Empty;

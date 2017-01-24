@@ -41,8 +41,8 @@ namespace UtyMap.Unity.Tests
                 // but process results on main thread
                 .ObserveOn(Scheduler.MainThread)
                 // convert element or mesh into your specific representation
-                .Subscribe(u => u.Match(e => Console.WriteLine("Element: {0}", e.Id),
-                                        m => Console.WriteLine("Mesh: {0}", m.Name)),
+                .Subscribe(r=> r.Item2.Match(e => Console.WriteLine("Element: {0}", e.Id),
+                                             m => Console.WriteLine("Mesh: {0}", m.Name)),
                            ex => Console.WriteLine("Error: {0}", ex));
 
             // 3. start loading of specific region

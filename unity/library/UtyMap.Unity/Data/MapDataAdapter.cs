@@ -6,7 +6,7 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using UtyRx;
-using Mesh = UtyMap.Unity.Mesh;
+using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Data
 {
@@ -17,12 +17,12 @@ namespace UtyMap.Unity.Data
         private const string TraceCategory = "mapdata.loader";
 
         private readonly Tile _tile;
-        private readonly List<IObserver<Union<Element, Mesh>>> _observers = new List<IObserver<Union<Element, Mesh>>>();
+        private readonly List<IObserver<Return>> _observers = new List<IObserver<Return>>();
         private readonly ITrace _trace;
 
         private static Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
 
-        public MapDataAdapter(Tile tile, List<IObserver<Union<Element, Mesh>>> observers, ITrace trace)
+        public MapDataAdapter(Tile tile, List<IObserver<Return>> observers, ITrace trace)
         {
             _tile = tile;
             _observers = observers;
@@ -99,6 +99,8 @@ namespace UtyMap.Unity.Data
                     unityUvs2 = new Vector2[worldPoints.Length];
                     unityUvs3 = new Vector2[worldPoints.Length];
                 }
+
+                _tile.Register(id);
             }
 
             if (worldPoints.Length >= 65000)
@@ -106,7 +108,7 @@ namespace UtyMap.Unity.Data
                                            "It should be split but this is missing functionality in UtyMap.Unity.", 
                                            name, worldPoints.Length.ToString());
             Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
-            _observers.ForEach(o => o.OnNext(new Union<Element, Mesh>(mesh)));
+            _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
@@ -122,7 +124,7 @@ namespace UtyMap.Unity.Data
             }
 
             Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
-            _observers.ForEach(o => o.OnNext(new Union<Element, Mesh>(element)));
+            _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(element))));
         }
 
         /// <summary> Adapts error message </summary>

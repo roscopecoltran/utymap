@@ -47,7 +47,7 @@ namespace UtyMap.Unity
         /// <returns> True if registration is found. </returns>
         internal bool Has(long id)
         {
-            return GlobalIds.Contains(id);
+            return GlobalIds.Contains(id) || _localIds.Contains(id);
         }
 
         /// <summary> Register element with given id inside to prevent multiple loading. </summary>
