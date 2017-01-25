@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts;
+using Assets.Scripts.Scene;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UtyMap.Unity;
+using UtyMap.Unity.Data;
+using UtyMap.Unity.Infrastructure.Config;
+using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Utils;
+using UtyRx;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
-    class OrbitCameraController : MonoBehaviour
+    internal sealed class OrbitCameraController : MonoBehaviour
     {
+        private const string TraceCategory = "scene.orbit";
+
         private int _currentLod;
         private int _minLod = 1;
         private int _maxLod = 9;
@@ -16,14 +24,40 @@ namespace Assets.Scenes.Orbit.Scripts
         private float _lodStep;
         private float _closestDistance;
 
-        private Vector3 _lastPosition = Vector3.zero;
+        private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         private Vector3 _origin = Vector3.zero;
+
+        private IMapDataStore _dataStore;
+        private IProjection _projection;
+        private Stylesheet _stylesheet;
 
         public GameObject Planet;
 
         public bool ShowState = true;
 
         #region Unity's callbacks
+
+        /// <summary> Performs framework initialization once, before any Start() is called. </summary>
+        void Awake()
+        {
+            var appManager = ApplicationManager.Instance;
+            appManager.InitializeFramework(ConfigBuilder.GetDefault(), init => { });
+
+            var trace = appManager.GetService<ITrace>();
+            var modelBuilder = appManager.GetService<UnityModelBuilder>();
+            appManager.GetService<IMapDataStore>()
+               .SubscribeOn(Scheduler.ThreadPool)
+               .ObserveOn(Scheduler.MainThread)
+               .Subscribe(r => r.Item2.Match(
+                               e => modelBuilder.BuildElement(r.Item1, e),
+                               m => modelBuilder.BuildMesh(r.Item1, m)),
+                          ex => trace.Error(TraceCategory, ex, "cannot process mapdata."),
+                          () => trace.Warn(TraceCategory, "stop listening mapdata."));
+
+            _dataStore = appManager.GetService<IMapDataStore>();
+            _stylesheet = appManager.GetService<Stylesheet>();
+            _projection = new SphericalProjection(_radius);
+        }
 
         void Start()
         {
@@ -68,7 +102,7 @@ namespace Assets.Scenes.Orbit.Scripts
         private void UpdateLod()
         {
             var distance = Vector3.Distance(transform.position, _origin) - _closestDistance;
-            _currentLod = Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
+            _currentLod =  Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
         }
 
         /// <summary> Builds planet on initial lod. </summary>
@@ -90,12 +124,15 @@ namespace Assets.Scenes.Orbit.Scripts
             if (!Physics.Raycast(transform.position, (_origin - transform.position).normalized, out hit))
                 return;
 
-            var parent = Planet;
-            var quadKeys = new List<QuadKey>();
-
-            var hitGameObject = hit.transform.gameObject;
+            // get parent which should have name the same as quadkey string representation
+            var hitGameObject = hit.transform.parent.transform.gameObject;
+            // skip "cap"
+            if (hitGameObject == Planet) return;
             var hitName = hitGameObject.name;
             var hitQuadKey = QuadKey.FromString(hitName);
+
+            var parent = Planet;
+            var quadKeys = new List<QuadKey>();
 
             // zoom in
             if (hitQuadKey.LevelOfDetail < _currentLod)
@@ -126,10 +163,12 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Builds quadkeys </summary>
         private void BuildQuadKeys(GameObject parent, IEnumerable<QuadKey> quadKeys)
         {
-            var projection = new SphericalProjection(_radius);
-            // TODO
-            //foreach (var quadKey in quadKeys)
-            //    QuadTreeSystem.BuildQuadTree(parent, quadKey, projection);
+            foreach (var quadKey in quadKeys)
+            {
+                var tileGameObject = new GameObject(quadKey.ToString());
+                tileGameObject.transform.parent = parent.transform;
+                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, tileGameObject));
+            }
         }
 
         /// <summary> Destroys gameobject by its name if it exists. </summary>

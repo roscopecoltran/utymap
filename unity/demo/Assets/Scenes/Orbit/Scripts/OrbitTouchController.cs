@@ -15,11 +15,13 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private Transform _pivot;
         private Transform _cam;
+        private Transform _light;
 
         private void Awake()
         {
             _pivot = transform.Find("Pivot");
             _cam = transform.Find("Pivot/Camera");
+            _light = transform.Find("Directional Light");
         }
 
         private void OnEnable()
@@ -41,6 +43,7 @@ namespace Assets.Scenes.Orbit.Scripts
                           -ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
                           ManipulationGesture.DeltaRotation);
             _pivot.localRotation *= rotation;
+            _light.localRotation *= rotation;
             _cam.transform.localPosition += Vector3.forward * (ManipulationGesture.DeltaScale - 1f) * PanSpeed;
         }
 
