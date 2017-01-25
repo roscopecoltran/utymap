@@ -23,8 +23,7 @@ namespace Assets.Scripts.Scene
         /// <inheritdoc />
         public void BuildElement(Tile tile, Element element)
         {
-            EnsureTile(tile);
-
+            // TODO Add more custom builders
             if (element.Styles["builders"].Contains("info"))
                 _placeElementBuilder.Build(tile, element).transform.parent = tile.GameObject.transform;
         }
@@ -52,13 +51,6 @@ namespace Assets.Scripts.Scene
                 _materialProvider.GetSharedMaterial(@"Materials/Default");
             gameObject.AddComponent<MeshCollider>();
             gameObject.transform.parent = tile.GameObject.transform;
-        }
-
-        /// <summary> Ensures that tile's game object is created. </summary>
-        private void EnsureTile(Tile tile)
-        {
-            if (tile.GameObject == null)
-                tile.GameObject = new GameObject("tile");
         }
     }
 }

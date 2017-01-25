@@ -27,17 +27,19 @@ namespace UtyMap.Unity
         public IProjection Projection { get; private set; }
 
         /// <summary> Sets game object which holds all children objects. </summary>
-        public GameObject GameObject { get; set; }
+        public GameObject GameObject { get; private set; }
 
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
         /// <param name="projection"> Projection. </param>
-        public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection)
+        /// <param name="parent"> Parent gameobject. </param>
+        public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection, GameObject gameObject = null)
         {
             QuadKey = quadKey;
             Stylesheet = stylesheet;
             Projection = projection;
+            GameObject = gameObject;
 
             BoundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);
         }
