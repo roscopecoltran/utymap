@@ -31,8 +31,6 @@ namespace Assets.Scripts.Scene
         /// <inheritdoc />
         public void BuildMesh(Tile tile, Mesh mesh)
         {
-            EnsureTile(tile);
-
             var gameObject = new GameObject(mesh.Name);
 
             var uMesh = new UnityEngine.Mesh();
