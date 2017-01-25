@@ -37,14 +37,14 @@ namespace UtyMap.Unity.Data.Providers.Geo
         /// <inheritdoc />
         protected override string GetUri(QuadKey quadKey)
         {
-            return Path.Combine(_cachePath, quadKey + _mapDataFormatExtension);
+            return String.Format(_mapDataServerUri, _mapDataLayers, quadKey.LevelOfDetail, quadKey.TileX,
+                quadKey.TileY, _mapDataApiKey);
         }
 
         /// <inheritdoc />
         protected override string GetFilePath(QuadKey quadKey)
         {
-            return String.Format(_mapDataServerUri, _mapDataLayers, quadKey.LevelOfDetail, quadKey.TileX,
-                quadKey.TileY, _mapDataApiKey);
+            return Path.Combine(_cachePath, quadKey + _mapDataFormatExtension);
         }
     }
 }
