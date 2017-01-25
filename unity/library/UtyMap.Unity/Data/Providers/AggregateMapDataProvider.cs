@@ -1,4 +1,5 @@
-﻿using UtyDepend;
+﻿using System;
+using UtyDepend;
 using UtyDepend.Config;
 using UtyMap.Unity.Data.Providers.Elevation;
 using UtyMap.Unity.Data.Providers.Geo;
@@ -14,6 +15,8 @@ namespace UtyMap.Unity.Data.Providers
     /// </summary>
     internal sealed class AggregateMapDataProvider : MapDataProvider
     {
+        private const int DefaultThrottleValueInMs = 2000;
+
         private IMapDataProvider _eleProvider;
         private IMapDataProvider _dataProvider;
        
@@ -83,10 +86,16 @@ namespace UtyMap.Unity.Data.Providers
                 _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
                 
                 _mapzenEleProvider.Configure(configSection);
-                _mapzenEleProvider.Subscribe(Notify);
+                _mapzenEleProvider
+                    .ThrottleFirst(TimeSpan.FromMilliseconds(
+                        configSection.GetInt("data/mapzen/throttle", DefaultThrottleValueInMs)))
+                    .Subscribe(Notify);
 
                 _srtmEleProvider.Configure(configSection);
-                _srtmEleProvider.Subscribe(Notify);
+                _srtmEleProvider
+                    .ThrottleFirst(TimeSpan.FromMilliseconds(
+                        configSection.GetInt("data/srtm/throttle", DefaultThrottleValueInMs)))
+                    .Subscribe(Notify);
             }
         }
 
@@ -123,10 +132,16 @@ namespace UtyMap.Unity.Data.Providers
             public override void Configure(IConfigSection configSection)
             {
                 _osmMapDataProvider.Configure(configSection);
-                _osmMapDataProvider.Subscribe(Notify);
+                _osmMapDataProvider
+                    .ThrottleFirst(TimeSpan.FromMilliseconds(
+                        configSection.GetInt("data/mapzen/throttle", DefaultThrottleValueInMs)))
+                    .Subscribe(Notify);
 
                 _mapzenMapDataProvider.Configure(configSection);
-                _mapzenMapDataProvider.Subscribe(Notify);
+                _mapzenMapDataProvider
+                    .ThrottleFirst(TimeSpan.FromMilliseconds(
+                        configSection.GetInt("data/osm/throttle", DefaultThrottleValueInMs)))
+                    .Subscribe(Notify);
             }
         }
 
