@@ -56,19 +56,17 @@ namespace UtyMap.Unity.Data
             _pathResolver = pathResolver;
             _trace = trace;
 
-            _mapDataProvider
-                .Subscribe(value =>
+            _mapDataProvider.Subscribe(value =>
                 {
                     // we have map data in store.
                     if (String.IsNullOrEmpty(value.Item2))
                         _mapDataLoader.OnNext(value.Item1);
                     else
                         Add(_mapDataStorageType, value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
-                            .Subscribe(progress => {}, () =>  _mapDataLoader.OnNext(value.Item1));
+                            .Subscribe(progress => { }, () => _mapDataLoader.OnNext(value.Item1));
                 });
 
-            _mapDataLoader
-                .Subscribe(u => _observers.ForEach(o => o.OnNext(u)));
+            _mapDataLoader.Subscribe(u => _observers.ForEach(o => o.OnNext(u)));
         }
 
         #region Interface implementations
@@ -92,7 +90,7 @@ namespace UtyMap.Unity.Data
                 string errorMsg = null;
                 // NOTE checks data in all registered stores
                 // TODO add API to check in specific store.
-                if (CoreLibrary.HasData(quadKey))
+                if (!CoreLibrary.HasData(quadKey))
                     CoreLibrary.AddToStore(dataStorageType, style, data, quadKey, error => errorMsg = error);
                 return errorMsg;
             });

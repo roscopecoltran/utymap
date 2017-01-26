@@ -15,8 +15,6 @@ namespace UtyMap.Unity.Data.Providers
     /// </summary>
     internal sealed class AggregateMapDataProvider : MapDataProvider
     {
-        private const int DefaultThrottleValueInMs = 2000;
-
         private IMapDataProvider _eleProvider;
         private IMapDataProvider _dataProvider;
        
@@ -30,9 +28,6 @@ namespace UtyMap.Unity.Data.Providers
             _dataProvider = new DataProvider(
                 new OpenStreetMapDataProvider(fileSystemService, networkService, trace),
                 new MapzenMapDataProvider(fileSystemService, networkService, trace));
-
-            _eleProvider.Subscribe(t => _dataProvider.OnNext(t.Item1));
-            _dataProvider.Subscribe(Notify);
         }
 
         /// <inheritdoc />
@@ -45,7 +40,10 @@ namespace UtyMap.Unity.Data.Providers
         public override void Configure(IConfigSection configSection)
         {
             _eleProvider.Configure(configSection);
+            _eleProvider.Subscribe(t => _dataProvider.OnNext(t.Item1));
+
             _dataProvider.Configure(configSection);
+            _dataProvider.Subscribe(Notify);
         }
 
         #region Nested classes
@@ -86,16 +84,10 @@ namespace UtyMap.Unity.Data.Providers
                 _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
                 
                 _mapzenEleProvider.Configure(configSection);
-                _mapzenEleProvider
-                    .ThrottleFirst(TimeSpan.FromMilliseconds(
-                        configSection.GetInt("data/mapzen/throttle", DefaultThrottleValueInMs)))
-                    .Subscribe(Notify);
+                _mapzenEleProvider.Subscribe(Notify);
 
                 _srtmEleProvider.Configure(configSection);
-                _srtmEleProvider
-                    .ThrottleFirst(TimeSpan.FromMilliseconds(
-                        configSection.GetInt("data/srtm/throttle", DefaultThrottleValueInMs)))
-                    .Subscribe(Notify);
+                _srtmEleProvider.Subscribe(Notify);
             }
         }
 
@@ -132,16 +124,10 @@ namespace UtyMap.Unity.Data.Providers
             public override void Configure(IConfigSection configSection)
             {
                 _osmMapDataProvider.Configure(configSection);
-                _osmMapDataProvider
-                    .ThrottleFirst(TimeSpan.FromMilliseconds(
-                        configSection.GetInt("data/mapzen/throttle", DefaultThrottleValueInMs)))
-                    .Subscribe(Notify);
+                _osmMapDataProvider.Subscribe(Notify);
 
                 _mapzenMapDataProvider.Configure(configSection);
-                _mapzenMapDataProvider
-                    .ThrottleFirst(TimeSpan.FromMilliseconds(
-                        configSection.GetInt("data/osm/throttle", DefaultThrottleValueInMs)))
-                    .Subscribe(Notify);
+                _mapzenMapDataProvider.Subscribe(Notify);
             }
         }
 
