@@ -19,7 +19,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private int _currentLod;
         private int _minLod = 1;
-        private int _maxLod = 9;
+        private int _maxLod = 3;
         private float _radius = 100;
         private float _lodStep;
         private float _closestDistance;
@@ -34,6 +34,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public GameObject Planet;
 
         public bool ShowState = true;
+        public bool FreezeLod = false;
 
         #region Unity's callbacks
 
@@ -101,8 +102,14 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Updates current lod level based on current position. </summary>
         private void UpdateLod()
         {
+            if (FreezeLod)
+            {
+                _currentLod = Math.Max(1, _currentLod);
+                return;
+            }
+
             var distance = Vector3.Distance(transform.position, _origin) - _closestDistance;
-            _currentLod =  Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
+            _currentLod = Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
         }
 
         /// <summary> Builds planet on initial lod. </summary>
