@@ -19,6 +19,7 @@ namespace Assets.Scripts.UI
             vh.GetUIVertexStream(vertices);
 
             var circumference = 2.0f / 360.0f * Mathf.PI * Radius;
+            var rotation = Quaternion.Euler(new Vector3((float)-Coordinate.Latitude, 90f - (float) Coordinate.Longitude, 0));
             for (var i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i];
@@ -27,12 +28,10 @@ namespace Assets.Scripts.UI
                 var yPercentCircumference = v.position.y / circumference;
                 var zOffset = Quaternion.Euler(0, -xPercentCircumference, 0) * Vector3.forward;
                 var yOffset = Quaternion.Euler(-yPercentCircumference, 0.0f, 0.0f) * Vector3.up;
-                v.position = yOffset * v.position.y + zOffset * Radius;
+                v.position = rotation * (yOffset * v.position.y + zOffset * Radius);
 
                 vertices[i] = v;
             }
-
-            rectTransform.Rotate(new Vector3( (float)-Coordinate.Latitude, (float) -Coordinate.Longitude, 0));
 
             vh.AddUIVertexTriangleStream(vertices);
         }

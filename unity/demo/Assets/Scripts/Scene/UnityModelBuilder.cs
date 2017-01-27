@@ -1,31 +1,37 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Scene.Builders;
+using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 using Mesh = UtyMap.Unity.Mesh;
 
 namespace Assets.Scripts.Scene
 {
-    /// <summary>
-    ///     Responsible for building Unity game objects from meshes and elements.
-    /// </summary>
+    /// <summary> Responsible for building Unity game objects from meshes and elements. </summary>
     internal class UnityModelBuilder
     {
         private readonly MaterialProvider _materialProvider;
-        private readonly PlaceElementBuilder _placeElementBuilder;
+
+        private Dictionary<string, IElementBuilder> _elementBuilders = new Dictionary<string, IElementBuilder>();
 
         [Dependency]
         public UnityModelBuilder(MaterialProvider materialProvider)
         {
             _materialProvider = materialProvider;
-            _placeElementBuilder = new PlaceElementBuilder(_materialProvider);
+
+            // register custom builders here.
+            _elementBuilders.Add("info", new PlaceElementBuilder(_materialProvider));
+            _elementBuilders.Add("label", new LabelElementBuilder());
         }
 
         /// <inheritdoc />
         public void BuildElement(Tile tile, Element element)
         {
-            // TODO Add more custom builders
-            if (element.Styles["builders"].Contains("info"))
-                _placeElementBuilder.Build(tile, element).transform.parent = tile.GameObject.transform;
+            foreach (var pair in _elementBuilders)
+            {
+                if (element.Styles["builders"].Contains(pair.Key))
+                    pair.Value.Build(tile, element);
+            }
         }
 
         /// <inheritdoc />

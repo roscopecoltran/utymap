@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using UtyDepend;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scene
+namespace Assets.Scripts.Scene.Builders
 {
-    // Builds Place of Interest from Element
-    internal class PlaceElementBuilder
+    /// <summary> Builds Place of Interest represented by cube primitive. </summary>
+    internal sealed class PlaceElementBuilder : IElementBuilder
     {
         private readonly MaterialProvider _materialProvider;
 
-        [Dependency]
         public PlaceElementBuilder(MaterialProvider customizationService)
         {
             _materialProvider = customizationService;
         }
 
+        /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
         {
             GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             gameObject.name = GetName(element);
             
             var transform = gameObject.transform;
-            transform.position = tile.Projection.Project(element.Geometry[0], 
-                GetMinHeight(element) + element.Heights[0]);
+            transform.parent = tile.GameObject.transform;
+            transform.position = tile.Projection.Project(element.Geometry[0], GetMinHeight(element) + element.Heights[0]);
             transform.localScale = new Vector3(2, 2, 2);
 
             gameObject.GetComponent<MeshFilter>().mesh.uv = GetUV(element);
@@ -67,7 +66,7 @@ namespace Assets.Scripts.Scene
 
         private string GetName(Element element)
         {
-            return String.Format("place:{0}[{1}]", element.Id, 
+            return String.Format("place:{0}[{1}]", element.Id,
                 element.Tags.Aggregate("", (s, t) => s+=String.Format("{0}={1},", t.Key, t.Value)));
         }
 
