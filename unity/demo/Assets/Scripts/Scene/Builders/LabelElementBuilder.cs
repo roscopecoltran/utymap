@@ -23,13 +23,14 @@ namespace Assets.Scripts.Scene.Builders
             var sphereText = gameObject.AddComponent<SphereText>();
             
             sphereText.Coordinate = element.Geometry[0];
-            sphereText.Radius = 101; // TODO should be in sync with sphere size
+            sphereText.Radius = 1001f; // TODO should be in sync with sphere size
 
             var font = GetFont(element);
             sphereText.font = font;
             sphereText.fontSize = int.Parse(element.Styles["font-size"]);
             sphereText.text = GetText(element);
             sphereText.alignment = TextAnchor.MiddleCenter;
+            sphereText.color = Color.red;
 
             // NOTE should be attached to properly oriented canvas.
             gameObject.transform.SetParent(_canvas.transform);

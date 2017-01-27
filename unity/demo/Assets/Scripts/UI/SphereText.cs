@@ -8,7 +8,7 @@ namespace Assets.Scripts.UI
     [ExecuteInEditMode]
     public class SphereText : Text
     {
-        public float Radius = 100.5f;
+        public float Radius = 1001f;
         public GeoCoordinate Coordinate;
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -32,8 +32,13 @@ namespace Assets.Scripts.UI
 
                 vertices[i] = v;
             }
-
+            
             vh.AddUIVertexTriangleStream(vertices);
+        }
+
+        void LateUpdate()
+        {
+            rectTransform.sizeDelta = new Vector2(Radius, Radius);
         }
     }
 }
