@@ -42,8 +42,14 @@ namespace Assets.Scenes.Orbit.Scripts
                           ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
                           -ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
                           ManipulationGesture.DeltaRotation);
+
             _pivot.localRotation *= rotation;
-            _light.localRotation *= rotation;
+            // NOTE cannot limit angle: limit values are different for different lods
+            // TODO try logic which checks distance to poles?
+            //_pivot.localEulerAngles = new Vector3(LimitAngle(_pivot.eulerAngles.x, 45),
+            //                                      _pivot.eulerAngles.y,
+            //                                      LimitAngle(_pivot.eulerAngles.z, 10));
+            _light.localRotation = _pivot.localRotation;
             _cam.transform.localPosition += Vector3.forward * (ManipulationGesture.DeltaScale - 1f) * PanSpeed;
         }
 
@@ -56,6 +62,13 @@ namespace Assets.Scenes.Orbit.Scripts
 
             _pivot.localRotation *= rotation;
             _cam.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * ZoomSpeed;
+        }
+
+        private static float LimitAngle(float angle, float limit)
+        {
+            angle = angle > 180 ? angle - 360 : angle;
+            var sign = angle < 0 ? -1 : 1;
+            return limit - sign * angle > 0 ? angle : sign * limit;
         }
     }
 }
