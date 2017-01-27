@@ -58,18 +58,18 @@ namespace UtyMap.Unity
             // the x-axis goes through long,lat (0,0), so longitude 0 meets the equator;
             // the y-axis goes through (0,90);
             // and the z-axis goes through the pol
-            // x = R * cos(lat) * cos(lon)
-            // y = R * cos(lat) * sin(lon)
-            // z = R * sin(lat)
+            // x = R * cos(lon) * cos(lat)
+            // z = R * cos(lat) * sin(lon)
+            // y = R * sin(lat)
 
             double radius = _radius + height;
             double latRad = (Math.PI / 180) * coordinate.Latitude;
             double lonRad = (Math.PI / 180) * coordinate.Longitude;
-            float x = (float)(radius * Math.Cos(latRad) * Math.Cos(lonRad));
-            float y = (float)(radius * Math.Cos(latRad) * Math.Sin(lonRad));
-            float z = (float)(radius * Math.Sin(latRad));
+            float x = (float)(radius * Math.Cos(lonRad) * Math.Cos(latRad));
+            float z = (float)(radius * Math.Cos(latRad) * Math.Sin(lonRad));
+            float y = (float)(radius * Math.Sin(latRad));
 
-            return new Vector3(x, z, y);
+            return new Vector3(x, y, z);
         }
 
         /// <inheritdoc />
