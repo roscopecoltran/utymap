@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -11,9 +12,10 @@ using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primit
 namespace UtyMap.Unity.Data
 {
     /// <summary> Adapts map tile data received from utymap API to the type used by the app. </summary>
-    /// TODO refactor this class to reduce complexity
+    /// TODO refactor this class to reduce complexity and uglyness
     internal class MapDataAdapter
     {
+        private const int VertexLimit = 64998;
         private const string TraceCategory = "mapdata.loader";
 
         private readonly Tile _tile;
@@ -103,12 +105,7 @@ namespace UtyMap.Unity.Data
                 _tile.Register(id);
             }
 
-            if (worldPoints.Length >= 65000)
-                _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed: {1}. " +
-                                           "It should be split but this is missing functionality in UtyMap.Unity.", 
-                                           name, worldPoints.Length.ToString());
-            Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
-            _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
+            BuildMesh(name, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
@@ -185,6 +182,45 @@ namespace UtyMap.Unity.Data
             }
 
             return new TextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, infos);
+        }
+
+        /// <summary> Builds mesh object and notifies observers. </summary>
+        /// <remarks> Unity has vertex count limit and spliiting meshes here is quite expensive operation. </remarks>
+        private void BuildMesh(string name, Vector3[] worldPoints, int[] triangles, Color[] unityColors, 
+            Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3)
+        {
+            if (worldPoints.Length < VertexLimit)
+            {
+                Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+                _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
+                return;
+            }
+
+            _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed by Unity: {1}. Will try to split..",
+                   name, worldPoints.Length.ToString());
+            if (worldPoints.Length != triangles.Length)
+            {
+                // TODO handle this case properly
+                _trace.Warn(TraceCategory, "Cannot split mesh {0}: vertecies count != triangles count", name);
+                return;
+            }
+
+            int parts = (int) Math.Ceiling((float) worldPoints.Length / VertexLimit);
+            for (int i = 0; i < parts; ++i)
+            {
+                var start = i * VertexLimit;
+                var end = Math.Min(start + VertexLimit, worldPoints.Length);
+                Mesh mesh = new Mesh(name + i, 0, 
+                    worldPoints.Skip(start).Take(end - start).ToArray(),
+                    i == 0
+                        ? triangles.Skip(start).Take(end - start).ToArray()
+                        : triangles.Skip(start).Take(end - start).Select(tri => tri - start).ToArray(),
+                    unityColors.Skip(start).Take(end - start).ToArray(),
+                    unityUvs.Skip(start).Take(end - start).ToArray(),
+                    unityUvs2.Skip(start).Take(end - start).ToArray(),
+                    unityUvs3.Skip(start).Take(end - start).ToArray());
+                _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
+            }
         }
 
         #endregion
