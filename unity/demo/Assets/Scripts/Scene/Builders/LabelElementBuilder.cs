@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UtyMap.Unity;
+using UtyMap.Unity.Utils;
 
 namespace Assets.Scripts.Scene.Builders
 {
@@ -25,13 +27,13 @@ namespace Assets.Scripts.Scene.Builders
             sphereText.Coordinate = element.Geometry[0];
             sphereText.Radius = 1001f; // TODO should be in sync with sphere size
 
-            var font = GetFont(element);
-            sphereText.font = font;
-            sphereText.fontSize = int.Parse(element.Styles["font-size"]);
+            var font = new FontWrapper(element.Styles);
+            sphereText.font = font.Font;
+            sphereText.fontSize = font.Size;
+            sphereText.color = font.Color;
             sphereText.text = GetText(element);
             sphereText.alignment = TextAnchor.MiddleCenter;
-            sphereText.color = Color.red;
-
+           
             // NOTE should be attached to properly oriented canvas.
             gameObject.transform.SetParent(_canvas.transform);
 
@@ -55,6 +57,20 @@ namespace Assets.Scripts.Scene.Builders
         {
             return String.Format("place:{0}[{1}]", element.Id,
                 element.Tags.Aggregate("", (s, t) => s += String.Format("{0}={1},", t.Key, t.Value)));
+        }
+
+        private struct FontWrapper
+        {
+            public readonly Font Font;
+            public readonly int Size;
+            public readonly Color Color;
+
+            public FontWrapper(Dictionary<string, string> styles)
+            {
+                Size = int.Parse(styles["font-size"]);
+                Font = UnityEngine.Font.CreateDynamicFontFromOSFont(styles["font-name"], Size);
+                Color = ColorUtils.FromUnknown(styles["font-color"]);
+            }
         }
     }
 }
