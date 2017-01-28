@@ -9,7 +9,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
 
-        public float PanSpeed = 20f;
+        public float Radius = 1000;
         public float RotationSpeed = 100f;
         public float ZoomSpeed = 20f;
 
@@ -43,14 +43,9 @@ namespace Assets.Scenes.Orbit.Scripts
                           -ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
                           ManipulationGesture.DeltaRotation);
 
-            _pivot.localRotation *= rotation;
-            // NOTE cannot limit angle: limit values are different for different lods
-            // TODO try logic which checks distance to poles?
-            //_pivot.localEulerAngles = new Vector3(LimitAngle(_pivot.eulerAngles.x, 45),
-            //                                      _pivot.eulerAngles.y,
-            //                                      LimitAngle(_pivot.eulerAngles.z, 10));
+
+            SetRotation(rotation);
             _light.localRotation = _pivot.localRotation;
-            _cam.transform.localPosition += Vector3.forward * (ManipulationGesture.DeltaScale - 1f) * PanSpeed;
         }
 
         private void twoFingerTransformHandler(object sender, EventArgs e)
@@ -60,8 +55,18 @@ namespace Assets.Scenes.Orbit.Scripts
                -TwoFingerMoveGesture.DeltaPosition.x / Screen.width * RotationSpeed,
                TwoFingerMoveGesture.DeltaRotation);
 
-            _pivot.localRotation *= rotation;
+            SetRotation(rotation);
             _cam.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * ZoomSpeed;
+        }
+
+        /// <summary> Sets rotation to pivot with limit. </summary>
+        private void SetRotation(Quaternion rotation)
+        {
+            _pivot.localRotation *= rotation;
+            _pivot.localEulerAngles = new Vector3(
+                LimitAngle(_pivot.eulerAngles.x, CalculateLimit()),
+                _pivot.eulerAngles.y,
+                LimitAngle(_pivot.eulerAngles.z, 10));
         }
 
         private static float LimitAngle(float angle, float limit)
@@ -69,6 +74,20 @@ namespace Assets.Scenes.Orbit.Scripts
             angle = angle > 180 ? angle - 360 : angle;
             var sign = angle < 0 ? -1 : 1;
             return limit - sign * angle > 0 ? angle : sign * limit;
+        }
+
+        private float CalculateLimit()
+        {
+            var pole = new Vector3(0, Radius, 0);
+            var center = Vector3.zero;
+            var position = new Vector3(0, 0, Vector3.Distance(_cam.transform.position, center));
+
+            var a = Vector3.Distance(position, center);
+            var b = Vector3.Distance(position, pole);
+            var c = Radius;
+
+            var cosine = (a * a + b * b - c * c) / (2 * a * b);
+            return (float) Math.Acos(cosine) * Mathf.Rad2Deg * 2;
         }
     }
 }
