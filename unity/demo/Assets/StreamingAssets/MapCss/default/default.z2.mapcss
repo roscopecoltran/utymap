@@ -1,0 +1,12 @@
+node|z2[label_placement=true][kind=lake][name] {
+    builders: label;
+    font-name: Arial;
+    font-size: 32;
+    font-color: white;
+}
+
+area,relation|z2[kind=lake] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: water;
+}

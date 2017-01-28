@@ -1,10 +1,3 @@
+@import url("default.orbit.mapcss");
 @import url("default.z1.mapcss");
-@import url("default.z14.mapcss");
-@import url("default.z16.mapcss");
-@import url("default.z1-z16.mapcss");
-
-@texture url("default.z16.txt");
-
-@lsystem url("tree.lsys");
-@lsystem url("conifer.lsys");
-@lsystem url("lamp.lsys");
+@import url("default.z2.mapcss");

@@ -1,0 +1,29 @@
+/* Contains properties shared between different LOD for orbit view. */
+canvas|z1-2 {
+    layer-priority:water,earth;
+    grid-cell-size: 5%;
+
+    max-area: 0.5%;
+    color-noise-freq: 0;
+    ele-noise-freq: 0;
+    color: gradient(blue);
+
+    water-max-area: 0.5%;
+    water-color-noise-freq: 0;
+    water-ele-noise-freq: 0;
+    water-color: gradient(blue);
+    water-mesh-name: water;
+
+    earth-max-area: 0.25%;
+    earth-color-noise-freq: 0;
+    earth-ele-noise-freq: 0;
+    earth-color: gradient(green);
+    earth-mesh-name: terrain_earth;
+    earth-height-offset: 10m;
+}
+
+area,relation|z1-2[kind=earth] {
+    clip:true;
+    builders: terrain;
+    terrain-layer:earth;
+}
