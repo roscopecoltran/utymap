@@ -56,7 +56,9 @@ namespace UtyMap.Unity.Data
             _pathResolver = pathResolver;
             _trace = trace;
 
-            _mapDataProvider.Subscribe(value =>
+            _mapDataProvider
+                .ObserveOn(Scheduler.ThreadPool)
+                .Subscribe(value =>
                 {
                     // we have map data in store.
                     if (String.IsNullOrEmpty(value.Item2))
