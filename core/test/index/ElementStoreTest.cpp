@@ -36,8 +36,6 @@ namespace {
 
         bool hasData(const QuadKey&) const override { return true; }
 
-        void commit() override {}
-
     protected:
 
         void storeImpl(const Element& element, const QuadKey& quadKey) override

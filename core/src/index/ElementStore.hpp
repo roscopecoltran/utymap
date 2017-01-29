@@ -14,7 +14,7 @@ namespace utymap { namespace index {
 class ElementStore
 {
 public:
-    explicit ElementStore(utymap::index::StringTable& stringTable);
+    explicit ElementStore(const utymap::index::StringTable& stringTable);
 
     virtual ~ElementStore() = default;
 
@@ -26,7 +26,7 @@ public:
     virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;
 
     /// Stores element in storage in all affected tiles at given level of details range.
-    bool store(const utymap::entities::Element& element, 
+    bool store(const utymap::entities::Element& element,
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
 
@@ -40,10 +40,6 @@ public:
                const utymap::BoundingBox& bbox,
                const utymap::LodRange& range,
                const utymap::mapcss::StyleProvider& styleProvider);
-
-    /// Commits changes done in element store.
-    virtual void commit() = 0;
-
 protected:
     /// Stores element in given quadkey.
     virtual void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) = 0;

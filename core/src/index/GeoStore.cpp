@@ -72,7 +72,6 @@ public:
     {
         auto& elementStore = storeMap_[storeKey];
         elementStore->store(element, range, styleProvider);
-        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const QuadKey& quadKey, const StyleProvider& styleProvider)
@@ -81,7 +80,6 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, quadKey, styleProvider);
         });
-        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const LodRange& range, const StyleProvider& styleProvider)
@@ -90,7 +88,6 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, range, styleProvider);
         });
-        elementStore->commit();
     }
 
     void add(const std::string& storeKey, const std::string& path, const BoundingBox& bbox, const LodRange& range, const StyleProvider& styleProvider)
@@ -99,7 +96,6 @@ public:
         add(path, styleProvider, [&](Element& element) {
             return elementStore->store(element, bbox, range, styleProvider);
         });
-        elementStore->commit();
     }
 
     void add(const std::string& path, const StyleProvider& styleProvider, const std::function<bool(Element&)>& functor) const
@@ -153,7 +149,7 @@ public:
 
     void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor) const
     {
-        throw std::domain_error("Not implemented");
+        throw std::domain_error("Not implemented.");
     }
 
     bool hasData(const QuadKey& quadKey)

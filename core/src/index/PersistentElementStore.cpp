@@ -5,6 +5,7 @@
 #include "entities/Relation.hpp"
 #include "index/PersistentElementStore.hpp"
 #include "utils/CoreUtils.hpp"
+#include "utils/LruCache.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -93,12 +94,12 @@ namespace {
 
     private:
 
-        void writeFlags(const std::uint8_t flags)
+        void writeFlags(const std::uint8_t flags) const
         {
             dataFile_.write(reinterpret_cast<const char*>(&flags), sizeof(flags));
         }
 
-        void writeTags(const std::vector<Tag>& tags)
+        void writeTags(const std::vector<Tag>& tags) const
         {
             std::uint16_t size = static_cast<std::uint16_t>(tags.size());
             dataFile_.write(reinterpret_cast<const char*>(&size), sizeof(size));
@@ -108,7 +109,7 @@ namespace {
             }
         }
 
-        void writeCoordinate(const GeoCoordinate& coord)
+        void writeCoordinate(const GeoCoordinate& coord) const
         {
             dataFile_.write(reinterpret_cast<const char*>(&coord.latitude), sizeof(coord.latitude));
             dataFile_.write(reinterpret_cast<const char*>(&coord.longitude), sizeof(coord.longitude));
@@ -153,7 +154,7 @@ namespace {
             }
         }
 
-        std::shared_ptr<Node> readNode()
+        std::shared_ptr<Node> readNode() const
         {
             auto node = std::make_shared<Node>();
             node->tags = readTags();
@@ -161,7 +162,7 @@ namespace {
             return node;
         }
 
-        std::shared_ptr<Way> readWay()
+        std::shared_ptr<Way> readWay() const
         {
             auto way = std::make_shared<Way>();
             way->tags = readTags();
@@ -169,7 +170,7 @@ namespace {
             return way;
         }
 
-        std::shared_ptr<Area> readArea()
+        std::shared_ptr<Area> readArea() const
         {
             auto area = std::make_shared<Area>();
             area->tags = readTags();
@@ -194,7 +195,7 @@ namespace {
             return relation;
         }
 
-        inline GeoCoordinate readCoordinate()
+        GeoCoordinate readCoordinate() const
         {
             GeoCoordinate coord;
             dataFile_.read(reinterpret_cast<char*>(&coord.latitude), sizeof(coord.latitude));
@@ -202,7 +203,7 @@ namespace {
             return coord;
         }
 
-        inline std::vector<GeoCoordinate> readCoordinates()
+        std::vector<GeoCoordinate> readCoordinates() const
         {
             std::uint16_t coordSize;
             dataFile_.read(reinterpret_cast<char*>(&coordSize), sizeof(coordSize));
@@ -216,7 +217,7 @@ namespace {
             return std::move(coordinates);
         }
 
-        inline std::vector<Tag> readTags()
+        std::vector<Tag> readTags() const
         {
             std::uint16_t tagSize;
             dataFile_.read(reinterpret_cast<char*>(&tagSize), sizeof(tagSize));
@@ -236,45 +237,77 @@ namespace {
     };
 }
 
+// TODO improve thread safety!
 class PersistentElementStore::PersistentElementStoreImpl final
 {
+    struct QuadKeyData
+    {
+        std::unique_ptr<std::fstream> dataFile;
+        std::unique_ptr<std::fstream> indexFile;
+
+        QuadKeyData(const std::string& dataPath, const std::string& indexPath) :
+            dataFile(utymap::utils::make_unique<std::fstream>()),
+            indexFile(utymap::utils::make_unique<std::fstream>())
+        {
+            using std::ios;
+            dataFile->open(dataPath, ios::in | ios::out | ios::binary | ios::app | ios::ate);
+            indexFile->open(indexPath, ios::in | ios::out | ios::binary | ios::app | ios::ate);
+        }
+
+        QuadKeyData(const QuadKeyData&) = delete;
+        QuadKeyData& operator=(const QuadKeyData&) = delete;
+
+        QuadKeyData(QuadKeyData&& other) :
+            dataFile(std::move(other.dataFile)),
+            indexFile(std::move(other.indexFile))
+        {
+        }
+
+        ~QuadKeyData()
+        {
+            if (dataFile != nullptr && dataFile->good()) dataFile->close();
+            if (indexFile != nullptr && indexFile->good()) indexFile->close();
+        }
+    };
+
 public:
-    explicit PersistentElementStoreImpl(const std::string& dataPath)
-            : dataPath_(dataPath)
+    explicit PersistentElementStoreImpl(const std::string& dataPath) :
+        dataPath_(dataPath),
+        dataCache_(8)
     {
     }
 
     void store(const Element& element, const QuadKey& quadKey)
     {
-        ensureFiles(quadKey);
+        const auto& quadKeyData = getQuadKeyData(quadKey);
 
         // write element data
-        std::uint32_t offset = static_cast<std::uint32_t>(dataFile_.tellg());
+        std::uint32_t offset = static_cast<std::uint32_t>(quadKeyData.dataFile->tellg());
 
-        ElementWriter visitor(dataFile_);
+        ElementWriter visitor(*quadKeyData.dataFile);
         element.accept(visitor);
 
         // write element index
-        indexFile_.seekg(0, std::ios::end);
-        indexFile_.write(reinterpret_cast<const char*>(&element.id), sizeof(element.id));
-        indexFile_.write(reinterpret_cast<const char*>(&offset), sizeof(offset));
+        quadKeyData.indexFile->seekg(0, std::ios::end);
+        quadKeyData.indexFile->write(reinterpret_cast<const char*>(&element.id), sizeof(element.id));
+        quadKeyData.indexFile->write(reinterpret_cast<const char*>(&offset), sizeof(offset));
     }
 
     void search(const QuadKey& quadKey, ElementVisitor& visitor)
     {
-        ensureFiles(quadKey);
+        const auto& quadKeyData = getQuadKeyData(quadKey);
 
-        std::uint32_t count = static_cast<std::uint32_t>(indexFile_.tellg() /
+        std::uint32_t count = static_cast<std::uint32_t>(quadKeyData.indexFile->tellg() /
                 (sizeof(std::uint64_t) + sizeof(std::uint32_t)));
 
-        ElementReader reader(dataFile_);
+        ElementReader reader(*quadKeyData.dataFile);
 
-        indexFile_.seekg(0, std::ios::beg);
+        quadKeyData.indexFile->seekg(0, std::ios::beg);
         for (std::uint32_t i = 0; i < count; ++i) {
             std::uint64_t id;
             std::uint32_t offset;
-            indexFile_.read(reinterpret_cast<char*>(&id), sizeof(id));
-            indexFile_.read(reinterpret_cast<char*>(&offset), sizeof(offset));
+            quadKeyData.indexFile->read(reinterpret_cast<char*>(&id), sizeof(id));
+            quadKeyData.indexFile->read(reinterpret_cast<char*>(&offset), sizeof(offset));
 
             reader.readElement(id, offset)->accept(visitor);
         }
@@ -284,12 +317,6 @@ public:
     {
         std::ifstream file(getFilePath(quadKey, DataFileExtension));
         return file.good();
-    }
-
-    void commit()
-    {
-        closeFiles();
-        currentQuadKey_ = QuadKey();
     }
 
 private:
@@ -302,35 +329,22 @@ private:
     }
 
     /// Ensures that open/close function is called on files.
-    void ensureFiles(const QuadKey& quadKey)
+    const QuadKeyData& getQuadKeyData(const QuadKey& quadKey)
     {
-        if (quadKey == currentQuadKey_)
-            return;
+        // TODO double checked locking is needed here.
+        if (dataCache_.exists(quadKey))
+            return dataCache_.get(quadKey);
 
-        closeFiles();
+        dataCache_.put(quadKey, QuadKeyData(getFilePath(quadKey, DataFileExtension), getFilePath(quadKey, IndexFileExtension)));
         
-        using std::ios;
-        dataFile_.open(getFilePath(quadKey, DataFileExtension), ios::in | ios::out | ios::binary | ios::app | ios::ate);
-        indexFile_.open(getFilePath(quadKey, IndexFileExtension),ios::in | ios::out | ios::binary | ios::app | ios::ate);
-
-        currentQuadKey_ = quadKey;
-    }
-
-    void closeFiles()
-    {
-        if (dataFile_.good()) dataFile_.close();
-        if (indexFile_.good()) indexFile_.close();
+        return dataCache_.get(quadKey);
     }
 
     const std::string dataPath_;
-    
-    QuadKey currentQuadKey_;
-
-    std::fstream indexFile_;
-    std::fstream dataFile_;
+    utymap::utils::LruCache<QuadKey, QuadKeyData, QuadKey::Comparator> dataCache_;
 };
 
-PersistentElementStore::PersistentElementStore(const std::string& dataPath, StringTable& stringTable) :
+PersistentElementStore::PersistentElementStore(const std::string& dataPath, const StringTable& stringTable) :
     ElementStore(stringTable), pimpl_(utymap::utils::make_unique<PersistentElementStoreImpl>(dataPath))
 {
 }
@@ -352,9 +366,4 @@ void PersistentElementStore::search(const QuadKey& quadKey, ElementVisitor& visi
 bool PersistentElementStore::hasData(const QuadKey& quadKey) const
 {
     return pimpl_->hasData(quadKey);
-}
-
-void PersistentElementStore::commit()
-{
-    pimpl_->commit();
 }

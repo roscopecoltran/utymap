@@ -69,7 +69,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl
     }  
 };
 
-InMemoryElementStore::InMemoryElementStore(StringTable& stringTable) :
+InMemoryElementStore::InMemoryElementStore(const StringTable& stringTable) :
     ElementStore(stringTable), pimpl_(utymap::utils::make_unique<InMemoryElementStoreImpl>())
 {
 }
@@ -100,9 +100,4 @@ void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entiti
     for (const auto& element : it->second) {
         element->accept(visitor);
     }
-}
-
-void InMemoryElementStore::commit()
-{
-
 }

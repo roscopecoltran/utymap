@@ -5,7 +5,6 @@
 #include "entities/Element.hpp"
 #include "index/ElementStore.hpp"
 
-#include <string>
 #include <memory>
 
 namespace utymap { namespace index {
@@ -15,7 +14,7 @@ class PersistentElementStore final : public ElementStore
 {
 public:
     explicit PersistentElementStore(const std::string& path,
-                           utymap::index::StringTable& stringTable);
+                                    const utymap::index::StringTable& stringTable);
 
     virtual ~PersistentElementStore();
 
@@ -23,8 +22,6 @@ public:
                 utymap::entities::ElementVisitor& visitor) override;
 
     bool hasData(const utymap::QuadKey& quadKey) const override;
-
-    void commit() override;
 
 protected:
     void storeImpl(const utymap::entities::Element& element, const utymap::QuadKey& quadKey) override;

@@ -50,7 +50,7 @@ namespace {
 
 namespace utymap { namespace index {
 
-ElementStore::ElementStore(StringTable& stringTable) :
+ElementStore::ElementStore(const StringTable& stringTable) :
     clipKeyId_(stringTable.getId(StyleConsts::ClipKey())),
     skipKeyId_(stringTable.getId(StyleConsts::SkipKey()))
 {
