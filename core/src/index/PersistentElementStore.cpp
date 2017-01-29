@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <mutex>
 
 using namespace utymap;
 using namespace utymap::index;
@@ -331,7 +332,9 @@ private:
     /// Ensures that open/close function is called on files.
     const QuadKeyData& getQuadKeyData(const QuadKey& quadKey)
     {
-        // TODO double checked locking is needed here.
+        // TODO this is not 100% thread safe as we return reference to data
+        // object it points can be destroyed right after.
+        std::lock_guard<std::mutex> lock(lock_);
         if (dataCache_.exists(quadKey))
             return dataCache_.get(quadKey);
 
@@ -340,6 +343,7 @@ private:
         return dataCache_.get(quadKey);
     }
 
+    mutable std::mutex lock_;
     const std::string dataPath_;
     utymap::utils::LruCache<QuadKey, QuadKeyData, QuadKey::Comparator> dataCache_;
 };

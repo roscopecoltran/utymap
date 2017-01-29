@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <list>
 #include <map>
-#include <mutex>
 
 namespace utymap { namespace utils {
 
@@ -21,8 +20,6 @@ public:
 
     void put(const Key& key, Value&& value)
     {
-        std::lock_guard<std::mutex> lock(lock_);
-
         itemsList_.push_front(KeyValuePair(key, std::move(value)));
 
         auto it = itemsMap_.find(key);
@@ -42,7 +39,6 @@ public:
 
     const Value& get(const Key& key)
     {
-        std::lock_guard<std::mutex> lock(lock_);
         auto it = itemsMap_.find(key);
         if (it == itemsMap_.end())
             throw std::range_error("There is no such key in cache.");
@@ -53,13 +49,11 @@ public:
 
     bool exists(const Key& key) const
     {
-        std::lock_guard<std::mutex> lock(lock_);
         return itemsMap_.find(key) != itemsMap_.end();
     }
 
     size_t size() const
     {
-        std::lock_guard<std::mutex> lock(lock_);
         return itemsMap_.size();
     }
 
@@ -67,8 +61,6 @@ private:
     std::list<KeyValuePair> itemsList_;
     std::map<Key, ListIterator, Comparator> itemsMap_;
     size_t maxSize_;
-
-    mutable std::mutex lock_;
 };
 
 }}
