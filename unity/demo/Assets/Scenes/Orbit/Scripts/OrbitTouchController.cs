@@ -9,7 +9,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
 
-        public float Radius = 1000;
+        public float Radius = 2000;
         public float RotationSpeed = 100f;
         public float ZoomSpeed = 20f;
 

@@ -19,8 +19,8 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private int _currentLod;
         private int _minLod = 1;
-        private int _maxLod = 3;
-        private float _radius = 1000;
+        private int _maxLod = 4;
+        private float _radius = 2000;
         private float _lodStep;
         private float _closestDistance;
 
@@ -79,7 +79,7 @@ namespace Assets.Scenes.Orbit.Scripts
             // close to surface
             if (Vector3.Distance(_lastPosition, _origin) < _closestDistance)
             {
-                SceneManager.LoadScene("Surface");
+                //SceneManager.LoadScene("Surface");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace Assets.Scenes.Orbit.Scripts
             if (ShowState)
             {
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
-                    String.Format("Position: {0} \n LOD: {1} \n Distance: {2}", transform.position, _currentLod,
+                    String.Format("Position: {0} \n LOD: {1} \n Distance: {2}", transform.position, GetLod(),
                         Vector3.Distance(transform.position, _origin)));
             }
         }
@@ -108,8 +108,13 @@ namespace Assets.Scenes.Orbit.Scripts
                 return;
             }
 
+            _currentLod = GetLod();
+        }
+
+        private int GetLod()
+        {
             var distance = Vector3.Distance(transform.position, _origin) - _closestDistance;
-            _currentLod = Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
+            return Math.Max(_maxLod - (int)Math.Round(distance / _lodStep), _minLod);
         }
 
         /// <summary> Builds planet on initial lod. </summary>

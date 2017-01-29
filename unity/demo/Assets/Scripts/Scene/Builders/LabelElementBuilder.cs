@@ -26,7 +26,7 @@ namespace Assets.Scripts.Scene.Builders
             
             sphereText.Coordinate = element.Geometry[0];
             // TODO should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = 1011f;
+            sphereText.Radius = 2011f;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;

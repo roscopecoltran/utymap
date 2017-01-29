@@ -8,7 +8,7 @@ namespace Assets.Scripts.UI
     [ExecuteInEditMode]
     public class SphereText : Text
     {
-        public float Radius = 1001f;
+        public float Radius = 2001f;
         public GeoCoordinate Coordinate;
 
         protected override void OnPopulateMesh(VertexHelper vh)
