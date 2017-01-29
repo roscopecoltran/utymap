@@ -103,6 +103,7 @@ set(HEADER_FILES
         utils/GeometryUtils.hpp
         utils/GeoUtils.hpp
         utils/GradientUtils.hpp
+        utils/LruCache.hpp
         utils/MathUtils.hpp
         utils/MeshUtils.hpp
         utils/NoiseUtils.hpp
