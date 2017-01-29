@@ -1,0 +1,11 @@
+area,relation|z1-7[kind=earth] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: earth;
+}
+
+area,relation|z2-7[kind=lake] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: water;
+}

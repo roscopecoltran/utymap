@@ -1,7 +1,0 @@
-node|z1[label_placement=true][kind=continent][name],
-node|z1[label_placement=true][kind=ocean][name] {
-    builders: label;
-    font-name: Arial;
-    font-size: 48;
-    font-color: yellow;
-}
