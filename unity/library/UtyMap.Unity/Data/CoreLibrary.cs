@@ -121,12 +121,8 @@ namespace UtyMap.Unity.Data
         public static void LoadQuadKey(string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError)
         {
-            // TODO make this call thread safe
-            lock (__lockObj)
-            {
-                loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
-                    (int) elevationDataType, onMeshBuilt, onElementLoaded, onError);
-            }
+            loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                 (int)elevationDataType, onMeshBuilt, onElementLoaded, onError);
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
