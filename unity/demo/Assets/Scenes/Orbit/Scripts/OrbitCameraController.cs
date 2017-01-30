@@ -20,7 +20,7 @@ namespace Assets.Scenes.Orbit.Scripts
         private int _currentLod;
         private int _minLod = 1;
         private int _maxLod = 7;
-        private float _radius = 2000;
+        private float _radius = 6371;
         private float _lodStep;
         private float _closestDistance;
 

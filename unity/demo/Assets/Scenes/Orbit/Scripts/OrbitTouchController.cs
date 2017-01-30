@@ -6,10 +6,13 @@ namespace Assets.Scenes.Orbit.Scripts
 {
     class OrbitTouchController : MonoBehaviour
     {
+        /// <summary> Value depends on radius and camera settings. </summary>
+        private const float MagicAngleLimitCoeff = 6;
+
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
 
-        public float Radius = 2000;
+        public float Radius = 6371;
         public float RotationSpeed = 100f;
         public float ZoomSpeed = 20f;
 
@@ -87,7 +90,7 @@ namespace Assets.Scenes.Orbit.Scripts
             var c = Radius;
 
             var cosine = (a * a + b * b - c * c) / (2 * a * b);
-            return (float) Math.Acos(cosine) * Mathf.Rad2Deg * 2;
+            return (float) Math.Acos(cosine) * Mathf.Rad2Deg * MagicAngleLimitCoeff;
         }
     }
 }
