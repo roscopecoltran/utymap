@@ -51,8 +51,9 @@ namespace Assets.Scripts.Scene
 
             gameObject.isStatic = true;
             gameObject.AddComponent<MeshFilter>().mesh = uMesh;
+            // TODO use TextureIndex to select proper material.
             gameObject.AddComponent<MeshRenderer>().sharedMaterial =
-                _materialProvider.GetSharedMaterial(@"Materials/Default");
+                _materialProvider.GetSharedMaterial(@"Materials/SurfaceColored");
             gameObject.AddComponent<MeshCollider>();
             gameObject.transform.parent = tile.GameObject.transform;
         }

@@ -1,4 +1,4 @@
-﻿Shader "Utymap/Surface colored" {
+﻿Shader "utymap/Surface textured colored" {
     Properties {
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _MainTex2 ("Albedo (RGB)", 2D) = "white" {}
