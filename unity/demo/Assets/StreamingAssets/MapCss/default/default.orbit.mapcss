@@ -1,37 +1,44 @@
 /* Contains properties shared between different LOD for orbit view. */
 canvas|z1-7 {
-    layer-priority:country-boundary,region-boundary,water,earth;
-    grid-cell-size: 5%;
+    layer-priority:country-boundary,region-boundary,water,park,earth;
+    grid-cell-size: 10%;
 
-    max-area: 0.5%;
+    max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
-    color: gradient(blue);
-
-    water-max-area: 1%;
-    water-color-noise-freq: 0;
-    water-ele-noise-freq: 0;
-    water-color: gradient(blue);
-    water-mesh-name: water;
-
-    earth-max-area: 1%;
-    earth-color-noise-freq: 0;
-    earth-ele-noise-freq: 10000000;
-    earth-color: gradient(green);
-    earth-height-offset: 10m;
-    earth-mesh-name: terrain_earth;
-
+    color: gradient(#b5d0d0);
+	
     country-boundary-max-area: 10%;
     country-boundary-color-noise-freq: 0;
     country-boundary-ele-noise-freq: 0;
-    country-boundary-color: gradient(white);
-    country-boundary-height-offset: 12m;
+    country-boundary-color: gradient(#d6abd0);
+    country-boundary-height-offset: 54m;
     country-boundary-mesh-name: terrain_country_boundary;
 
     region-boundary-max-area: 10%;
     region-boundary-color-noise-freq: 0;
     region-boundary-ele-noise-freq: 0;
     region-boundary-color: gradient(white);
-    region-boundary-height-offset: 11m;
+    region-boundary-height-offset: 53m;
     region-boundary-mesh-name: terrain_region_boundary;
+
+    water-max-area: 0.5%;
+    water-color-noise-freq: 0;
+    water-ele-noise-freq: 0;
+    water-color: gradient(#b5d0d0);
+    water-mesh-name: water;
+	
+	park-max-area: 0.5%;
+    park-color-noise-freq: 0;
+    park-ele-noise-freq: 10000000;
+    park-color: gradient(darkgreen);
+    park-height-offset: 52m;
+    park-mesh-name: terrain_earth;
+
+    earth-max-area: 0.5%;
+    earth-color-noise-freq: 0;
+    earth-ele-noise-freq: 10000000;
+    earth-color: gradient(#f2efe9);
+    earth-height-offset: 50m;
+    earth-mesh-name: terrain_earth;
 }

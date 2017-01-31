@@ -2,8 +2,8 @@ node|z2[label_placement=true][kind=continent][name],
 node|z2[label_placement=true][kind=ocean][name] {
     builders: label;
     font-name: Arial;
-    font-size: 72;
-    font-color: yellow;
+    font-size: 300;
+    font-color: #813d7e;
 }
 
 node|z4[kind=country][name][population>5000000] {
