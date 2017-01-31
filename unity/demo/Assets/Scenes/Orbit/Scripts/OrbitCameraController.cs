@@ -23,7 +23,6 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private int _currentLod;
 
-        private Vector3 _origin = Vector3.zero;
         private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         private IMapDataStore _dataStore;
@@ -67,8 +66,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
             _lastPosition = transform.position;
 
-            // close to surface
-            if (Vector3.Distance(_lastPosition, _origin) < OrbitCalculator.MinDistance)
+            if (OrbitCalculator.IsCloseToSurface(_lastPosition))
             {
                 //SceneManager.LoadScene("Surface");
                 return;
@@ -82,10 +80,10 @@ namespace Assets.Scenes.Orbit.Scripts
         {
             if (ShowState)
             {
-                var labelText = String.Format("Position: {0} \n LOD: {1} \n Distance: {2}",
+                var labelText = String.Format("Position: {0} \n LOD: {1} \n Distance: {2:0.#}km",
                     transform.position,
                     OrbitCalculator.CalculateLevelOfDetail(transform.position),
-                    Vector3.Distance(transform.position, _origin));
+                    OrbitCalculator.DistanceToSurface(transform.position));
 
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
             }
@@ -121,7 +119,7 @@ namespace Assets.Scenes.Orbit.Scripts
         private void BuildIfNecessary()
         {
             RaycastHit hit;
-            if (!Physics.Raycast(transform.position, (_origin - transform.position).normalized, out hit))
+            if (!Physics.Raycast(transform.position, (OrbitCalculator.Origin - transform.position).normalized, out hit))
                 return;
 
             // get parent which should have name the same as quadkey string representation
