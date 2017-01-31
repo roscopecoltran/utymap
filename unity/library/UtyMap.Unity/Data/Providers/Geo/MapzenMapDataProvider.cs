@@ -14,7 +14,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
         /// <summary> Provides the way to control what to request from server. </summary>
         private static readonly Dictionary<int, int> LodMapping = new Dictionary<int, int>()
         {
-            {2, 1}, {3, 3}, {4, 3}, {5, 3}, {6, 4}, {7, 5}
+            {2, 1}, {3, 3}, {4, 3}, {5, 4}, {6, 5}, {7, 6}
         };
 
         private string _cachePath;

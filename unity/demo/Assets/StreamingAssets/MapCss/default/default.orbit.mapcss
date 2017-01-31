@@ -1,6 +1,6 @@
 /* Contains properties shared between different LOD for orbit view. */
 canvas|z1-7 {
-    layer-priority:country-boundary,region-boundary,water,park,earth;
+    layer-priority:water,boundary-country,boundary-region,road-highway,earth;
     grid-cell-size: 10%;
 
     max-area: 0.25%;
@@ -8,37 +8,37 @@ canvas|z1-7 {
     ele-noise-freq: 0;
     color: gradient(#b5d0d0);
 	
-    country-boundary-max-area: 10%;
-    country-boundary-color-noise-freq: 0;
-    country-boundary-ele-noise-freq: 0;
-    country-boundary-color: gradient(#d6abd0);
-    country-boundary-height-offset: 54m;
-    country-boundary-mesh-name: terrain_country_boundary;
-
-    region-boundary-max-area: 10%;
-    region-boundary-color-noise-freq: 0;
-    region-boundary-ele-noise-freq: 0;
-    region-boundary-color: gradient(white);
-    region-boundary-height-offset: 53m;
-    region-boundary-mesh-name: terrain_region_boundary;
-
     water-max-area: 0.5%;
     water-color-noise-freq: 0;
     water-ele-noise-freq: 0;
     water-color: gradient(#b5d0d0);
     water-mesh-name: water;
 	
-	park-max-area: 0.5%;
-    park-color-noise-freq: 0;
-    park-ele-noise-freq: 10000000;
-    park-color: gradient(darkgreen);
-    park-height-offset: 52m;
-    park-mesh-name: terrain_earth;
+	boundary-country-max-area: 10%;
+    boundary-country-color-noise-freq: 0;
+    boundary-country-ele-noise-freq: 0;
+    boundary-country-color: gradient(#d6abd0);
+    boundary-country-height-offset: 11.5m;
+    boundary-country-mesh-name: terrain_boundary_country;
 
+    boundary-region-max-area: 10%;
+    boundary-region-color-noise-freq: 0;
+    boundary-region-ele-noise-freq: 0;
+    boundary-region-color: gradient(#dcbad6);
+    boundary-region-height-offset: 11m;
+    boundary-region-mesh-name: terrain_boundary_region;
+	
+	road-highway-max-area: 0.5%;
+    road-highway-color-noise-freq: 0;
+    road-highway-ele-noise-freq: 0;
+    road-highway-color: gradient(#b5b4b1);
+    road-highway-height-offset: 10.5m;
+    road-highway-mesh-name: terrain_road_highway;
+	
     earth-max-area: 0.5%;
     earth-color-noise-freq: 0;
-    earth-ele-noise-freq: 10000000;
+    earth-ele-noise-freq: 0;
     earth-color: gradient(#f2efe9);
-    earth-height-offset: 50m;
+    earth-height-offset: 10m;
     earth-mesh-name: terrain_earth;
 }

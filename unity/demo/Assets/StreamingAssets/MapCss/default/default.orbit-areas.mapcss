@@ -9,10 +9,3 @@ area,relation|z4-7[kind=lake] {
     builders: terrain;
     terrain-layer: water;
 }
-
-/*
-area,relation|z8[kind=national_park] {
-    clip:true;
-    builders: terrain;
-    terrain-layer: park;
-}*/
