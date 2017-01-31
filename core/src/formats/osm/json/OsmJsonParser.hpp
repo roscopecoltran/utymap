@@ -196,6 +196,7 @@ private:
 
     void parseProperties(utymap::entities::Element& element, std::uint32_t featureId, const ptree &properties) const
     {
+        element.id = 0;
         for (const ptree::value_type &property : properties) {
             std::uint32_t key = stringTable_.getId(property.first);
             if (key == idKey_)
