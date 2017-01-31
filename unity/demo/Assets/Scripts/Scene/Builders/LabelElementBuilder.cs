@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scenes.Orbit.Scripts;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UtyMap.Unity;
@@ -25,8 +26,8 @@ namespace Assets.Scripts.Scene.Builders
             var sphereText = gameObject.AddComponent<SphereText>();
             
             sphereText.Coordinate = element.Geometry[0];
-            // TODO should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = 6371 + 75;
+            // NOTE should be in sync with sphere size and offsetted polygons
+            sphereText.Radius = OrbitCalculator.Radius + 75;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;
