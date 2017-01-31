@@ -26,7 +26,7 @@ namespace Assets.Scripts.Scene.Builders
             
             sphereText.Coordinate = element.Geometry[0];
             // TODO should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = 6371 + 15;
+            sphereText.Radius = 6371 + 75;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;
@@ -39,14 +39,6 @@ namespace Assets.Scripts.Scene.Builders
             gameObject.transform.SetParent(_canvas.transform);
 
             return gameObject;
-        }
-
-        private static Font GetFont(Element element)
-        {
-            var name = element.Styles["font-name"];
-            var size = int.Parse(element.Styles["font-size"]);
-            // TODO cache created font
-            return Font.CreateDynamicFontFromOSFont(name, size);
         }
 
         private static string GetText(Element element)
