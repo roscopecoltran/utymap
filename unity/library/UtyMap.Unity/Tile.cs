@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
@@ -26,6 +27,9 @@ namespace UtyMap.Unity
         /// <summary> Used projection. </summary>
         public IProjection Projection { get; private set; }
 
+        /// <summary> Specifies which elevation data type should be used. </summary>
+        public ElevationDataType ElevationType { get; private set; }
+
         /// <summary> Sets game object which holds all children objects. </summary>
         public GameObject GameObject { get; private set; }
 
@@ -34,11 +38,13 @@ namespace UtyMap.Unity
         /// <param name="stylesheet"></param>
         /// <param name="projection"> Projection. </param>
         /// <param name="parent"> Parent gameobject. </param>
-        public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection, GameObject gameObject = null)
+        public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection, 
+            ElevationDataType elevationType, GameObject gameObject = null)
         {
             QuadKey = quadKey;
             Stylesheet = stylesheet;
             Projection = projection;
+            ElevationType = elevationType;
             GameObject = gameObject;
 
             BoundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);

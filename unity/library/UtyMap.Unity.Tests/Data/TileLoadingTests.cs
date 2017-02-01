@@ -113,7 +113,7 @@ namespace UtyMap.Unity.Tests.Data
                     manualResetEvent.Set();
                 });
 
-            _mapDataStore.OnNext(new Tile(quadKey, _stylesheet, _projection));
+            _mapDataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat));
 
             manualResetEvent.WaitOne();
         }

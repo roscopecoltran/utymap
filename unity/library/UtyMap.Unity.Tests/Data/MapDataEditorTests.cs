@@ -55,7 +55,7 @@ namespace UtyMap.Unity.Tests.Data
             _dataStore
                 .SubscribeOn(Scheduler.CurrentThread)
                 .Subscribe(u => result = u);
-            _dataStore.OnNext(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection));
+            _dataStore.OnNext(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection, ElevationDataType.Flat));
             result.Item2.Match(
                 e => CompareElements(node, e),
                 mesh => { throw new ArgumentException(); });

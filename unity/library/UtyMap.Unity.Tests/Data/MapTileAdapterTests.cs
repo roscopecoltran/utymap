@@ -18,7 +18,7 @@ namespace UtyMap.Unity.Tests.Data
         [TestFixtureSetUp]
         public void SetUp()
         {
-            var tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object);
+            var tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object, ElevationDataType.Flat);
             _observer = new Mock<IObserver<Return>>();
             _adapter = new MapDataAdapter(tile, new List<IObserver<Return>>() { _observer.Object }, new DefaultTrace());
         }

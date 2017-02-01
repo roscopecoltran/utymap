@@ -6,6 +6,7 @@ using System.Threading;
 using Moq;
 using NUnit.Framework;
 using UtyDepend.Config;
+using UtyMap.Unity.Data;
 using UtyMap.Unity.Data.Providers.Elevation;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
@@ -47,7 +48,7 @@ namespace UtyMap.Unity.Tests.Providers
             _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\",\"height\":[43,38,37,37]}");
 
             _tile = new Tile(GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 16),
-                new Stylesheet(""), new CartesianProjection(TestHelper.WorldZeroPoint));
+                new Stylesheet(""), new CartesianProjection(TestHelper.WorldZeroPoint), ElevationDataType.Flat);
 
             _networkService
                 .Setup(ns => ns.GetAndGetBytes(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>()))

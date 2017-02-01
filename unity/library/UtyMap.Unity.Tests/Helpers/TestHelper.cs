@@ -45,7 +45,6 @@ namespace UtyMap.Unity.Tests.Helpers
             var config = ConfigBuilder.GetDefault()
                 .SetStringIndex("Index/")
                 .SetSpatialIndex("Index/")
-                .SetElevationType(ElevationDataType.Flat)
                 .Build();
 
             // initialize services

@@ -52,7 +52,9 @@ namespace UtyMap.Unity.Tests
                 // specify stylesheet which is used to create meshes
                 stylesheet,
                 // specify projection used by map data adapter
-                new CartesianProjection(TestHelper.WorldZeroPoint)));
+                new CartesianProjection(TestHelper.WorldZeroPoint),
+                // specify elevation data type
+                ElevationDataType.Flat));
 
             Console.ReadLine();
         }

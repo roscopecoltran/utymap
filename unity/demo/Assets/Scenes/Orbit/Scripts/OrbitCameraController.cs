@@ -165,7 +165,7 @@ namespace Assets.Scenes.Orbit.Scripts
             {
                 var tileGameObject = new GameObject(quadKey.ToString());
                 tileGameObject.transform.parent = parent.transform;
-                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, tileGameObject));
+                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat, tileGameObject));
             }
         }
 

@@ -52,9 +52,7 @@ namespace UtyMap.Unity.Data.Providers
         private class ElevationProvider : MapDataProvider
         {
             private readonly Range<int> ElevationTileRange = new Range<int>(15, 16);
-
-            private ElevationDataType _eleDataType = ElevationDataType.Flat;
-            
+           
             private readonly IMapDataProvider _mapzenEleProvider;
             private readonly IMapDataProvider _srtmEleProvider;
 
@@ -67,9 +65,9 @@ namespace UtyMap.Unity.Data.Providers
             /// <inheritdoc />
             public override void OnNext(Tile value)
             {
-                if (_eleDataType != ElevationDataType.Flat &&  ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
+                if (value.ElevationType != ElevationDataType.Flat && ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
                 {
-                    if (_eleDataType == ElevationDataType.Grid)
+                    if (value.ElevationType == ElevationDataType.Grid)
                         _mapzenEleProvider.OnNext(value);
                     else
                         _srtmEleProvider.OnNext(value);
@@ -81,8 +79,6 @@ namespace UtyMap.Unity.Data.Providers
             /// <inheritdoc />
             public override void Configure(IConfigSection configSection)
             {
-                _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 2);
-                
                 _mapzenEleProvider.Configure(configSection);
                 _mapzenEleProvider.Subscribe(Notify);
 

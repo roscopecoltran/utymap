@@ -1,5 +1,4 @@
 ﻿using UtyDepend.Config;
-using UtyMap.Unity.Data;
 
 namespace UtyMap.Unity.Infrastructure.Config
 {
@@ -98,12 +97,6 @@ namespace UtyMap.Unity.Infrastructure.Config
             return this;
         }
 
-        public ConfigBuilder SetElevationType(ElevationDataType type)
-        {
-            Add<int>(@"data/elevation/type", (int)type);
-            return this;
-        }
-
         #endregion
 
         #region Default instance
@@ -120,8 +113,7 @@ namespace UtyMap.Unity.Infrastructure.Config
                 .SetMapzenMapData("http://tile.mapzen.com/mapzen/vector/v1/{0}/{1}/{2}/{3}.json?api_key={4}", "all", "json", "")
                 .SetMapzenEleData("http://elevation.mapzen.com/height?json={0}&api_key={1}", 4, "ele", "")
                 .SetCache("Cache")
-                .SetGeocodingServer("http://nominatim.openstreetmap.org/search?")
-                .SetElevationType(ElevationDataType.Flat);
+                .SetGeocodingServer("http://nominatim.openstreetmap.org/search?");
         }
 
         #endregion
