@@ -18,8 +18,6 @@ namespace UtyMap.Unity.Data
         private readonly IPathResolver _pathResolver;
         private readonly ITrace _trace;
 
-        private ElevationDataType _eleDataType = ElevationDataType.Flat;
-
         public MapDataLoader(IPathResolver pathResolver, ITrace trace)
         {
             _pathResolver = pathResolver;
@@ -49,7 +47,7 @@ namespace UtyMap.Unity.Data
             CoreLibrary.LoadQuadKey(
                 stylesheetPathResolved,
                 tile.QuadKey,
-                _eleDataType,
+                tile.ElevationType,
                 adapter.AdaptMesh,
                 adapter.AdaptElement,
                 adapter.AdaptError);
@@ -67,7 +65,7 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            _eleDataType = (ElevationDataType) configSection.GetInt("data/elevation/type", 0);
+            // empty so far
         }
     }
 }
