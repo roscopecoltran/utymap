@@ -50,9 +50,7 @@ namespace UtyMap.Unity.Data.Providers
 
         /// <summary> Encapsulates elevation processing. </summary>
         private class ElevationProvider : MapDataProvider
-        {
-            private readonly Range<int> ElevationTileRange = new Range<int>(15, 16);
-           
+        {          
             private readonly IMapDataProvider _mapzenEleProvider;
             private readonly IMapDataProvider _srtmEleProvider;
 
@@ -65,15 +63,16 @@ namespace UtyMap.Unity.Data.Providers
             /// <inheritdoc />
             public override void OnNext(Tile value)
             {
-                if (value.ElevationType != ElevationDataType.Flat && ElevationTileRange.Contains(value.QuadKey.LevelOfDetail))
+                if (value.ElevationType == ElevationDataType.Flat)
                 {
-                    if (value.ElevationType == ElevationDataType.Grid)
-                        _mapzenEleProvider.OnNext(value);
-                    else
-                        _srtmEleProvider.OnNext(value);
-                }
-                else
                     Notify(new Tuple<Tile, string>(value, ""));
+                    return;
+                }
+                
+                if (value.ElevationType == ElevationDataType.Grid)
+                    _mapzenEleProvider.OnNext(value);
+                else
+                    _srtmEleProvider.OnNext(value);
             }
 
             /// <inheritdoc />
