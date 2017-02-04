@@ -1,0 +1,40 @@
+area,relation|z10-12[kind=water],
+area,relation|z10-12[kind=wetland] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: water;
+}
+
+area,relation|z10-12[kind=nature_reserve] {
+    clip:true;
+    builders: terrain;
+	
+	max-area: 0.25%;
+    color-noise-freq: 0;
+    ele-noise-freq: 0;
+    color: gradient(#b5e3b5);
+    mesh-name: nature_reserve;
+}
+
+area,relation|z10-12[kind=park],
+area,relation|z10-12[kind=national_park] {
+    clip:true;
+    builders: terrain;
+		
+	max-area: 0.25%;
+    color-noise-freq: 0;
+    ele-noise-freq: 0;
+    color: gradient(#add19e);
+    mesh-name: national_park;
+}
+
+area,relation|z10-12[kind=urban_area] {
+    clip:true;
+    builders: terrain;
+	
+	max-area: 0.25%;
+    color-noise-freq: 0;
+    ele-noise-freq: 0;
+    color: gradient(#e0dfdf);
+    mesh-name: urban_area;
+}

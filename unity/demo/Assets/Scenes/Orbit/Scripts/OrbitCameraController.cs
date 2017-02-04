@@ -28,6 +28,7 @@ namespace Assets.Scenes.Orbit.Scripts
         private IMapDataStore _dataStore;
         private IProjection _projection;
         private Stylesheet _stylesheet;
+        private ElevationDataType _elevationDataType = ElevationDataType.Flat;
 
         #region Unity's callbacks
 
@@ -165,7 +166,7 @@ namespace Assets.Scenes.Orbit.Scripts
             {
                 var tileGameObject = new GameObject(quadKey.ToString());
                 tileGameObject.transform.parent = parent.transform;
-                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat, tileGameObject));
+                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject));
             }
         }
 
