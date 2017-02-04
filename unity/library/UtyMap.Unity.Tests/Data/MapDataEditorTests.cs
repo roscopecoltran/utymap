@@ -5,9 +5,7 @@ using NUnit.Framework;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Tests.Helpers;
-using UtyRx;
-
-using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
+using UtyMap.Unity.Utils;
 
 namespace UtyMap.Unity.Tests.Data
 {
@@ -40,22 +38,20 @@ namespace UtyMap.Unity.Tests.Data
         public void CanAddNode()
         {
             // ARRANGE
-            var levelOfDetails = new Range<int>(1, 1);
+            var quadKey = new QuadKey(0, 0, 6);
+            var levelOfDetails = new Range<int>(quadKey.LevelOfDetail, quadKey.LevelOfDetail);
             var node = new Element(7,
-                new GeoCoordinate[] { new GeoCoordinate(5, 5) },
-                new double[] { 0 }, 
-                new Dictionary<string, string>() { { "featurecla", "Populated place" } }, 
+                new GeoCoordinate[] { GeoUtils.QuadKeyToBoundingBox(quadKey).Center() },
+                new double[] { 0 },
+                // NOTE must be corresponding rule in mapcss.
+                new Dictionary<string, string>() { { "kind", "locality" }, {"name", "secret place"} },
                 new Dictionary<string, string>());
-            var result = default(Return);
 
             // ACT
             _mapDataEditor.Add(MapDataStorageType.InMemory, node, levelOfDetails);
 
             // ASSERT
-            _dataStore
-                .SubscribeOn(Scheduler.CurrentThread)
-                .Subscribe(u => result = u);
-            _dataStore.OnNext(new Tile(new QuadKey(1, 0, 1), _stylesheet, _projection, ElevationDataType.Flat));
+            var result = _dataStore.GetResultSync(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat));
             result.Item2.Match(
                 e => CompareElements(node, e),
                 mesh => { throw new ArgumentException(); });

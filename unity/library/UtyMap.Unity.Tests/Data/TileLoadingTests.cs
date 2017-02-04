@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Tests.Helpers;
@@ -46,31 +45,8 @@ namespace UtyMap.Unity.Tests.Data
             var centerQuadKey = new QuadKey(35205, 21489, lod);
 
             // ACT & ASSERT
-            for (var y = 0; y < count; ++y)
-                for (var x = 0; x < count; ++x)
-                    LoadQuadKeySync(new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod));
-            Assert.IsTrue(_isCalled);
+            TestQuadKeys(centerQuadKey, count, lod);
         }
-
-        // TODO Reimplement this test to support new mapcss
-        /*[Test(Description = "This test loads 4 tiles at zoom level 1.")]
-        public void CanLoadGlobeAtLowestLevelOfDetails()
-        {
-            // ARRANGE
-            int lod = 1;
-            SetupMapData(TestHelper.NaturalEarth110mAdmin, lod);
-            SetupMapData(TestHelper.NaturalEarth110mLakes, lod);
-            SetupMapData(TestHelper.NaturalEarth110mLand, lod);
-            SetupMapData(TestHelper.NaturalEarth110mRivers, lod);
-            var count = 2;
-
-            // ACT & ASSERT
-            for (var y = 0; y < count; ++y)
-                for (var x = 0; x < count; ++x)
-                    LoadQuadKeySync(new QuadKey(x, y, lod));
-
-            Assert.IsTrue(_isCalled);
-        }*/
 
         [Test(Description = "This test loads 4 tiles at zoom level 14.")]
         public void CanLoadAtBirdEyeLevelOfDetails()
@@ -82,11 +58,7 @@ namespace UtyMap.Unity.Tests.Data
             var centerQuadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, lod);
 
             // ACT & ASSERT
-            for (var y = 0; y < count; ++y)
-                for (var x = 0; x < count; ++x)
-                    LoadQuadKeySync(new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod));
-            
-            Assert.IsTrue(_isCalled);
+            TestQuadKeys(centerQuadKey, count, lod);
         }
 
         #region Private members
@@ -100,31 +72,24 @@ namespace UtyMap.Unity.Tests.Data
                 .Add(MapDataStorageType.InMemory, mapDataPath, _stylesheet, range);
         }
 
-        /// <summary> Loads quadkey waiting for completion callback. </summary>
-        private void LoadQuadKeySync(QuadKey quadKey)
+        private void TestQuadKeys(QuadKey centerQuadKey, int count, int lod)
         {
-            var manualResetEvent = new ManualResetEvent(false);
-            _mapDataStore
-                .SubscribeOn(Scheduler.CurrentThread)
-                .ObserveOn(Scheduler.CurrentThread)
-                .Subscribe(r =>
+            for (var y = 0; y < count; ++y)
+                for (var x = 0; x < count; ++x)
                 {
-                    AssertData(r);
-                    manualResetEvent.Set();
-                });
-
-            _mapDataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat));
-
-            manualResetEvent.WaitOne();
+                    var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod);
+                    AssertResult(_mapDataStore.GetResultSync(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat)));
+                }
+            Assert.IsTrue(_isCalled);
         }
 
-        /// <summary> Checks whether data satisfied minimal correctness critirea. </summary>
-        private void AssertData(Tuple<Tile, Union<Element, Mesh>> data)
+        /// <summary> Checks whether result satisfied minimal correctness critirea. </summary>
+        private void AssertResult(Tuple<Tile, Union<Element, Mesh>> result)
         {
             _isCalled = true;
             var elements = 0;
             var meshes = 0;
-            data.Item2.Match(
+            result.Item2.Match(
                 element =>
                 {
                     Assert.Greater(element.Geometry.Length, 0);
