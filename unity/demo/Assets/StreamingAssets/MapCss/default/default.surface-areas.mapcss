@@ -1,3 +1,9 @@
+area,relation|z10-12[kind=earth] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: earth;
+}
+
 area,relation|z10-12[kind=water],
 area,relation|z10-12[kind=wetland] {
     clip:true;

@@ -12,7 +12,7 @@ canvas|z10-12 {
     max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
-    color: gradient(#f2efe9);
+    color: gradient(#b5d0d0);
 	
 	boundary-country-max-area: 10%;
     boundary-country-color-noise-freq: 0;
@@ -40,4 +40,11 @@ canvas|z10-12 {
     water-ele-noise-freq: 0;
     water-color: gradient(#b5d0d0);
     water-mesh-name: water;
+	
+	earth-max-area: 0.5%;
+    earth-color-noise-freq: 0;
+    earth-ele-noise-freq: 0;
+    earth-color: gradient(#f2efe9);
+    earth-height-offset: 10m;
+    earth-mesh-name: terrain_earth;
 }
