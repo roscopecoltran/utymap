@@ -65,15 +65,14 @@ namespace UtyMap.Unity.Data.Providers
         public override void OnNext(Tile value)
         {
             var filePath = GetFilePath(value.QuadKey);
-            var uri = GetUri(value.QuadKey);
-
             if (_fileSystemService.Exists(filePath))
             {
                 Notify(new Tuple<Tile, string>(value, filePath));
                 return;
             }
 
-            _trace.Warn(TraceCategory, Strings.NoPresistentElementSourceFound, value.ToString(), uri);
+            var uri = GetUri(value.QuadKey);
+            _trace.Info(TraceCategory, Strings.NoPresistentElementSourceFound, value.ToString(), uri);
             _networkService.GetAndGetBytes(uri)
                 .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(bytes =>
