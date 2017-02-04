@@ -66,7 +66,7 @@ namespace UtyMap.Unity.Tests.Providers
         [Test]
         public void CanRequestPolyline()
         {
-            _eleProvider.OnNext(_tile);
+            _eleProvider.GetResultSync(_tile);
 
             _networkService.Verify(ns => ns.GetAndGetBytes("elevation.mapzen.com/height?json={\"range\":false,\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\"}&api_key=ggg", It.IsAny<Dictionary<string, string>>()));
         }
@@ -74,27 +74,18 @@ namespace UtyMap.Unity.Tests.Providers
         [Test]
         public void CanCreateDataFile()
         {
-            _eleProvider.OnNext(_tile);
+            _eleProvider.GetResultSync(_tile);
 
-            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", 
+            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache",
                 Path.Combine("16", "1202102332220103.ele"))));
         }
 
         [Test]
         public void CanGetElevationFilePath()
         {
-            string filePath = null;
-            var @event = new ManualResetEvent(false);
-            _eleProvider.Subscribe(value =>
-            {
-                filePath = value.Item2;
-                @event.Set();
-            });
+            var result = _eleProvider.GetResultSync(_tile);
 
-            _eleProvider.OnNext(_tile);
-
-            @event.WaitOne(TimeSpan.FromSeconds(5));
-            Assert.AreEqual(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele")), filePath);
+            Assert.AreEqual(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele")), result.Item2);
         }
 
         [Test]
@@ -102,7 +93,7 @@ namespace UtyMap.Unity.Tests.Providers
         {
             var expectedBytes = Encoding.UTF8.GetBytes("43 38 37 37");
 
-            _eleProvider.OnNext(_tile);
+            _eleProvider.GetResultSync(_tile);
 
             _writeStream.Verify(ws => ws.Write(expectedBytes, 0, expectedBytes.Length));
         }

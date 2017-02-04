@@ -57,9 +57,19 @@ namespace UtyMap.Unity.Tests.Helpers
 
         public static Return GetResultSync(this IMapDataStore store, Tile tile)
         {
-            var result = default(Return);
+            return GetResultSyncImpl(store, tile);
+        }
+
+        public static Tuple<Tile, string> GetResultSync(this ISubject<Tile, Tuple<Tile, string>> source, Tile tile)
+        {
+            return GetResultSyncImpl(source, tile);
+        }
+
+        private static T GetResultSyncImpl<T>(this ISubject<Tile, T> source, Tile tile)
+        {
+            var result = default(T);
             var manualResetEvent = new ManualResetEvent(false);
-            store
+            source
                 .SubscribeOn(Scheduler.CurrentThread)
                 .ObserveOn(Scheduler.CurrentThread)
                 .Subscribe(r =>
@@ -68,10 +78,9 @@ namespace UtyMap.Unity.Tests.Helpers
                     manualResetEvent.Set();
                 });
 
-            store.OnNext(tile);
+            source.OnNext(tile);
 
-            manualResetEvent.WaitOne();
-
+            manualResetEvent.WaitOne(TimeSpan.FromSeconds(5));
             return result;
         }
     }
