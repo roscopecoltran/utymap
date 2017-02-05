@@ -13,6 +13,7 @@ way,relation|z10-12[kind=region][kind_detail=4] {
 }
 
 
+way,relation|z10-12[kind=major_road][kind_detail=primary],
 way,relation|z10-12[kind=highway][kind_detail=motorway] {
     clip:true;
     builders: terrain;

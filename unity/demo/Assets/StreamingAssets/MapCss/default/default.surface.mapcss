@@ -6,7 +6,7 @@ area,relation|z14-16[man_made!=bridge][layer<0] {
 }*/
 
 canvas|z10-12 {
-    grid-cell-size: 2.5%;
+    grid-cell-size: 5%;
 
     max-area: 0.25%;
     color-noise-freq: 0;
