@@ -76,8 +76,7 @@ namespace UtyMap.Unity.Tests.Providers
         {
             _eleProvider.GetResultSync(_tile);
 
-            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache",
-                Path.Combine("16", "1202102332220103.ele"))));
+            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele"))));
         }
 
         [Test]

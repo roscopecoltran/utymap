@@ -75,11 +75,12 @@ namespace UtyMap.Unity.Tests.Data
         private void TestQuadKeys(QuadKey centerQuadKey, int count, int lod)
         {
             for (var y = 0; y < count; ++y)
-                for (var x = 0; x < count; ++x)
-                {
-                    var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod);
-                    AssertResult(_mapDataStore.GetResultSync(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat)));
-                }
+            for (var x = 0; x < count; ++x)
+            {
+                var quadKey = new QuadKey(centerQuadKey.TileX + x, centerQuadKey.TileY + y, lod);
+                var tile = new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat);
+                AssertResult(_mapDataStore.GetResultSync(tile));
+            }
             Assert.IsTrue(_isCalled);
         }
 

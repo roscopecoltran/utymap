@@ -70,8 +70,8 @@ namespace UtyMap.Unity.Tests.Helpers
             var result = default(T);
             var manualResetEvent = new ManualResetEvent(false);
             source
-                .SubscribeOn(Scheduler.CurrentThread)
-                .ObserveOn(Scheduler.CurrentThread)
+                .SubscribeOn(Scheduler.ThreadPool)
+                .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(r =>
                 {
                     result = r;
