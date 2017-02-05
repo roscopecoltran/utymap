@@ -24,7 +24,11 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext& context,
                                      context.boundingBox.maxPoint.longitude,
                                      context.boundingBox.maxPoint.latitude)
 {
-    auto size = style_.getValue(StyleConsts::GridCellSize(), context_.boundingBox);
+    // find relative size which fits for all quadkeys on given LOD
+    auto relativeQuadKey = utymap::utils::GeoUtils::GeoCoordinateToQuadKey(GeoCoordinate(0, 0), context.quadKey.levelOfDetail);
+    auto relativeBbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(relativeQuadKey);
+    auto size = style_.getValue(StyleConsts::GridCellSize(), relativeBbox);
+
     splitter_.setParams(Scale, size);
 }
 
