@@ -23,7 +23,7 @@ public:
     static const int MaxLevelOfDetails = 19;
 
     /// Converts Latitude/Longitude to quadkey
-    static QuadKey latLonToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
+    static QuadKey GeoCoordinateToQuadKey(const GeoCoordinate& coordinate, int levelOfDetail)
     {
         return QuadKey(levelOfDetail,
                        lonToTileX(clamp(coordinate.longitude, -179.9999999, 179.9999999), levelOfDetail),
@@ -78,8 +78,8 @@ public:
     {
         if (!bbox.isValid()) return;
 
-        QuadKey start = latLonToQuadKey(bbox.minPoint, levelOfDetail);
-        QuadKey end = latLonToQuadKey(bbox.maxPoint, levelOfDetail);
+        QuadKey start = GeoCoordinateToQuadKey(bbox.minPoint, levelOfDetail);
+        QuadKey end = GeoCoordinateToQuadKey(bbox.maxPoint, levelOfDetail);
 
         for (int y = end.tileY; y < start.tileY + 1; y++) {
             for (int x = start.tileX; x < end.tileX + 1; x++) {

@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE(Utils_GeoUtils)
 
 BOOST_AUTO_TEST_CASE( GivenTestLocationAtFirstLod_WhenGetQuadKey_ThenReturnValidQuadKey )
 {
-    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 1);
+    QuadKey quadKey = GeoUtils::GeoCoordinateToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 1);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 1);
     BOOST_CHECK_EQUAL(quadKey.tileX, 1);
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( GivenTestLocationAtFirstLod_WhenGetQuadKey_ThenReturnValid
 
 BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineLod_WhenGetQuadKey_ThenReturnValidQuadKey)
 {
-    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 9);
+    QuadKey quadKey = GeoUtils::GeoCoordinateToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 9);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 9);
     BOOST_CHECK_EQUAL(quadKey.tileX, 275);
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineLod_WhenGetQuadKey_ThenReturnValidQu
 
 BOOST_AUTO_TEST_CASE(GivenTestLocationAtNineteenLod_WhenGetQuadKey_ThenReturnValidQuadKey)
 {
-    QuadKey quadKey = GeoUtils::latLonToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 19);
+    QuadKey quadKey = GeoUtils::GeoCoordinateToQuadKey(GeoCoordinate(TestLatitude, TestLongitude), 19);
 
     BOOST_CHECK_EQUAL(quadKey.levelOfDetail, 19);
     BOOST_CHECK_EQUAL(quadKey.tileX, 281640);
