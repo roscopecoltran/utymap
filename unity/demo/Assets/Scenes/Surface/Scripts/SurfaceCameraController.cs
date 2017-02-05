@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Scene;
 using UnityEngine;
@@ -17,20 +16,9 @@ namespace Assets.Scenes.Surface.Scripts
     {
         private const string TraceCategory = "scene.surface";
 
-        private float _originDistance = 1000;
-
-        private int _minLod = 10;
-        private int _maxLod = 10;
         private int _currentLod;
         private QuadKey _currentQuadKey;
-
-        private float _lodStep;
-
-        private float _closestDistance = 5;
         private Vector3 _lastPosition = Vector3.zero;
-
-        private readonly Vector3 _origin = Vector3.zero;
-        private GeoCoordinate _geoOrigin = new GeoCoordinate(47.1014, 9.6099);
 
         public GameObject Pivot;
         public GameObject Planet;
@@ -60,13 +48,11 @@ namespace Assets.Scenes.Surface.Scripts
 
             _dataStore = appManager.GetService<IMapDataStore>();
             _stylesheet = appManager.GetService<Stylesheet>();
-            _projection = new CartesianProjection(_geoOrigin);
+            _projection = new CartesianProjection(SurfaceCalculator.GeoOrigin);
         }
 
         void Start()
         {
-            _lodStep = (transform.position.y - _closestDistance) / (_maxLod - _minLod);
-
             UpdateLod();
         }
 
@@ -90,36 +76,35 @@ namespace Assets.Scenes.Surface.Scripts
             GUI.contentColor = Color.red;
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height), String.Format("Position: {0}\nGeo:{1}\nLOD: {2}",
                 transform.position,
-                GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(transform.position.x, transform.position.z)),
+                GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z)),
                 _currentLod));
         }
 
         private void KeepOrigin()
         {
-            if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), _origin) < _originDistance)
+            if (!SurfaceCalculator.IsFar(transform.position))
                 return;
 
-            Vector3 direction = new Vector3(transform.position.x, 0, transform.position.z) -_origin;
+            Vector3 direction = new Vector3(transform.position.x, 0, transform.position.z) - SurfaceCalculator.Origin;
 
-            Pivot.transform.position = _origin;
+            Pivot.transform.position = SurfaceCalculator.Origin;
             Planet.transform.position += direction * -1;
 
-            _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(direction.x, direction.z));
-            _projection = new CartesianProjection(_geoOrigin);
+            SurfaceCalculator.GeoOrigin = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(direction.x, direction.z));
+            _projection = new CartesianProjection(SurfaceCalculator.GeoOrigin);
         }
 
         /// <summary> Updates current lod level based on current position. </summary>
         private void UpdateLod()
         {
-            var distance = transform.position.y - _closestDistance;
-            _currentLod = Mathf.Clamp(_maxLod - (int) Math.Round(distance / _lodStep), _minLod, _maxLod);
+            _currentLod = SurfaceCalculator.CalculateLevelOfDetail(transform.position);
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
         private void BuildIfNecessary()
         {
             var oldLod = _currentQuadKey.LevelOfDetail;
-            var currentPosition = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(_lastPosition.x, _lastPosition.z));
+            var currentPosition = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(_lastPosition.x, _lastPosition.z));
             _currentQuadKey = GeoUtils.CreateQuadKey(currentPosition, _currentLod);
 
             // zoom in/out
@@ -173,7 +158,6 @@ namespace Assets.Scenes.Surface.Scripts
             var tileGameObject = new GameObject(quadKey.ToString());
             tileGameObject.transform.parent = parent.transform;
             _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject));
-            //QuadTreeSystem.BuildQuadTree(parent, quadKey, _projection);
             _loadedQuadKeys.Add(quadKey);
         }
 
