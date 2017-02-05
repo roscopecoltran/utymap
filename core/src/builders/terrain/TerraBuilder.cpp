@@ -179,6 +179,9 @@ public:
                 mergeRegions(layerPair.second, std::make_shared<RegionContext>(
                     RegionContext::create(context_, style_, stylePrefix)));
             }
+            else
+                layerPair.second.sortOrder = 0;
+
             // sort regions inside one layer based on their area
             std::sort(layerPair.second.regions.begin(), layerPair.second.regions.end(), LessThanByArea());
             layers.push_back(std::move(layerPair.second));
@@ -208,8 +211,8 @@ private:
 
     void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
     {
+        layers_[type].regions.push_back(region);
         for (const auto& generator : generators_) {
-            layers_[type].regions.push_back(region);
             generator->onNewRegion(type, element, style, region);
         }
     }
