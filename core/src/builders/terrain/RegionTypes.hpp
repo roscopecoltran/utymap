@@ -105,9 +105,29 @@ struct Region final
     ClipperLib::Paths geometry;
 };
 
-typedef std::shared_ptr<const Region> RegionPtr;
-typedef std::vector<RegionPtr> Layer;
-typedef std::unordered_map<std::string, Layer> Layers;
+/// Represents terrain regions grouped by sort order.
+struct Layer
+{
+    int sortOrder;
+    std::vector<std::shared_ptr<const Region>> regions;
+
+    Layer() = default;
+    Layer(const Layer&) = delete;
+    Layer& operator=(const Layer&) = delete;
+
+    Layer& operator=(Layer&& other)
+    {
+        sortOrder = other.sortOrder;
+        regions = std::move(other.regions);
+        return *this;
+    }
+
+    Layer(Layer&& other) :
+        sortOrder(other.sortOrder),
+        regions(std::move(other.regions))
+    {
+    }
+};
 
 }}
 

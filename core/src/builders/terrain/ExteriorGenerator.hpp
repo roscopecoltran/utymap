@@ -20,7 +20,7 @@ public:
                      const utymap::mapcss::Style& style,
                      const std::shared_ptr<Region>& region) override;
 
-    void generateFrom(Layers& layers) override;
+    void generateFrom(const std::vector<Layer>& layers) override;
 
     ~ExteriorGenerator();
 

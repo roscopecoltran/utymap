@@ -24,7 +24,6 @@ struct StyleConsts final {
 
     static const std::string& MaxAreaKey();
     static const std::string& HeightOffsetKey();
-    static const std::string& LayerPriorityKey();
     static const std::string& MeshNameKey();
     static const std::string& MeshExtrasKey();
     static const std::string& GridCellSize();
@@ -41,6 +40,7 @@ struct StyleConsts final {
     static const std::string& FrequencyKey();
 
     static const std::string& LevelKey();
+    static const std::string& SortOrderKey();
     static const std::string& DimensionKey();
     static const std::string& DirectionKey();
     static const std::string& TypeKey();

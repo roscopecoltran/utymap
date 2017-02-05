@@ -26,7 +26,7 @@ public:
                              const std::shared_ptr<Region>& region) = 0;
 
     /// Generates mesh for given rect.
-    virtual void generateFrom(Layers& layers) = 0;
+    virtual void generateFrom(const std::vector<Layer>& layers) = 0;
 
     virtual ~TerraGenerator() = default;
 

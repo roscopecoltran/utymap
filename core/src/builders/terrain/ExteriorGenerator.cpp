@@ -27,7 +27,7 @@ void ExteriorGenerator::onNewRegion(const std::string& type, const Element& elem
 {
 }
 
-void ExteriorGenerator::generateFrom(Layers& layers)
+void ExteriorGenerator::generateFrom(const std::vector<Layer>& layers)
 {
     // TODO
 }

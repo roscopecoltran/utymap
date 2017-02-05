@@ -33,9 +33,18 @@ namespace {
     /// Compares regions based on their area.
     struct LessThanByArea
     {
-        bool operator()(const RegionPtr& lhs, const RegionPtr& rhs) const
+        bool operator()(const std::shared_ptr<const Region>& lhs, const std::shared_ptr<const Region>& rhs) const
         {
             return lhs->area < rhs->area;
+        }
+    };
+
+    /// Compares layers based on their sort order.
+    struct MoreThanSortOrder
+    {
+        bool operator()(const Layer& lhs, const Layer& rhs) const
+        {
+            return lhs.sortOrder > rhs.sortOrder;
         }
     };
 
@@ -159,17 +168,29 @@ public:
     /// Builds tile mesh using created layers and registered terra generators.
     void complete() override
     {
+        std::vector<Layer> layers;
+        layers.reserve(layers_.size());
+
         for (auto& layerPair : layers_) {
+            // named layer has to merge all regions inside
             if (!layerPair.first.empty()) {
+                auto stylePrefix = layerPair.first + "-";
+                layerPair.second.sortOrder = style_.getValue(stylePrefix + StyleConsts::SortOrderKey());
                 mergeRegions(layerPair.second, std::make_shared<RegionContext>(
-                    RegionContext::create(context_, style_, layerPair.first + "-")));
+                    RegionContext::create(context_, style_, stylePrefix)));
             }
-            // sort based on area
-            std::sort(layerPair.second.begin(), layerPair.second.end(), LessThanByArea());
+            // sort regions inside one layer based on their area
+            std::sort(layerPair.second.regions.begin(), layerPair.second.regions.end(), LessThanByArea());
+            layers.push_back(std::move(layerPair.second));
         }
 
+        layers_.clear();
+
+        // sort all layers based on their sort order
+        std::sort(layers.begin(), layers.end(), MoreThanSortOrder());
+
         for (const auto& generator : generators_)
-            generator->generateFrom(layers_);
+            generator->generateFrom(layers);
     }
 
 private:
@@ -188,7 +209,7 @@ private:
     void addRegion(const std::string& type, const utymap::entities::Element& element, const Style& style, std::shared_ptr<Region>& region)
     {
         for (const auto& generator : generators_) {
-            layers_[type].push_back(region);
+            layers_[type].regions.push_back(region);
             generator->onNewRegion(type, element, style, region);
         }
     }
@@ -215,7 +236,7 @@ private:
     void mergeRegions(Layer& layer, const std::shared_ptr<const RegionContext>& regionContext) const
     {
         std::unordered_map<int, std::pair<std::shared_ptr<Region>, std::shared_ptr<Clipper>>> regionMap;
-        for (const auto& current : layer) {
+        for (const auto& current : layer.regions) {
             auto mapPair = regionMap.find(current->level);
             if (mapPair == regionMap.end()) {
                 auto clipperPair = std::make_pair(std::make_shared<Region>(), std::make_shared<Clipper>());
@@ -226,7 +247,7 @@ private:
             mapPair->second.second->AddPaths(current->geometry, ptSubject, true);
         }
 
-        layer.clear();
+        layer.regions.clear();
         for (auto& pair : regionMap) {
             Paths result;
             pair.second.second->Execute(ctUnion, result, pftNonZero, pftNonZero);
@@ -236,7 +257,7 @@ private:
             }) / (Scale * Scale);
                
             pair.second.first->geometry = std::move(result);
-            layer.push_back(pair.second.first);
+            layer.regions.push_back(pair.second.first);
         }
     }
 
@@ -244,7 +265,7 @@ private:
     ClipperEx clipper_;
     ClipperOffset offset_;
     std::vector<std::unique_ptr<TerraGenerator>> generators_;
-    Layers layers_;
+    std::unordered_map<std::string, Layer> layers_;
     Path tileRect_;
     std::uint32_t dimenstionKey_;
 };

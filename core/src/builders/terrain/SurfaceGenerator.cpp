@@ -20,7 +20,7 @@ namespace {
 };
 
 SurfaceGenerator::SurfaceGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
-TerraGenerator(context, style, tileRect, TerrainMeshName)
+    TerraGenerator(context, style, tileRect, TerrainMeshName)
 {
 }
 
@@ -29,7 +29,7 @@ void SurfaceGenerator::onNewRegion(const std::string& type, const utymap::entiti
 }
 
 /// NOTE Original layer collection is cleared after this function executed.
-void SurfaceGenerator::generateFrom(Layers& layers)
+void SurfaceGenerator::generateFrom(const std::vector<Layer>& layers)
 {
     buildForeground(layers);
 
@@ -38,26 +38,10 @@ void SurfaceGenerator::generateFrom(Layers& layers)
     context_.meshCallback(mesh_);
 }
 
-void SurfaceGenerator::buildForeground(Layers& layers)
+void SurfaceGenerator::buildForeground(const std::vector<Layer>& layers)
 {
-    // Process layers according their priority
-    std::stringstream ss(style_.getString(StyleConsts::LayerPriorityKey()));
-    while (ss.good()) {
-        std::string name;
-        getline(ss, name, ',');
-        auto layer = layers.find(name);
-        if (layer != layers.end()) {
-            buildLayer(layer->second);
-            layers.erase(layer);
-        }
-    }
-
-    // Process the rest.
-    while (!layers.empty()) {
-        auto layer = layers.begin();
-        buildLayer(layer->second);
-        layers.erase(layer->first);
-    }
+    for (const auto& layer : layers)
+        buildLayer(layer);
 }
 
 void SurfaceGenerator::buildBackground()
@@ -72,9 +56,9 @@ void SurfaceGenerator::buildBackground()
             [](const Path& path) {});
 }
 
-void SurfaceGenerator::buildLayer(Layer& layer)
+void SurfaceGenerator::buildLayer(const Layer& layer)
 {
-    for (const auto& region : layer) {
+    for (const auto& region : layer.regions) {
         // TODO revise condition once level processing is implemented
         // if (region->level == 0)
         buildRegion(*region);

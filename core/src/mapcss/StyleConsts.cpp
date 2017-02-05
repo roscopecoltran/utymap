@@ -68,12 +68,6 @@ const std::string& StyleConsts::HeightOffsetKey()
     return value;
 }
 
-const std::string& StyleConsts::LayerPriorityKey()
-{
-    static const std::string value = "layer-priority";
-    return value;
-}
-
 const std::string& StyleConsts::MeshNameKey()
 {
     static const std::string value = "mesh-name";
@@ -143,6 +137,12 @@ const std::string& StyleConsts::FrequencyKey()
 const std::string& StyleConsts::LevelKey()
 {
     static const std::string value = "level";
+    return value;
+}
+
+const std::string& StyleConsts::SortOrderKey()
+{
+    static const std::string value = "sort-order";
     return value;
 }
 

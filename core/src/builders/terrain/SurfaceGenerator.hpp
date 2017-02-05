@@ -22,7 +22,7 @@ public:
                      const utymap::mapcss::Style& style,
                      const std::shared_ptr<Region>& region) override;
 
-    void generateFrom(Layers& layers) override;
+    void generateFrom(const std::vector<Layer>& layers) override;
 
 protected:
     /// Adds geometry to mesh.
@@ -30,13 +30,13 @@ protected:
 
 private:
     /// Builds foreground surface.
-    void buildForeground(Layers& layers);
+    void buildForeground(const std::vector<Layer>& layers);
 
     /// Builds background surface.
     void buildBackground();
 
     /// Builds layer.
-    void buildLayer(Layer& layer);
+    void buildLayer(const Layer& layer);
 
     /// Builds mesh using paths data.
     void buildRegion(const Region& region);

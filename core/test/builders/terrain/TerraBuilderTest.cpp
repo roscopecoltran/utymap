@@ -17,7 +17,7 @@ using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet =
-        "canvas|z1 { grid-cell-size: 1%; layer-priority: road; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
+        "canvas|z1 { grid-cell-size: 1%; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
         "road-ele-noise-freq: 0; road-color-noise-freq: 0; road-color:gradient(red); road-max-area: 0;}"
         "area|z1[landuse=commercial] { builders:terrain; terrain-layer:road; }"
 
