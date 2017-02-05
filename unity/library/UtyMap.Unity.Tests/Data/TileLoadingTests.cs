@@ -35,13 +35,13 @@ namespace UtyMap.Unity.Tests.Data
             _compositionRoot.Dispose();
         }
 
-        [Test(Description = "This test loads 64 tiles from osm file to ensure that there are no unexpected crashes at least at test region.")]
+        [Test(Description = "This test loads 4 tiles at zoom level 16.")]
         public void CanLoadMultipleTilesAtDetailedLevelOfDetails()
         {
             // ARRANGE
             int lod = 16;
             SetupMapData(TestHelper.BerlinPbfData, lod);
-            var count = 10;
+            var count = 1;
             var centerQuadKey = new QuadKey(35205, 21489, lod);
 
             // ACT & ASSERT
