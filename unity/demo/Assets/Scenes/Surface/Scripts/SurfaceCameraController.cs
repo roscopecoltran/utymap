@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Scene;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using UtyRx;
 
@@ -19,6 +21,7 @@ namespace Assets.Scenes.Surface.Scripts
         private int _currentLod;
         private QuadKey _currentQuadKey;
         private Vector3 _lastPosition = Vector3.zero;
+        private RangeTree<float, int> _lodTree;
 
         public GameObject Pivot;
         public GameObject Planet;
@@ -53,6 +56,8 @@ namespace Assets.Scenes.Surface.Scripts
 
         void Start()
         {
+            _lodTree = SurfaceCalculator.GetLodTree(GetComponent<Camera>(), transform.position);
+
             UpdateLod();
         }
 
@@ -74,10 +79,13 @@ namespace Assets.Scenes.Surface.Scripts
         void OnGUI()
         {
             GUI.contentColor = Color.red;
-            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), String.Format("Position: {0}\nGeo:{1}\nLOD: {2}",
-                transform.position,
-                GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z)),
-                _currentLod));
+            GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
+                String.Format("Position:{0}\nGeo:{1}\nLOD:{2}\nScreen: {3}:{4}\nFoV: {5}",
+                    transform.position,
+                    GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z)),
+                    _currentLod,
+                    Screen.width, Screen.height,
+                    GetComponent<Camera>().fieldOfView));
         }
 
         private void KeepOrigin()
@@ -97,7 +105,7 @@ namespace Assets.Scenes.Surface.Scripts
         /// <summary> Updates current lod level based on current position. </summary>
         private void UpdateLod()
         {
-            _currentLod = SurfaceCalculator.CalculateLevelOfDetail(transform.position);
+            _currentLod = _lodTree[transform.position.y].First().Value;
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
@@ -158,6 +166,7 @@ namespace Assets.Scenes.Surface.Scripts
             var tileGameObject = new GameObject(quadKey.ToString());
             tileGameObject.transform.parent = parent.transform;
             _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject));
+            //QuadTreeSystem.BuildQuadTree(tileGameObject, quadKey, _projection);
             _loadedQuadKeys.Add(quadKey);
         }
 
