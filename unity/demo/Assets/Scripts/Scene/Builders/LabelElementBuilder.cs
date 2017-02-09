@@ -29,7 +29,7 @@ namespace Assets.Scripts.Scene.Builders
             // NOTE should be attached to properly oriented canvas from proper scene.
             gameObject.transform.SetParent(_canvas.transform);
 
-            return element.Styles["type"] == "flat"
+            return element.Styles.ContainsKey("type") && element.Styles["type"] == "flat"
                 ? BuildFlatText(gameObject, element)
                 : BuildSphereText(gameObject, element);
         }
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Scene.Builders
 
             sphereText.Coordinate = element.Geometry[0];
             // NOTE should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = OrbitCalculator.Radius + 75;
+            sphereText.Radius = OrbitCalculator.Radius + 25;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;
@@ -100,7 +100,7 @@ namespace Assets.Scripts.Scene.Builders
                 Font = UnityEngine.Font.CreateDynamicFontFromOSFont(styles["font-name"], Size);
                 Color = ColorUtils.FromUnknown(styles["font-color"]);
 
-                if (!styles.ContainsKey("font-scale") || !int.TryParse(styles["font-scale"], out Scale)) 
+                if (!styles.ContainsKey("font-scale") || !int.TryParse(styles["font-scale"], out Scale))
                     Scale = 1;
             }
         }
