@@ -1,28 +1,31 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
 namespace Assets.Scenes.Surface.Scripts
 {
+    /// <summary> Provides API for calculating surface scene specific values. </summary>
     internal static class SurfaceCalculator
     {
         /// <summary> Max distance from origin before moving back. </summary>
-        public const float MaxOriginDistance = 3000;
+        private const float MaxOriginDistance = 3000;
 
         /// <summary> Minimal LOD. </summary>
-        public const int MinLod = 10;
+        private const int MinLod = 10;
 
         /// <summary> Maximal LOD. </summary>
-        public const int MaxLod = 14;
+        private const int MaxLod = 16;
 
         /// <summary> Origin in world coordinates. </summary>
         public static readonly Vector3 Origin = Vector3.zero;
 
-        /// <summary> Origin in geo coordinates. </summary>
+        /// <summary> Origin as GeoCoordinate. </summary>
         public static GeoCoordinate GeoOrigin = GeoUtils.QuadKeyToBoundingBox(
             GeoUtils.CreateQuadKey(new GeoCoordinate(28.2684, -16.6432), MinLod)).Center();
+
+        /// <summary> Returns current LOD. </summary>
+        public static int CurrentLevelOfDetails = MinLod;
 
         /// <summary> Checks whether position is far from origin. </summary>
         public static bool IsFar(Vector3 position)
@@ -30,7 +33,19 @@ namespace Assets.Scenes.Surface.Scripts
             return Vector2.Distance(new Vector2(position.x, position.z), Origin) < MaxOriginDistance;
         }
 
-        /// <summary> Gets range tree with LODs </summary>
+        /// <summary> Gets zoom speed ratio. </summary>
+        public static float GetZoomSpeedRatio(int lod)
+        {
+            return Mathf.Pow(2, -(lod - MinLod));
+        }
+
+        /// <summary> Gets pan speed ratio. </summary>
+        public static float GetPanSpeedRatio(int lod)
+        {
+            return Mathf.Pow(2, -(lod - MinLod));
+        }
+
+        /// <summary> Gets range (interval) tree with LODs </summary>
         /// <remarks> Modifies camera's field of view. </remarks>
         public static RangeTree<float, int> GetLodTree(Camera camera, Vector3 position)
         {
@@ -42,21 +57,23 @@ namespace Assets.Scenes.Surface.Scripts
             var aspectRatio = sizeRatio * Screen.height < Screen.width ? 1 / camera.aspect : 1;
 
             var fov = GetFieldOfView(GeoUtils.CreateQuadKey(GeoOrigin, MinLod), maxDistance, aspectRatio);
-            maxDistance = float.MaxValue;
 
-            for (int lod = MinLod; lod <= MaxLod; ++lod)
+            tree.Add(maxDistance, float.MaxValue, MinLod);
+            for (int lod = MinLod + 1; lod <= MaxLod; ++lod)
             {
                 var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(GeoOrigin, lod), aspectRatio);
                 var distance = frustumHeight * 0.5f / Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
-                tree.Add(distance, maxDistance, lod);
+                tree.Add(distance, maxDistance, lod - 1);
                 maxDistance = distance;
             }
+            tree.Add(float.MinValue, maxDistance, MaxLod);
 
             camera.fieldOfView = fov;
 
             return tree;
         }
 
+        /// <summary> Gets  height of camera's frustum. </summary>
         private static float GetFrustumHeight(QuadKey quadKey, float aspectRatio)
         {
             return GetGridSize(quadKey) * aspectRatio;

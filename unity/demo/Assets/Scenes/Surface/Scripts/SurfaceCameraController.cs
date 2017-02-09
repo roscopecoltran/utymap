@@ -18,7 +18,6 @@ namespace Assets.Scenes.Surface.Scripts
     {
         private const string TraceCategory = "scene.surface";
 
-        private int _currentLod;
         private QuadKey _currentQuadKey;
         private Vector3 _lastPosition = Vector3.zero;
         private RangeTree<float, int> _lodTree;
@@ -80,10 +79,11 @@ namespace Assets.Scenes.Surface.Scripts
         {
             GUI.contentColor = Color.red;
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
-                String.Format("Position:{0}\nGeo:{1}\nLOD:{2}\nScreen: {3}:{4}\nFoV: {5}",
+                String.Format("Position:{0}\nGeo:{1}\nQuadKey: {2}\nLOD:{3}\nScreen: {4}:{5}\nFoV: {6}",
                     transform.position,
                     GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z)),
-                    _currentLod,
+                    _currentQuadKey,
+                    SurfaceCalculator.CurrentLevelOfDetails,
                     Screen.width, Screen.height,
                     GetComponent<Camera>().fieldOfView));
         }
@@ -105,7 +105,7 @@ namespace Assets.Scenes.Surface.Scripts
         /// <summary> Updates current lod level based on current position. </summary>
         private void UpdateLod()
         {
-            _currentLod = _lodTree[transform.position.y].First().Value;
+            SurfaceCalculator.CurrentLevelOfDetails = _lodTree[transform.position.y].First().Value;
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
@@ -113,10 +113,10 @@ namespace Assets.Scenes.Surface.Scripts
         {
             var oldLod = _currentQuadKey.LevelOfDetail;
             var currentPosition = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(_lastPosition.x, _lastPosition.z));
-            _currentQuadKey = GeoUtils.CreateQuadKey(currentPosition, _currentLod);
+            _currentQuadKey = GeoUtils.CreateQuadKey(currentPosition, SurfaceCalculator.CurrentLevelOfDetails);
 
             // zoom in/out
-            if (oldLod != _currentLod)
+            if (oldLod != SurfaceCalculator.CurrentLevelOfDetails)
             {
                 foreach (var quadKey in _loadedQuadKeys)
                     SafeDestroy(quadKey.ToString());
