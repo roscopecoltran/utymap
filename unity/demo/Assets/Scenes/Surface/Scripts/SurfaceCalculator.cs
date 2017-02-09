@@ -49,12 +49,12 @@ namespace Assets.Scenes.Surface.Scripts
         /// <remarks> Modifies camera's field of view. </remarks>
         public static RangeTree<float, int> GetLodTree(Camera camera, Vector3 position)
         {
-            const float sizeRatio = 1f;
+            const float sizeRatio = 0.75f;
             var tree = new RangeTree<float, int>();
 
             var maxDistance = position.y - 1;
 
-            var aspectRatio = sizeRatio * Screen.height < Screen.width ? 1 / camera.aspect : 1;
+            var aspectRatio = sizeRatio * (Screen.height < Screen.width ? 1 / camera.aspect : 1);
 
             var fov = GetFieldOfView(GeoUtils.CreateQuadKey(GeoOrigin, MinLod), maxDistance, aspectRatio);
 
