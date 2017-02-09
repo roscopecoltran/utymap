@@ -36,6 +36,8 @@ namespace UtyMap.Unity.Data
             int[] triangles, int triangleCount, int[] colors, int colorCount,
             double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
         {
+            if (IsTileDestoyed()) return;
+
             Vector3[] worldPoints;
             Color[] unityColors;
 
@@ -112,6 +114,8 @@ namespace UtyMap.Unity.Data
         public void AdaptElement(long id, string[] tags, int tagCount, double[] vertices, int vertexCount, 
             string[] styles, int styleCount)
         {
+            if (IsTileDestoyed()) return;
+
             var geometry = new GeoCoordinate[vertexCount / 3];
             var heights = new double[vertexCount/3];
             for (int i = 0; i < vertexCount/3; i += 3)
@@ -133,6 +137,13 @@ namespace UtyMap.Unity.Data
         }
 
         #region Private members
+
+        /// <summary> Checks whether tile is destroyed. </summary>
+        /// <remarks> GameObject is not null, but operator seems to be overloaded. </remarks>
+        private bool IsTileDestoyed()
+        {
+            return _tile.GameObject == null;
+        }
 
         private static Dictionary<string, string> ReadDict(string[] data)
         {
