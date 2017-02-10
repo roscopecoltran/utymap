@@ -17,7 +17,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public static readonly int MinLod = 1;
 
         /// <summary> Maximal supported LOD. </summary>
-        public static readonly int MaxLod = 7;
+        public static readonly int MaxLod = 8;
 
         /// <summary> Closest distance to sphere's surface. </summary>
         private static readonly float MinDistance = Radius * 1.1f;

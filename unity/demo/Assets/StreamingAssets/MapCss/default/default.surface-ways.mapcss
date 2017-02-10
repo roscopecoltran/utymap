@@ -1,11 +1,11 @@
-way,relation|z10-12[kind=country][kind_detail=2] {
+way,relation|z9-12[kind=country][kind_detail=2] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-country;
     width: 0.75%;
 }
 
-way,relation|z10-12[kind=region][kind_detail=4] {
+way,relation|z9-12[kind=region][kind_detail=4] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-region;
@@ -13,8 +13,8 @@ way,relation|z10-12[kind=region][kind_detail=4] {
 }
 
 
-way,relation|z10-12[kind=major_road][kind_detail=primary],
-way,relation|z10-12[kind=highway][kind_detail=motorway] {
+way,relation|z9-12[kind=major_road][kind_detail=primary],
+way,relation|z9-12[kind=highway][kind_detail=motorway] {
     clip:true;
     builders: terrain;
     terrain-layer: road-highway;

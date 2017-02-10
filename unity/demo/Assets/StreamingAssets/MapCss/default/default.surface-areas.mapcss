@@ -1,17 +1,17 @@
-area,relation|z10-12[kind=earth] {
+area,relation|z9-12[kind=earth] {
     clip:true;
     builders: terrain;
     terrain-layer: earth;
 }
 
-area,relation|z10-12[kind=water],
-area,relation|z10-12[kind=wetland] {
+area,relation|z9-12[kind=water],
+area,relation|z9-12[kind=wetland] {
     clip:true;
     builders: terrain;
     terrain-layer: water;
 }
 
-area,relation|z10-12[kind=nature_reserve] {
+area,relation|z9-12[kind=nature_reserve] {
     clip:true;
     builders: terrain;
 	
@@ -22,8 +22,8 @@ area,relation|z10-12[kind=nature_reserve] {
     mesh-name: nature_reserve;
 }
 
-area,relation|z10-12[kind=park],
-area,relation|z10-12[kind=national_park] {
+area,relation|z9-12[kind=park],
+area,relation|z9-12[kind=national_park] {
     clip:true;
     builders: terrain;
 		
@@ -34,7 +34,7 @@ area,relation|z10-12[kind=national_park] {
     mesh-name: national_park;
 }
 
-area,relation|z10-12[kind=urban_area] {
+area,relation|z9-12[kind=urban_area] {
     clip:true;
     builders: terrain;
 	

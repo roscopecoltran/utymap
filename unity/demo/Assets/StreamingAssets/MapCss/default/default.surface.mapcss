@@ -5,7 +5,7 @@ area,relation|z14-16[man_made!=bridge][layer<0] {
     skip:true;
 }*/
 
-canvas|z10-12 {
+canvas|z9-12 {
     grid-cell-size: 5%;
 
     max-area: 0.25%;

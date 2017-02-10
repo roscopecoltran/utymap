@@ -9,10 +9,10 @@ namespace Assets.Scenes.Surface.Scripts
     internal static class SurfaceCalculator
     {
         /// <summary> Max distance from origin before moving back. </summary>
-        private const float MaxOriginDistance = 3000;
+        private const float MaxOriginDistance = 2000;
 
         /// <summary> Minimal LOD. </summary>
-        private const int MinLod = 10;
+        private const int MinLod = 9;
 
         /// <summary> Maximal LOD. </summary>
         private const int MaxLod = 16;
