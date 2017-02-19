@@ -5,6 +5,10 @@ set(current_project_name "utymap") # PROJECT_NAME: ${current_project_name}
 set(current_project_version v0.1.0) # PROJECT_VERSION: ${current_project_version}
 set(current_project_root_path ${CMAKE_CURRENT_LIST_DIR})
 
+if(NOT DEFINED ${HUNTER_UNITY3D_PLUGIN_PREFIX_PATH})
+	set(HUNTER_UNITY3D_PLUGIN_PREFIX_PATH "../../unity/demo/Assets/Plugins") # No trailing slash
+endif(NOT DEFINED ${HUNTER_UNITY3D_PLUGIN_PREFIX_PATH})
+
 string(COMPARE NOTEQUAL "$ENV{TRAVIS_TAG}" "" travis_deploy)
 string(COMPARE EQUAL "$ENV{APPVEYOR_REPO_TAG}" "true" appveyor_deploy)
 
@@ -44,6 +48,9 @@ set(is_android ${ANDROID}) # syntax compatibility
 string(COMPARE EQUAL "${CMAKE_OSX_SYSROOT}" "iphoneos" is_ios)
 string(COMPARE EQUAL "${CMAKE_SYSTEM_NAME}" "Linux" is_linux)
 string(COMPARE EQUAL "${CMAKE_GENERATOR}" "Xcode" is_xcode)
+if(is_xcode AND NOT is_ios)
+	set(is_osx TRUE)
+endif()
 
 # force static library for iOS
 if(is_ios)
@@ -145,3 +152,5 @@ if(BUILD_TESTS)
 endif(BUILD_TESTS)
 
 add_subdirectory(shared)
+
+

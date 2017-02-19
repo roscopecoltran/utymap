@@ -43,9 +43,7 @@ function build_all
              --config ${BUILD_TYPE} \
              --reconfig \
              --clear \
-             --install \
              --home ./core \
-             --framework \
     	     --universal-apple \
              --test \
              --fwd CMAKE_XCODE_ATTRIBUTE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET} \

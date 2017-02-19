@@ -1,4 +1,27 @@
+
 set(LIBRARY_NAME UtyMap)
+
+if(ENABLE_UNITYPLUGIN)
+
+    # use the project name if the target as
+    if(NOT DEFINED HUNTER_UNITY3D_PLUGIN_SDK_NAME)
+        set(HUNTER_UNITY3D_PLUGIN_SDK_NAME "${LIBRARY_NAME}ForUnity")
+    endif(NOT DEFINED HUNTER_UNITY3D_PLUGIN_SDK_NAME)    
+
+    if(NOT DEFINED HUNTER_UNITY3D_PLUGIN_LIBRARY_NAME)
+        set(HUNTER_UNITY3D_PLUGIN_LIBRARY_NAME ${LIBRARY_NAME})
+    endif(NOT DEFINED HUNTER_UNITY3D_PLUGIN_LIBRARY_NAME)
+
+    list(APPEND CMAKE_MODULE_PATH "${current_project_root_path}/cmake/Unity3D") 
+    include(Unity3DNativePluginExport) # will set suffix and prefix for each platforms
+
+    hunter_unity3d_set_target_properties(
+        SDK_NAME          "${HUNTER_UNITY3D_PLUGIN_SDK_NAME}"
+        LIBRARY_NAME      "${HUNTER_UNITY3D_PLUGIN_LIBRARY_NAME}"
+        #ARCH_PREFIX_ALIAS "x86" # eg i386 -> x86
+    )
+
+endif(ENABLE_UNITYPLUGIN)
 
 IF(HUNTER_ENABLED)
 
@@ -202,3 +225,17 @@ ELSE()
 ENDIF()
 
 include_directories(${MAIN_SOURCE} ${LIB_SOURCE} ${CMAKE_CURRENT_BINARY_DIR})
+
+# ---[ Install main target 
+
+
+# ---[ Deploy Unity3D plugin
+
+    hunter_unity3d_deploy_target(
+        SDK_NAME          "${HUNTER_UNITY3D_PLUGIN_SDK_NAME}"
+        LIBRARY_NAME      "${HUNTER_UNITY3D_PLUGIN_LIBRARY_NAME}"
+        #ARCH_PREFIX_ALIAS "x86" # eg i386 -> x86
+    )
+
+
+
