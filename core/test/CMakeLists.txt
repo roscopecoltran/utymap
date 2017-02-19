@@ -1,16 +1,62 @@
-find_package(Boost COMPONENTS unit_test_framework system filesystem REQUIRED)
+
+# added by Luc Michalski - 2017
+
+# ---[ Boost
+IF(HUNTER_ENABLED)
+    hunter_add_package(Boost COMPONENTS test system filesystem)
+    find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework system filesystem)
+ELSE()
+    find_package(Boost COMPONENTS unit_test_framework system filesystem REQUIRED)
+ENDIF(HUNTER_ENABLED)
 
 enable_testing ()
 
 # Define test assets path
 file(READ ${TEST_SOURCE}/config.hpp FILE_CONTENT)
-string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
+
+string( REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
         MODIFIED_FILE_CONTENT "${FILE_CONTENT}")
+
 file(WRITE ${TEST_SOURCE}/config.hpp "${MODIFIED_FILE_CONTENT}")
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
-    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
-    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+# ---[ Protobuf
+IF(HUNTER_ENABLED)
+
+    hunter_add_package(Protobuf)
+    find_package(Protobuf CONFIG REQUIRED)  
+
+    set(PROTOS_TEST_FILES "${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto" "${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto")
+    set(PROTO_TEST_SRCS)
+    set(PROTO_TEST_HDRS)
+
+    #Code Generation
+    foreach(proto_test_file ${PROTOS_TEST_FILES})
+      get_filename_component(proto_test_file_abs ${proto_test_file} ABSOLUTE)
+      get_filename_component(basename ${proto_test_file} NAME_WE)
+      set(generated_files ${basename}.pb.cc ${basename}.pb.h)
+
+      list(APPEND PROTO_TEST_SRCS ${basename}.pb.cc)
+      list(APPEND PROTO_TEST_HDRS ${basename}.pb.h)
+
+      add_custom_command(
+          OUTPUT ${generated_files}
+          COMMAND protobuf::protoc --cpp_out ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR} ${proto_test_file_abs}
+          COMMENT "Generating ${generated_files} from ${proto_test_file}"
+          VERBATIM
+      )
+
+    endforeach()
+    add_library(protos_test ${PROTO_TEST_SRCS})
+    target_link_libraries(protos_test protobuf::libprotobuf)
+    target_include_directories(protos_test PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..)
+
+ELSE()
+
+    PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+        ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+        ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+
+ENDIF(HUNTER_ENABLED)
 
 include_directories(${MAIN_SOURCE}
         ${LIB_SOURCE}
@@ -76,10 +122,14 @@ add_executable(${TEST}
         ${HEADER_FILES}
         )
 
-target_link_libraries(${TEST} UtyMap
-                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                              ${Boost_SYSTEM_LIBRARY}
-                              ${Boost_FILESYSTEM_LIBRARY})
+IF(HUNTER_ENABLED)
+    target_link_libraries(${TEST} UtyMap Boost::unit_test_framework Boost::system Boost::filesystem protos_test)
+ELSE()
+    target_link_libraries(${TEST} UtyMap
+                                  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                                  ${Boost_SYSTEM_LIBRARY}
+                                  ${Boost_FILESYSTEM_LIBRARY})    
+ENDIF()
 
 enable_testing ()
 add_test (${TEST} ${TEST})

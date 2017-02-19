@@ -1,8 +1,48 @@
 set(LIBRARY_NAME UtyMap)
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
-    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
-    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+IF(HUNTER_ENABLED)
+
+    hunter_add_package(Protobuf)
+    find_package(Protobuf CONFIG REQUIRED)  
+
+    set(PROTOS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/formats/osm/pbf/fileformat.proto ${CMAKE_CURRENT_SOURCE_DIR}/formats/osm/pbf/osmformat.proto)
+    set(PROTO_SRCS)
+    set(PROTO_HDRS)
+
+    #Code Generation
+    foreach(proto_file ${PROTOS_FILES})
+      get_filename_component(proto_file_abs ${proto_file} ABSOLUTE)
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - proto_file_abs: ${proto_file_abs}")
+      get_filename_component(basename ${proto_file} NAME_WE)
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - basename: ${basename}")
+      set(generated_files ${basename}.pb.cc ${basename}.pb.h)
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - generated_files: ${generated_files}")
+
+      list(APPEND PROTO_SRCS ${basename}.pb.cc)
+      list(APPEND PROTO_HDRS ${CMAKE_CURRENT_BINARY_DIR}/${basename}.pb.h)
+
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - generated_files: ${generated_files}")
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - command: protobuf::protoc --cpp_out ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR} ${proto_file_abs}")
+      MESSAGE(STATUS " ** [Sniper] Protobuf generation - Generating ${generated_files} from ${proto_file}")
+
+      add_custom_command(
+          OUTPUT ${generated_files}
+          COMMAND protobuf::protoc --cpp_out ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR}/formats/osm/pbf/ ${proto_file_abs}
+          COMMENT "Generating ${generated_files} from ${proto_file}"
+          VERBATIM
+      )
+    endforeach()
+
+    MESSAGE(STATUS " ** [Sniper] Protobuf generation - protos: ${PROTO_SRCS}")
+    add_library(protos ${PROTO_SRCS})
+    target_link_libraries(protos protobuf::libprotobuf)
+
+    #target_include_directories(protos PUBLIC ".")
+    #add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/formats/osm/pbf)
+
+ELSE()
+    PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+ENDIF(HUNTER_ENABLED)
 
 set(HEADER_FILES
         ${PROTO_HDRS}
@@ -155,6 +195,10 @@ add_library(${LIBRARY_NAME}
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(${LIBRARY_NAME} ${PROTOBUF_LIBRARY} ${ZLIB_LIBRARY})
+IF(HUNTER_ENABLED)
+    target_link_libraries(${LIBRARY_NAME} protos ZLIB::zlib)
+ELSE()
+    target_link_libraries(${LIBRARY_NAME} ${PROTOBUF_LIBRARY} ${ZLIB_LIBRARY})
+ENDIF()
 
 include_directories(${MAIN_SOURCE} ${LIB_SOURCE} ${CMAKE_CURRENT_BINARY_DIR})

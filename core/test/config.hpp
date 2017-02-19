@@ -1,4 +1,4 @@
-#define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
+#define TEST_ASSETS_PATH "/Volumes/HardDrive/gocommerce/src/github.com/roscopecoltran/sniper-unity3d/unity-n-native/utymap/core/test/test_assets/"
 
 #define TEST_EXTERNAL_ASSETS_PATH TEST_ASSETS_PATH "../../../unity/demo/Assets/StreamingAssets/"
 
