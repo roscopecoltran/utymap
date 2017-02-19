@@ -1,0 +1,6 @@
+[submodule "helpers/hunter"]
+	path = helpers/hunter
+	url = https://github.com/ruslo/hunter
+[submodule "helpers/polly"]
+	path = helpers/polly
+	url = https://github.com/ruslo/polly
